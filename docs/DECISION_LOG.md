@@ -51,3 +51,11 @@ Use a pure target-weight backtest engine with a strict separation between signal
 Do not award automatic spread capture to maker orders. Preserve partial and completely missed executions in the result. Sell reductions before purchases, and scale cash-constrained multi-asset buys proportionally so results do not depend on pair sort order.
 
 The engine and synthetic fixtures validate arithmetic and invariants only. No fee, fill-rate, spread, depth, slippage or impact assumption may support a strategy conclusion until it is versioned and calibrated from time-appropriate venue and pair evidence.
+
+## 2026-07-26 — Survivorship-safe dynamic universe
+
+Store market definitions, lifecycle events and market-quality observations as immutable hashed records. Reconstruct membership using only definitions and observations available by the historical signal time and lifecycle events both effective and published by that time.
+
+Retain suspended, Australian-disabled and delisted markets in history rather than deleting them from the research dataset. Treat a documented relisting as a new listing era. Conflicting simultaneous states, changed immutable identities and missing chronology fail closed.
+
+Classify eligible assets into established, high-volatility or new-listing lanes using a signed policy. Nominal unit price and current survival do not confer eligibility. Every lane remains subject to instrument, Australian availability, valuation, data-quality, minimum-order, turnover, depth, spread and impact gates.
