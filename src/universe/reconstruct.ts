@@ -309,16 +309,20 @@ function reconstructLifecycle(
 
   for (const event of knowable) {
     switch (event.eventType) {
-      case "listed":
-        if (listedAtMs === undefined || delistedAtMs !== undefined) {
+      case "listed": {
+        const startsNewEra = delistedAtMs !== undefined;
+        if (listedAtMs === undefined || startsNewEra) {
           listedAtMs = event.effectiveAtMs;
           delistedAtMs = undefined;
           online = false;
-          availableInAustralia = false;
           latestTradingEvent = undefined;
-          latestAustraliaEvent = undefined;
+          if (startsNewEra) {
+            availableInAustralia = false;
+            latestAustraliaEvent = undefined;
+          }
         }
         break;
+      }
       case "trading-online":
       case "trading-resumed":
         online = true;
