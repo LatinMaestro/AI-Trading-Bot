@@ -6,6 +6,7 @@ import type {
   SubmittedOrder,
 } from "./types.ts";
 import { krakenSignature } from "../utils/crypto.ts";
+import { MonotonicNonce } from "./monotonicNonce.ts";
 
 const API_BASE = "https://api.kraken.com";
 const FORBIDDEN_PERMISSIONS = new Set([
@@ -27,7 +28,12 @@ export interface KrakenCredentials {
 }
 
 export class KrakenSpotAdapter implements ExchangeAdapter {
-  constructor(private readonly credentials?: KrakenCredentials) {}
+  private readonly nonce = new MonotonicNonce();
+  private readonly credentials: KrakenCredentials | undefined;
+
+  constructor(credentials?: KrakenCredentials) {
+    this.credentials = credentials;
+  }
 
   async getDailyCandles(pair: string, sinceSeconds?: number): Promise<readonly Candle[]> {
     const url = new URL("/0/public/OHLC", API_BASE);
@@ -124,7 +130,7 @@ export class KrakenSpotAdapter implements ExchangeAdapter {
     if (this.credentials === undefined) {
       throw new Error("Kraken credentials are not configured");
     }
-    const nonce = String(Date.now() * 1000 + crypto.getRandomValues(new Uint16Array(1))[0]!);
+    const nonce = this.nonce.next();
     form.set("nonce", nonce);
     const body = form.toString();
     const signature = await krakenSignature(

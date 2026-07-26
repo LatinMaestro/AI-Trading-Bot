@@ -7,7 +7,11 @@ export interface CycleAudit {
 }
 
 export class TradingRepository {
-  constructor(private readonly db: D1Database) {}
+  private readonly db: D1Database;
+
+  constructor(db: D1Database) {
+    this.db = db;
+  }
 
   async appendCycleAudit(audit: CycleAudit): Promise<void> {
     const eventId = crypto.randomUUID();
