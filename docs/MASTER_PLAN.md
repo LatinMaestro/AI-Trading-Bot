@@ -36,7 +36,8 @@
   - [ ] Establish complete lifecycle-source coverage and signed policy calibration by venue, period and equity scale.
     - [x] Add an allowlisted official-source manifest, future-effective event handling and deterministic coverage audit.
     - [ ] Backfill complete listing, trading-status, delisting and Australian-availability history.
-    - [ ] Add scheduled raw-source capture and immutable persistence.
+    - [x] Add bounded raw-source capture and immutable D1 persistence.
+    - [ ] Maintain a capture-target registry and invoke it on a schedule.
   - [ ] Persist signed policies/snapshots and connect eligible membership to strategy and backtest orchestration.
 - [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
   - [x] Add a deterministic pure target-weight rebalancing engine.
