@@ -243,6 +243,31 @@ test("record conflict rolls back batch provenance and all memberships", async ()
   );
 });
 
+test("incomplete batches cannot receive a commit marker", () => {
+  const db = database();
+  const batchDigest = digest("f");
+  db.prepare(INSERT_UNIVERSE_INGESTION_BATCH_SQL).run(
+    batchDigest,
+    "kraken",
+    NOW,
+    1,
+    0,
+    0,
+    1,
+  );
+  db.prepare(INSERT_UNIVERSE_INGESTION_SOURCE_SQL).run(
+    batchDigest,
+    digest("a"),
+  );
+  assert.throws(
+    () =>
+      db
+        .prepare(INSERT_UNIVERSE_INGESTION_COMMIT_SQL)
+        .run(batchDigest),
+    /universe ingestion batch is incomplete/,
+  );
+});
+
 test("batch provenance and memberships are immutable and venue-bound", async () => {
   const db = database();
   const batch = await prepareUniverseIngestionBatch(input());
