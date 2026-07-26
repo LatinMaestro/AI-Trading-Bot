@@ -4,7 +4,7 @@ CREATE TABLE market_data_batches (
   canonical_pair TEXT NOT NULL,
   exchange_pair TEXT NOT NULL,
   interval_minutes INTEGER NOT NULL CHECK (interval_minutes IN (60, 1440)),
-  requested_since_seconds INTEGER,
+  requested_since_seconds INTEGER CHECK (requested_since_seconds IS NULL OR requested_since_seconds >= 0),
   source_cursor TEXT,
   fetched_at TEXT NOT NULL,
   committed_count INTEGER NOT NULL CHECK (committed_count >= 1),
@@ -12,6 +12,7 @@ CREATE TABLE market_data_batches (
   last_open_time_ms INTEGER NOT NULL,
   payload_sha256 TEXT NOT NULL CHECK (length(payload_sha256) = 64),
   CHECK (first_open_time_ms <= last_open_time_ms),
+  CHECK (committed_count = ((last_open_time_ms - first_open_time_ms) / (interval_minutes * 60000)) + 1),
   CHECK (first_open_time_ms % (interval_minutes * 60000) = 0),
   CHECK (last_open_time_ms % (interval_minutes * 60000) = 0)
 );
@@ -53,7 +54,19 @@ WHEN EXISTS (
   SELECT 1
   FROM market_data_batches existing
   WHERE existing.batch_id = NEW.batch_id
-    AND existing.payload_sha256 <> NEW.payload_sha256
+    AND (
+      existing.venue <> NEW.venue
+      OR existing.canonical_pair <> NEW.canonical_pair
+      OR existing.exchange_pair <> NEW.exchange_pair
+      OR existing.interval_minutes <> NEW.interval_minutes
+      OR existing.requested_since_seconds IS NOT NEW.requested_since_seconds
+      OR existing.source_cursor IS NOT NEW.source_cursor
+      OR existing.fetched_at <> NEW.fetched_at
+      OR existing.committed_count <> NEW.committed_count
+      OR existing.first_open_time_ms <> NEW.first_open_time_ms
+      OR existing.last_open_time_ms <> NEW.last_open_time_ms
+      OR existing.payload_sha256 <> NEW.payload_sha256
+    )
 )
 BEGIN
   SELECT RAISE(ABORT, 'market data batch payload conflict');
@@ -68,7 +81,16 @@ WHEN EXISTS (
     AND existing.canonical_pair = NEW.canonical_pair
     AND existing.interval_minutes = NEW.interval_minutes
     AND existing.open_time_ms = NEW.open_time_ms
-    AND existing.candle_sha256 <> NEW.candle_sha256
+    AND (
+      existing.exchange_pair <> NEW.exchange_pair
+      OR existing.close_time_ms <> NEW.close_time_ms
+      OR existing.open <> NEW.open
+      OR existing.high <> NEW.high
+      OR existing.low <> NEW.low
+      OR existing.close <> NEW.close
+      OR existing.volume <> NEW.volume
+      OR existing.candle_sha256 <> NEW.candle_sha256
+    )
 )
 BEGIN
   SELECT RAISE(ABORT, 'market candle payload conflict');
