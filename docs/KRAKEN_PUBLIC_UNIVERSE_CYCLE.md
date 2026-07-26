@@ -25,6 +25,7 @@ The default depth window is six pairs. The runtime reduces it further when the a
 
 - Public requests have timeouts and response-size limits.
 - Depth requests are spaced sequentially.
+- Ticker and Depth evidence outside the configured observation-skew limit is rejected.
 - HTTP throttling, temporary server/service failures and network timeouts receive bounded retries.
 - The cycle audit records actual HTTP attempts, selected/skipped pair counts and the committed batch digest.
 
@@ -40,6 +41,7 @@ The default depth window is six pairs. The runtime reduces it further when the a
 - Current snapshots never infer listing, suspension, resumption, delisting or Australian-availability events.
 - Official lifecycle announcements remain separate evidence.
 - Aggregate hourly/daily counts and contiguity are read transactionally; annualised log-return volatility uses at most the latest 366 daily closes.
+- The quality-source digest binds ticker, Depth, conversion and derived history evidence.
 - Candle close times and source-batch fetch times after the scheduled signal time are excluded.
 - Missing, gapped, stale or insufficient history remains non-complete and cannot satisfy research-tier history gates.
 - Strategy selection still uses the separately approved-pair candle path; dynamic-universe eligibility is not yet authoritative until complete official lifecycle coverage and signed policy orchestration exist.
