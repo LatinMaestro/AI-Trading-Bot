@@ -112,7 +112,8 @@
 - [ ] Require minimum observation periods and evidence before capital increases.
 - [ ] Preserve the signed strategy's hard drawdown, loss, permission and reconciliation limits.
 - [ ] Add drift detection and automatic return to paper/shadow mode.
-- [ ] Add incident runbooks and periodic credential rotation.
+- [x] Define severity-based incident, credential-rotation, kill-switch and recovery runbooks.
+- [ ] Test runbooks, alert delivery, exchange-side revocation and quarterly rotation.
 - [ ] Maintain provider, market-universe, capacity and fee reviews.
 - [ ] Prevent automatic capital top-ups even when the system is behind the five-year path.
 
