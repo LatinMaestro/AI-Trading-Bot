@@ -9,11 +9,22 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - Market-data pull request: #2, `agent/phase-1-market-data-contracts` into `agent/phase-0-foundation`
 - Idempotency pull request: #3, `agent/phase-1-cycle-idempotency` into `agent/phase-1-market-data-contracts`
 - Candle-persistence pull request: #4, `agent/phase-1-candle-persistence` into `agent/phase-1-cycle-idempotency`
-- All four pull requests are draft and intentionally unmerged.
+- Five-year aggressive-mandate pull request: #5, `agent/five-year-aggressive-mandate` into `agent/phase-1-candle-persistence`
+- All five pull requests are draft and intentionally unmerged.
 - Live deployment: none
 - Credentials: none
 - Funds: none
 - Wallet connection: none
+
+## Authoritative strategy direction
+
+- The aspirational objective is US$200 to US$1,000,000 within five years of first authorised live-capital activation.
+- The reference path requires approximately 449.28% compound growth per year or 15.25% compound growth per month.
+- Research is market-cap agnostic and may consider approved blue chips, mid-caps, micro-caps and newly listed spot assets.
+- Concentrated positions, up to 100% gross spot exposure, hourly decisions and multiple daily rebalances may be researched.
+- Reports must include target-attainment, terminal-wealth, drawdown, capacity and probabilities of substantial or complete capital loss.
+- Aggressive capital risk does not weaken spot-only, no-debt, no-withdrawal, no-transfer, no-wallet and fail-closed operational controls.
+- Current conservative implementation limits remain active until a signed aggressive configuration passes all promotion and live gates.
 
 ## Verified foundation checks
 
@@ -52,20 +63,27 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - Gaps crossing Kraken's documented REST retention horizon are split into unavailable and repairable portions.
 - Strict TypeScript source checking passes for the new pure and D1-facing modules using interface-compatible D1 declarations.
 
+## Verified aggressive-mandate checks
+
+- The objective arithmetic and year-by-year reference path were independently checked.
+- Agent instructions, product specification, risk policy, master plan, review gates and decision log now use one consistent five-year mandate.
+- The mandate explicitly accepts possible complete loss of the approved capital while preserving operational safety boundaries.
+- No source code, dependency, migration, credential, deployment, exchange access, wallet integration, funds or executable order capability changed in PR #5.
+
 ## External validation blocker
 
 GitHub Actions runs currently fail before any job step starts and provide no job log. The account's private-repository Actions capacity is known to be unavailable until 1 August 2026. Full `npm install`, Wrangler-generated binding types and `wrangler deploy --dry-run` therefore remain unverified on GitHub exact heads.
 
-Do not merge pull requests #1, #2, #3 or #4 until fresh exact-head CI runs complete successfully and the stack is merged in order.
+Do not merge pull requests #1, #2, #3, #4 or #5 until fresh exact-head CI runs complete successfully and the stack is merged in order.
 
-## Work permitted while Actions is unavailable
+## Highest-priority unblocked work
 
 Continue focused, non-live work that can be validated without GitHub Actions, preferably as additional stacked draft branches:
 
-1. Fee/slippage-aware backtest specification and pure calculation modules.
-2. Tax-record export schema and synthetic fixtures.
-3. Security and incident runbooks.
-4. Lease heartbeats before any private exchange operation is introduced.
-5. Scheduled public-data ingestion and automated gap repair after the persistence contract receives exact-head validation.
+1. Define and implement the fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest calculation contract.
+2. Define dynamic venue-wide universe tiers and survivorship-safe historical membership records.
+3. Add objective-path, terminal-wealth and risk-of-ruin pure calculation modules.
+4. Add tax-record export schema and synthetic fixtures.
+5. Add security and incident runbooks.
 
 Do not deploy, request credentials, create an exchange account, move funds or enable live execution.
