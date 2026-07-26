@@ -129,7 +129,13 @@ function assertCanonicalTarget(target: KrakenLifecycleCaptureTarget): void {
   const matched = KRAKEN_LIFECYCLE_CAPTURE_TARGETS.find(
     (candidate) =>
       candidate.sourceKind === target.sourceKind &&
-      candidate.sourceRef === target.sourceRef,
+      candidate.sourceRef === target.sourceRef &&
+      candidate.acceptedContentTypes.length ===
+        target.acceptedContentTypes.length &&
+      candidate.acceptedContentTypes.every(
+        (contentType, index) =>
+          contentType === target.acceptedContentTypes[index],
+      ),
   );
   if (matched === undefined) {
     throw new Error("Lifecycle capture target is not allowlisted");
