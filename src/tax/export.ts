@@ -70,6 +70,15 @@ export interface TaxFinancialYearSummary {
   readonly gainLossAud: number;
 }
 
+export interface TaxRecordArchive {
+  readonly schemaVersion: "tax-record-archive-v1";
+  readonly generatedAt: string;
+  readonly records: readonly TaxTransactionRecord[];
+  readonly transactionsCsv: string;
+  readonly sourcePayloadDigests: readonly string[];
+  readonly archiveSha256: string;
+}
+
 export interface TaxExportBundle {
   readonly schemaVersion: "tax-export-v1";
   readonly generatedAt: string;
@@ -411,36 +420,60 @@ function canonicalJson(value: unknown): string {
   throw new Error("Tax export contains unsupported data");
 }
 
-export async function buildTaxExportBundle(
-  recordsInput: readonly TaxTransactionRecord[],
-  allocations: readonly TaxLotAllocation[],
+function validateGenerationTime(
+  records: readonly TaxTransactionRecord[],
   generatedAt: string,
-): Promise<TaxExportBundle> {
+): void {
   assertCanonicalIso("generatedAt", generatedAt);
-  const records = validateAndSortRecords(recordsInput);
   const latestOccurredAt = records.at(-1)?.occurredAt;
   if (latestOccurredAt === undefined) throw new Error("Tax export requires records");
   if (generatedAt < latestOccurredAt) {
     throw new Error("Tax export cannot be generated before the latest transaction");
   }
-  const cgtAllocations = buildCgtAllocations(records, allocations);
-  const financialYearSummaries = summariseFinancialYears(cgtAllocations);
-  const transactions = transactionsCsv(records);
-  const cgt = cgtCsv(cgtAllocations);
-  const summaries = summaryCsv(financialYearSummaries);
-  const sourcePayloadDigests = [...new Set(
+}
+
+function recordSourceDigests(
+  records: readonly TaxTransactionRecord[],
+): readonly string[] {
+  return [...new Set(
     records.flatMap((record) => [record.sourcePayloadSha256, record.valuationPayloadSha256]),
   )].sort();
+}
+
+export async function buildTaxRecordArchive(
+  recordsInput: readonly TaxTransactionRecord[],
+  generatedAt: string,
+): Promise<TaxRecordArchive> {
+  const records = validateAndSortRecords(recordsInput);
+  validateGenerationTime(records, generatedAt);
+  const content = {
+    schemaVersion: "tax-record-archive-v1" as const,
+    generatedAt,
+    records,
+    transactionsCsv: transactionsCsv(records),
+    sourcePayloadDigests: recordSourceDigests(records),
+  };
+  return { ...content, archiveSha256: await sha256Hex(canonicalJson(content)) };
+}
+
+export async function buildTaxExportBundle(
+  recordsInput: readonly TaxTransactionRecord[],
+  allocations: readonly TaxLotAllocation[],
+  generatedAt: string,
+): Promise<TaxExportBundle> {
+  const archive = await buildTaxRecordArchive(recordsInput, generatedAt);
+  const cgtAllocations = buildCgtAllocations(archive.records, allocations);
+  const financialYearSummaries = summariseFinancialYears(cgtAllocations);
   const content = {
     schemaVersion: "tax-export-v1" as const,
     generatedAt,
-    records,
+    records: archive.records,
     cgtAllocations,
     financialYearSummaries,
-    transactionsCsv: transactions,
-    cgtAllocationsCsv: cgt,
-    financialYearSummaryCsv: summaries,
-    sourcePayloadDigests,
+    transactionsCsv: archive.transactionsCsv,
+    cgtAllocationsCsv: cgtCsv(cgtAllocations),
+    financialYearSummaryCsv: summaryCsv(financialYearSummaries),
+    sourcePayloadDigests: archive.sourcePayloadDigests,
   };
   return { ...content, exportSha256: await sha256Hex(canonicalJson(content)) };
 }
