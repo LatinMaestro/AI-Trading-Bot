@@ -8,6 +8,8 @@ import {
   type KrakenTickerObservation,
 } from "../marketData/krakenQuality.ts";
 import type { SpotPairDefinition } from "../marketData/pairs.ts";
+import type { KrakenUniverseHistoryEvidence } from "../marketData/historyEvidence.ts";
+export type { KrakenUniverseHistoryEvidence } from "../marketData/historyEvidence.ts";
 import { sha256Hex } from "../utils/crypto.ts";
 import {
   resolveAudValuationPath,
@@ -34,19 +36,16 @@ type PublicFetch = (
   init?: RequestInit,
 ) => Promise<Response>;
 
-export interface KrakenUniverseHistoryEvidence {
-  readonly dailyCommittedCandles: number;
-  readonly hourlyCommittedCandles: number;
-  readonly annualisedVolatility: number;
-  readonly dataQualityState: MarketDataQualityState;
-}
-
 export interface KrakenPublicUniverseOptions {
   readonly scheduledAtMs: number;
   readonly fetchImpl?: PublicFetch;
   readonly sleep?: (milliseconds: number) => Promise<void>;
   readonly nowMs?: () => number;
   readonly historyByPair?: Readonly<Record<string, KrakenUniverseHistoryEvidence>>;
+  readonly historyProvider?: (
+    pairs: readonly string[],
+    asOfMs: number,
+  ) => Promise<Readonly<Record<string, KrakenUniverseHistoryEvidence>>>;
   readonly maximumDepthPairs?: number;
   readonly rotationIntervalMs?: number;
   readonly depthLevelCount?: number;
@@ -258,6 +257,12 @@ export async function prepareScheduledKrakenUniverse(
   if (!Number.isFinite(referenceOrderAud) || referenceOrderAud <= 0) {
     throw new Error("referenceOrderAud must be positive");
   }
+  if (
+    options.historyByPair !== undefined &&
+    options.historyProvider !== undefined
+  ) {
+    throw new Error("Supply historyByPair or historyProvider, not both");
+  }
 
   const sleep = options.sleep ?? defaultSleep;
   const clock = options.nowMs ?? Date.now;
@@ -328,6 +333,11 @@ export async function prepareScheduledKrakenUniverse(
     maximumDepthPairs,
     rotationIntervalMs,
   );
+  const selectedPairs = selected.map((pair) => pair.canonicalSymbol);
+  const historyByPair =
+    options.historyProvider === undefined
+      ? options.historyByPair
+      : await options.historyProvider(selectedPairs, options.scheduledAtMs);
 
   const books: Array<{
     readonly pair: SpotPairDefinition;
@@ -398,7 +408,7 @@ export async function prepareScheduledKrakenUniverse(
       const mid = (ticker.ask + ticker.bid) / 2;
       const storedHistory = validateHistory(
         pair.canonicalSymbol,
-        options.historyByPair?.[pair.canonicalSymbol],
+        historyByPair?.[pair.canonicalSymbol],
       );
       return {
         canonicalPair: pair.canonicalSymbol,
@@ -440,7 +450,7 @@ export async function prepareScheduledKrakenUniverse(
       markets,
       lifecycleAnnouncements: [],
     },
-    selectedPairs: selected.map((pair) => pair.canonicalSymbol),
+    selectedPairs,
     skippedPairs: skippedPairs.sort(),
     requestCount: requestCounter.value,
   };
