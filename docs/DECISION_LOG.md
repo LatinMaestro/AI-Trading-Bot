@@ -139,3 +139,11 @@ Accept lifecycle declarations only when they bind an exact content digest to a K
 Do not extract lifecycle events from free text with a language model or keyword heuristic. Reviewed declarations must state canonical pair, event type, scope, effective time and publication time. Future-effective events are valid when already published, but historical reconstruction applies them only after their effective time.
 
 Audit listing, trading-status and Australian-availability coverage independently for every expected pair. Missing coverage remains explicit and blocks survivorship-safe venue-wide claims. Complete historical backfill and scheduled raw-source persistence remain separate work.
+
+## 2026-07-27 — Daily immutable Kraken lifecycle source capture
+
+At the 00:00 UTC scheduled slot, capture the fixed Kraken asset-listing index, delistings index, status incidents feed and scheduled-maintenance feed before public universe evaluation. Use public HTTPS only, bounded timeout/retry/spacing controls, strict media types, a one MiB streaming ceiling and exact UTF-8 byte round-tripping.
+
+Bind each response to its source kind, exact URL, fetch time, payload SHA-256, byte length, media type and bounded cache headers. Split exact text on UTF-8 character boundaries into independently hashed chunks. Persist all headers, chunks and database-verified commit markers through one D1 transactional batch; reject changed identity reuse, incomplete membership and ordinary mutation.
+
+Raw capture does not create lifecycle events and uses no free-text AI extraction. Individual listing, delisting and regional-availability documents still require deterministic discovery, exact capture and reviewed pair-level declarations. This public evidence capability adds no credential, private API, account, wallet, fund or order authority.
