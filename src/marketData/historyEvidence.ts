@@ -7,6 +7,7 @@ import {
 import type { MarketDataQualityState } from "../universe/types.ts";
 
 const MAXIMUM_PAIRS_PER_QUERY = 20;
+const DAILY_VOLATILITY_SAMPLE_CANDLES = 366;
 const MINIMUM_VOLATILITY_CANDLES = 3;
 const MAXIMUM_HOURLY_AGE_MS = 2 * HOUR_MS;
 const MAXIMUM_DAILY_AGE_MS = 2 * DAY_MS;
@@ -18,9 +19,17 @@ export interface KrakenUniverseHistoryEvidence {
   readonly dataQualityState: MarketDataQualityState;
 }
 
-export interface StoredCandleHistoryRow {
+export interface StoredCandleHistorySummaryRow {
   readonly canonicalPair: string;
   readonly intervalMinutes: number;
+  readonly committedCount: number;
+  readonly firstOpenTimeMs: number;
+  readonly lastOpenTimeMs: number;
+  readonly latestCloseTimeMs: number;
+}
+
+export interface StoredDailyCloseRow {
+  readonly canonicalPair: string;
   readonly openTimeMs: number;
   readonly closeTimeMs: number;
   readonly close: number;
@@ -30,6 +39,13 @@ export interface StoredCandleHistoryRow {
 export interface HistoryEvidenceOptions {
   readonly maximumHourlyAgeMs?: number;
   readonly maximumDailyAgeMs?: number;
+}
+
+interface ValidatedSummary {
+  readonly intervalMinutes: CandleIntervalMinutes;
+  readonly committedCount: number;
+  readonly latestCloseTimeMs: number;
+  readonly hasGap: boolean;
 }
 
 function assertSafeTime(name: string, value: number): void {
@@ -54,11 +70,11 @@ function assertMaximumAge(name: string, value: number): void {
   }
 }
 
-function validatedRow(
-  row: StoredCandleHistoryRow,
+function validateSummary(
+  row: StoredCandleHistorySummaryRow,
   requested: ReadonlySet<string>,
   asOfMs: number,
-): StoredCandleHistoryRow {
+): ValidatedSummary {
   assertCanonicalPair(row.canonicalPair);
   if (!requested.has(row.canonicalPair)) {
     throw new Error(`Unexpected candle pair ${row.canonicalPair}`);
@@ -66,18 +82,55 @@ function validatedRow(
   if (row.intervalMinutes !== 60 && row.intervalMinutes !== 1440) {
     throw new Error(`${row.canonicalPair} has an unsupported candle interval`);
   }
+  if (!Number.isSafeInteger(row.committedCount) || row.committedCount < 1) {
+    throw new Error(`${row.canonicalPair} has an invalid committed count`);
+  }
   const stepMs = intervalMs(row.intervalMinutes);
-  assertSafeTime("candle openTimeMs", row.openTimeMs);
-  assertSafeTime("candle closeTimeMs", row.closeTimeMs);
+  assertSafeTime("firstOpenTimeMs", row.firstOpenTimeMs);
+  assertSafeTime("lastOpenTimeMs", row.lastOpenTimeMs);
+  assertSafeTime("latestCloseTimeMs", row.latestCloseTimeMs);
   if (
-    row.openTimeMs % stepMs !== 0 ||
-    row.closeTimeMs !== row.openTimeMs + stepMs ||
+    row.firstOpenTimeMs % stepMs !== 0 ||
+    row.lastOpenTimeMs % stepMs !== 0 ||
+    row.lastOpenTimeMs < row.firstOpenTimeMs ||
+    row.latestCloseTimeMs !== row.lastOpenTimeMs + stepMs ||
+    row.latestCloseTimeMs > asOfMs
+  ) {
+    throw new Error(`${row.canonicalPair} has invalid history chronology`);
+  }
+  const spanCount =
+    (row.lastOpenTimeMs - row.firstOpenTimeMs) / stepMs + 1;
+  if (!Number.isSafeInteger(spanCount) || row.committedCount > spanCount) {
+    throw new Error(`${row.canonicalPair} has an impossible committed count`);
+  }
+  return {
+    intervalMinutes: row.intervalMinutes,
+    committedCount: row.committedCount,
+    latestCloseTimeMs: row.latestCloseTimeMs,
+    hasGap: row.committedCount !== spanCount,
+  };
+}
+
+function validateDailyClose(
+  row: StoredDailyCloseRow,
+  requested: ReadonlySet<string>,
+  asOfMs: number,
+): StoredDailyCloseRow {
+  assertCanonicalPair(row.canonicalPair);
+  if (!requested.has(row.canonicalPair)) {
+    throw new Error(`Unexpected candle pair ${row.canonicalPair}`);
+  }
+  assertSafeTime("daily openTimeMs", row.openTimeMs);
+  assertSafeTime("daily closeTimeMs", row.closeTimeMs);
+  if (
+    row.openTimeMs % DAY_MS !== 0 ||
+    row.closeTimeMs !== row.openTimeMs + DAY_MS ||
     row.closeTimeMs > asOfMs
   ) {
-    throw new Error(`${row.canonicalPair} has invalid candle chronology`);
+    throw new Error(`${row.canonicalPair} has invalid daily chronology`);
   }
   if (!Number.isFinite(row.close) || row.close <= 0) {
-    throw new Error(`${row.canonicalPair} has an invalid close`);
+    throw new Error(`${row.canonicalPair} has an invalid daily close`);
   }
   const fetchedAtMs = Date.parse(row.fetchedAt);
   if (
@@ -90,27 +143,8 @@ function validatedRow(
   return row;
 }
 
-function intervalHasGap(
-  rows: readonly StoredCandleHistoryRow[],
-  interval: CandleIntervalMinutes,
-): boolean {
-  const stepMs = intervalMs(interval);
-  for (let index = 1; index < rows.length; index += 1) {
-    const previous = rows[index - 1];
-    const current = rows[index];
-    if (
-      previous === undefined ||
-      current === undefined ||
-      current.openTimeMs - previous.openTimeMs !== stepMs
-    ) {
-      return true;
-    }
-  }
-  return false;
-}
-
 function annualisedDailyVolatility(
-  rows: readonly StoredCandleHistoryRow[],
+  rows: readonly StoredDailyCloseRow[],
 ): number {
   if (rows.length < MINIMUM_VOLATILITY_CANDLES) return 0;
   const returns: number[] = [];
@@ -136,7 +170,8 @@ function annualisedDailyVolatility(
 
 export function summariseStoredCandleHistory(
   pairs: readonly string[],
-  rows: readonly StoredCandleHistoryRow[],
+  summaries: readonly StoredCandleHistorySummaryRow[],
+  dailyCloses: readonly StoredDailyCloseRow[],
   asOfMs: number,
   options: HistoryEvidenceOptions = {},
 ): Readonly<Record<string, KrakenUniverseHistoryEvidence>> {
@@ -157,45 +192,62 @@ export function summariseStoredCandleHistory(
   assertMaximumAge("maximumHourlyAgeMs", maximumHourlyAgeMs);
   assertMaximumAge("maximumDailyAgeMs", maximumDailyAgeMs);
 
-  const grouped = new Map<
-    string,
-    { hourly: StoredCandleHistoryRow[]; daily: StoredCandleHistoryRow[] }
-  >(
-    pairs.map((pair) => [pair, { hourly: [], daily: [] }]),
+  const summaryByIdentity = new Map<string, ValidatedSummary>();
+  for (const source of summaries) {
+    const summary = validateSummary(source, requested, asOfMs);
+    const identity = `${source.canonicalPair}:${summary.intervalMinutes}`;
+    if (summaryByIdentity.has(identity)) {
+      throw new Error(`Duplicate history summary ${identity}`);
+    }
+    summaryByIdentity.set(identity, summary);
+  }
+
+  const dailyByPair = new Map<string, StoredDailyCloseRow[]>(
+    pairs.map((pair) => [pair, []]),
   );
-  for (const sourceRow of rows) {
-    const row = validatedRow(sourceRow, requested, asOfMs);
-    const group = grouped.get(row.canonicalPair);
-    if (group === undefined) throw new Error("History grouping failed");
-    (row.intervalMinutes === 60 ? group.hourly : group.daily).push(row);
+  for (const source of dailyCloses) {
+    const row = validateDailyClose(source, requested, asOfMs);
+    dailyByPair.get(row.canonicalPair)?.push(row);
   }
 
   const result: Record<string, KrakenUniverseHistoryEvidence> = {};
   for (const pair of pairs) {
-    const group = grouped.get(pair);
-    if (group === undefined) throw new Error("History pair is missing");
-    group.hourly.sort((left, right) => left.openTimeMs - right.openTimeMs);
-    group.daily.sort((left, right) => left.openTimeMs - right.openTimeMs);
+    const hourly = summaryByIdentity.get(`${pair}:60`);
+    const daily = summaryByIdentity.get(`${pair}:1440`);
+    const closes = dailyByPair.get(pair) ?? [];
+    closes.sort((left, right) => left.openTimeMs - right.openTimeMs);
+    for (let index = 1; index < closes.length; index += 1) {
+      if (
+        closes[index]?.openTimeMs !==
+        (closes[index - 1]?.openTimeMs ?? 0) + DAY_MS
+      ) {
+        throw new Error(`${pair} daily volatility sample is not contiguous`);
+      }
+    }
+    const expectedSampleCount =
+      daily === undefined
+        ? 0
+        : Math.min(daily.committedCount, DAILY_VOLATILITY_SAMPLE_CANDLES);
+    if (closes.length !== expectedSampleCount) {
+      throw new Error(`${pair} daily volatility sample is incomplete`);
+    }
 
-    const hourlyGap = intervalHasGap(group.hourly, 60);
-    const dailyGap = intervalHasGap(group.daily, 1440);
-    const latestHourlyClose = group.hourly.at(-1)?.closeTimeMs;
-    const latestDailyClose = group.daily.at(-1)?.closeTimeMs;
     const stale =
-      (latestHourlyClose !== undefined &&
-        asOfMs - latestHourlyClose > maximumHourlyAgeMs) ||
-      (latestDailyClose !== undefined &&
-        asOfMs - latestDailyClose > maximumDailyAgeMs);
+      (hourly !== undefined &&
+        asOfMs - hourly.latestCloseTimeMs > maximumHourlyAgeMs) ||
+      (daily !== undefined &&
+        asOfMs - daily.latestCloseTimeMs > maximumDailyAgeMs);
     const incomplete =
-      group.hourly.length === 0 ||
-      group.daily.length < MINIMUM_VOLATILITY_CANDLES ||
-      hourlyGap ||
-      dailyGap;
+      hourly === undefined ||
+      daily === undefined ||
+      daily.committedCount < MINIMUM_VOLATILITY_CANDLES ||
+      hourly.hasGap ||
+      daily.hasGap;
 
     result[pair] = {
-      dailyCommittedCandles: group.daily.length,
-      hourlyCommittedCandles: group.hourly.length,
-      annualisedVolatility: annualisedDailyVolatility(group.daily),
+      dailyCommittedCandles: daily?.committedCount ?? 0,
+      hourlyCommittedCandles: hourly?.committedCount ?? 0,
+      annualisedVolatility: annualisedDailyVolatility(closes),
       dataQualityState: stale ? "stale" : incomplete ? "gap" : "complete",
     };
   }
@@ -219,27 +271,69 @@ export class MarketCandleHistoryRepository {
     }
     const placeholders = pairs.map(() => "?").join(", ");
     const fetchedBy = new Date(asOfMs).toISOString();
-    const result = await this.db
+    const sharedWhere = `candle.venue = ?
+      AND candle.canonical_pair IN (${placeholders})
+      AND candle.close_time_ms <= ?
+      AND batch.fetched_at <= ?`;
+    const summaryStatement = this.db
       .prepare(
         `SELECT
            candle.canonical_pair AS canonicalPair,
            candle.interval_minutes AS intervalMinutes,
-           candle.open_time_ms AS openTimeMs,
-           candle.close_time_ms AS closeTimeMs,
-           candle.close AS close,
-           batch.fetched_at AS fetchedAt
+           COUNT(*) AS committedCount,
+           MIN(candle.open_time_ms) AS firstOpenTimeMs,
+           MAX(candle.open_time_ms) AS lastOpenTimeMs,
+           MAX(candle.close_time_ms) AS latestCloseTimeMs
          FROM market_candles candle
          JOIN market_data_batches batch
            ON batch.batch_id = candle.source_batch_id
-         WHERE candle.venue = ?
-           AND candle.canonical_pair IN (${placeholders})
+         WHERE ${sharedWhere}
            AND candle.interval_minutes IN (60, 1440)
-           AND candle.close_time_ms <= ?
-           AND batch.fetched_at <= ?
-         ORDER BY candle.canonical_pair, candle.interval_minutes, candle.open_time_ms`,
+         GROUP BY candle.canonical_pair, candle.interval_minutes
+         ORDER BY candle.canonical_pair, candle.interval_minutes`,
       )
-      .bind("kraken", ...pairs, asOfMs, fetchedBy)
-      .all<StoredCandleHistoryRow>();
-    return summariseStoredCandleHistory(pairs, result.results, asOfMs);
+      .bind("kraken", ...pairs, asOfMs, fetchedBy);
+    const dailyStatement = this.db
+      .prepare(
+        `SELECT canonicalPair, openTimeMs, closeTimeMs, close, fetchedAt
+         FROM (
+           SELECT
+             candle.canonical_pair AS canonicalPair,
+             candle.open_time_ms AS openTimeMs,
+             candle.close_time_ms AS closeTimeMs,
+             candle.close AS close,
+             batch.fetched_at AS fetchedAt,
+             ROW_NUMBER() OVER (
+               PARTITION BY candle.canonical_pair
+               ORDER BY candle.open_time_ms DESC
+             ) AS sampleRank
+           FROM market_candles candle
+           JOIN market_data_batches batch
+             ON batch.batch_id = candle.source_batch_id
+           WHERE ${sharedWhere}
+             AND candle.interval_minutes = 1440
+         )
+         WHERE sampleRank <= ?
+         ORDER BY canonicalPair, openTimeMs`,
+      )
+      .bind(
+        "kraken",
+        ...pairs,
+        asOfMs,
+        fetchedBy,
+        DAILY_VOLATILITY_SAMPLE_CANDLES,
+      );
+    const results = await this.db.batch([summaryStatement, dailyStatement]);
+    const summaryResult = results[0];
+    const dailyResult = results[1];
+    if (summaryResult === undefined || dailyResult === undefined) {
+      throw new Error("Market history query returned incomplete results");
+    }
+    return summariseStoredCandleHistory(
+      pairs,
+      summaryResult.results as unknown as StoredCandleHistorySummaryRow[],
+      dailyResult.results as unknown as StoredDailyCloseRow[],
+      asOfMs,
+    );
   }
 }
