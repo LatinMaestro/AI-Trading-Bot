@@ -130,6 +130,12 @@ function indexStep(
   }
   if (
     previousExecutionTimestampMs !== undefined &&
+    step.signalTimestampMs < previousExecutionTimestampMs
+  ) {
+    throw new Error("Signal timestamp cannot precede the prior execution timestamp");
+  }
+  if (
+    previousExecutionTimestampMs !== undefined &&
     step.executionTimestampMs <= previousExecutionTimestampMs
   ) {
     throw new Error("Backtest execution timestamps must be strictly increasing");
