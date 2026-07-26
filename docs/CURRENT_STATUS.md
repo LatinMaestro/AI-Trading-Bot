@@ -10,7 +10,8 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - Idempotency pull request: #3, `agent/phase-1-cycle-idempotency` into `agent/phase-1-market-data-contracts`
 - Candle-persistence pull request: #4, `agent/phase-1-candle-persistence` into `agent/phase-1-cycle-idempotency`
 - Five-year aggressive-mandate pull request: #5, `agent/five-year-aggressive-mandate` into `agent/phase-1-candle-persistence`
-- All five pull requests are draft and intentionally unmerged.
+- Execution-aware backtest pull request: #6, `agent/phase-1-execution-backtest` into `agent/five-year-aggressive-mandate`
+- All six pull requests are draft and intentionally unmerged.
 - Live deployment: none
 - Credentials: none
 - Funds: none
@@ -79,19 +80,31 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - The mandate explicitly accepts possible complete loss of the approved capital while preserving operational safety boundaries.
 - No source code, dependency, migration, credential, deployment, exchange access, wallet integration, funds or executable order capability changed in PR #5.
 
+## Verified execution-backtest checks
+
+- 8 focused Node 22 tests pass in an isolated harness for the new pure backtest modules.
+- Strict TypeScript source checking passes for `src/backtest/types.ts` and `src/backtest/engine.ts` under the repository's strict compiler options.
+- Signal time must precede execution time and execution steps must be strictly ordered.
+- Gross target weights above 100%, missing marks, duplicate markets or targets, invalid costs and non-finite values fail closed.
+- Taker fees, spread, slippage and square-root price impact are separately attributed.
+- Maker fill rate and adverse selection are explicit; partial and complete non-fills remain visible as missed notional.
+- Participation limits, minimum order values and cash reserves constrain fills without creating negative cash or positions.
+- Rotations sell before buying and cash-constrained multi-asset buys scale proportionally rather than favouring pair sort order.
+- The implementation is a calculation primitive only; synthetic assumptions are not accepted as profitability evidence.
+
 ## External validation blocker
 
 GitHub Actions runs currently fail before any job step starts and provide no job log. The account's private-repository Actions capacity is known to be unavailable until 1 August 2026. Full `npm install`, Wrangler-generated binding types and `wrangler deploy --dry-run` therefore remain unverified on GitHub exact heads.
 
-Do not merge pull requests #1, #2, #3, #4 or #5 until fresh exact-head CI runs complete successfully and the stack is merged in order.
+Do not merge pull requests #1, #2, #3, #4, #5 or #6 until fresh exact-head CI runs complete successfully and the stack is merged in order.
 
 ## Highest-priority unblocked work
 
 Continue focused, non-live work that can be validated without GitHub Actions, preferably as additional stacked draft branches:
 
-1. Define and implement the fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest calculation contract.
-2. Define dynamic venue-wide universe tiers and survivorship-safe historical membership records.
-3. Add objective-path, terminal-wealth and risk-of-ruin pure calculation modules.
+1. Define dynamic venue-wide universe tiers and survivorship-safe historical membership records.
+2. Add objective-path, terminal-wealth and risk-of-ruin pure calculation modules.
+3. Add benchmark calculations and repeatable research-report schemas.
 4. Add tax-record export schema and synthetic fixtures.
 5. Add security and incident runbooks.
 
