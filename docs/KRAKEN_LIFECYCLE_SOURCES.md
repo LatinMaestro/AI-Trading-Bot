@@ -16,7 +16,7 @@ Individual evidence records must reference an exact Kraken Blog listing article,
 
 ## Raw-source capture
 
-`docs/KRAKEN_LIFECYCLE_CAPTURE.md` defines the scheduled preservation boundary. The daily 00:00 UTC cycle captures the official listing and delisting indexes plus Kraken Status incident and scheduled-maintenance feeds. Exact valid UTF-8 bytes are SHA-256 hashed, split into bounded content-addressed chunks and committed atomically to immutable D1 records.
+`docs/KRAKEN_LIFECYCLE_CAPTURE.md` defines the scheduled preservation boundary. The daily 00:00 UTC cycle captures the official listing and delisting indexes plus Kraken Status incident and scheduled-maintenance feeds. Exact valid UTF-8 bytes are SHA-256 hashed and stored once as bounded content-addressed D1 payloads; each fetch remains a separate immutable capture with a database-verified commit marker.
 
 Raw capture does not create lifecycle events. Complete pair-level evidence still requires reviewed declarations tied to exact committed source payloads. Exact individual listing, delisting and Australian-availability documents must be discovered and captured before their declarations are admitted.
 
