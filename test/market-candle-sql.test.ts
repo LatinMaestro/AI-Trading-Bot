@@ -20,36 +20,43 @@ function insertPrepared(
   db: DatabaseSync,
   prepared: Awaited<ReturnType<typeof prepareMarketDataBatch>>,
 ): void {
-  db.prepare(INSERT_MARKET_DATA_BATCH_SQL).run(
-    prepared.batchId,
-    prepared.venue,
-    prepared.canonicalPair,
-    prepared.exchangePair,
-    prepared.intervalMinutes,
-    prepared.requestedSinceSeconds,
-    prepared.sourceCursor,
-    prepared.fetchedAt,
-    prepared.committedCount,
-    prepared.firstOpenTimeMs,
-    prepared.lastOpenTimeMs,
-    prepared.payloadSha256,
-  );
-  for (const candle of prepared.candles) {
-    db.prepare(INSERT_MARKET_CANDLE_SQL).run(
-      candle.venue,
-      candle.canonicalPair,
-      candle.exchangePair,
-      candle.intervalMinutes,
-      candle.openTimeMs,
-      candle.closeTimeMs,
-      candle.open,
-      candle.high,
-      candle.low,
-      candle.close,
-      candle.volume,
-      candle.sourceBatchId,
-      candle.candleSha256,
+  db.exec("BEGIN");
+  try {
+    db.prepare(INSERT_MARKET_DATA_BATCH_SQL).run(
+      prepared.batchId,
+      prepared.venue,
+      prepared.canonicalPair,
+      prepared.exchangePair,
+      prepared.intervalMinutes,
+      prepared.requestedSinceSeconds,
+      prepared.sourceCursor,
+      prepared.fetchedAt,
+      prepared.committedCount,
+      prepared.firstOpenTimeMs,
+      prepared.lastOpenTimeMs,
+      prepared.payloadSha256,
     );
+    for (const candle of prepared.candles) {
+      db.prepare(INSERT_MARKET_CANDLE_SQL).run(
+        candle.venue,
+        candle.canonicalPair,
+        candle.exchangePair,
+        candle.intervalMinutes,
+        candle.openTimeMs,
+        candle.closeTimeMs,
+        candle.open,
+        candle.high,
+        candle.low,
+        candle.close,
+        candle.volume,
+        candle.sourceBatchId,
+        candle.candleSha256,
+      );
+    }
+    db.exec("COMMIT");
+  } catch (error) {
+    db.exec("ROLLBACK");
+    throw error;
   }
 }
 
@@ -106,7 +113,7 @@ test("market batches and candles are idempotent and immutable", async () => {
   );
 });
 
-test("same candle identity with different values fails closed", async () => {
+test("same candle identity with different values fails closed atomically", async () => {
   const db = database();
   const original = await prepareMarketDataBatch({
     batchId: "cycle-1:BTC/AUD:60",
@@ -128,6 +135,10 @@ test("same candle identity with different values fails closed", async () => {
     candles: [{ ...candles[0], close: 106 }],
   });
   assert.throws(() => insertPrepared(db, conflicting), /market candle payload conflict/);
+  const batchCount = db
+    .prepare("SELECT COUNT(*) AS count FROM market_data_batches")
+    .get() as { count: number };
+  assert.equal(batchCount.count, 1);
 });
 
 test("same batch identity with changed provenance fails closed", async () => {
@@ -153,6 +164,10 @@ test("same batch identity with changed provenance fails closed", async () => {
     candles,
   });
   assert.throws(() => insertPrepared(db, changed), /market data batch payload conflict/);
+  const batchCount = db
+    .prepare("SELECT COUNT(*) AS count FROM market_data_batches")
+    .get() as { count: number };
+  assert.equal(batchCount.count, 1);
 });
 
 test("batch preparation rejects non-contiguous data and produces stable hashes", async () => {
