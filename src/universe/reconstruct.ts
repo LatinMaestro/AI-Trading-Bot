@@ -267,6 +267,21 @@ function assertNoAmbiguousLifecycleEvents(
   }
 }
 
+function lifecycleEventOrder(
+  eventType: MarketLifecycleEvent["eventType"],
+): number {
+  if (eventType === "listed") return 0;
+  if (
+    eventType === "trading-online" ||
+    eventType === "trading-suspended" ||
+    eventType === "trading-resumed"
+  ) {
+    return 1;
+  }
+  if (eventType === "au-enabled" || eventType === "au-disabled") return 2;
+  return 3;
+}
+
 function reconstructLifecycle(
   events: readonly MarketLifecycleEvent[],
   asOfMs: number,
@@ -280,6 +295,8 @@ function reconstructLifecycle(
       (left, right) =>
         left.effectiveAtMs - right.effectiveAtMs ||
         left.publishedAtMs - right.publishedAtMs ||
+        lifecycleEventOrder(left.eventType) -
+          lifecycleEventOrder(right.eventType) ||
         left.eventId.localeCompare(right.eventId),
     );
 
@@ -297,7 +314,9 @@ function reconstructLifecycle(
           listedAtMs = event.effectiveAtMs;
           delistedAtMs = undefined;
           online = false;
+          availableInAustralia = false;
           latestTradingEvent = undefined;
+          latestAustraliaEvent = undefined;
         }
         break;
       case "trading-online":
