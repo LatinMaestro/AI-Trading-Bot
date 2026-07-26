@@ -6,7 +6,7 @@ Last verified: 27 July 2026 (Australia/Brisbane)
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
 - Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #19 scheduled universe cycle → #21 stored history evidence → #23 official lifecycle contracts.
-- #7, #10, #16, #18, #20 and #22 were closed as superseded or reset duplicates.
+- #7, #10, #16, #18, #20, #22 and #24 were closed as superseded, reset or duplicate work.
 - All 17 active pull requests remain draft and unmerged.
 - `main` remains a one-line placeholder.
 - Deployment, credentials, funds and wallet connection: none.
