@@ -11,6 +11,7 @@ Cloudflare Cron
 Trading-cycle orchestrator
       |
       +--> public market-data adapter
+      +--> immutable lifecycle-source capture
       +--> immutable market-data persistence and gap checks
       +--> survivorship-safe universe reconstruction
       +--> strategy engine
@@ -40,18 +41,19 @@ Trading-cycle orchestrator
 
 1. Acquire a lease in D1 to prevent duplicate concurrent cycles.
 2. Load runtime state and verify mode.
-3. Discover current approved markets and fetch public committed candles.
-4. Persist accepted public-data batches and candles immutably.
-5. Detect missing, duplicate, stale, conflicting or unrecoverable market data and fail closed.
-6. Reconstruct the Australian-available spot universe from definitions, lifecycle events and quality observations knowable at the signal time.
-7. Apply signed tier-specific listing-age, history, spread, turnover, depth, impact, minimum-order and instrument gates.
-8. Generate a strategy decision only from eligible universe members and a versioned configuration.
-9. Reconcile balances and orders when private access is available.
-10. Evaluate hard risk limits.
-11. Create an order intent with a deterministic idempotency key.
-12. In non-live modes, record the proposed action only.
-13. In live mode, verify API permissions, activation secret and execution limits again immediately before submission.
-14. Submit, reconcile and record every response.
+3. At the daily 00:00 UTC slot, capture and atomically persist the fixed official Kraken listing/delisting indexes and status feeds. Any incomplete or malformed capture set fails the slot.
+4. Discover current approved markets and fetch public committed candles.
+5. Persist accepted public-data batches and candles immutably.
+6. Detect missing, duplicate, stale, conflicting or unrecoverable market data and fail closed.
+7. Reconstruct the Australian-available spot universe from definitions, lifecycle events and quality observations knowable at the signal time.
+8. Apply signed tier-specific listing-age, history, spread, turnover, depth, impact, minimum-order and instrument gates.
+9. Generate a strategy decision only from eligible universe members and a versioned configuration.
+10. Reconcile balances and orders when private access is available.
+11. Evaluate hard risk limits.
+12. Create an order intent with a deterministic idempotency key.
+13. In non-live modes, record the proposed action only.
+14. In live mode, verify API permissions, activation secret and execution limits again immediately before submission.
+15. Submit, reconcile and record every response.
 
 ## Data model
 
@@ -59,6 +61,7 @@ D1 stores:
 
 - system and activation state;
 - cycle leases and scheduled-cycle outcomes;
+- immutable chunked Kraken lifecycle raw-source captures and database-verified commit markers;
 - immutable public market-data batch provenance;
 - immutable committed 60-minute and daily OHLCV candles;
 - versioned market definitions;
@@ -71,6 +74,8 @@ D1 stores:
 - risk events and kill-switch state;
 - immutable audit events;
 - Australian-dollar tax ledger entries.
+
+Raw lifecycle captures bind an exact allowlisted Kraken URL, fetch time, media type, payload byte length and SHA-256 to ordered UTF-8 chunks with independent digests. D1 permits a final commit marker only when chunk count and total byte length match the immutable header. Raw captures do not create lifecycle declarations; reviewed pair-level events remain a separate, explicit evidence boundary.
 
 Market batches and candles use deterministic SHA-256 content digests. Database triggers reject identity reuse with different content and prevent ordinary update or delete operations. Gap detection is performed against explicit expected ranges before strategy research is allowed to rely on stored data.
 
