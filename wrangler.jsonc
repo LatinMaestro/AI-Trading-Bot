@@ -1,0 +1,57 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "ai-crypto-trader",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-26",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "vars": {
+    "APP_ENV": "preview",
+    "TRADING_MODE": "paper",
+    "LIVE_TRADING_ENABLED": "false",
+    "APPROVED_PAIRS": "XBTAUD,ETHAUD,SOLAUD",
+    "MAX_GROSS_EXPOSURE_PCT": "90",
+    "DAILY_LOSS_LIMIT_PCT": "5",
+    "WEEKLY_LOSS_LIMIT_PCT": "10",
+    "MAX_DRAWDOWN_PCT": "15",
+    "LIVE_ACTIVATION_SHA256": ""
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ai-crypto-trader-preview",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "triggers": {
+    "crons": ["*/15 * * * *"]
+  },
+  "env": {
+    "production": {
+      "name": "ai-crypto-trader-production",
+      "vars": {
+        "APP_ENV": "production",
+        "TRADING_MODE": "paper",
+        "LIVE_TRADING_ENABLED": "false",
+        "APPROVED_PAIRS": "XBTAUD,ETHAUD,SOLAUD",
+        "MAX_GROSS_EXPOSURE_PCT": "90",
+        "DAILY_LOSS_LIMIT_PCT": "5",
+        "WEEKLY_LOSS_LIMIT_PCT": "10",
+        "MAX_DRAWDOWN_PCT": "15",
+        "LIVE_ACTIVATION_SHA256": ""
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "ai-crypto-trader-production",
+          "database_id": "00000000-0000-0000-0000-000000000000",
+          "migrations_dir": "migrations"
+        }
+      ]
+    }
+  }
+}
