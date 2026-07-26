@@ -9,6 +9,7 @@ import {
   scheduleKeyFromTimestamp,
 } from "../storage/cycleControl.ts";
 import { UniverseIngestionRepository } from "../storage/universeIngestion.ts";
+import { MarketCandleHistoryRepository } from "../marketData/historyEvidence.ts";
 import { runScheduledKrakenUniverseCycle } from "../universe/krakenPublicCycle.ts";
 
 export interface CycleResult {
@@ -34,6 +35,7 @@ export async function runTradingCycle(
   const scheduleKey = scheduleKeyFromTimestamp(invocation.scheduledAtMs);
   const control = new CycleControlRepository(env.DB);
   const repository = new TradingRepository(env.DB);
+  const candleHistory = new MarketCandleHistoryRepository(env.DB);
 
   const globalLeaseAcquired = await control.acquireGlobalLease(holderId, clock());
   if (!globalLeaseAcquired) {
@@ -68,6 +70,8 @@ export async function runTradingCycle(
         scheduledAtMs: invocation.scheduledAtMs,
         nowMs: clock,
         maximumDepthPairs: Math.max(1, 9 - config.approvedPairs.length),
+        historyProvider: (pairs, asOfMs) =>
+          candleHistory.loadKrakenHistoryByPair(pairs, asOfMs),
       },
     );
 
