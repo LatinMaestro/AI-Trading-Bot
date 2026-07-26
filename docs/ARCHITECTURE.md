@@ -61,7 +61,8 @@ D1 stores:
 
 - system and activation state;
 - cycle leases and scheduled-cycle outcomes;
-- immutable chunked Kraken lifecycle raw-source captures and database-verified commit markers;
+- deduplicated content-addressed Kraken lifecycle payloads and chunks;
+- immutable Kraken lifecycle fetch records and database-verified commit markers;
 - immutable public market-data batch provenance;
 - immutable committed 60-minute and daily OHLCV candles;
 - versioned market definitions;
@@ -75,7 +76,7 @@ D1 stores:
 - immutable audit events;
 - Australian-dollar tax ledger entries.
 
-Raw lifecycle captures bind an exact allowlisted Kraken URL, fetch time, media type, payload byte length and SHA-256 to ordered UTF-8 chunks with independent digests. D1 permits a final commit marker only when chunk count and total byte length match the immutable header. Raw captures do not create lifecycle declarations; reviewed pair-level events remain a separate, explicit evidence boundary.
+Each distinct lifecycle payload is stored once by exact SHA-256 and split into ordered UTF-8 chunks with independent digests. Every scheduled observation remains a separate immutable capture binding source kind, exact allowlisted URL, fetch time, media type and bounded response metadata to that payload. D1 permits a final capture commit marker only when the referenced payload's chunk count and total byte length match its immutable header and the commit does not predate the fetch. Raw captures do not create lifecycle declarations; reviewed pair-level events remain a separate, explicit evidence boundary.
 
 Market batches and candles use deterministic SHA-256 content digests. Database triggers reject identity reuse with different content and prevent ordinary update or delete operations. Gap detection is performed against explicit expected ranges before strategy research is allowed to rely on stored data.
 
