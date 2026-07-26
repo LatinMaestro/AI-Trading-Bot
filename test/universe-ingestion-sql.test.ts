@@ -3,22 +3,16 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { DatabaseSync } from "node:sqlite";
 import {
-  INSERT_UNIVERSE_DEFINITION_MEMBERSHIP_SQL,
-  INSERT_UNIVERSE_DEFINITION_SQL,
-  INSERT_UNIVERSE_EVENT_MEMBERSHIP_SQL,
-  INSERT_UNIVERSE_EVENT_SQL,
+  INSERT_UNIVERSE_DEFINITION_MEMBERSHIPS_JSON_SQL,
+  INSERT_UNIVERSE_DEFINITIONS_JSON_SQL,
   INSERT_UNIVERSE_INGESTION_BATCH_SQL,
   INSERT_UNIVERSE_INGESTION_COMMIT_SQL,
-  INSERT_UNIVERSE_INGESTION_SOURCE_SQL,
-  INSERT_UNIVERSE_OBSERVATION_MEMBERSHIP_SQL,
-  INSERT_UNIVERSE_OBSERVATION_SQL,
+  INSERT_UNIVERSE_INGESTION_SOURCES_JSON_SQL,
   UniverseIngestionRepository,
+  prepareUniversePersistence,
+  type UniversePersistenceStatement,
 } from "../src/storage/universeIngestion.ts";
-import {
-  prepareUniverseIngestionBatch,
-  type UniverseIngestionBatch,
-  type UniverseIngestionInput,
-} from "../src/universe/ingestion.ts";
+import type { UniverseIngestionInput } from "../src/universe/ingestion.ts";
 
 const NOW = Date.UTC(2026, 6, 26, 12);
 const digest = (value: string) => value.repeat(64).slice(0, 64);
@@ -99,89 +93,15 @@ function database(): DatabaseSync {
   return db;
 }
 
-function persistPrepared(
+function executeAtomically(
   db: DatabaseSync,
-  batch: UniverseIngestionBatch,
+  statements: readonly UniversePersistenceStatement[],
 ): void {
   db.exec("BEGIN");
   try {
-    db.prepare(INSERT_UNIVERSE_INGESTION_BATCH_SQL).run(
-      batch.batchSha256,
-      batch.venue,
-      batch.recordedAtMs,
-      batch.definitions.length,
-      batch.lifecycleEvents.length,
-      batch.observations.length,
-      batch.sourceDigests.length,
-    );
-    for (const sourceDigest of batch.sourceDigests) {
-      db.prepare(INSERT_UNIVERSE_INGESTION_SOURCE_SQL).run(
-        batch.batchSha256,
-        sourceDigest,
-      );
+    for (const statement of statements) {
+      db.prepare(statement.sql).run(...statement.params);
     }
-    for (const definition of batch.definitions) {
-      db.prepare(INSERT_UNIVERSE_DEFINITION_SQL).run(
-        definition.definitionId,
-        definition.venue,
-        definition.canonicalPair,
-        definition.exchangePair,
-        definition.baseAsset,
-        definition.quoteAsset,
-        definition.instrumentKind,
-        definition.availableAtMs,
-        definition.sourceRef,
-        definition.payloadSha256,
-      );
-      db.prepare(INSERT_UNIVERSE_DEFINITION_MEMBERSHIP_SQL).run(
-        batch.batchSha256,
-        definition.definitionId,
-      );
-    }
-    for (const event of batch.lifecycleEvents) {
-      db.prepare(INSERT_UNIVERSE_EVENT_SQL).run(
-        event.eventId,
-        event.venue,
-        event.canonicalPair,
-        event.eventType,
-        event.effectiveAtMs,
-        event.publishedAtMs,
-        event.recordedAtMs,
-        event.sourceRef,
-        event.payloadSha256,
-      );
-      db.prepare(INSERT_UNIVERSE_EVENT_MEMBERSHIP_SQL).run(
-        batch.batchSha256,
-        event.eventId,
-      );
-    }
-    for (const observation of batch.observations) {
-      db.prepare(INSERT_UNIVERSE_OBSERVATION_SQL).run(
-        observation.observationId,
-        observation.venue,
-        observation.canonicalPair,
-        observation.observedAtMs,
-        observation.availableAtMs,
-        observation.spreadBps,
-        observation.quoteTurnoverAud24h,
-        observation.availableQuoteVolumeAud,
-        observation.estimatedImpactBps,
-        observation.minimumOrderAud,
-        observation.audValuationComplete ? 1 : 0,
-        observation.dailyCommittedCandles,
-        observation.hourlyCommittedCandles,
-        observation.annualisedVolatility,
-        observation.dataQualityState,
-        observation.payloadSha256,
-      );
-      db.prepare(INSERT_UNIVERSE_OBSERVATION_MEMBERSHIP_SQL).run(
-        batch.batchSha256,
-        observation.observationId,
-      );
-    }
-    db.prepare(INSERT_UNIVERSE_INGESTION_COMMIT_SQL).run(
-      batch.batchSha256,
-    );
     db.exec("COMMIT");
   } catch (error: unknown) {
     db.exec("ROLLBACK");
@@ -189,55 +109,59 @@ function persistPrepared(
   }
 }
 
+function count(db: DatabaseSync, table: string): number {
+  return (
+    db.prepare(`SELECT COUNT(*) AS count FROM ${table}`).get() as {
+      count: number;
+    }
+  ).count;
+}
+
 test("prepared universe batches persist atomically and retry idempotently", async () => {
   const db = database();
-  const batch = await prepareUniverseIngestionBatch(input());
-  persistPrepared(db, batch);
-  persistPrepared(db, batch);
+  const prepared = await prepareUniversePersistence(input());
+  executeAtomically(db, prepared.statements);
+  executeAtomically(db, prepared.statements);
 
-  const count = (table: string): number =>
-    (
-      db.prepare(`SELECT COUNT(*) AS count FROM ${table}`).get() as {
-        count: number;
-      }
-    ).count;
-
-  assert.equal(count("universe_ingestion_batches"), 1);
-  assert.equal(count("universe_ingestion_batch_commits"), 1);
-  assert.equal(count("universe_ingestion_batch_sources"), 3);
-  assert.equal(count("universe_ingestion_batch_definitions"), 1);
-  assert.equal(count("universe_ingestion_batch_events"), 1);
-  assert.equal(count("universe_ingestion_batch_observations"), 1);
-  assert.equal(count("market_universe_definitions"), 1);
-  assert.equal(count("market_universe_events"), 1);
-  assert.equal(count("market_quality_observations"), 1);
+  assert.equal(prepared.statements.length, 9);
+  assert.equal(count(db, "universe_ingestion_batches"), 1);
+  assert.equal(count(db, "universe_ingestion_batch_commits"), 1);
+  assert.equal(count(db, "universe_ingestion_batch_sources"), 3);
+  assert.equal(count(db, "universe_ingestion_batch_definitions"), 1);
+  assert.equal(count(db, "universe_ingestion_batch_events"), 1);
+  assert.equal(count(db, "universe_ingestion_batch_observations"), 1);
+  assert.equal(count(db, "market_universe_definitions"), 1);
+  assert.equal(count(db, "market_universe_events"), 1);
+  assert.equal(count(db, "market_quality_observations"), 1);
 });
 
 test("record conflict rolls back batch provenance and all memberships", async () => {
   const db = database();
-  const original = await prepareUniverseIngestionBatch(input());
-  persistPrepared(db, original);
+  const original = await prepareUniversePersistence(input());
+  executeAtomically(db, original.statements);
 
-  const conflicting = await prepareUniverseIngestionBatch(input(digest("d")));
-  assert.notEqual(conflicting.batchSha256, original.batchSha256);
+  const conflicting = await prepareUniversePersistence(input(digest("d")));
+  assert.notEqual(conflicting.batch.batchSha256, original.batch.batchSha256);
   assert.throws(
-    () => persistPrepared(db, conflicting),
+    () => executeAtomically(db, conflicting.statements),
     /market universe definition payload conflict/,
   );
 
-  const row = db
-    .prepare(
-      "SELECT batch_sha256 FROM universe_ingestion_batches WHERE batch_sha256 = ?",
-    )
-    .get(conflicting.batchSha256);
-  assert.equal(row, undefined);
+  assert.equal(
+    db
+      .prepare(
+        "SELECT batch_sha256 FROM universe_ingestion_batches WHERE batch_sha256 = ?",
+      )
+      .get(conflicting.batch.batchSha256),
+    undefined,
+  );
   assert.equal(
     (
       db
         .prepare(
           "SELECT COUNT(*) AS count FROM universe_ingestion_batch_sources WHERE batch_sha256 = ?",
         )
-        .get(conflicting.batchSha256) as { count: number }
+        .get(conflicting.batch.batchSha256) as { count: number }
     ).count,
     0,
   );
@@ -255,23 +179,20 @@ test("incomplete batches cannot receive a commit marker", () => {
     0,
     1,
   );
-  db.prepare(INSERT_UNIVERSE_INGESTION_SOURCE_SQL).run(
+  db.prepare(INSERT_UNIVERSE_INGESTION_SOURCES_JSON_SQL).run(
     batchDigest,
-    digest("a"),
+    JSON.stringify([digest("a")]),
   );
   assert.throws(
-    () =>
-      db
-        .prepare(INSERT_UNIVERSE_INGESTION_COMMIT_SQL)
-        .run(batchDigest),
+    () => db.prepare(INSERT_UNIVERSE_INGESTION_COMMIT_SQL).run(batchDigest),
     /universe ingestion batch is incomplete/,
   );
 });
 
 test("batch provenance and memberships are immutable and venue-bound", async () => {
   const db = database();
-  const batch = await prepareUniverseIngestionBatch(input());
-  persistPrepared(db, batch);
+  const prepared = await prepareUniversePersistence(input());
+  executeAtomically(db, prepared.statements);
 
   assert.throws(
     () =>
@@ -291,33 +212,31 @@ test("batch provenance and memberships are immutable and venue-bound", async () 
     /source memberships are immutable/,
   );
 
-  db.prepare(
-    `INSERT INTO market_universe_definitions (
-      definition_id, venue, canonical_pair, exchange_pair, base_asset,
-      quote_asset, instrument_kind, available_at_ms, source_ref, payload_sha256
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-  ).run(
-    "definition:other",
-    "other-venue",
-    "ETH/AUD",
-    "ETHAUD",
-    "ETH",
-    "AUD",
-    "spot",
-    NOW,
-    "other:source",
-    digest("e"),
+  const otherDefinition = {
+    definitionId: "definition:other",
+    venue: "other-venue",
+    canonicalPair: "ETH/AUD",
+    exchangePair: "ETHAUD",
+    baseAsset: "ETH",
+    quoteAsset: "AUD",
+    instrumentKind: "spot",
+    availableAtMs: NOW,
+    sourceRef: "other:source",
+    payloadSha256: digest("e"),
+  };
+  db.prepare(INSERT_UNIVERSE_DEFINITIONS_JSON_SQL).run(
+    JSON.stringify([otherDefinition]),
   );
   assert.throws(
     () =>
       db
-        .prepare(INSERT_UNIVERSE_DEFINITION_MEMBERSHIP_SQL)
-        .run(batch.batchSha256, "definition:other"),
+        .prepare(INSERT_UNIVERSE_DEFINITION_MEMBERSHIPS_JSON_SQL)
+        .run(prepared.batch.batchSha256, JSON.stringify([otherDefinition])),
     /invalid universe definition batch membership/,
   );
 });
 
-test("repository submits every record in one D1 batch", async () => {
+test("repository submits a fixed nine-statement D1 batch for multiple markets", async () => {
   const prepared: Array<{ readonly sql: string; readonly values: readonly unknown[] }> = [];
   let calls = 0;
   const fakeDb = {
@@ -332,22 +251,32 @@ test("repository submits every record in one D1 batch", async () => {
     },
     async batch(statements: readonly unknown[]) {
       calls += 1;
-      assert.equal(statements.length, prepared.length);
+      assert.equal(statements.length, 9);
       return [];
     },
   };
 
+  const base = input();
+  const firstMarket = base.markets[0];
+  if (firstMarket === undefined) throw new Error("Missing market fixture");
+  const multiMarket: UniverseIngestionInput = {
+    ...base,
+    markets: [
+      firstMarket,
+      {
+        ...firstMarket,
+        canonicalPair: "ETH/AUD",
+        exchangePair: "ETHAUD",
+        baseAsset: "ETH",
+      },
+    ],
+  };
   const batch = await new UniverseIngestionRepository(
     fakeDb as unknown as D1Database,
-  ).persistBatch(input());
+  ).persistBatch(multiMarket);
 
   assert.equal(calls, 1);
-  assert.equal(prepared.length, 11);
-  assert.equal(
-    prepared.filter((statement) =>
-      statement.sql.includes("universe_ingestion_batches"),
-    ).length,
-    1,
-  );
+  assert.equal(prepared.length, 9);
+  assert.equal(batch.definitions.length, 2);
   assert.equal(batch.sourceDigests.length, 3);
 });
