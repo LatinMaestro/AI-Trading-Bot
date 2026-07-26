@@ -99,3 +99,11 @@ Use severity-based incident handling with immediate live disablement for suspect
 Containment authority is intentionally broad: an operator may disable schedules, activate the kill switch, revoke affected credentials or cancel unexpected open orders. Restoration authority is narrow: live operation requires complete exchange-authoritative reconciliation, corrective evidence, paper/shadow regression checks and explicit user approval.
 
 Treat every exposed secret as compromised even if it is later deleted. Preserve redacted evidence digests, never secrets. Restore D1 only through an isolated verified recovery that preserves immutable audit, market, universe and tax evidence. Live-recovery approval never authorises a capital increase, broader permission, new venue or different strategy.
+
+## 2026-07-26 — Database-verified universe ingestion commits
+
+Persist each prepared universe-ingestion result through one transactional D1 batch containing the batch header, source digests, immutable definitions/events/observations, record memberships and a final commit marker.
+
+The database permits the commit marker only when actual source and record membership counts match the content-addressed header. Exact retries are idempotent. Changed identity reuse aborts, and transaction rollback prevents orphaned provenance. Ordinary updates and deletes of batch evidence are prohibited.
+
+Only committed batches are complete research evidence. This persistence boundary does not yet fetch scheduled Kraken metadata, ticker/depth quality or AUD conversion inputs and adds no private API or order capability.
