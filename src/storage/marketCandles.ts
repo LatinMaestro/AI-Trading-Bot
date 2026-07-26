@@ -63,8 +63,9 @@ export interface PreparedMarketDataBatch {
   readonly candles: readonly PreparedMarketCandle[];
 }
 
-function assertNonEmpty(name: string, value: string): void {
-  if (value.trim().length === 0) throw new Error(`${name} must not be empty`);
+function assertCanonicalText(name: string, value: string): void {
+  if (value.length === 0) throw new Error(`${name} must not be empty`);
+  if (value !== value.trim()) throw new Error(`${name} must not contain surrounding whitespace`);
 }
 
 function canonicalCandlePayload(
@@ -118,10 +119,13 @@ function assertCandleValues(pair: string, candle: Candle): void {
 export async function prepareMarketDataBatch(
   input: MarketDataBatchInput,
 ): Promise<PreparedMarketDataBatch> {
-  assertNonEmpty("batchId", input.batchId);
-  assertNonEmpty("venue", input.venue);
-  assertNonEmpty("canonicalPair", input.canonicalPair);
-  assertNonEmpty("exchangePair", input.exchangePair);
+  assertCanonicalText("batchId", input.batchId);
+  assertCanonicalText("venue", input.venue);
+  assertCanonicalText("canonicalPair", input.canonicalPair);
+  assertCanonicalText("exchangePair", input.exchangePair);
+  if (input.sourceCursor !== undefined) {
+    assertCanonicalText("sourceCursor", input.sourceCursor);
+  }
   assertSupportedInterval(input.intervalMinutes);
   if (input.candles.length === 0) throw new Error("Market data batch must contain candles");
 
