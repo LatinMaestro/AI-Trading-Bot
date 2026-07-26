@@ -94,17 +94,14 @@ test("stale summaries take precedence and look-ahead evidence is rejected", () =
     )["BTC/AUD"]?.dataQualityState,
     "stale",
   );
+  const firstClose = dailyCloses()[0];
+  if (firstClose === undefined) throw new Error("Missing daily fixture");
   assert.throws(
     () =>
       summariseStoredCandleHistory(
         ["BTC/AUD"],
         summaries(),
-        [
-          {
-            ...dailyCloses()[0],
-            closeTimeMs: asOfMs + DAY_MS,
-          } as StoredDailyCloseRow,
-        ],
+        [{ ...firstClose, closeTimeMs: asOfMs + DAY_MS }],
         asOfMs,
       ),
     /invalid daily chronology/,
@@ -199,12 +196,14 @@ test("rejects duplicate requests, unexpected rows and malformed values", () => {
       ),
     /Unexpected candle pair/,
   );
+  const firstClose = dailyCloses()[0];
+  if (firstClose === undefined) throw new Error("Missing daily fixture");
   assert.throws(
     () =>
       summariseStoredCandleHistory(
         ["BTC/AUD"],
         summaries(),
-        [{ ...dailyCloses()[0], close: 0 } as StoredDailyCloseRow],
+        [{ ...firstClose, close: 0 }],
         asOfMs,
       ),
     /invalid daily close/,
