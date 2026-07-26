@@ -75,3 +75,11 @@ Every candidate report must include aligned AUD cash, BTC hold, equal-weight hol
 Research-report v1 binds strategy and benchmark series, objective/ruin metrics, evaluation split, exact period, warnings and code/data/universe/configuration provenance into a canonical SHA-256 digest.
 
 The digest proves content identity only. Live approval still requires a separately authorised signed strategy configuration and approval record after validated walk-forward, final-holdout, sensitivity, capacity and tax evidence.
+
+## 2026-07-26 — Universe ingestion and AUD valuation provenance
+
+Prepare scheduled universe evidence as deterministic content-addressed batches. Keep venue metadata, market-quality measurements, official lifecycle announcements and AUD conversion observations as separate source classes with independent fetch times and payload digests.
+
+Do not infer a delisting from a pair being absent from one venue snapshot. Listing, suspension, resumption, delisting and Australian-availability events require explicit official evidence and valid publication chronology.
+
+Convert quote-currency market metrics to AUD only through a fresh, knowable and unambiguous valuation path. Missing, stale or multiple shortest paths fail closed. Calibration summaries are evidence only; they do not automatically alter signed universe limits.
