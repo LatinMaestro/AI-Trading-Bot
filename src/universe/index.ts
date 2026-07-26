@@ -159,6 +159,25 @@ export function reconstructUniverseAt(
   );
 }
 
+export {
+  prepareUniverseIngestionBatch,
+  resolveAudValuationPath,
+  summariseUniverseCalibration,
+} from "./ingestion.ts";
+
+export type {
+  AudConversionQuote,
+  AudValuationPath,
+  LifecycleAnnouncementInput,
+  UniverseCalibrationSample,
+  UniverseIngestionBatch,
+  UniverseIngestionInput,
+  UniverseSourceEvidence,
+  UniverseSourceKind,
+  UniverseTierCalibrationSummary,
+  VenueMarketObservationInput,
+} from "./ingestion.ts";
+
 export type {
   InstrumentKind,
   MarketDataQualityState,
