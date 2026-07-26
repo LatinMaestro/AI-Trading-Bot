@@ -10,7 +10,7 @@
 
 ## Phase 1 — Market data and deterministic research
 
-- [ ] Implement Kraken asset-pair discovery and pair normalisation.
+- [x] Implement Kraken asset-pair discovery and pair normalisation.
 - [ ] Ingest validated daily and hourly OHLC data.
 - [ ] Add idempotent D1 persistence, gap detection and repair.
 - [ ] Build fee/slippage-aware backtest engine.

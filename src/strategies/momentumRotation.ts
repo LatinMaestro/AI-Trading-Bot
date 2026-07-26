@@ -3,9 +3,9 @@ import type {
   Candle,
   StrategyDecision,
 } from "../domain/types.ts";
+import { MIN_DAILY_CANDLES } from "../marketData/candleQuality.ts";
 
 const STRATEGY_VERSION = "momentum-rotation-v0.1.0";
-const MIN_DAILY_CANDLES = 220;
 
 function returnOver(closes: readonly number[], days: number): number {
   const current = closes.at(-1);

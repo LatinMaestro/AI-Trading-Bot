@@ -1,4 +1,5 @@
 import type { TradingMode } from "./domain/types.ts";
+import { normalizeAudPairSymbol } from "./marketData/symbols.ts";
 
 export interface RuntimeConfig {
   readonly appEnv: string;
@@ -33,12 +34,15 @@ export function loadConfig(env: Env): RuntimeConfig {
     throw new Error("TRADING_MODE is invalid");
   }
 
-  const approvedPairs = env.APPROVED_PAIRS.split(",")
-    .map((pair) => pair.trim().toUpperCase())
+  const configuredPairs = env.APPROVED_PAIRS.split(",")
+    .map((pair) => pair.trim())
     .filter(Boolean);
-
-  if (approvedPairs.length === 0) {
+  if (configuredPairs.length === 0) {
     throw new Error("APPROVED_PAIRS cannot be empty");
+  }
+  const approvedPairs = configuredPairs.map(normalizeAudPairSymbol);
+  if (new Set(approvedPairs).size !== approvedPairs.length) {
+    throw new Error("APPROVED_PAIRS contains duplicates after normalisation");
   }
 
   return {
