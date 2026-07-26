@@ -53,6 +53,12 @@ CREATE TABLE universe_ingestion_batch_observations (
     REFERENCES market_quality_observations(observation_id)
 );
 
+CREATE TABLE universe_ingestion_batch_commits (
+  batch_sha256 TEXT PRIMARY KEY,
+  FOREIGN KEY (batch_sha256)
+    REFERENCES universe_ingestion_batches(batch_sha256)
+);
+
 CREATE INDEX idx_universe_ingestion_batches_recorded
   ON universe_ingestion_batches(venue, recorded_at_ms);
 
@@ -128,6 +134,53 @@ BEGIN
   SELECT RAISE(ABORT, 'invalid universe observation batch membership');
 END;
 
+CREATE TRIGGER enforce_universe_ingestion_batch_completion
+BEFORE INSERT ON universe_ingestion_batch_commits
+WHEN NOT EXISTS (
+    SELECT 1
+    FROM universe_ingestion_batches
+    WHERE batch_sha256 = NEW.batch_sha256
+  )
+  OR (
+    SELECT COUNT(*)
+    FROM universe_ingestion_batch_sources
+    WHERE batch_sha256 = NEW.batch_sha256
+  ) <> (
+    SELECT source_count
+    FROM universe_ingestion_batches
+    WHERE batch_sha256 = NEW.batch_sha256
+  )
+  OR (
+    SELECT COUNT(*)
+    FROM universe_ingestion_batch_definitions
+    WHERE batch_sha256 = NEW.batch_sha256
+  ) <> (
+    SELECT definition_count
+    FROM universe_ingestion_batches
+    WHERE batch_sha256 = NEW.batch_sha256
+  )
+  OR (
+    SELECT COUNT(*)
+    FROM universe_ingestion_batch_events
+    WHERE batch_sha256 = NEW.batch_sha256
+  ) <> (
+    SELECT event_count
+    FROM universe_ingestion_batches
+    WHERE batch_sha256 = NEW.batch_sha256
+  )
+  OR (
+    SELECT COUNT(*)
+    FROM universe_ingestion_batch_observations
+    WHERE batch_sha256 = NEW.batch_sha256
+  ) <> (
+    SELECT observation_count
+    FROM universe_ingestion_batches
+    WHERE batch_sha256 = NEW.batch_sha256
+  )
+BEGIN
+  SELECT RAISE(ABORT, 'universe ingestion batch is incomplete');
+END;
+
 CREATE TRIGGER prevent_universe_ingestion_batch_update
 BEFORE UPDATE ON universe_ingestion_batches
 BEGIN
@@ -186,4 +239,16 @@ CREATE TRIGGER prevent_universe_ingestion_observation_membership_delete
 BEFORE DELETE ON universe_ingestion_batch_observations
 BEGIN
   SELECT RAISE(ABORT, 'universe observation batch memberships are immutable');
+END;
+
+CREATE TRIGGER prevent_universe_ingestion_commit_update
+BEFORE UPDATE ON universe_ingestion_batch_commits
+BEGIN
+  SELECT RAISE(ABORT, 'universe ingestion commit markers are immutable');
+END;
+
+CREATE TRIGGER prevent_universe_ingestion_commit_delete
+BEFORE DELETE ON universe_ingestion_batch_commits
+BEGIN
+  SELECT RAISE(ABORT, 'universe ingestion commit markers are immutable');
 END;
