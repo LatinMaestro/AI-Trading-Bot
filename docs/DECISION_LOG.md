@@ -123,3 +123,11 @@ After the global cycle lease and scheduled-slot claim, fetch Australian Kraken m
 Use the content-addressed client and quality contracts rather than duplicate parsing. Apply bounded retry, timeout, response-size and request-spacing controls, and record actual HTTP attempts plus the committed batch digest in the cycle audit.
 
 Never infer lifecycle events from current snapshots. Until committed history and volatility evidence are joined, collected observations remain history-incomplete and dynamic-universe eligibility is not authoritative for strategy selection. No private or live-order capability is added.
+
+## 2026-07-27 — Stored candle history and realised-volatility evidence
+
+Join each bounded scheduled universe window to committed D1 candle evidence available by the scheduled signal time. Read aggregate counts and contiguity for hourly and daily intervals in one transactional batch with a bounded trailing 366-daily-candle sample for annualised log-return volatility.
+
+A history state is complete only when both intervals exist, their aggregate ranges are contiguous, at least three daily closes support volatility, and the latest closes are fresh. Missing, gapped or stale history remains explicit and cannot make a dynamic-universe candidate eligible. Batch fetch timestamps and candle close times after the signal time are excluded to prevent look-ahead.
+
+This evidence changes public research metadata only. It adds no private endpoint, credential, order, fund, withdrawal, transfer, wallet, leverage or derivative capability.
