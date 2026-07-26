@@ -312,3 +312,23 @@ test("loads stored history only for the selected rotation before persistence", a
     /not both/,
   );
 });
+
+
+test("rejects ticker and depth evidence outside the configured skew", async () => {
+  let tick = 0;
+  await assert.rejects(
+    prepareScheduledKrakenUniverse({
+      scheduledAtMs: 0,
+      nowMs: () => {
+        tick += 1_000;
+        return tick;
+      },
+      fetchImpl: fakeFetch([]),
+      sleep: async () => undefined,
+      maximumDepthPairs: 1,
+      requestSpacingMs: 0,
+      maximumEvidenceSkewMs: 1,
+    }),
+    /evidence skew exceeded/,
+  );
+});
