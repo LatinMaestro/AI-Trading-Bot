@@ -8,6 +8,7 @@ import {
   INSERT_UNIVERSE_EVENT_MEMBERSHIP_SQL,
   INSERT_UNIVERSE_EVENT_SQL,
   INSERT_UNIVERSE_INGESTION_BATCH_SQL,
+  INSERT_UNIVERSE_INGESTION_COMMIT_SQL,
   INSERT_UNIVERSE_INGESTION_SOURCE_SQL,
   INSERT_UNIVERSE_OBSERVATION_MEMBERSHIP_SQL,
   INSERT_UNIVERSE_OBSERVATION_SQL,
@@ -178,6 +179,9 @@ function persistPrepared(
         observation.observationId,
       );
     }
+    db.prepare(INSERT_UNIVERSE_INGESTION_COMMIT_SQL).run(
+      batch.batchSha256,
+    );
     db.exec("COMMIT");
   } catch (error: unknown) {
     db.exec("ROLLBACK");
@@ -199,6 +203,7 @@ test("prepared universe batches persist atomically and retry idempotently", asyn
     ).count;
 
   assert.equal(count("universe_ingestion_batches"), 1);
+  assert.equal(count("universe_ingestion_batch_commits"), 1);
   assert.equal(count("universe_ingestion_batch_sources"), 3);
   assert.equal(count("universe_ingestion_batch_definitions"), 1);
   assert.equal(count("universe_ingestion_batch_events"), 1);
@@ -251,6 +256,10 @@ test("batch provenance and memberships are immutable and venue-bound", async () 
         )
         .run(),
     /universe ingestion batches are immutable/,
+  );
+  assert.throws(
+    () => db.prepare("DELETE FROM universe_ingestion_batch_commits").run(),
+    /commit markers are immutable/,
   );
   assert.throws(
     () => db.prepare("DELETE FROM universe_ingestion_batch_sources").run(),
@@ -308,7 +317,7 @@ test("repository submits every record in one D1 batch", async () => {
   ).persistBatch(input());
 
   assert.equal(calls, 1);
-  assert.equal(prepared.length, 10);
+  assert.equal(prepared.length, 11);
   assert.equal(
     prepared.filter((statement) =>
       statement.sql.includes("universe_ingestion_batches"),
