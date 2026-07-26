@@ -150,7 +150,11 @@ function retryableError(error: unknown): boolean {
   if (!(error instanceof Error)) return false;
   const statusMatch = /returned HTTP (\d{3})/.exec(error.message);
   if (statusMatch !== null) return retryable(Number(statusMatch[1]));
-  return error instanceof TypeError || error.name === "AbortError";
+  return (
+    error instanceof TypeError ||
+    error.name === "AbortError" ||
+    error.name === "TimeoutError"
+  );
 }
 
 async function readBoundedBody(response: Response): Promise<Uint8Array> {
@@ -313,8 +317,10 @@ export async function runScheduledKrakenLifecycleCapture(
   }
   const nowMs = options.nowMs ?? Date.now;
   const fetchImpl = options.fetchImpl ?? fetch;
-  const sleep = options.sleep ?? ((milliseconds) =>
-    new Promise<void>((resolve) => setTimeout(resolve, milliseconds)));
+  const sleep =
+    options.sleep ??
+    ((milliseconds) =>
+      new Promise<void>((resolve) => setTimeout(resolve, milliseconds)));
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   const retryDelayMs = options.retryDelayMs ?? DEFAULT_RETRY_DELAY_MS;
   const requestSpacingMs = options.requestSpacingMs ?? 250;
