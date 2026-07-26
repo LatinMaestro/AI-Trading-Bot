@@ -37,7 +37,7 @@ function sourceResponse(url: URL, status = 200): Response {
   );
 }
 
-test("captures exact UTF-8 payloads as deterministic content-addressed chunks", async () => {
+test("captures exact UTF-8 payloads with deterministic content identity", async () => {
   const body = `start-${"é".repeat(20_000)}-end`;
   const target = KRAKEN_LIFECYCLE_CAPTURE_TARGETS[0];
   if (target === undefined) throw new Error("Missing capture target");
@@ -54,13 +54,11 @@ test("captures exact UTF-8 payloads as deterministic content-addressed chunks", 
 
   assert.equal(first.captureId, second.captureId);
   assert.equal(first.payloadSha256, second.payloadSha256);
-  assert.ok(first.chunks.length > 1);
-  assert.equal(first.chunks.map((chunk) => chunk.text).join(""), body);
+  assert.equal(first.payloadText, body);
   assert.equal(
-    first.chunks.reduce((sum, chunk) => sum + chunk.byteLength, 0),
+    first.payloadByteLength,
     new TextEncoder().encode(body).byteLength,
   );
-  assert.ok(first.chunks.every((chunk) => chunk.byteLength <= 32_768));
   assert.equal(first.contentType, "text/html");
   assert.equal(first.etag, '"capture-v1"');
 });
