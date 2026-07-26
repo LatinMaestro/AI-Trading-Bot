@@ -75,10 +75,22 @@ export interface PreparedKrakenLifecycleEvidence {
 const ALLOWED_EVENTS: Readonly<
   Record<KrakenLifecycleSourceClass, ReadonlySet<MarketLifecycleEventType>>
 > = {
-  "asset-listing": new Set(["listed", "trading-online"]),
-  "delisting-notice": new Set(["trading-suspended", "delisted"]),
-  "status-incident": new Set(["trading-suspended", "trading-resumed"]),
-  "regional-availability": new Set(["au-enabled", "au-disabled"]),
+  "asset-listing": new Set<MarketLifecycleEventType>([
+    "listed",
+    "trading-online",
+  ]),
+  "delisting-notice": new Set<MarketLifecycleEventType>([
+    "trading-suspended",
+    "delisted",
+  ]),
+  "status-incident": new Set<MarketLifecycleEventType>([
+    "trading-suspended",
+    "trading-resumed",
+  ]),
+  "regional-availability": new Set<MarketLifecycleEventType>([
+    "au-enabled",
+    "au-disabled",
+  ]),
 };
 
 function assertCanonical(name: string, value: string): void {
@@ -184,6 +196,19 @@ function assertDeclarationAllowed(
   }
 }
 
+function eventOrder(eventType: MarketLifecycleEventType): number {
+  if (eventType === "listed") return 0;
+  if (
+    eventType === "trading-online" ||
+    eventType === "trading-suspended" ||
+    eventType === "trading-resumed"
+  ) {
+    return 1;
+  }
+  if (eventType === "au-enabled" || eventType === "au-disabled") return 2;
+  return 3;
+}
+
 function eventDimensions(
   eventType: MarketLifecycleEventType,
 ): readonly string[] {
@@ -214,6 +239,8 @@ function auditCoverage(
             right.announcement.effectiveAtMs ||
           left.announcement.publishedAtMs -
             right.announcement.publishedAtMs ||
+          eventOrder(left.announcement.eventType) -
+            eventOrder(right.announcement.eventType) ||
           left.announcement.eventType.localeCompare(
             right.announcement.eventType,
           ),
@@ -236,6 +263,9 @@ function auditCoverage(
       if (item.announcement.effectiveAtMs > asOfMs) continue;
       switch (item.announcement.eventType) {
         case "listed":
+          if (!currentlyListed) {
+            currentlyAvailableInAustralia = false;
+          }
           currentlyListed = true;
           currentlyOnline = false;
           break;
