@@ -22,9 +22,11 @@ Each record preserves:
 
 Supported factual event kinds are acquisition, disposal, fee disposal, transfer, income, expense and adjustment.
 
+`buildTaxRecordArchive` exports factual records and `transactions.csv` immediately, even when tax treatment or lot allocation remains incomplete. The archive receives its own canonical SHA-256 digest.
+
 ## Explicit lot allocations
 
-The exporter never selects lots automatically. Each disposal must be fully linked to explicit acquisition records through a versioned `selectionReference`.
+The final CGT worksheet never selects lots automatically. Each disposal must be fully linked to explicit acquisition records through a versioned `selectionReference`.
 
 Controls:
 
@@ -37,7 +39,7 @@ Controls:
 
 The worksheet does not apply CGT discounts, exemptions, carried losses or income-tax classifications.
 
-## Export bundle
+## Final export bundle
 
 `buildTaxExportBundle` produces:
 
