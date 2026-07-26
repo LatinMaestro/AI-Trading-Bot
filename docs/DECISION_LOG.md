@@ -16,13 +16,13 @@ Do not connect MetaMask or request wallet signing authority. The user's ETH on P
 
 Choose Kraken as the primary implementation because it exposes granular API permissions and key introspection. Higher fees are accepted initially in exchange for enforceable withdrawal exclusion and mature API behaviour.
 
-## 2026-07-26 — CoinJar excluded
+## 2026-07-26 — Unsafe venue credentials excluded
 
-Do not use CoinJar Exchange for unattended execution while its API keys have full Exchange-account control, including transfers.
+Do not use a venue for unattended execution when its selected API key grants transfer, withdrawal, address-management or unrestricted account control. A future venue may be reconsidered only after current documentation and programmatic permission checks prove that trading authority can be isolated from custody authority.
 
 ## 2026-07-26 — Deterministic baseline before adaptive AI
 
-Begin with transparent momentum rotation, fee-aware backtesting and hard risk controls. Adaptive model selection is a later gated enhancement, not a substitute for evidence.
+Begin with transparent strategies, fee-aware backtesting and hard operational controls. Adaptive model selection is a later gated enhancement, not a substitute for evidence.
 
 ## 2026-07-26 — Cloudflare foundation
 
@@ -33,3 +33,13 @@ Use Cloudflare Workers and D1 to minimise infrastructure cost while preserving h
 Persist accepted committed 60-minute and daily candles as append-only D1 records with deterministic SHA-256 digests. Exact retries are idempotent, but a reused batch or candle identity with different content is a hard conflict. Ordinary updates and deletes are rejected by database triggers so research evidence cannot be silently rewritten.
 
 Kraken REST is not treated as a complete historical archive. Its documented 720-row response includes the current uncommitted row, so gap repair assumes no more than 719 committed intervals remain recoverable. Older gaps must use a separately approved reproducible source, progressive collection or explicit exclusion from research.
+
+## 2026-07-26 — Five-year aggressive mandate
+
+Optimise strategy research for the aspirational objective of growing US$200 toward US$1,000,000 within five years of first authorised live-capital activation. Do not silently substitute a slow multi-decade wealth plan.
+
+The universe is market-cap agnostic and may include approved blue chips, mid-caps, micro-caps and newly listed spot assets. Candidate research may use concentrated positions, up to 100% gross spot exposure, hourly decisions, multiple daily rebalances and maker or taker execution when realistic after-cost evidence supports them.
+
+The user accepts the possible complete loss of the approved allocation. This capital-risk direction does not weaken operational safety: no leverage, debt, negative-balance strategy, automatic top-up, withdrawal authority, transfer authority, wallet signing, permission bypass or access to other funds is permitted.
+
+Promotion requires objective-path reporting, risk-of-ruin and terminal-wealth analysis, realistic execution costs, survivorship-safe universe reconstruction, walk-forward evidence and a signed risk configuration. The target remains aspirational and must never be represented as promised or probable.
