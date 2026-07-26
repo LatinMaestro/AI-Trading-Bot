@@ -9,6 +9,18 @@ import type { MarketLifecycleEventType } from "./types.ts";
 const SHA256_PATTERN = /^[0-9a-f]{64}$/;
 const MAXIMUM_DOCUMENTS = 200;
 const MAXIMUM_DECLARATIONS_PER_DOCUMENT = 500;
+const SOURCE_CLASSES = new Set<KrakenLifecycleSourceClass>([
+  "asset-listing",
+  "delisting-notice",
+  "status-incident",
+  "regional-availability",
+]);
+
+export const KRAKEN_OFFICIAL_LIFECYCLE_INDEXES = {
+  assetListings: "https://blog.kraken.com/category/product/asset-listings",
+  delistings: "https://support.kraken.com/sections/delistings",
+  statusApi: "https://status.kraken.com/api",
+} as const;
 
 export type KrakenLifecycleSourceClass =
   | "asset-listing"
@@ -64,11 +76,7 @@ const ALLOWED_EVENTS: Readonly<
   Record<KrakenLifecycleSourceClass, ReadonlySet<MarketLifecycleEventType>>
 > = {
   "asset-listing": new Set(["listed", "trading-online"]),
-  "delisting-notice": new Set([
-    "trading-suspended",
-    "delisted",
-    "au-disabled",
-  ]),
+  "delisting-notice": new Set(["trading-suspended", "delisted"]),
   "status-incident": new Set(["trading-suspended", "trading-resumed"]),
   "regional-availability": new Set(["au-enabled", "au-disabled"]),
 };
@@ -127,6 +135,7 @@ function assertOfficialSource(
     throw new Error("Lifecycle sourceRef must be an absolute URL");
   }
   if (
+    url.toString() !== sourceRef ||
     url.protocol !== "https:" ||
     url.username !== "" ||
     url.password !== "" ||
@@ -301,6 +310,9 @@ export async function prepareKrakenLifecycleEvidence(
       throw new Error(`Duplicate lifecycle document ${document.documentId}`);
     }
     documentIds.add(document.documentId);
+    if (!SOURCE_CLASSES.has(document.sourceClass)) {
+      throw new Error(`Unknown lifecycle source class ${document.sourceClass}`);
+    }
     assertOfficialSource(document.sourceClass, document.sourceRef);
     assertTime("document publishedAtMs", document.publishedAtMs);
     assertTime("document fetchedAtMs", document.fetchedAtMs);
