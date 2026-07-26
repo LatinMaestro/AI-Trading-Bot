@@ -83,3 +83,11 @@ Prepare scheduled universe evidence as deterministic content-addressed batches. 
 Do not infer a delisting from a pair being absent from one venue snapshot. Listing, suspension, resumption, delisting and Australian-availability events require explicit official evidence and valid publication chronology.
 
 Convert quote-currency market metrics to AUD only through a fresh, knowable and unambiguous valuation path. Missing, stale or multiple shortest paths fail closed. Calibration summaries are evidence only; they do not automatically alter signed universe limits.
+
+## 2026-07-26 — Explicit tax lots and content-addressed exports
+
+Preserve one factual record for every crypto acquisition, disposal, crypto fee, transfer, income, expense or adjustment with UTC time, Australian local date, AUD value and source/valuation digests.
+
+Do not choose tax lots automatically. Every disposal must be fully linked to explicit acquisition records through a versioned selection reference before a provisional CGT worksheet is produced. Asset mismatches, later acquisitions and over-allocation fail closed.
+
+Export transactions, allocation outcomes and Australian financial-year summaries as deterministic CSV and canonical machine-readable content with one SHA-256 bundle digest. Spreadsheet formula-like text is neutralised. The digest proves content identity only; professional tax review remains mandatory.
