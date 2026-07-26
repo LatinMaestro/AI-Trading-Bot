@@ -2,7 +2,7 @@
 
 ## Scope
 
-This contract prepares deterministic, content-addressed universe evidence from scheduled public venue inputs. It does not fetch data, infer profitability, place orders or activate capital.
+This contract prepares and atomically persists deterministic, content-addressed universe evidence from scheduled public venue inputs. It does not fetch data, infer profitability, place orders or activate capital.
 
 ## Source evidence
 
@@ -46,6 +46,19 @@ Converted metrics include 24-hour quote turnover, available quote-volume capacit
 
 Exact source content produces the same IDs, payload digests and batch digest.
 
+## Atomic persistence
+
+`UniverseIngestionRepository.persistBatch` prepares and submits one D1 batch containing:
+
+- immutable batch provenance and sorted source-digest memberships;
+- market definitions, lifecycle events and quality observations;
+- immutable links from every record to the containing batch; and
+- a final commit marker.
+
+The database accepts the commit marker only when source and record membership counts exactly match the batch header. Exact retries are idempotent. Changed reuse of a record identity or natural identity fails closed, and D1 batch rollback prevents orphaned provenance. Batch headers, memberships and commit markers reject ordinary updates and deletions.
+
+Only batches with a commit marker are complete ingestion evidence.
+
 ## Calibration evidence
 
 `summariseUniverseCalibration` produces evidence summaries by universe tier:
@@ -63,7 +76,6 @@ The summary does not automatically set policy limits. Final tier policies requir
 ## Remaining work
 
 - connect scheduled Kraken public endpoints;
-- persist ingestion batches atomically into existing append-only tables;
 - establish complete official lifecycle-source coverage;
 - calibrate AUD conversion freshness and tier thresholds from historical evidence;
 - persist signed universe policies and generated snapshots.
