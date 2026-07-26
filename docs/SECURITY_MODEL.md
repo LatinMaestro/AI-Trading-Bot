@@ -12,6 +12,14 @@
 - hidden withdrawal or funding permissions;
 - audit-log deletion or inconsistency.
 
+## Operational runbooks
+
+- `docs/SECURITY_OPERATIONS_RUNBOOK.md` defines credential inventory, provisioning, permission verification, quarterly rotation, suspected-exposure response, backup evidence and drill records.
+- `docs/INCIDENT_RESPONSE_RUNBOOK.md` defines severity, immediate containment, exchange-authoritative reconciliation, scenario playbooks and live-recovery gates.
+- Any operator may stop automation or revoke access. Only the user may restore live operation.
+- SEV-1 and SEV-2 events disable scheduled live execution. Uncertain severity is escalated.
+- Incident records contain redacted identifiers and evidence digests, never secrets or unredacted private responses.
+
 ## Credential rules
 
 - Exchange credentials are Cloudflare secrets, never repository variables.
