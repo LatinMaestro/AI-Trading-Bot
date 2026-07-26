@@ -22,6 +22,40 @@ interface KrakenEnvelope<T> {
   readonly result: T;
 }
 
+type KrakenOhlcRow = readonly (string | number)[];
+
+export function parseCommittedOhlcRows(
+  pair: string,
+  rows: readonly KrakenOhlcRow[],
+): readonly Candle[] {
+  if (rows.length < 2) {
+    throw new Error(`Kraken OHLC returned no committed candles for ${pair}`);
+  }
+
+  return rows.slice(0, -1).map((row) => {
+    const [timestamp, open, high, low, close, , volume] = row;
+    const candle: Candle = {
+      timestampMs: Number(timestamp) * 1000,
+      open: Number(open),
+      high: Number(high),
+      low: Number(low),
+      close: Number(close),
+      volume: Number(volume),
+    };
+    if (
+      !Number.isFinite(candle.timestampMs) ||
+      !Number.isFinite(candle.open) ||
+      !Number.isFinite(candle.high) ||
+      !Number.isFinite(candle.low) ||
+      !Number.isFinite(candle.close) ||
+      !Number.isFinite(candle.volume)
+    ) {
+      throw new Error(`Kraken OHLC returned malformed data for ${pair}`);
+    }
+    return candle;
+  });
+}
+
 export interface KrakenCredentials {
   readonly apiKey: string;
   readonly apiSecret: string;
@@ -52,28 +86,7 @@ export class KrakenSpotAdapter implements ExchangeAdapter {
       throw new Error(`Kraken OHLC returned no candles for ${pair}`);
     }
 
-    return entry[1].map((row) => {
-      const [timestamp, open, high, low, close, , volume] = row;
-      const candle: Candle = {
-        timestampMs: Number(timestamp) * 1000,
-        open: Number(open),
-        high: Number(high),
-        low: Number(low),
-        close: Number(close),
-        volume: Number(volume),
-      };
-      if (
-        !Number.isFinite(candle.timestampMs) ||
-        !Number.isFinite(candle.open) ||
-        !Number.isFinite(candle.high) ||
-        !Number.isFinite(candle.low) ||
-        !Number.isFinite(candle.close) ||
-        !Number.isFinite(candle.volume)
-      ) {
-        throw new Error(`Kraken OHLC returned malformed data for ${pair}`);
-      }
-      return candle;
-    });
+    return parseCommittedOhlcRows(pair, entry[1]);
   }
 
   async getApiKeyInfo(): Promise<ApiKeyInfo> {
