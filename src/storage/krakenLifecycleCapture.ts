@@ -4,6 +4,7 @@ import type {
 } from "../universe/krakenLifecycleCapture.ts";
 
 type D1BindValue = string | number | null;
+const encoder = new TextEncoder();
 
 export interface KrakenLifecycleCaptureStatement {
   readonly sql: string;
@@ -12,22 +13,9 @@ export interface KrakenLifecycleCaptureStatement {
 
 export const INSERT_KRAKEN_LIFECYCLE_PAYLOAD_SQL =
   `INSERT INTO kraken_lifecycle_source_payloads
-    (payload_sha256, payload_byte_length, chunk_count)
+    (payload_sha256, payload_byte_length, payload_text)
    VALUES (?, ?, ?)
    ON CONFLICT(payload_sha256) DO NOTHING`;
-
-export const INSERT_KRAKEN_LIFECYCLE_PAYLOAD_CHUNKS_JSON_SQL =
-  `INSERT INTO kraken_lifecycle_source_payload_chunks
-    (payload_sha256, chunk_index, chunk_sha256, chunk_byte_length, chunk_text)
-   SELECT
-     ?,
-     json_extract(value, '$.index'),
-     json_extract(value, '$.sha256'),
-     json_extract(value, '$.byteLength'),
-     json_extract(value, '$.text')
-   FROM json_each(?)
-   WHERE 1
-   ON CONFLICT(payload_sha256, chunk_index) DO NOTHING`;
 
 export const INSERT_KRAKEN_LIFECYCLE_CAPTURE_SQL =
   `INSERT INTO kraken_lifecycle_source_captures
@@ -73,24 +61,17 @@ export function prepareKrakenLifecycleCapturePersistence(
     if (capture.fetchedAtMs > committedAtMs) {
       throw new Error("Lifecycle capture commit precedes a source fetch");
     }
-    if (capture.chunks.length === 0 || capture.chunks.length > 64) {
-      throw new Error("Lifecycle capture has an invalid chunk count");
-    }
-    const chunkBytes = capture.chunks.reduce(
-      (sum, chunk, index) => {
-        if (chunk.index !== index) {
-          throw new Error("Lifecycle capture chunks are not contiguous");
-        }
-        return sum + chunk.byteLength;
-      },
-      0,
-    );
-    if (chunkBytes !== capture.payloadByteLength) {
-      throw new Error("Lifecycle capture chunk length does not match payload");
+    const payloadByteLength = encoder.encode(capture.payloadText).byteLength;
+    if (
+      payloadByteLength === 0 ||
+      payloadByteLength > 1_048_576 ||
+      payloadByteLength !== capture.payloadByteLength
+    ) {
+      throw new Error("Lifecycle capture payload length is invalid");
     }
     const payloadIdentity = JSON.stringify({
       payloadByteLength: capture.payloadByteLength,
-      chunks: capture.chunks,
+      payloadText: capture.payloadText,
     });
     const previousPayloadIdentity = payloadIdentities.get(capture.payloadSha256);
     if (
@@ -108,12 +89,8 @@ export function prepareKrakenLifecycleCapturePersistence(
         params: [
           capture.payloadSha256,
           capture.payloadByteLength,
-          capture.chunks.length,
+          capture.payloadText,
         ],
-      },
-      {
-        sql: INSERT_KRAKEN_LIFECYCLE_PAYLOAD_CHUNKS_JSON_SQL,
-        params: [capture.payloadSha256, JSON.stringify(capture.chunks)],
       },
       {
         sql: INSERT_KRAKEN_LIFECYCLE_CAPTURE_SQL,
