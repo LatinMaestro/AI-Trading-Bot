@@ -118,6 +118,9 @@ export class KrakenSpotAdapter implements ExchangeAdapter {
     intent: OrderIntent,
     validateOnly: boolean,
   ): Promise<SubmittedOrder> {
+    if (!validateOnly) {
+      throw new Error("Phase 0 permits Kraken order validation only");
+    }
     await this.getApiKeyInfo();
     const form = new URLSearchParams({
       pair: intent.pair,
