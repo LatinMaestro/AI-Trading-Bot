@@ -21,10 +21,13 @@
   - [x] Add strict expected-range gap detection and Kraken REST-horizon classification.
   - [ ] Add scheduled gap repair and an approved historical source for data outside Kraken's REST horizon.
 - [ ] Build a dynamic market-cap-agnostic spot universe from current Australian venue metadata.
-  - [ ] Add established, high-volatility and new-listing research tiers.
-  - [ ] Record listing, suspension and delisting dates to prevent survivorship bias.
-  - [ ] Enforce spread, liquidity, price-impact, order-minimum, data-quality and instrument-type gates.
-  - [ ] Support complete Australian-dollar valuation paths for every researched pair.
+  - [x] Define immutable versioned market definitions, lifecycle events and quality observations.
+  - [x] Reconstruct established, high-volatility and new-listing tiers at historical signal times.
+  - [x] Preserve listing, suspension, resumption, delisting, relisting and Australian-availability history.
+  - [x] Enforce instrument, freshness, spread, turnover, depth, impact, minimum-order, data-quality and history gates.
+  - [ ] Ingest scheduled venue metadata and reproducible official lifecycle sources.
+  - [ ] Support complete Australian-dollar valuation paths and calibrate signed tier policies by venue, period and equity scale.
+  - [ ] Persist signed policies/snapshots and connect eligible membership to strategy and backtest orchestration.
 - [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
   - [x] Add a deterministic pure target-weight rebalancing engine.
   - [x] Attribute maker/taker fees, spread, slippage, adverse selection and square-root price impact.
