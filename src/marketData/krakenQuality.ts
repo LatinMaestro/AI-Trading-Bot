@@ -32,7 +32,7 @@ function isRecord(value: unknown): value is Readonly<Record<string, unknown>> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function canonicalPair(value: string): string {
+export function normalizeKrakenDisplayPair(value: string): string {
   if (value.trim() !== value || value !== value.toUpperCase()) {
     throw new Error("Kraken pair key must be canonical uppercase text");
   }
@@ -96,7 +96,7 @@ export function parseKrakenTickers(
     if (!isRecord(raw)) {
       throw new Error(`Kraken ticker ${pairKey} must be an object`);
     }
-    const pair = canonicalPair(pairKey);
+    const pair = normalizeKrakenDisplayPair(pairKey);
     if (identities.has(pair)) {
       throw new Error(`Kraken Ticker returned duplicate pair ${pair}`);
     }
@@ -175,7 +175,7 @@ export function parseKrakenOrderBook(payload: unknown): KrakenOrderBook {
   if (entry === undefined || !isRecord(entry[1])) {
     throw new Error("Kraken Depth result is malformed");
   }
-  const pair = canonicalPair(entry[0]);
+  const pair = normalizeKrakenDisplayPair(entry[0]);
   const asks = parseBookSide(pair, "asks", entry[1].asks);
   const bids = parseBookSide(pair, "bids", entry[1].bids);
   const bestAsk = asks[0]?.price;
