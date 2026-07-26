@@ -123,3 +123,11 @@ After the global cycle lease and scheduled-slot claim, fetch Australian Kraken m
 Use the content-addressed client and quality contracts rather than duplicate parsing. Apply bounded retry, timeout, response-size and request-spacing controls, and record actual HTTP attempts plus the committed batch digest in the cycle audit.
 
 Never infer lifecycle events from current snapshots. Until committed history and volatility evidence are joined, collected observations remain history-incomplete and dynamic-universe eligibility is not authoritative for strategy selection. No private or live-order capability is added.
+
+## 2026-07-26 — Bounded committed universe evidence join
+
+Join the bounded public pair set with exact committed daily/hourly candle counts, latest committed timestamps, annualised volatility and fresh AUD conversion evidence before authoritative persistence.
+
+Require exact pair coverage, complete and knowable history, limited ticker/depth skew, sufficient two-sided displayed depth and lifecycle evidence constrained to the selected set. Missing, stale, mismatched or ambiguous evidence aborts the batch.
+
+Bind only used ticker, depth, candle and conversion evidence into a deterministic quality-manifest digest, then submit one complete input to the fixed nine-statement atomic repository. The scheduled cycle must switch from its history-gap collection path only after D1-backed evidence providers are connected.
