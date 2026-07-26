@@ -115,3 +115,11 @@ Use Kraken's official `assetVersion=1` AssetPairs, Ticker and Depth contracts fo
 Reject legacy or ambiguous pair keys, malformed envelopes, incomplete requested ticker sets, crossed markets, unordered books, unsafe times and non-finite arithmetic. Derive quote turnover from 24-hour base volume and VWAP. Derive spread and two-sided capacity from one coherent L2 book. Report candidate impact as unavailable when displayed depth cannot fill both sides rather than inventing a favourable value.
 
 This slice deliberately stops before scheduled persistence. Complete observations still require committed candle counts, annualised volatility, fresh AUD conversion and lifecycle evidence. No private endpoint, credential or order path is added.
+
+## 2026-07-26 — Lease-protected scheduled public universe collection
+
+After the global cycle lease and scheduled-slot claim, fetch Australian Kraken metadata and tickers, rotate a bounded order-book window every 15 minutes, derive fresh AUD-valued quality observations and atomically commit the batch before strategy evaluation.
+
+Use the content-addressed client and quality contracts rather than duplicate parsing. Apply bounded retry, timeout, response-size and request-spacing controls, and record actual HTTP attempts plus the committed batch digest in the cycle audit.
+
+Never infer lifecycle events from current snapshots. Until committed history and volatility evidence are joined, collected observations remain history-incomplete and dynamic-universe eligibility is not authoritative for strategy selection. No private or live-order capability is added.
