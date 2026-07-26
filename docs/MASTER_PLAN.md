@@ -36,12 +36,17 @@
   - [ ] Calibrate assumptions by venue, pair, universe tier, equity scale and historical period.
   - [ ] Add exchange-specific precision, tick-size and multi-event order-lifecycle simulation.
 - [ ] Add benchmark comparisons: AUD cash, BTC hold, equal-weight hold and the five-year constant-compounding objective path.
+  - [x] Add deterministic benchmark builders and aligned return/drawdown summaries.
+  - [x] Keep USD objective references separate from AUD comparisons unless FX provenance is supplied.
+  - [ ] Calibrate cash returns, prices, historical equal-weight membership and FX inputs.
 - [ ] Add target-attainment, terminal-wealth and risk-of-ruin analysis.
   - [x] Add objective-path, progress-status and required-forward-rate calculations.
   - [x] Add terminal-wealth, target-attainment and loss/drawdown scenario summaries.
   - [x] Add reproducible seeded moving-block bootstrap primitives.
   - [ ] Integrate validated walk-forward, holdout, benchmark and sensitivity inputs.
 - [ ] Produce repeatable research reports and signed strategy configurations.
+  - [x] Add content-addressed research-report v1 with mandatory provenance and benchmarks.
+  - [ ] Persist reports and bind approved strategy configurations to authorised signatures/approval records.
 
 ## Phase 2 — Aggressive strategy portfolio
 
