@@ -33,8 +33,8 @@ export interface KrakenRawLifecycleDocument {
   readonly fetchedAtMs: number;
   readonly payloadSha256: string;
   readonly contentType: string;
-  readonly etag?: string;
-  readonly lastModified?: string;
+  readonly etag: string | undefined;
+  readonly lastModified: string | undefined;
   readonly byteLength: number;
   readonly payloadText: string;
 }
