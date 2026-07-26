@@ -1,13 +1,13 @@
 # Current status
 
-Last verified: 26 July 2026 (Australia/Brisbane)
+Last verified: 27 July 2026 (Australia/Brisbane)
 
 ## Repository stack
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality.
+- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #20 Kraken universe join.
 - #7, #10 and #16 were closed as superseded duplicates.
-- All 14 active pull requests remain draft and unmerged.
+- All 15 active pull requests remain draft and unmerged.
 - Deployment, credentials, funds and wallet connection: none.
 
 ## Mandate and boundaries
@@ -39,14 +39,15 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - Security runbooks: credential rotation/revocation, SEV-1–3 playbooks, kill/recovery gates and redacted evidence rules.
 - Universe persistence: migration 0006; database-verified commit markers; exact retries; conflict rollback; venue-bound memberships; fixed nine-statement D1 batching independent of universe size.
 - Kraken public quality: content-addressed AssetPairs/Ticker/Depth evidence; strict display-pair and L2 parsing; quote turnover, spread, two-sided depth and candidate impact; unavailable impact remains explicit.
+- Kraken universe join: bounded pair/depth work; exact candle coverage; fresh AUD conversion; deterministic quality manifest; fixed-count atomic persistence; eight branch tests plus seven passing representative isolated tests and strict source TypeScript validation.
 
 ## External blocker
 
-GitHub Actions private-repository capacity remains unavailable until 1 August 2026. Exact-head jobs fail before steps or logs. Do not merge #1–#6, #8, #9, #11–#15 or #17 until fresh exact-head checks pass and the stack merges in order.
+GitHub Actions private-repository capacity remains unavailable until 1 August 2026. Exact-head jobs fail before steps or logs. Do not merge #1–#6, #8, #9, #11–#15, #17 or #20 until fresh exact-head checks pass and the stack merges in order.
 
 ## Next unblocked work
 
-1. Join bounded Kraken public fetches with committed candle counts, annualised volatility, AUD conversion and lifecycle evidence before fixed-count atomic persistence.
+1. Invoke the joined Kraken contract from scheduled cycles using D1-backed committed-candle, AUD-conversion and lifecycle evidence providers.
 2. Persist immutable tax records from fills and reconcile exchange exports.
 3. Integrate walk-forward, holdout, benchmark and sensitivity inputs.
 4. Persist reports and bind approved strategy configurations to authorised approval records.
