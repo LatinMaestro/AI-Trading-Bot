@@ -1,13 +1,13 @@
 # Current status
 
-Last verified: 26 July 2026 (Australia/Brisbane)
+Last verified: 27 July 2026 (Australia/Brisbane)
 
 ## Repository stack
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #19 scheduled universe cycle → #21 stored history evidence.
-- #7, #10, #16, #18 and #20 were closed as superseded or reset duplicates.
-- All 16 active pull requests remain draft and unmerged.
+- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #19 scheduled universe cycle → #21 stored history evidence → #23 official lifecycle contracts.
+- #7, #10, #16, #18, #20 and #22 were closed as superseded or reset duplicates.
+- All 17 active pull requests remain draft and unmerged.
 - `main` remains a one-line placeholder.
 - Deployment, credentials, funds and wallet connection: none.
 
@@ -30,6 +30,9 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - The cycle audit records committed batch digest, selected/skipped pair counts and actual HTTP attempts.
 - Lifecycle events are never inferred from snapshots.
 - Stored history evidence: transactional aggregate counts/contiguity, bounded trailing volatility, signal-time availability, skew rejection and quality-manifest binding.
+- Official lifecycle contracts: allowlisted Kraken listing, delisting, status-incident and Australian-availability sources; deterministic coverage gaps; future-effective events; and relisting-era Australian reset.
+- PR #23 adds seven focused tests. Exact-head execution remains blocked before workflow steps.
+- Complete lifecycle backfill and scheduled immutable raw-source capture remain pending.
 - Missing, gapped, stale or insufficient history remains non-complete; dynamic-universe eligibility is not yet authoritative for strategy selection.
 - No private API, credential, fund, wallet or live-order capability changed.
 
@@ -37,14 +40,15 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 
 GitHub Actions private-repository capacity remains unavailable until 1 August 2026. Exact-head jobs fail before steps or logs.
 
-Do not merge #1–#6, #8, #9, #11–#15, #17, #19 or #21 until fresh exact-head checks pass and the stack merges in order.
+Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21 or #23 until fresh exact-head checks pass and the stack merges in order.
 
 ## Next unblocked work
 
-1. Establish complete official lifecycle-source coverage.
-2. Persist signed universe policies/snapshots and connect eligible membership to strategy/backtest orchestration.
-3. Persist immutable tax records from fills and reconcile exchange exports.
-4. Integrate walk-forward, holdout, benchmark and sensitivity inputs.
-5. Persist reports and authorised strategy-approval records.
+1. Complete official Kraken lifecycle historical backfill.
+2. Add scheduled raw lifecycle-source capture and immutable persistence.
+3. Persist signed universe policies/snapshots and connect eligible membership to strategy/backtest orchestration.
+4. Persist immutable tax records from fills and reconcile exchange exports.
+5. Integrate walk-forward, holdout, benchmark and sensitivity inputs.
+6. Persist reports and authorised strategy-approval records.
 
 Do not deploy, request credentials, create an exchange account, move funds or enable live execution.
