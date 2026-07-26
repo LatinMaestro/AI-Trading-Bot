@@ -16,8 +16,9 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - Benchmark/report pull request: #11, `agent/phase-1-benchmarks-reports` into `agent/phase-1-objective-risk-metrics`
 - Universe-ingestion pull request: #12, `agent/phase-1-universe-ingestion` into `agent/phase-1-benchmarks-reports`
 - Tax-export pull request: #13, `agent/phase-1-tax-exports` into `agent/phase-1-universe-ingestion`
+- Security-runbooks pull request: #14, `agent/phase-1-security-runbooks` into `agent/phase-1-tax-exports`
 - Pull requests #7 and #10 were closed as superseded duplicates.
-- All eleven active pull requests are draft and intentionally unmerged.
+- All twelve active pull requests are draft and intentionally unmerged.
 - Live deployment: none
 - Credentials: none
 - Funds: none
@@ -132,18 +133,27 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - CSV formula-like text is neutralised and each archive/bundle receives a canonical SHA-256 digest.
 - Tax treatment, discounts, exemptions, losses and capital-versus-revenue classification remain professional-review decisions.
 
+## Verified security-runbook checks
+
+- Exact comparison contains 7 documentation-only security files before this status update.
+- Credential provisioning, minimum-permission checks, quarterly rotation, revocation and backup evidence are defined.
+- SEV-1 through SEV-3 classification and six incident playbooks cover compromise, unexpected orders, reconciliation drift, data/provider failure, Cloudflare/D1 recovery and repository/dependency compromise.
+- Containment authority is broad; live restoration requires zero unexplained drift, corrective evidence, paper/shadow regression checks and explicit user approval.
+- Incident evidence must contain redacted identifiers and content digests, never secrets or unredacted private payloads.
+- No runtime code, credential, dependency, migration, deployment, fund, wallet or live-order capability changed.
+
 ## External validation blocker
 
 GitHub Actions runs currently fail before any job step starts and provide no job log. The account's private-repository Actions capacity is known to be unavailable until 1 August 2026. Full dependency installation, Wrangler-generated binding types and deployment dry-runs remain unverified on GitHub exact heads.
 
-Do not merge pull requests #1, #2, #3, #4, #5, #6, #8, #9, #11, #12 or #13 until fresh exact-head CI runs complete successfully and the stack is merged in order.
+Do not merge pull requests #1, #2, #3, #4, #5, #6, #8, #9, #11, #12, #13 or #14 until fresh exact-head CI runs complete successfully and the stack is merged in order.
 
 ## Highest-priority unblocked work
 
-1. Add security and incident runbooks.
-2. Wire scheduled universe fetches and atomic persistence.
-3. Persist immutable tax records from fills and reconcile them with exchange exports.
-4. Integrate validated walk-forward, holdout, benchmark and sensitivity inputs.
-5. Persist reports and bind approved strategy configurations to authorised approval records.
+1. Wire scheduled universe fetches and atomic persistence.
+2. Persist immutable tax records from fills and reconcile them with exchange exports.
+3. Integrate validated walk-forward, holdout, benchmark and sensitivity inputs.
+4. Persist reports and bind approved strategy configurations to authorised approval records.
+5. Implement and test alert delivery, exchange-side revocation and incident drills.
 
 Do not deploy, request credentials, create an exchange account, move funds or enable live execution.
