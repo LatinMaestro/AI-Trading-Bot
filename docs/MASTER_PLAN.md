@@ -30,6 +30,8 @@
   - [x] Resolve fresh AUD valuation paths and produce tier calibration evidence summaries.
   - [x] Persist prepared metadata, quality, conversion and lifecycle batches atomically with verified commit markers.
   - [ ] Wire scheduled venue metadata, quality and conversion fetches into the persistence boundary.
+    - [x] Add content-addressed Kraken AssetPairs, Ticker and Depth clients with strict quality parsers.
+    - [ ] Join bounded public fetches with committed candle/volatility and AUD-conversion evidence before persistence.
   - [ ] Establish complete lifecycle-source coverage and signed policy calibration by venue, period and equity scale.
   - [ ] Persist signed policies/snapshots and connect eligible membership to strategy and backtest orchestration.
 - [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
