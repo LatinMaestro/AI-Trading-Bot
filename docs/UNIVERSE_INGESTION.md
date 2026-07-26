@@ -48,7 +48,7 @@ Exact source content produces the same IDs, payload digests and batch digest.
 
 ## Atomic persistence
 
-`UniverseIngestionRepository.persistBatch` prepares and submits one D1 batch containing:
+`UniverseIngestionRepository.persistBatch` submits one transactional D1 batch with nine statements regardless of universe size. Canonical JSON row expansion writes:
 
 - immutable batch provenance and sorted source-digest memberships;
 - market definitions, lifecycle events and quality observations;
@@ -57,7 +57,7 @@ Exact source content produces the same IDs, payload digests and batch digest.
 
 The database accepts the commit marker only when source and record membership counts exactly match the batch header. Exact retries are idempotent. Changed reuse of a record identity or natural identity fails closed, and D1 batch rollback prevents orphaned provenance. Batch headers, memberships and commit markers reject ordinary updates and deletions.
 
-Only batches with a commit marker are complete ingestion evidence.
+Only batches with a commit marker are complete ingestion evidence. Fixed statement count avoids scaling database subrequests linearly with the number of listed markets.
 
 ## Calibration evidence
 
