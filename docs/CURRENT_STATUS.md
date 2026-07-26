@@ -27,6 +27,7 @@ Last verified: 27 July 2026 (Australia/Brisbane)
 - Kraken public quality: content-addressed AssetPairs/Ticker/Depth evidence and strict ticker/L2 quality calculations.
 - Scheduled universe cycle: bounded 15-minute depth rotation, fresh AUD paths, retry/timeout/size controls and atomic persistence before strategy evaluation.
 - Committed-evidence join: exact candle coverage, knowable/fresh timestamps, annualised volatility, candidate-order depth/impact, used FX provenance and lifecycle-pair bounds before fixed nine-statement persistence.
+- PR #20 is cleanly stacked on PR #19 with no branch-history divergence.
 - PR #19 has five focused orchestration tests; PR #20 contains eight branch tests. Seven representative join tests and strict source TypeScript checking passed in an isolated Node 22 harness.
 - The cycle audit records committed batch digest, selected/skipped pair counts and actual HTTP attempts.
 - Lifecycle events are never inferred from snapshots.
