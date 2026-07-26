@@ -4,6 +4,7 @@ import test from "node:test";
 import { DatabaseSync } from "node:sqlite";
 import {
   INSERT_KRAKEN_LIFECYCLE_CAPTURE_COMMIT_SQL,
+  INSERT_KRAKEN_LIFECYCLE_PAYLOAD_SQL,
   KrakenLifecycleCaptureRepository,
   prepareKrakenLifecycleCapturePersistence,
   type KrakenLifecycleCaptureStatement,
@@ -103,10 +104,20 @@ test("rejects changed payload, capture and natural identities atomically", () =>
     prepareKrakenLifecycleCapturePersistence([original], NOW + 1),
   );
 
+  assert.throws(
+    () =>
+      db.prepare(INSERT_KRAKEN_LIFECYCLE_PAYLOAD_SQL).run(
+        digest("6"),
+        1,
+        "é",
+      ),
+    /CHECK constraint failed/,
+  );
+
   const payloadConflict = {
     ...capture(
       digest("7"),
-      "https://status.kraken.com/api/v2/incidents.json?later=1",
+      "https://status.kraken.com/api/v2/incidents.json",
     ),
     fetchedAtMs: NOW + 10,
     payloadText: "{\"a\":2}",
