@@ -91,3 +91,11 @@ Preserve one factual record for every crypto acquisition, disposal, crypto fee, 
 Do not choose tax lots automatically. Every disposal must be fully linked to explicit acquisition records through a versioned selection reference before a provisional CGT worksheet is produced. Asset mismatches, later acquisitions and over-allocation fail closed.
 
 Export transactions, allocation outcomes and Australian financial-year summaries as deterministic CSV and canonical machine-readable content with one SHA-256 bundle digest. Spreadsheet formula-like text is neutralised. The digest proves content identity only; professional tax review remains mandatory.
+
+## 2026-07-26 — Containment authority and explicit live recovery
+
+Use severity-based incident handling with immediate live disablement for suspected compromise, unexpected or ambiguous orders, unexplained balance drift, immutable-record conflicts and material provider failures.
+
+Containment authority is intentionally broad: an operator may disable schedules, activate the kill switch, revoke affected credentials or cancel unexpected open orders. Restoration authority is narrow: live operation requires complete exchange-authoritative reconciliation, corrective evidence, paper/shadow regression checks and explicit user approval.
+
+Treat every exposed secret as compromised even if it is later deleted. Preserve redacted evidence digests, never secrets. Restore D1 only through an isolated verified recovery that preserves immutable audit, market, universe and tax evidence. Live-recovery approval never authorises a capital increase, broader permission, new venue or different strategy.
