@@ -2,7 +2,7 @@
 
 ## Scope
 
-This contract prepares and atomically persists deterministic, content-addressed universe evidence from scheduled public venue inputs. It does not fetch data, infer profitability, place orders or activate capital.
+This contract prepares and atomically persists deterministic, content-addressed universe evidence from scheduled public venue inputs. It does not infer profitability, place orders or activate capital.
 
 ## Source evidence
 
@@ -16,6 +16,22 @@ Every input source records:
 Venue metadata, market-quality observations, lifecycle announcements and AUD conversion data remain distinct evidence classes.
 
 Lifecycle events require explicit official-announcement evidence. A market disappearing from one venue snapshot is not treated as a delisting.
+
+## Official Kraken lifecycle evidence
+
+`prepareKrakenLifecycleNotice` establishes the fail-closed source boundary for Kraken lifecycle records:
+
+- Help Center notices must use a canonical `https://support.kraken.com/hc/...` article URL;
+- operational incidents must use a canonical `https://status.kraken.com/...` record URL;
+- credentials, query strings, fragments, unofficial hosts, empty or oversized payloads and impossible publication/fetch chronology are rejected;
+- the exact captured payload text is SHA-256 addressed before event extraction;
+- canonical pair, event type, publication time and effective time remain explicit;
+- events are sorted deterministically and duplicate identities are rejected;
+- status incidents may establish only trading suspension or resumption;
+- support notices may establish listing, availability, suspension, resumption or delisting events;
+- a notice may be published before its future effective time, but the event must not affect a historical universe until both publication and effective times have passed.
+
+This contract does not scrape, poll or claim complete historical coverage. Scheduled acquisition, archival fixtures, asset-to-pair expansion and completeness reconciliation remain separate work. No lifecycle event may be inferred from current AssetPairs metadata alone.
 
 ## AUD valuation
 
@@ -75,8 +91,8 @@ The summary does not automatically set policy limits. Final tier policies requir
 
 ## Remaining work
 
-- connect the content-addressed Kraken public client to a bounded scheduled orchestrator;
-- join ticker/depth evidence with committed candle counts and annualised volatility without fabricating missing inputs;
-- establish complete official lifecycle-source coverage;
+- acquire and content-address official Kraken lifecycle records on a bounded schedule;
+- backfill and reconcile complete listing, suspension, resumption, delisting and Australian-availability history;
+- expand asset-level notices into verified affected pair events without guessing;
 - calibrate AUD conversion freshness and tier thresholds from historical evidence;
 - persist signed universe policies and generated snapshots.
