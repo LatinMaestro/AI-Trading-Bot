@@ -115,3 +115,11 @@ Use Kraken's official `assetVersion=1` AssetPairs, Ticker and Depth contracts fo
 Reject legacy or ambiguous pair keys, malformed envelopes, incomplete requested ticker sets, crossed markets, unordered books, unsafe times and non-finite arithmetic. Derive quote turnover from 24-hour base volume and VWAP. Derive spread and two-sided capacity from one coherent L2 book. Report candidate impact as unavailable when displayed depth cannot fill both sides rather than inventing a favourable value.
 
 This slice deliberately stops before scheduled persistence. Complete observations still require committed candle counts, annualised volatility, fresh AUD conversion and lifecycle evidence. No private endpoint, credential or order path is added.
+
+## 2026-07-26 — Bounded Kraken universe evidence join
+
+Join one explicit bounded pair set across content-addressed AssetPairs, exact Ticker coverage, bounded-concurrency Depth, committed candle counts, annualised volatility and fresh AUD conversion evidence before persistence.
+
+Require exact candle-evidence coverage, complete quality state, knowable and fresh committed timestamps, limited ticker/depth skew and sufficient displayed depth for the AUD-denominated candidate order. Missing, stale, mismatched or ambiguous evidence aborts the entire batch.
+
+Bind the raw ticker, Depth, candle and conversion evidence into a deterministic quality-manifest digest, then pass one complete input to the fixed nine-statement atomic universe repository. This remains public-data research infrastructure and adds no private API or live-order capability.
