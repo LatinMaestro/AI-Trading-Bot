@@ -26,6 +26,14 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - Aggressive capital risk does not weaken spot-only, no-debt, no-withdrawal, no-transfer, no-wallet and fail-closed operational controls.
 - Current conservative implementation limits remain active until a signed aggressive configuration passes all promotion and live gates.
 
+## Venue direction
+
+- Kraken remains the primary foundation adapter because granular permissions and key introspection support withdrawal exclusion.
+- CoinJar Exchange is now a priority comparison candidate rather than blanket-excluded: current documentation separates a trade-capable `trades` scope from transfer-capable `allaccess`.
+- CoinJar cannot be implemented for live use until the required balance, order, fill and reconciliation reads are proven available under `trades`, all transfer-capable functions are proven absent and unattended use is permitted.
+- CoinSpot remains a secondary comparison candidate pending the same permission, data and reconciliation evidence.
+- Final venue selection must compare actual fees, spread, depth, price impact, market coverage and API reliability without weakening credential safety.
+
 ## Verified foundation checks
 
 - 12 Node tests pass for strategy selection, risk limits, live fail-closed behaviour, monotonic Kraken nonces, committed-candle parsing and executable-order rejection.
@@ -66,7 +74,8 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 ## Verified aggressive-mandate checks
 
 - The objective arithmetic and year-by-year reference path were independently checked.
-- Agent instructions, product specification, risk policy, master plan, review gates and decision log now use one consistent five-year mandate.
+- Agent instructions, product specification, risk policy, master plan, review gates, strategy research, venue research and decision log now use one consistent five-year mandate.
+- The strategy plan now includes established, high-volatility and new-listing research lanes, venue-wide relative strength, breakout, volatility-expansion and separately evaluated mean-reversion candidates.
 - The mandate explicitly accepts possible complete loss of the approved capital while preserving operational safety boundaries.
 - No source code, dependency, migration, credential, deployment, exchange access, wallet integration, funds or executable order capability changed in PR #5.
 
