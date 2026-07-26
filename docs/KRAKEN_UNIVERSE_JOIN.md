@@ -34,7 +34,7 @@ Every requested pair requires:
 - fresh AUD conversion observations when the quote asset is not AUD; and
 - explicit lifecycle announcements when lifecycle events are supplied.
 
-Candle evidence must exactly match the requested pair set, be knowable before the market observation and meet configured freshness limits. Missing, stale, conflicting or ambiguous evidence aborts the batch.
+Candle evidence must exactly match the requested pair set, be knowable before the market observation and meet configured freshness limits. Lifecycle evidence supplied to a run must also belong to that exact pair set. Missing, stale, conflicting or ambiguous evidence aborts the batch.
 
 ## Market-quality construction
 
@@ -46,7 +46,7 @@ For each pair the join records:
 - 24-hour quote turnover;
 - conservative two-sided displayed depth;
 - worst-side candidate impact;
-- current quote minimum using both Kraken minimum cost and minimum volume;
+- current quote minimum using both Kraken minimum cost and minimum volume valued at the current ask;
 - committed history counts;
 - annualised volatility; and
 - evidence availability times.
@@ -55,13 +55,13 @@ If displayed depth cannot fill the candidate order on both sides, impact remains
 
 ## Quality manifest
 
-Ticker, per-pair Depth, candle and conversion evidence are sorted into `kraken-universe-quality-manifest-v1`. The exact manifest receives a SHA-256 digest and becomes the batch's market-quality source.
+Ticker, per-pair Depth, candle and actually used conversion evidence are canonicalised into `kraken-universe-quality-manifest-v1`. Duplicate source entries are removed deterministically. The exact manifest receives a SHA-256 digest and becomes the batch's market-quality source.
 
 The returned manifest preserves the underlying public source references, fetch times and payload digests for audit capture. The universe repository then prepares and submits its fixed nine-statement transactional D1 batch.
 
 ## Validation
 
-Six focused tests cover:
+Eight branch tests cover:
 
 - successful multi-pair joining and deterministic batch/manifest hashes;
 - bounded Depth concurrency;
@@ -69,7 +69,9 @@ Six focused tests cover:
 - exact candle-evidence coverage;
 - stale candle rejection;
 - insufficient displayed-depth rejection;
-- ticker/depth skew rejection; and
-- ambiguous AUD-path rejection.
+- ticker/depth skew rejection;
+- ambiguous AUD-path rejection;
+- exclusion of irrelevant conversion quotes from the manifest; and
+- rejection of lifecycle evidence outside the scheduled pair set.
 
-Synthetic fixtures validate control flow and arithmetic only. Scheduled runtime wiring still requires D1-backed committed-candle, AUD-conversion and lifecycle evidence providers.
+An isolated Node 22 harness passed seven representative tests and strict source TypeScript checking with `exactOptionalPropertyTypes` enabled. Synthetic fixtures validate control flow and arithmetic only. Exact-head repository CI and scheduled runtime wiring still require restored Actions capacity and D1-backed committed-candle, AUD-conversion and lifecycle evidence providers.
