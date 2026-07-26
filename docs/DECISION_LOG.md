@@ -131,3 +131,11 @@ Join each bounded scheduled universe window to committed D1 candle evidence avai
 A history state is complete only when both intervals exist, their aggregate ranges are contiguous, at least three daily closes support volatility, and the latest closes are fresh. Missing, gapped or stale history remains explicit and cannot make a dynamic-universe candidate eligible. Batch fetch timestamps and candle close times after the signal time are excluded to prevent look-ahead.
 
 This evidence changes public research metadata only. It adds no private endpoint, credential, order, fund, withdrawal, transfer, wallet, leverage or derivative capability.
+
+## 2026-07-27 — Official Kraken lifecycle evidence boundary
+
+Accept lifecycle evidence only from canonical HTTPS Kraken Help Center articles or Kraken Status records. Hash the exact captured payload, retain publication and fetch times, require explicit canonical pair events, sort deterministically and reject duplicate, unofficial, malformed, empty or oversized evidence.
+
+A lifecycle notice may be published before its future effective time. Historical reconstruction must continue to apply an event only after both times have passed. Status incidents may establish only trading suspension or resumption; listing, delisting and Australian-availability changes require an appropriate official notice.
+
+This source boundary does not claim complete history. Scheduled acquisition, archival backfill, asset-to-pair scope reconciliation and Australian-availability coverage remain required before venue-wide strategy results may be called survivorship-safe. No private API, credential or executable-order capability is added.
