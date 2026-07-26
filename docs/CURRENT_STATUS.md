@@ -1,13 +1,13 @@
 # Current status
 
-Last verified: 26 July 2026 (Australia/Brisbane)
+Last verified: 27 July 2026 (Australia/Brisbane)
 
 ## Repository stack
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #19 scheduled universe cycle.
+- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #19 scheduled universe cycle → #20 committed-evidence join.
 - #7, #10, #16 and #18 were closed as superseded or reset duplicates.
-- All 15 active pull requests remain draft and unmerged.
+- All 16 active pull requests remain draft and unmerged.
 - `main` remains a one-line placeholder.
 - Deployment, credentials, funds and wallet connection: none.
 
@@ -26,21 +26,22 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - Australian tax exports and security/incident runbooks.
 - Kraken public quality: content-addressed AssetPairs/Ticker/Depth evidence and strict ticker/L2 quality calculations.
 - Scheduled universe cycle: bounded 15-minute depth rotation, fresh AUD paths, retry/timeout/size controls and atomic persistence before strategy evaluation.
-- Five focused orchestration tests and strict TypeScript checking pass in an isolated Node 22 harness.
+- Committed-evidence join: exact candle coverage, knowable/fresh timestamps, annualised volatility, candidate-order depth/impact, used FX provenance and lifecycle-pair bounds before fixed nine-statement persistence.
+- PR #19 has five focused orchestration tests; PR #20 contains eight branch tests. Seven representative join tests and strict source TypeScript checking passed in an isolated Node 22 harness.
 - The cycle audit records committed batch digest, selected/skipped pair counts and actual HTTP attempts.
 - Lifecycle events are never inferred from snapshots.
-- History and volatility default to `gap`; dynamic-universe eligibility is not yet authoritative for strategy selection.
+- Dynamic-universe eligibility remains non-authoritative until PR #20's joined contract is invoked by the scheduled cycle with D1-backed evidence providers.
 - No private API, credential, fund, wallet or live-order capability changed.
 
 ## External blocker
 
 GitHub Actions private-repository capacity remains unavailable until 1 August 2026. Exact-head jobs fail before steps or logs.
 
-Do not merge #1–#6, #8, #9, #11–#15, #17 or #19 until fresh exact-head checks pass and the stack merges in order.
+Do not merge #1–#6, #8, #9, #11–#15, #17, #19 or #20 until fresh exact-head checks pass and the stack merges in order.
 
 ## Next unblocked work
 
-1. Join committed hourly/daily candle counts and volatility evidence to scheduled universe observations.
+1. Invoke the committed-evidence join from the scheduled cycle using D1-backed candle, conversion and lifecycle providers.
 2. Establish complete official lifecycle-source coverage.
 3. Persist immutable tax records from fills and reconcile exchange exports.
 4. Integrate walk-forward, holdout, benchmark and sensitivity inputs.
