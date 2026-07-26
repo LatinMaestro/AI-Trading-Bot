@@ -54,7 +54,7 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 ## Verified idempotency checks
 
 - 32 tests pass across the complete idempotency stacked head.
-- D1 integration tests apply both current migrations successfully.
+- D1 integration tests apply migrations `0001` and `0002` successfully.
 - Global cycle leases are exclusive, expiring and owner-guarded.
 - Completed scheduled slots cannot execute twice; failed or stale attempts can be retried with an incremented attempt count.
 - Order request fingerprints are stable across equivalent Kraken aliases and decimal formatting.
