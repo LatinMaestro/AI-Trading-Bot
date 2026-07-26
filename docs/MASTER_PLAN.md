@@ -70,6 +70,10 @@
 - [ ] Model maker/taker fees, spread, slippage, missed fills, price impact and minimum order sizes.
 - [ ] Reconcile simulated positions and cash every cycle.
 - [ ] Produce Australian-dollar tax-lot and disposal records.
+  - [x] Add deterministic transaction-record and explicit lot-allocation contracts.
+  - [x] Add content-addressed CSV/JSON exports and Australian financial-year summaries.
+  - [ ] Persist immutable tax records from fills and reconcile them with exchange exports.
+  - [ ] Complete professional review of treatment, lot selection, fees, discounts and losses.
 - [ ] Add performance, objective-path, drawdown, exposure, turnover and ruin-risk reporting.
 - [ ] Demonstrate that aggressive strategies cannot create a negative balance or use more than approved capital.
 
