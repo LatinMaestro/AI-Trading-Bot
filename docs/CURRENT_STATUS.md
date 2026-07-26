@@ -12,7 +12,9 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - Five-year aggressive-mandate pull request: #5, `agent/five-year-aggressive-mandate` into `agent/phase-1-candle-persistence`
 - Execution-aware backtest pull request: #6, `agent/phase-1-execution-backtest` into `agent/five-year-aggressive-mandate`
 - Survivorship-safe universe pull request: #8, `agent/phase-1-survivorship-universe` into `agent/phase-1-execution-backtest`
-- All seven pull requests are draft and intentionally unmerged.
+- Objective-risk pull request: #9, `agent/phase-1-objective-risk-metrics` into `agent/phase-1-survivorship-universe`
+- Pull request #7 was closed as superseded by the more complete pull request #8.
+- All eight active pull requests are draft and intentionally unmerged.
 - Live deployment: none
 - Credentials: none
 - Funds: none
@@ -107,20 +109,30 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - Fractional historical times and candle counts fail at both the TypeScript facade and D1 boundary.
 - The source-boundary check prevents production modules from bypassing `src/universe/index.ts`.
 
+## Verified objective-risk checks
+
+- 5 focused Node 22 tests pass for objective milestones, required-forward rates, target/loss/drawdown scenario summaries, seeded block resampling and fail-closed inputs.
+- Strict TypeScript source checking passes for `src/research/objectiveMetrics.ts` under the repository's strict compiler options.
+- Objective status distinguishes ahead, behind, on-path, met, expired and zero-equity ruin states.
+- Terminal loss and maximum drawdown are reported separately at 50%, 75% and configurable substantial-loss thresholds.
+- Scenario paths must share the same horizon and cadence, begin at the configured initial equity and contain only finite non-negative values.
+- Seeded moving-block bootstrap output is reproducible and retains consecutive returns inside each block.
+- Scenario frequencies remain non-predictive and cannot support promotion until supplied with validated after-cost walk-forward and holdout inputs.
+
 ## External validation blocker
 
 GitHub Actions runs currently fail before any job step starts and provide no job log. The account's private-repository Actions capacity is known to be unavailable until 1 August 2026. Full `npm install`, Wrangler-generated binding types and `wrangler deploy --dry-run` therefore remain unverified on GitHub exact heads.
 
-Do not merge pull requests #1, #2, #3, #4, #5, #6 or #8 until fresh exact-head CI runs complete successfully and the stack is merged in order.
+Do not merge pull requests #1, #2, #3, #4, #5, #6, #8 or #9 until fresh exact-head CI runs complete successfully and the stack is merged in order.
 
 ## Highest-priority unblocked work
 
 Continue focused, non-live work that can be validated without GitHub Actions, preferably as additional stacked draft branches:
 
-1. Add objective-path, terminal-wealth and risk-of-ruin pure calculation modules.
-2. Add benchmark calculations and repeatable research-report schemas.
-3. Add scheduled universe ingestion, lifecycle-source provenance and Australian-dollar valuation/calibration contracts.
-4. Add tax-record export schema and synthetic fixtures.
-5. Add security and incident runbooks.
+1. Add benchmark calculations and repeatable research-report schemas.
+2. Add scheduled universe ingestion, lifecycle-source provenance and Australian-dollar valuation/calibration contracts.
+3. Add tax-record export schema and synthetic fixtures.
+4. Add security and incident runbooks.
+5. Integrate validated walk-forward and holdout inputs into objective-risk analysis.
 
 Do not deploy, request credentials, create an exchange account, move funds or enable live execution.
