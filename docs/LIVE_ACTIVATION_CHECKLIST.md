@@ -32,6 +32,11 @@ All items must be complete. A missing or uncertain item means live trading remai
 - [ ] Strategy version and risk configuration are approved.
 - [ ] D1 backup/export procedure is tested.
 - [ ] Alerts and exchange-side kill procedure are tested.
+- [ ] Credential revocation and scheduled-execution disablement are tested.
+- [ ] D1 export/restore preserves immutable evidence digests.
+- [ ] SEV-1 credential-exposure and ambiguous-order drills are recorded.
+- [ ] Incident owner, client-notification path and evidence-retention location are assigned.
+- [ ] Live-recovery approval is proven separate from capital-increase approval.
 
 ## Activation
 
