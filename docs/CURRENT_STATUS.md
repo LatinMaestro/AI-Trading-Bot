@@ -11,7 +11,8 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - Candle-persistence pull request: #4, `agent/phase-1-candle-persistence` into `agent/phase-1-cycle-idempotency`
 - Five-year aggressive-mandate pull request: #5, `agent/five-year-aggressive-mandate` into `agent/phase-1-candle-persistence`
 - Execution-aware backtest pull request: #6, `agent/phase-1-execution-backtest` into `agent/five-year-aggressive-mandate`
-- All six pull requests are draft and intentionally unmerged.
+- Survivorship-safe universe pull request: #8, `agent/phase-1-survivorship-universe` into `agent/phase-1-execution-backtest`
+- All seven pull requests are draft and intentionally unmerged.
 - Live deployment: none
 - Credentials: none
 - Funds: none
@@ -53,7 +54,7 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 ## Verified idempotency checks
 
 - 32 tests pass across the complete idempotency stacked head.
-- D1 integration tests apply the first two migrations successfully.
+- D1 integration tests apply both current migrations successfully.
 - Global cycle leases are exclusive, expiring and owner-guarded.
 - Completed scheduled slots cannot execute twice; failed or stale attempts can be retried with an incremented attempt count.
 - Order request fingerprints are stable across equivalent Kraken aliases and decimal formatting.
@@ -92,19 +93,33 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - Rotations sell before buying and cash-constrained multi-asset buys scale proportionally rather than favouring pair sort order.
 - The implementation is a calculation primitive only; synthetic assumptions are not accepted as profitability evidence.
 
+## Verified dynamic-universe checks
+
+- 14 focused Node 22 tests pass across pure reconstruction and SQLite-backed evidence constraints.
+- Migrations `0001` through `0005` apply sequentially in SQLite.
+- Strict TypeScript source checking passes for universe contracts, deterministic reconstruction and the hardened production facade.
+- Definitions, listing/status/Australian lifecycle events and market-quality observations are immutable and idempotent; changed explicit or natural identities fail closed.
+- Historical membership uses only definitions and observations available at signal time and lifecycle events both effective and published by signal time.
+- Freshness is measured from the market observation time, so delayed ingestion cannot make stale spread or depth evidence current.
+- Suspended, Australian-disabled and delisted assets remain in history but are ineligible; a documented relisting begins a new listing era.
+- Established, high-volatility and new-listing lanes are deterministic policy outputs, and assets between tier windows are not silently promoted.
+- Instrument, Australian availability, valuation, data-quality, minimum-order, committed-history, turnover, depth, spread and impact failures remain visible as reason codes.
+- Fractional historical times and candle counts fail at both the TypeScript facade and D1 boundary.
+- The source-boundary check prevents production modules from bypassing `src/universe/index.ts`.
+
 ## External validation blocker
 
 GitHub Actions runs currently fail before any job step starts and provide no job log. The account's private-repository Actions capacity is known to be unavailable until 1 August 2026. Full `npm install`, Wrangler-generated binding types and `wrangler deploy --dry-run` therefore remain unverified on GitHub exact heads.
 
-Do not merge pull requests #1, #2, #3, #4, #5 or #6 until fresh exact-head CI runs complete successfully and the stack is merged in order.
+Do not merge pull requests #1, #2, #3, #4, #5, #6 or #8 until fresh exact-head CI runs complete successfully and the stack is merged in order.
 
 ## Highest-priority unblocked work
 
 Continue focused, non-live work that can be validated without GitHub Actions, preferably as additional stacked draft branches:
 
-1. Define dynamic venue-wide universe tiers and survivorship-safe historical membership records.
-2. Add objective-path, terminal-wealth and risk-of-ruin pure calculation modules.
-3. Add benchmark calculations and repeatable research-report schemas.
+1. Add objective-path, terminal-wealth and risk-of-ruin pure calculation modules.
+2. Add benchmark calculations and repeatable research-report schemas.
+3. Add scheduled universe ingestion, lifecycle-source provenance and Australian-dollar valuation/calibration contracts.
 4. Add tax-record export schema and synthetic fixtures.
 5. Add security and incident runbooks.
 
