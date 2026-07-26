@@ -14,8 +14,9 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - Survivorship-safe universe pull request: #8, `agent/phase-1-survivorship-universe` into `agent/phase-1-execution-backtest`
 - Objective-risk pull request: #9, `agent/phase-1-objective-risk-metrics` into `agent/phase-1-survivorship-universe`
 - Benchmark/report pull request: #11, `agent/phase-1-benchmarks-reports` into `agent/phase-1-objective-risk-metrics`
+- Universe-ingestion pull request: #12, `agent/phase-1-universe-ingestion` into `agent/phase-1-benchmarks-reports`
 - Pull requests #7 and #10 were closed as superseded duplicates.
-- All nine active pull requests are draft and intentionally unmerged.
+- All ten active pull requests are draft and intentionally unmerged.
 - Live deployment: none
 - Credentials: none
 - Funds: none
@@ -112,17 +113,26 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - Research-report v1 binds evaluation split, period, strategy, benchmarks, objective/risk metrics, warnings and code/data/universe/configuration digests into a canonical SHA-256 digest.
 - The digest proves content identity, not approval or profitability.
 
+## Verified universe-ingestion checks
+
+- 5 focused Node 22 tests pass for AUD path resolution, missing/stale/ambiguous path rejection, deterministic batch preparation, explicit lifecycle evidence and calibration summaries.
+- Strict TypeScript source checking passes for the universe-ingestion contract.
+- Venue metadata, market quality and official lifecycle announcements remain separate evidence classes.
+- Delisting is never inferred from one missing venue snapshot.
+- Quote turnover, available depth and venue minimums are converted through fresh AUD valuation paths.
+- Calibration summaries are content-addressed evidence and cannot automatically change signed tier limits.
+
 ## External validation blocker
 
 GitHub Actions runs currently fail before any job step starts and provide no job log. The account's private-repository Actions capacity is known to be unavailable until 1 August 2026. Full dependency installation, Wrangler-generated binding types and deployment dry-runs remain unverified on GitHub exact heads.
 
-Do not merge pull requests #1, #2, #3, #4, #5, #6, #8, #9 or #11 until fresh exact-head CI runs complete successfully and the stack is merged in order.
+Do not merge pull requests #1, #2, #3, #4, #5, #6, #8, #9, #11 or #12 until fresh exact-head CI runs complete successfully and the stack is merged in order.
 
 ## Highest-priority unblocked work
 
-1. Add scheduled universe ingestion, lifecycle-source provenance and Australian-dollar valuation/calibration contracts.
-2. Add Australian tax-record export schema and synthetic fixtures.
-3. Add security and incident runbooks.
+1. Add Australian tax-record export schema and synthetic fixtures.
+2. Add security and incident runbooks.
+3. Wire scheduled universe fetches and atomic persistence.
 4. Integrate validated walk-forward, holdout, benchmark and sensitivity inputs.
 5. Persist reports and bind approved strategy configurations to authorised approval records.
 
