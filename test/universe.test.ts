@@ -241,6 +241,38 @@ test("a later published relisting starts a new listing era", () => {
   assert.equal(snapshot.candidates[0]?.lifecycle.delistedAtMs, undefined);
 });
 
+test("relisting does not inherit Australian availability from an earlier era", () => {
+  const pair = "RELISTNOAU/AUD";
+  const firstListing = AS_OF - 400 * DAY_MS;
+  const relistedAt = AS_OF - 10 * DAY_MS;
+  const snapshot = reconstructUniverseAt(
+    AS_OF,
+    [definition(pair)],
+    [
+      ...lifecycle(pair, firstListing),
+      event(pair, "delisted", AS_OF - 60 * DAY_MS),
+      event(pair, "listed", relistedAt),
+      event(pair, "trading-resumed", relistedAt),
+    ],
+    [
+      observation(pair, {
+        dailyCommittedCandles: 10,
+        hourlyCommittedCandles: 120,
+      }),
+    ],
+    policy,
+  );
+  assert.equal(
+    snapshot.candidates[0]?.lifecycle.availableInAustralia,
+    false,
+  );
+  assert.ok(
+    snapshot.candidates[0]?.reasons.includes(
+      "not-available-in-australia",
+    ),
+  );
+});
+
 test("instrument, valuation, data, order and liquidity gates fail closed", () => {
   const pair = "BAD/AUD";
   const snapshot = reconstructUniverseAt(
