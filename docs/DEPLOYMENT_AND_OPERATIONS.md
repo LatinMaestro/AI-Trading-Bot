@@ -32,7 +32,17 @@ Never store these in GitHub. Use `wrangler secret put` or the Cloudflare dashboa
 - daily balance and order reconciliation;
 - alert on stale data, permission changes, rejected orders, unknown order states, drawdown and failed schedules;
 - documented manual exchange-side kill procedure;
-- quarterly credential rotation at minimum and immediate rotation after suspected exposure.
+- quarterly credential rotation at minimum and immediate rotation after suspected exposure;
+- quarterly exchange-side revocation, schedule-disablement, backup/restore and alert drills;
+- severity-based incident response with live recovery requiring zero unexplained reconciliation drift.
+
+## Incident operation
+
+Follow `docs/INCIDENT_RESPONSE_RUNBOOK.md` for unexpected orders, ambiguous exchange state, credential exposure, reconciliation drift, provider failure, D1 recovery and repository compromise.
+
+Containment authority is deliberately broader than restoration authority: an operator may disable schedules, activate the kill switch, revoke a key or cancel an unexpected open order. Live restoration requires the recovery gates and explicit user approval.
+
+Follow `docs/SECURITY_OPERATIONS_RUNBOOK.md` for provisioning, minimum-permission evidence, rotation and sensitive backup handling.
 
 ## Cost policy
 
