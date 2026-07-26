@@ -271,3 +271,44 @@ test("skips unavailable AUD valuation paths and fails closed for malformed books
     /has no asks/,
   );
 });
+
+
+test("loads stored history only for the selected rotation before persistence", async () => {
+  const historyCalls: Array<{ pairs: readonly string[]; asOfMs: number }> = [];
+  const prepared = await prepareScheduledKrakenUniverse({
+    scheduledAtMs: 900_000,
+    nowMs: () => 901_000,
+    fetchImpl: fakeFetch([]),
+    sleep: async () => undefined,
+    maximumDepthPairs: 2,
+    requestSpacingMs: 0,
+    historyProvider: async (pairs, asOfMs) => {
+      historyCalls.push({ pairs, asOfMs });
+      return Object.fromEntries(
+        pairs.map((pair) => [pair, completeHistory]),
+      );
+    },
+  });
+
+  assert.deepEqual(historyCalls, [
+    { pairs: ["SOL/USD", "USD/AUD"], asOfMs: 900_000 },
+  ]);
+  assert.ok(
+    prepared.input.markets.every(
+      (market) => market.dataQualityState === "complete",
+    ),
+  );
+  await assert.rejects(
+    prepareScheduledKrakenUniverse({
+      scheduledAtMs: 0,
+      nowMs: () => 1_000,
+      fetchImpl: fakeFetch([]),
+      sleep: async () => undefined,
+      maximumDepthPairs: 1,
+      requestSpacingMs: 0,
+      historyByPair: { "BTC/AUD": completeHistory },
+      historyProvider: async () => ({}),
+    }),
+    /not both/,
+  );
+});
