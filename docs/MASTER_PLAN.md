@@ -26,6 +26,12 @@
   - [ ] Enforce spread, liquidity, price-impact, order-minimum, data-quality and instrument-type gates.
   - [ ] Support complete Australian-dollar valuation paths for every researched pair.
 - [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
+  - [x] Add a deterministic pure target-weight rebalancing engine.
+  - [x] Attribute maker/taker fees, spread, slippage, adverse selection and square-root price impact.
+  - [x] Model participation caps, minimum orders, cash reserves and proportional buy scaling.
+  - [x] Preserve partial and completely missed execution outcomes.
+  - [ ] Calibrate assumptions by venue, pair, universe tier, equity scale and historical period.
+  - [ ] Add exchange-specific precision, tick-size and multi-event order-lifecycle simulation.
 - [ ] Add benchmark comparisons: AUD cash, BTC hold, equal-weight hold and the five-year constant-compounding objective path.
 - [ ] Add target-attainment, terminal-wealth and risk-of-ruin analysis.
 - [ ] Produce repeatable research reports and signed strategy configurations.
