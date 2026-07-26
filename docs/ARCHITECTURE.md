@@ -64,6 +64,7 @@ D1 stores:
 - versioned market definitions;
 - immutable listing, trading-status, delisting and Australian-availability events;
 - immutable market-quality observations for spread, turnover, depth, impact, minimums, valuation and data state;
+- content-addressed universe-ingestion batch headers, source digests, record memberships and verified commit markers;
 - strategy decisions;
 - order intents, exchange orders and fills;
 - balances and equity snapshots;
@@ -73,7 +74,7 @@ D1 stores:
 
 Market batches and candles use deterministic SHA-256 content digests. Database triggers reject identity reuse with different content and prevent ordinary update or delete operations. Gap detection is performed against explicit expected ranges before strategy research is allowed to rely on stored data.
 
-Universe definitions, lifecycle events and quality observations are also append-only and hashed. Historical reconstruction uses source publication and data-availability timestamps so later listings, suspensions, delistings or quality observations cannot leak into an earlier signal. The contract is defined in `docs/MARKET_UNIVERSE.md`.
+Universe definitions, lifecycle events and quality observations are also append-only and hashed. Prepared universe evidence is submitted through one transactional D1 batch and is complete only when a final database-verified commit marker proves that every declared source and record membership exists. Historical reconstruction uses source publication and data-availability timestamps so later listings, suspensions, delistings or quality observations cannot leak into an earlier signal. The contract is defined in `docs/MARKET_UNIVERSE.md`.
 
 ## AI design
 
