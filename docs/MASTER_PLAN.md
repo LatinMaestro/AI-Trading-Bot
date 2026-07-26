@@ -32,7 +32,7 @@
   - [x] Wire scheduled venue metadata, quality and conversion fetches into the persistence boundary.
     - [x] Add content-addressed Kraken AssetPairs, Ticker and Depth clients with strict quality parsers.
     - [x] Add bounded rotation, retry/timeout controls, fresh AUD conversion and pre-strategy atomic persistence.
-    - [ ] Connect committed candle-count and volatility evidence to collected observations.
+    - [x] Connect committed candle-count and volatility evidence to collected observations.
   - [ ] Establish complete lifecycle-source coverage and signed policy calibration by venue, period and equity scale.
   - [ ] Persist signed policies/snapshots and connect eligible membership to strategy and backtest orchestration.
 - [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
