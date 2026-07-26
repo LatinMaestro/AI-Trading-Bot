@@ -90,7 +90,6 @@ export interface ObjectivePathBenchmarkInput {
 }
 
 const SHA256_HEX_PATTERN = /^[0-9a-f]{64}$/;
-const EPSILON = 1e-9;
 
 function assertCanonicalId(name: string, value: string): void {
   if (value.trim() !== value || value.length === 0) {
@@ -107,22 +106,21 @@ function assertPositive(name: string, value: number): void {
   if (value <= 0) throw new Error(`${name} must be positive`);
 }
 
-function validateDigests(digests: readonly string[]): readonly string[] {
+function canonicalDigests(digests: readonly string[]): readonly string[] {
   if (digests.length === 0) throw new Error("sourceDigests cannot be empty");
-  const sorted = [...digests].sort();
+  const sorted = [...new Set(digests)].sort();
   for (const digest of sorted) {
     if (!SHA256_HEX_PATTERN.test(digest)) {
       throw new Error("sourceDigests must contain lowercase SHA-256 values");
     }
   }
-  if (new Set(sorted).size !== sorted.length) {
-    throw new Error("sourceDigests cannot contain duplicates");
-  }
   return sorted;
 }
 
 function validateTimestamps(timestampsMs: readonly number[]): void {
-  if (timestampsMs.length < 2) throw new Error("A research series requires at least two timestamps");
+  if (timestampsMs.length < 2) {
+    throw new Error("A research series requires at least two timestamps");
+  }
   let previous: number | undefined;
   for (const timestamp of timestampsMs) {
     if (!Number.isSafeInteger(timestamp) || timestamp < 0) {
@@ -158,15 +156,13 @@ function buildSeries(
     if (timestampMs === undefined) throw new Error("Timestamp index is invalid");
     return { timestampMs, equity: value };
   });
-  if ((points[0]?.equity ?? 0) <= 0) {
-    throw new Error("Initial equity must be positive");
-  }
+  if ((points[0]?.equity ?? 0) <= 0) throw new Error("Initial equity must be positive");
   return {
     seriesId,
     kind,
     currency,
     points,
-    sourceDigests: validateDigests(sourceDigests),
+    sourceDigests: canonicalDigests(sourceDigests),
   };
 }
 
@@ -391,26 +387,4 @@ export function compareStrategyToBenchmarks(
           strategySummary.maximumDrawdownPct - summary.maximumDrawdownPct,
       };
     });
-}
-
-export function seriesApproximatelyEqual(
-  left: ResearchEquitySeries,
-  right: ResearchEquitySeries,
-): boolean {
-  const validatedLeft = createResearchEquitySeries(left);
-  const validatedRight = createResearchEquitySeries(right);
-  if (
-    validatedLeft.currency !== validatedRight.currency ||
-    validatedLeft.points.length !== validatedRight.points.length
-  ) {
-    return false;
-  }
-  return validatedLeft.points.every((point, index) => {
-    const other = validatedRight.points[index];
-    return (
-      other !== undefined &&
-      point.timestampMs === other.timestampMs &&
-      Math.abs(point.equity - other.equity) <= EPSILON
-    );
-  });
 }
