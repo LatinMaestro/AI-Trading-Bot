@@ -259,15 +259,17 @@ function auditCoverage(
     let currentlyListed = false;
     let currentlyOnline = false;
     let currentlyAvailableInAustralia = false;
+    let wasDelisted = false;
     for (const item of knowable) {
       if (item.announcement.effectiveAtMs > asOfMs) continue;
       switch (item.announcement.eventType) {
         case "listed":
-          if (!currentlyListed) {
+          if (wasDelisted) {
             currentlyAvailableInAustralia = false;
           }
           currentlyListed = true;
           currentlyOnline = false;
+          wasDelisted = false;
           break;
         case "trading-online":
         case "trading-resumed":
@@ -279,6 +281,7 @@ function auditCoverage(
         case "delisted":
           currentlyListed = false;
           currentlyOnline = false;
+          wasDelisted = true;
           break;
         case "au-enabled":
           currentlyAvailableInAustralia = true;
