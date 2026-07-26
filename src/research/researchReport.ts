@@ -68,6 +68,14 @@ const REQUIRED_BENCHMARK_KINDS: readonly ResearchSeriesKind[] = [
   "equal-weight-hold",
   "objective-path",
 ];
+const OBJECTIVE_STATUSES = new Set([
+  "ahead",
+  "behind",
+  "on-path",
+  "met",
+  "expired",
+  "ruined",
+]);
 const SHA256_HEX_PATTERN = /^[0-9a-f]{64}$/;
 
 function assertCanonicalString(name: string, value: string): void {
@@ -76,11 +84,12 @@ function assertCanonicalString(name: string, value: string): void {
   }
 }
 
-function assertCanonicalIso(name: string, value: string): void {
+function assertCanonicalIso(name: string, value: string): number {
   const parsed = Date.parse(value);
   if (!Number.isFinite(parsed) || new Date(parsed).toISOString() !== value) {
     throw new Error(`${name} must be a canonical ISO-8601 timestamp`);
   }
+  return parsed;
 }
 
 function assertDigest(name: string, value: string): void {
@@ -133,6 +142,9 @@ function validateObjectiveProgress(progress: ObjectiveProgress): void {
   if (progress.currency !== "AUD" && progress.currency !== "USD") {
     throw new Error("objectiveProgress currency must be AUD or USD");
   }
+  if (!OBJECTIVE_STATUSES.has(progress.status)) {
+    throw new Error("objectiveProgress status is invalid");
+  }
   const numbers = [
     progress.elapsedMonths,
     progress.remainingMonths,
@@ -171,6 +183,9 @@ function validateScenarioRisk(risk: ScenarioRiskAnalysis): void {
     throw new Error("periodsPerScenario must be a positive integer");
   }
   validateProbability("substantialLossFraction", risk.substantialLossFraction);
+  if (risk.substantialLossFraction <= 0.75) {
+    throw new Error("substantialLossFraction must be greater than 0.75");
+  }
   for (const [name, value] of Object.entries({
     targetEverAttainmentProbability: risk.targetEverAttainmentProbability,
     targetTerminalAttainmentProbability: risk.targetTerminalAttainmentProbability,
@@ -227,7 +242,11 @@ function validateBenchmarkSet(
   const nonObjective = validated.filter(
     (benchmark) => benchmark.kind !== "objective-path",
   );
-  if (nonObjective.some((benchmark) => benchmark.currency !== strategy.currency)) {
+  if (
+    nonObjective.some(
+      (benchmark) => benchmark.currency !== validatedStrategy.currency,
+    )
+  ) {
     throw new Error("Tradable benchmarks must use the strategy currency");
   }
   const objectivePath = kinds.get("objective-path");
@@ -236,8 +255,14 @@ function validateBenchmarkSet(
     if (provenance.fxConversionSha256 !== undefined) {
       throw new Error("fxConversionSha256 is unnecessary for an unconverted objective path");
     }
+    const terminalReference = objectivePath.points.at(-1)?.equity;
+    if (terminalReference === undefined) throw new Error("Objective path cannot be empty");
+    const tolerance = Math.max(1, objectiveProgress.referenceEquity) * 1e-9;
+    if (Math.abs(terminalReference - objectiveProgress.referenceEquity) > tolerance) {
+      throw new Error("Objective path terminal must match objectiveProgress referenceEquity");
+    }
   } else {
-    if (objectivePath.currency !== strategy.currency) {
+    if (objectivePath.currency !== validatedStrategy.currency) {
       throw new Error("Converted objective path must use the strategy currency");
     }
     if (provenance.fxConversionSha256 === undefined) {
@@ -276,7 +301,7 @@ export async function prepareResearchReport(
   input: ResearchReportInput,
 ): Promise<ResearchReport> {
   assertCanonicalString("reportId", input.reportId);
-  assertCanonicalIso("generatedAt", input.generatedAt);
+  const generatedAtMs = assertCanonicalIso("generatedAt", input.generatedAt);
   if (
     input.evaluationSplit !== "walk-forward" &&
     input.evaluationSplit !== "final-holdout" &&
@@ -291,6 +316,9 @@ export async function prepareResearchReport(
     input.periodEndMs <= input.periodStartMs
   ) {
     throw new Error("Report period is invalid");
+  }
+  if (generatedAtMs < input.periodEndMs) {
+    throw new Error("generatedAt cannot precede the report period end");
   }
 
   const strategy = createResearchEquitySeries(input.strategy);
