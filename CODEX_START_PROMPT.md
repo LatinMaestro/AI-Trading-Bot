@@ -14,6 +14,8 @@ At the start of every run:
 
 Standing authority covers research, documentation, code, tests, security hardening, paper trading, shadow trading, hosted Preview deployments and provider-free build work.
 
+Strategy research must follow `docs/FIVE_YEAR_AGGRESSIVE_MANDATE.md`: optimise for the aspirational five-year US$200-to-US$1,000,000 objective, use a market-cap-agnostic approved spot universe, and investigate concentrated, high-volatility and high-turnover strategies where realistic evidence supports them. Do not silently optimise for a multi-decade conservative outcome. Always report the target's extreme required return and the corresponding probability of substantial or complete capital loss.
+
 Standing authority does **not** cover:
 
 - creating or funding an exchange account;
