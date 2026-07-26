@@ -14,9 +14,10 @@ Each cycle:
 2. fetches the public ticker snapshot;
 3. identifies pairs with a fresh AUD valuation path;
 4. selects a bounded pair window that rotates every 15 minutes;
-5. fetches those order books sequentially;
-6. derives spread, quote turnover, two-sided depth, venue minimum and reference-order impact; and
-7. commits the content-addressed ingestion batch through the database-verified atomic persistence boundary.
+5. loads committed hourly/daily candle counts and trailing realised-volatility evidence available by the scheduled signal time;
+6. fetches those order books sequentially;
+7. derives spread, quote turnover, two-sided depth, venue minimum and reference-order impact; and
+8. commits the content-addressed ingestion batch through the database-verified atomic persistence boundary.
 
 The default depth window is six pairs. The runtime reduces it further when the approved candle-pair list is larger so the scheduled cycle retains public-request headroom.
 
@@ -38,7 +39,9 @@ The default depth window is six pairs. The runtime reduces it further when the a
 
 - Current snapshots never infer listing, suspension, resumption, delisting or Australian-availability events.
 - Official lifecycle announcements remain separate evidence.
-- Until stored hourly/daily candle counts and volatility evidence are supplied, observations retain a `gap` history state and cannot satisfy research-tier history gates.
-- Strategy selection still uses the separately approved-pair candle path; dynamic-universe eligibility is not yet authoritative for target selection.
+- Aggregate hourly/daily counts and contiguity are read transactionally; annualised log-return volatility uses at most the latest 366 daily closes.
+- Candle close times and source-batch fetch times after the scheduled signal time are excluded.
+- Missing, gapped, stale or insufficient history remains non-complete and cannot satisfy research-tier history gates.
+- Strategy selection still uses the separately approved-pair candle path; dynamic-universe eligibility is not yet authoritative until complete official lifecycle coverage and signed policy orchestration exist.
 
 No live, private API, withdrawal, transfer, wallet, leverage or derivative capability is added.
