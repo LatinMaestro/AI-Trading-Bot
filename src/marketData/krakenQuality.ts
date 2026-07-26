@@ -240,8 +240,13 @@ export function summariseKrakenMarketQuality(
     throw new Error("Ticker and order-book pairs must match");
   }
   const candidate = positiveNumber(candidateOrderQuote, "candidate order quote");
-  const mid = (ticker.ask + ticker.bid) / 2;
-  const spreadBps = ((ticker.ask - ticker.bid) / mid) * 10_000;
+  const bestAsk = book.asks[0]?.price;
+  const bestBid = book.bids[0]?.price;
+  if (bestAsk === undefined || bestBid === undefined) {
+    throw new Error("Kraken order book is incomplete");
+  }
+  const mid = (bestAsk + bestBid) / 2;
+  const spreadBps = ((bestAsk - bestBid) / mid) * 10_000;
   const askQuote = book.asks.reduce(
     (total, level) => total + level.price * level.baseVolume,
     0,
