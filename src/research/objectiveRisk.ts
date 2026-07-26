@@ -158,7 +158,9 @@ export function analyseScenarioRisk(
     validateScenarioPath(path, objective.initialEquity);
     const terminal = path.at(-1);
     if (terminal === undefined) throw new Error("Scenario path cannot be empty");
-    const minimum = Math.min(...path);
+    let minimum = path[0];
+    if (minimum === undefined) throw new Error("Scenario path cannot be empty");
+    for (const equity of path) minimum = Math.min(minimum, equity);
     terminals.push(terminal);
     drawdowns.push(maximumDrawdown(path));
     if (path.some((equity) => equity >= objective.targetEquity)) targetHits += 1;
@@ -190,7 +192,7 @@ export function analyseScenarioRisk(
 function seededRandom(seed: number): () => number {
   let state = seed >>> 0;
   return () => {
-    state += 0x6d2b79f5;
+    state = (state + 0x6d2b79f5) >>> 0;
     let value = state;
     value = Math.imul(value ^ (value >>> 15), value | 1);
     value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
@@ -203,6 +205,7 @@ export function generateBlockBootstrapPaths(
   config: BlockBootstrapConfig,
 ): readonly (readonly number[])[] {
   assertPositive("initialEquity", config.initialEquity);
+  if (periodReturns.length === 0) throw new Error("periodReturns cannot be empty");
   if (!Number.isInteger(config.scenarioCount) || config.scenarioCount <= 0) {
     throw new Error("scenarioCount must be a positive integer");
   }
@@ -217,7 +220,6 @@ export function generateBlockBootstrapPaths(
     throw new Error("blockLength must be between 1 and the return history length");
   }
   if (!Number.isInteger(config.seed)) throw new Error("seed must be an integer");
-  if (periodReturns.length === 0) throw new Error("periodReturns cannot be empty");
   for (const periodReturn of periodReturns) {
     assertFinite("period return", periodReturn);
     if (periodReturn <= -1) throw new Error("period return must be greater than -1");
