@@ -422,7 +422,6 @@ async function prepareLifecycleEvent(
   assertTime("lifecycle effectiveAtMs", announcement.effectiveAtMs);
   assertTime("lifecycle publishedAtMs", announcement.publishedAtMs);
   if (
-    announcement.effectiveAtMs > announcement.publishedAtMs ||
     announcement.publishedAtMs > source.fetchedAtMs ||
     source.fetchedAtMs > recordedAtMs
   ) {
