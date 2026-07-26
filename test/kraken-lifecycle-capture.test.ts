@@ -41,7 +41,8 @@ test("captures exact UTF-8 payloads as deterministic content-addressed chunks", 
   const body = `start-${"é".repeat(20_000)}-end`;
   const target = KRAKEN_LIFECYCLE_CAPTURE_TARGETS[0];
   if (target === undefined) throw new Error("Missing capture target");
-  const fetchImpl = (async () => response(body, "text/html; charset=utf-8")) as typeof fetch;
+  const fetchImpl = (async () =>
+    response(body, "text/html; charset=utf-8")) as typeof fetch;
   const first = await captureKrakenLifecycleTarget(target, FETCHED_AT, {
     fetchImpl,
     timeoutMs: 1_000,
@@ -62,6 +63,38 @@ test("captures exact UTF-8 payloads as deterministic content-addressed chunks", 
   assert.ok(first.chunks.every((chunk) => chunk.byteLength <= 32_768));
   assert.equal(first.contentType, "text/html");
   assert.equal(first.etag, '"capture-v1"');
+});
+
+test("stops a streaming response before it exceeds the one MiB limit", async () => {
+  const target = KRAKEN_LIFECYCLE_CAPTURE_TARGETS[2];
+  if (target === undefined) throw new Error("Missing status capture target");
+  let pull = 0;
+  const body = new ReadableStream<Uint8Array>({
+    pull(controller) {
+      pull += 1;
+      if (pull === 1) {
+        controller.enqueue(new Uint8Array(800_000));
+        return;
+      }
+      if (pull === 2) {
+        controller.enqueue(new Uint8Array(300_000));
+        return;
+      }
+      controller.close();
+    },
+  });
+  const fetchImpl = (async () =>
+    new Response(body, {
+      headers: { "Content-Type": "application/json" },
+    })) as typeof fetch;
+
+  await assert.rejects(
+    captureKrakenLifecycleTarget(target, FETCHED_AT, {
+      fetchImpl,
+      timeoutMs: 1_000,
+    }),
+    /response body is outside bounds/,
+  );
 });
 
 test("runs the four allowlisted source captures only at the daily UTC slot", async () => {
@@ -140,7 +173,8 @@ test("retries bounded transient HTTP failures and rejects incompatible payloads"
 
   await assert.rejects(
     captureKrakenLifecycleTarget(target, FETCHED_AT, {
-      fetchImpl: (async () => response("<html></html>", "text/html")) as typeof fetch,
+      fetchImpl: (async () =>
+        response("<html></html>", "text/html")) as typeof fetch,
     }),
     /unsupported text\/html/,
   );
