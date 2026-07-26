@@ -27,12 +27,23 @@ CREATE TABLE kraken_lifecycle_source_captures (
     )
   ),
   source_ref TEXT NOT NULL CHECK (
-    length(source_ref) BETWEEN 1 AND 500
-    AND substr(source_ref, 1, 8) = 'https://'
+    (source_kind = 'asset-listings-index'
+      AND source_ref = 'https://blog.kraken.com/category/product/asset-listings')
+    OR (source_kind = 'delistings-index'
+      AND source_ref = 'https://support.kraken.com/sections/delistings')
+    OR (source_kind = 'status-incidents'
+      AND source_ref = 'https://status.kraken.com/api/v2/incidents.json')
+    OR (source_kind = 'status-maintenance'
+      AND source_ref = 'https://status.kraken.com/api/v2/scheduled-maintenances.json')
   ),
   fetched_at_ms INTEGER NOT NULL CHECK (fetched_at_ms >= 0),
   payload_sha256 TEXT NOT NULL,
-  content_type TEXT NOT NULL CHECK (length(content_type) BETWEEN 1 AND 100),
+  content_type TEXT NOT NULL CHECK (
+    (source_kind IN ('asset-listings-index', 'delistings-index')
+      AND content_type = 'text/html')
+    OR (source_kind IN ('status-incidents', 'status-maintenance')
+      AND content_type = 'application/json')
+  ),
   etag TEXT CHECK (etag IS NULL OR length(etag) BETWEEN 1 AND 500),
   last_modified TEXT CHECK (
     last_modified IS NULL OR length(last_modified) BETWEEN 1 AND 500
