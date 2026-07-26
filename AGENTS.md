@@ -14,6 +14,7 @@ Read these files before changing the repository:
 - `docs/REVIEW_GATES.md`
 - `docs/DEFINITION_OF_DONE.md`
 - `docs/DECISION_LOG.md`
+- `docs/CURRENT_STATUS.md`
 
 Read the remaining `docs/` files when their subject is relevant.
 
