@@ -64,6 +64,12 @@ export interface ScheduledKrakenLifecycleCaptureResult {
   readonly requestCount: number;
 }
 
+interface FetchedLifecycleTarget {
+  readonly response: Response;
+  readonly contentType: string;
+  readonly bytes: Uint8Array;
+}
+
 export const KRAKEN_LIFECYCLE_CAPTURE_TARGETS: readonly KrakenLifecycleCaptureTarget[] = [
   {
     sourceKind: "asset-listings-index",
@@ -166,15 +172,60 @@ function retryable(status: number): boolean {
   return status === 408 || status === 429 || status >= 500;
 }
 
+function retryableError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  const statusMatch = /returned HTTP (\d{3})/.exec(error.message);
+  if (statusMatch !== null) return retryable(Number(statusMatch[1]));
+  return error instanceof TypeError || error.name === "AbortError";
+}
+
+async function readBoundedBody(response: Response): Promise<Uint8Array> {
+  if (response.body === null) {
+    throw new Error("Lifecycle response is missing a body");
+  }
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (value.byteLength === 0) continue;
+      if (total + value.byteLength > MAXIMUM_PAYLOAD_BYTES) {
+        try {
+          await reader.cancel("Lifecycle response body exceeds limit");
+        } catch {
+          // The size rejection remains authoritative even if cancellation fails.
+        }
+        throw new Error("Lifecycle response body is outside bounds");
+      }
+      chunks.push(value);
+      total += value.byteLength;
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  if (total === 0) {
+    throw new Error("Lifecycle response body is outside bounds");
+  }
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return bytes;
+}
+
 async function fetchTarget(
   target: KrakenLifecycleCaptureTarget,
   fetchImpl: typeof fetch,
   timeoutMs: number,
-): Promise<Response> {
+): Promise<FetchedLifecycleTarget> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    return await fetchImpl(target.sourceRef, {
+    const response = await fetchImpl(target.sourceRef, {
       method: "GET",
       redirect: "error",
       signal: controller.signal,
@@ -183,6 +234,33 @@ async function fetchTarget(
         "User-Agent": "AI-Trading-Bot-Lifecycle-Capture/1",
       },
     });
+    if (!response.ok) {
+      throw new Error(
+        `Lifecycle source ${target.sourceKind} returned HTTP ${response.status}`,
+      );
+    }
+    if (response.url !== "" && response.url !== target.sourceRef) {
+      throw new Error("Lifecycle source redirected away from its canonical URL");
+    }
+    const contentType = contentTypeOf(response);
+    if (!target.acceptedContentTypes.includes(contentType)) {
+      throw new Error(
+        `Lifecycle source ${target.sourceKind} returned unsupported ${contentType}`,
+      );
+    }
+    const declaredLength = response.headers.get("content-length");
+    if (declaredLength !== null) {
+      const parsed = Number(declaredLength);
+      if (
+        !Number.isSafeInteger(parsed) ||
+        parsed <= 0 ||
+        parsed > MAXIMUM_PAYLOAD_BYTES
+      ) {
+        throw new Error("Lifecycle response Content-Length is outside bounds");
+      }
+    }
+    const bytes = await readBoundedBody(response);
+    return { response, contentType, bytes };
   } finally {
     clearTimeout(timeout);
   }
@@ -205,36 +283,11 @@ export async function captureKrakenLifecycleTarget(
   assertTime("fetchedAtMs", fetchedAtMs);
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   assertPositiveInteger("timeoutMs", timeoutMs);
-  const response = await fetchTarget(target, options.fetchImpl ?? fetch, timeoutMs);
-  if (!response.ok) {
-    throw new Error(
-      `Lifecycle source ${target.sourceKind} returned HTTP ${response.status}`,
-    );
-  }
-  if (response.url !== "" && response.url !== target.sourceRef) {
-    throw new Error("Lifecycle source redirected away from its canonical URL");
-  }
-  const contentType = contentTypeOf(response);
-  if (!target.acceptedContentTypes.includes(contentType)) {
-    throw new Error(
-      `Lifecycle source ${target.sourceKind} returned unsupported ${contentType}`,
-    );
-  }
-  const declaredLength = response.headers.get("content-length");
-  if (declaredLength !== null) {
-    const parsed = Number(declaredLength);
-    if (
-      !Number.isSafeInteger(parsed) ||
-      parsed <= 0 ||
-      parsed > MAXIMUM_PAYLOAD_BYTES
-    ) {
-      throw new Error("Lifecycle response Content-Length is outside bounds");
-    }
-  }
-  const bytes = new Uint8Array(await response.arrayBuffer());
-  if (bytes.byteLength === 0 || bytes.byteLength > MAXIMUM_PAYLOAD_BYTES) {
-    throw new Error("Lifecycle response body is outside bounds");
-  }
+  const { response, contentType, bytes } = await fetchTarget(
+    target,
+    options.fetchImpl ?? fetch,
+    timeoutMs,
+  );
   let text: string;
   try {
     text = decoder.decode(bytes);
@@ -325,7 +378,6 @@ export async function runScheduledKrakenLifecycleCapture(
     if (targetIndex > 0 && requestSpacingMs > 0) {
       await sleep(requestSpacingMs);
     }
-    let lastError: unknown;
     for (let attempt = 1; attempt <= MAXIMUM_ATTEMPTS; attempt += 1) {
       const fetchedAtMs = nowMs();
       assertTime("capture fetchedAtMs", fetchedAtMs);
@@ -337,29 +389,20 @@ export async function runScheduledKrakenLifecycleCapture(
             timeoutMs,
           }),
         );
-        lastError = undefined;
         break;
       } catch (error: unknown) {
-        lastError = error;
-        const statusMatch =
-          error instanceof Error
-            ? /returned HTTP (\d{3})/.exec(error.message)
-            : null;
-        const status = statusMatch === null ? null : Number(statusMatch[1]);
-        if (
-          attempt >= MAXIMUM_ATTEMPTS ||
-          status === null ||
-          !retryable(status)
-        ) {
+        if (attempt >= MAXIMUM_ATTEMPTS || !retryableError(error)) {
           throw error;
         }
         await sleep(retryDelayMs * attempt);
       }
     }
-    if (lastError !== undefined) throw lastError;
   }
   const committedAtMs = nowMs();
   assertTime("capture committedAtMs", committedAtMs);
+  if (captures.length !== KRAKEN_LIFECYCLE_CAPTURE_TARGETS.length) {
+    throw new Error("Lifecycle capture set is incomplete");
+  }
   if (captures.some((capture) => capture.fetchedAtMs > committedAtMs)) {
     throw new Error("Lifecycle capture commit precedes a source fetch");
   }
