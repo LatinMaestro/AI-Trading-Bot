@@ -13,8 +13,9 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - Execution-aware backtest pull request: #6, `agent/phase-1-execution-backtest` into `agent/five-year-aggressive-mandate`
 - Survivorship-safe universe pull request: #8, `agent/phase-1-survivorship-universe` into `agent/phase-1-execution-backtest`
 - Objective-risk pull request: #9, `agent/phase-1-objective-risk-metrics` into `agent/phase-1-survivorship-universe`
-- Pull request #7 was closed as superseded by the more complete pull request #8.
-- All eight active pull requests are draft and intentionally unmerged.
+- Benchmark/report pull request: #11, `agent/phase-1-benchmarks-reports` into `agent/phase-1-objective-risk-metrics`
+- Pull requests #7 and #10 were closed as superseded duplicates.
+- All nine active pull requests are draft and intentionally unmerged.
 - Live deployment: none
 - Credentials: none
 - Funds: none
@@ -33,8 +34,7 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 ## Venue direction
 
 - Kraken remains the primary foundation adapter because granular permissions and key introspection support withdrawal exclusion.
-- CoinJar Exchange is now a priority comparison candidate rather than blanket-excluded: current documentation separates a trade-capable `trades` scope from transfer-capable `allaccess`.
-- CoinJar cannot be implemented for live use until the required balance, order, fill and reconciliation reads are proven available under `trades`, all transfer-capable functions are proven absent and unattended use is permitted.
+- CoinJar Exchange is a priority comparison candidate only after its restricted trade scope proves sufficient for balance, order, fill and reconciliation access without transfer authority.
 - CoinSpot remains a secondary comparison candidate pending the same permission, data and reconciliation evidence.
 - Final venue selection must compare actual fees, spread, depth, price impact, market coverage and API reliability without weakening credential safety.
 
@@ -78,61 +78,52 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 ## Verified aggressive-mandate checks
 
 - The objective arithmetic and year-by-year reference path were independently checked.
-- Agent instructions, product specification, risk policy, master plan, review gates, strategy research, venue research and decision log now use one consistent five-year mandate.
-- The strategy plan now includes established, high-volatility and new-listing research lanes, venue-wide relative strength, breakout, volatility-expansion and separately evaluated mean-reversion candidates.
-- The mandate explicitly accepts possible complete loss of the approved capital while preserving operational safety boundaries.
-- No source code, dependency, migration, credential, deployment, exchange access, wallet integration, funds or executable order capability changed in PR #5.
+- Agent instructions, product specification, risk policy, master plan, review gates, strategy research, venue research and decision log use one five-year mandate.
+- The mandate accepts possible complete loss of the approved allocation while preserving operational safety boundaries.
 
 ## Verified execution-backtest checks
 
-- 8 focused Node 22 tests pass in an isolated harness for the new pure backtest modules.
-- Strict TypeScript source checking passes for `src/backtest/types.ts` and `src/backtest/engine.ts` under the repository's strict compiler options.
-- Signal time must precede execution time and execution steps must be strictly ordered.
-- Gross target weights above 100%, missing marks, duplicate markets or targets, invalid costs and non-finite values fail closed.
-- Taker fees, spread, slippage and square-root price impact are separately attributed.
-- Maker fill rate and adverse selection are explicit; partial and complete non-fills remain visible as missed notional.
-- Participation limits, minimum order values and cash reserves constrain fills without creating negative cash or positions.
-- Rotations sell before buying and cash-constrained multi-asset buys scale proportionally rather than favouring pair sort order.
-- The implementation is a calculation primitive only; synthetic assumptions are not accepted as profitability evidence.
+- 8 focused Node 22 tests pass for costless controls, execution-cost attribution, maker non-fills, participation limits, rotations, proportional buy scaling and fail-closed chronology.
+- Strict TypeScript source checking passes for the backtest modules.
+- The engine cannot create negative cash, negative positions, shorts or exposure beyond approved capital.
+- Synthetic assumptions are not accepted as profitability evidence.
 
 ## Verified dynamic-universe checks
 
 - 14 focused Node 22 tests pass across pure reconstruction and SQLite-backed evidence constraints.
 - Migrations `0001` through `0005` apply sequentially in SQLite.
-- Strict TypeScript source checking passes for universe contracts, deterministic reconstruction and the hardened production facade.
-- Definitions, listing/status/Australian lifecycle events and market-quality observations are immutable and idempotent; changed explicit or natural identities fail closed.
-- Historical membership uses only definitions and observations available at signal time and lifecycle events both effective and published by signal time.
-- Freshness is measured from the market observation time, so delayed ingestion cannot make stale spread or depth evidence current.
-- Suspended, Australian-disabled and delisted assets remain in history but are ineligible; a documented relisting begins a new listing era.
-- Established, high-volatility and new-listing lanes are deterministic policy outputs, and assets between tier windows are not silently promoted.
-- Instrument, Australian availability, valuation, data-quality, minimum-order, committed-history, turnover, depth, spread and impact failures remain visible as reason codes.
-- Fractional historical times and candle counts fail at both the TypeScript facade and D1 boundary.
-- The source-boundary check prevents production modules from bypassing `src/universe/index.ts`.
+- Definitions, lifecycle events and market-quality observations are immutable, idempotent and no-lookahead.
+- Suspended, Australian-disabled and delisted assets remain in history; relisting begins a new listing era.
+- Tier, instrument, valuation, data, minimum-order, turnover, depth, spread and impact failures remain visible as reason codes.
 
 ## Verified objective-risk checks
 
-- 5 focused Node 22 tests pass for objective milestones, required-forward rates, target/loss/drawdown scenario summaries, seeded block resampling and fail-closed inputs.
-- Strict TypeScript source checking passes for `src/research/objectiveMetrics.ts` under the repository's strict compiler options.
-- Objective status distinguishes ahead, behind, on-path, met, expired and zero-equity ruin states.
-- Terminal loss and maximum drawdown are reported separately at 50%, 75% and configurable substantial-loss thresholds.
-- Scenario paths must share the same horizon and cadence, begin at the configured initial equity and contain only finite non-negative values.
-- Seeded moving-block bootstrap output is reproducible and retains consecutive returns inside each block.
-- Scenario frequencies remain non-predictive and cannot support promotion until supplied with validated after-cost walk-forward and holdout inputs.
+- 5 focused Node 22 tests pass for objective milestones, required-forward rates, target/loss/drawdown summaries, seeded block resampling and fail-closed inputs.
+- Strict TypeScript source checking passes for `src/research/objectiveMetrics.ts`.
+- Terminal loss and maximum drawdown are reported separately.
+- Scenario frequencies remain non-predictive and require validated after-cost walk-forward and holdout inputs.
+
+## Verified benchmark/report checks
+
+- 5 focused Node 22 tests pass for cash/BTC benchmark arithmetic, unrebalanced equal-weight hold, currency separation, deterministic report hashing and fail-closed report inputs.
+- Strict TypeScript source checking passes for the benchmark and report modules.
+- Required benchmarks are AUD cash, BTC hold, survivorship-safe equal-weight hold and the five-year objective path.
+- Benchmark cadence must match the strategy exactly; unlike currencies are not directly compared without versioned FX provenance.
+- Research-report v1 binds evaluation split, period, strategy, benchmarks, objective/risk metrics, warnings and code/data/universe/configuration digests into a canonical SHA-256 digest.
+- The digest proves content identity, not approval or profitability.
 
 ## External validation blocker
 
-GitHub Actions runs currently fail before any job step starts and provide no job log. The account's private-repository Actions capacity is known to be unavailable until 1 August 2026. Full `npm install`, Wrangler-generated binding types and `wrangler deploy --dry-run` therefore remain unverified on GitHub exact heads.
+GitHub Actions runs currently fail before any job step starts and provide no job log. The account's private-repository Actions capacity is known to be unavailable until 1 August 2026. Full dependency installation, Wrangler-generated binding types and deployment dry-runs remain unverified on GitHub exact heads.
 
-Do not merge pull requests #1, #2, #3, #4, #5, #6, #8 or #9 until fresh exact-head CI runs complete successfully and the stack is merged in order.
+Do not merge pull requests #1, #2, #3, #4, #5, #6, #8, #9 or #11 until fresh exact-head CI runs complete successfully and the stack is merged in order.
 
 ## Highest-priority unblocked work
 
-Continue focused, non-live work that can be validated without GitHub Actions, preferably as additional stacked draft branches:
-
-1. Add benchmark calculations and repeatable research-report schemas.
-2. Add scheduled universe ingestion, lifecycle-source provenance and Australian-dollar valuation/calibration contracts.
-3. Add tax-record export schema and synthetic fixtures.
-4. Add security and incident runbooks.
-5. Integrate validated walk-forward and holdout inputs into objective-risk analysis.
+1. Add scheduled universe ingestion, lifecycle-source provenance and Australian-dollar valuation/calibration contracts.
+2. Add Australian tax-record export schema and synthetic fixtures.
+3. Add security and incident runbooks.
+4. Integrate validated walk-forward, holdout, benchmark and sensitivity inputs.
+5. Persist reports and bind approved strategy configurations to authorised approval records.
 
 Do not deploy, request credentials, create an exchange account, move funds or enable live execution.
