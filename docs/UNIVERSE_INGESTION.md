@@ -2,7 +2,7 @@
 
 ## Scope
 
-This contract prepares deterministic, content-addressed universe evidence from scheduled public venue inputs. It does not fetch data, infer profitability, place orders or activate capital.
+This contract prepares and persists deterministic, content-addressed universe evidence from scheduled public venue inputs. It does not infer profitability, place orders or activate capital.
 
 ## Source evidence
 
@@ -46,6 +46,22 @@ Converted metrics include 24-hour quote turnover, available quote-volume capacit
 
 Exact source content produces the same IDs, payload digests and batch digest.
 
+## Atomic D1 persistence
+
+`UniverseIngestionRepository.persistBatch` persists the prepared snapshot through one D1 `batch()` call containing five statements:
+
+1. the immutable batch manifest;
+2. all market definitions;
+3. all lifecycle events;
+4. all quality observations; and
+5. manifest-to-evidence membership links.
+
+Definitions, events, observations and links are expanded from canonical JSON arrays inside SQLite, so database statement count remains fixed as the universe grows.
+
+The transaction is all-or-nothing. An identity reused with changed content aborts the entire snapshot. Exact retries are idempotent. The manifest records source digests and expected item counts, and immutable links bind each evidence ID and digest to its batch.
+
+Migration `0006_universe_ingestion_batches.sql` prevents ordinary update or deletion of manifests and membership links. Existing definition, event and observation immutability triggers remain authoritative for their payloads.
+
 ## Calibration evidence
 
 `summariseUniverseCalibration` produces evidence summaries by universe tier:
@@ -62,8 +78,7 @@ The summary does not automatically set policy limits. Final tier policies requir
 
 ## Remaining work
 
-- connect scheduled Kraken public endpoints;
-- persist ingestion batches atomically into existing append-only tables;
+- connect scheduled Kraken public endpoints to the prepared ingestion contract;
 - establish complete official lifecycle-source coverage;
 - calibrate AUD conversion freshness and tier thresholds from historical evidence;
 - persist signed universe policies and generated snapshots.
