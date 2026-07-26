@@ -75,7 +75,8 @@ The summary does not automatically set policy limits. Final tier policies requir
 
 ## Remaining work
 
-- connect scheduled Kraken public endpoints;
+- connect the content-addressed Kraken public client to a bounded scheduled orchestrator;
+- join ticker/depth evidence with committed candle counts and annualised volatility without fabricating missing inputs;
 - establish complete official lifecycle-source coverage;
 - calibrate AUD conversion freshness and tier thresholds from historical evidence;
 - persist signed universe policies and generated snapshots.
