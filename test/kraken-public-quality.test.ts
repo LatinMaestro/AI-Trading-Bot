@@ -78,7 +78,8 @@ test("order-book parsing and market-quality impact are fail closed", () => {
 
   assert.equal(summary.spreadBps, 200);
   assert.equal(summary.availableQuoteVolume, 492);
-  assert.equal(summary.estimatedImpactBps, 100);
+  assert.ok(summary.estimatedImpactBps !== null);
+  assert.ok(Math.abs(summary.estimatedImpactBps - 100) < 1e-9);
   assert.equal(
     summariseKrakenMarketQuality(ticker, book, 1_000).estimatedImpactBps,
     null,
@@ -182,7 +183,7 @@ test("public client rejects incomplete responses and invalid depth limits", asyn
   );
   await assert.rejects(
     client.fetchTickers(["BTC/AUD", "ETH/AUD"]),
-    /did not return every requested pair/,
+    /did not return exactly the requested pairs/,
   );
   await assert.rejects(client.fetchOrderBook("BTC/AUD", 501), /1 to 500/);
 });
