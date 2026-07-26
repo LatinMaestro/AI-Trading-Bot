@@ -20,12 +20,12 @@ All targets are fixed in code and must match the allowlist exactly. Redirects, n
 Each request:
 
 - uses only a public Kraken-owned endpoint;
-- has a ten-second default timeout;
+- has a ten-second default timeout that remains active through the complete body read;
 - accepts only the expected HTML or JSON media type;
 - rejects non-200 responses;
-- rejects declared or actual payloads above 1 MiB;
+- stops streaming and rejects declared or actual payloads above 1 MiB;
 - requires valid UTF-8 that round-trips to the exact fetched bytes; and
-- uses at most two attempts for transient HTTP 408, 429 or 5xx responses.
+- uses at most two attempts for transient network, timeout, HTTP 408, 429 or 5xx failures.
 
 The four responses are collected before persistence. Any missing or malformed response fails the scheduled slot; incomplete capture sets are not committed.
 
@@ -47,16 +47,19 @@ A repeated fetch at a different time is a separate capture even when the payload
 
 ## Atomic immutable persistence
 
-D1 stores a capture header, ordered chunks and a final commit marker in one transactional batch. The database rejects:
+D1 stores each distinct payload and its ordered chunks once, keyed by the exact payload SHA-256. Every scheduled observation receives a separate immutable capture header referencing that content-addressed payload and a final commit marker. This avoids storing unchanged index or status content again on every daily capture while preserving every fetch time and response identity.
 
-- changed reuse of a capture identifier;
+The database rejects:
+
+- changed reuse of a payload or capture identifier;
 - more than one payload for the same URL and fetch time;
-- changed reuse of a chunk index;
+- changed reuse of a payload chunk index;
 - missing, excess or non-contiguous chunk membership;
-- a commit whose chunk count or total byte length does not match the header; and
-- ordinary update or delete operations against headers, chunks or commit markers.
+- a commit before the source fetch;
+- a commit whose chunk count or total byte length does not match the payload header; and
+- ordinary update or delete operations against payloads, chunks, captures or commit markers.
 
-Only captures with a commit marker are complete evidence.
+The payload, chunks, capture header and commit marker are submitted in one transactional D1 batch. Only captures with a commit marker are complete evidence.
 
 ## Declaration boundary
 
