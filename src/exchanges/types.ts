@@ -1,4 +1,5 @@
 import type { Candle, OrderIntent } from "../domain/types.ts";
+import type { SpotPairDefinition } from "../marketData/pairs.ts";
 
 export interface ApiKeyInfo {
   readonly permissions: readonly string[];
@@ -16,6 +17,7 @@ export interface SubmittedOrder {
 }
 
 export interface ExchangeAdapter {
+  getSpotPairs(countryCode?: string): Promise<readonly SpotPairDefinition[]>;
   getDailyCandles(pair: string, sinceSeconds?: number): Promise<readonly Candle[]>;
   getApiKeyInfo(): Promise<ApiKeyInfo>;
   getBalances(): Promise<readonly ExchangeBalance[]>;
