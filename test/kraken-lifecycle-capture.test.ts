@@ -139,7 +139,7 @@ test("runs the four allowlisted source captures only at the daily UTC slot", asy
   );
 });
 
-test("retries bounded transient HTTP failures and rejects incompatible payloads", async () => {
+test("retries transient failures and rejects noncanonical source contracts", async () => {
   const target = KRAKEN_LIFECYCLE_CAPTURE_TARGETS[2];
   if (target === undefined) throw new Error("Missing status capture target");
   let attempts = 0;
@@ -175,6 +175,18 @@ test("retries bounded transient HTTP failures and rejects incompatible payloads"
         response("<html></html>", "text/html")) as typeof fetch,
     }),
     /unsupported text\/html/,
+  );
+  await assert.rejects(
+    captureKrakenLifecycleTarget(
+      { ...target, acceptedContentTypes: ["text/html"] },
+      FETCHED_AT,
+      {
+        fetchImpl: (async () => {
+          throw new Error("Noncanonical target should not be fetched");
+        }) as typeof fetch,
+      },
+    ),
+    /target is not allowlisted/,
   );
 });
 
