@@ -7,7 +7,10 @@ CREATE TABLE kraken_lifecycle_source_payloads (
     payload_byte_length >= 1
     AND payload_byte_length <= 1048576
   ),
-  payload_text TEXT NOT NULL CHECK (length(payload_text) >= 1)
+  payload_text TEXT NOT NULL CHECK (
+    length(payload_text) >= 1
+    AND payload_byte_length = length(CAST(payload_text AS BLOB))
+  )
 );
 
 CREATE TABLE kraken_lifecycle_source_captures (
