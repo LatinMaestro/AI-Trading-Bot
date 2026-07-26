@@ -107,3 +107,11 @@ Persist each prepared universe-ingestion result through one transactional D1 bat
 The database permits the commit marker only when actual source and record membership counts match the content-addressed header. Exact retries are idempotent. Changed identity reuse aborts, and transaction rollback prevents orphaned provenance. Ordinary updates and deletes of batch evidence are prohibited.
 
 Only committed batches are complete research evidence. This persistence boundary does not yet fetch scheduled Kraken metadata, ticker/depth quality or AUD conversion inputs and adds no private API or order capability.
+
+## 2026-07-26 — Content-addressed Kraken public quality evidence
+
+Use Kraken's official `assetVersion=1` AssetPairs, Ticker and Depth contracts for scheduled universe source evidence. Hash the exact successful response text and retain its public URL and fetch time before typed parsing.
+
+Reject legacy or ambiguous pair keys, malformed envelopes, incomplete requested ticker sets, crossed markets, unordered books, unsafe times and non-finite arithmetic. Derive quote turnover from 24-hour base volume and VWAP. Derive spread and two-sided capacity from one coherent L2 book. Report candidate impact as unavailable when displayed depth cannot fill both sides rather than inventing a favourable value.
+
+This slice deliberately stops before scheduled persistence. Complete observations still require committed candle counts, annualised volatility, fresh AUD conversion and lifecycle evidence. No private endpoint, credential or order path is added.
