@@ -15,8 +15,9 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - Objective-risk pull request: #9, `agent/phase-1-objective-risk-metrics` into `agent/phase-1-survivorship-universe`
 - Benchmark/report pull request: #11, `agent/phase-1-benchmarks-reports` into `agent/phase-1-objective-risk-metrics`
 - Universe-ingestion pull request: #12, `agent/phase-1-universe-ingestion` into `agent/phase-1-benchmarks-reports`
+- Tax-export pull request: #13, `agent/phase-1-tax-exports` into `agent/phase-1-universe-ingestion`
 - Pull requests #7 and #10 were closed as superseded duplicates.
-- All ten active pull requests are draft and intentionally unmerged.
+- All eleven active pull requests are draft and intentionally unmerged.
 - Live deployment: none
 - Credentials: none
 - Funds: none
@@ -122,17 +123,26 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - Quote turnover, available depth and venue minimums are converted through fresh AUD valuation paths.
 - Calibration summaries are content-addressed evidence and cannot automatically change signed tier limits.
 
+## Verified tax-export checks
+
+- 6 focused Node 22 tests pass for deterministic exports, crypto-to-crypto pairing, raw record archives, Australian financial-year boundaries, allocation controls and malformed input rejection.
+- Strict TypeScript source checking passes for `src/tax/export.ts`.
+- Factual transaction records remain exportable before lot selection or tax treatment is complete.
+- Final CGT worksheets require explicit, complete acquisition-to-disposal allocations and reject asset mismatches, later acquisitions and over-allocation.
+- CSV formula-like text is neutralised and each archive/bundle receives a canonical SHA-256 digest.
+- Tax treatment, discounts, exemptions, losses and capital-versus-revenue classification remain professional-review decisions.
+
 ## External validation blocker
 
 GitHub Actions runs currently fail before any job step starts and provide no job log. The account's private-repository Actions capacity is known to be unavailable until 1 August 2026. Full dependency installation, Wrangler-generated binding types and deployment dry-runs remain unverified on GitHub exact heads.
 
-Do not merge pull requests #1, #2, #3, #4, #5, #6, #8, #9, #11 or #12 until fresh exact-head CI runs complete successfully and the stack is merged in order.
+Do not merge pull requests #1, #2, #3, #4, #5, #6, #8, #9, #11, #12 or #13 until fresh exact-head CI runs complete successfully and the stack is merged in order.
 
 ## Highest-priority unblocked work
 
-1. Add Australian tax-record export schema and synthetic fixtures.
-2. Add security and incident runbooks.
-3. Wire scheduled universe fetches and atomic persistence.
+1. Add security and incident runbooks.
+2. Wire scheduled universe fetches and atomic persistence.
+3. Persist immutable tax records from fills and reconcile them with exchange exports.
 4. Integrate validated walk-forward, holdout, benchmark and sensitivity inputs.
 5. Persist reports and bind approved strategy configurations to authorised approval records.
 
