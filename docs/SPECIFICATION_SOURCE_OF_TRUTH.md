@@ -2,32 +2,35 @@
 
 ## Product objective
 
-Build a private, autonomous, systematic cryptocurrency trading service for an Australian resident, beginning with an intended capital allocation of **US$200** and an aspirational target of **US$1,000,000**.
+Build a private, autonomous, systematic cryptocurrency trading service for an Australian resident, beginning with an intended capital allocation of **US$200** and an aspirational target of **US$1,000,000 within five years of first authorised live-capital activation**.
 
-The objective requires a 5,000× increase, or approximately 12.3 doublings. No strategy, model or platform can guarantee this. The system must never represent the target as probable, assured or time-bound.
+The objective requires a 5,000× increase, approximately 12.29 doublings, 449.28% compound growth per year or 15.25% compound growth per month for 60 months. No strategy, model or platform can guarantee this. The system must never represent the target as probable or assured.
+
+The authoritative risk and research interpretation is in `docs/FIVE_YEAR_AGGRESSIVE_MANDATE.md`.
 
 ## Product priorities
 
 In order:
 
 1. Prevent credential theft, unauthorised withdrawals and uncontrolled provider access.
-2. Prevent software defects from placing unintended orders.
-3. Preserve an accurate, immutable audit and tax record.
-4. Prevent catastrophic loss through explicit portfolio and execution limits.
-5. Optimise long-run risk-adjusted growth after realistic fees and slippage.
-6. Reduce infrastructure cost where that does not compromise the above priorities.
+2. Prevent software defects from placing unintended, duplicated or unreconciled orders.
+3. Preserve an accurate, immutable audit and Australian-dollar tax record.
+4. Bound any loss to the explicitly approved spot capital; never create debt, negative-balance exposure or access to other funds.
+5. Maximise the evidence-based probability of reaching the five-year objective after realistic fees, spread, slippage and tax effects.
+6. Measure and disclose drawdown, target-attainment probability and risk of substantial or complete loss.
+7. Reduce infrastructure cost where that does not compromise the above priorities.
 
 ## Functional scope
 
 The complete product is intended to provide:
 
-- market-data ingestion;
+- market-data ingestion across a dynamic approved spot universe;
 - deterministic and adaptive strategy research;
-- backtesting and walk-forward evaluation;
+- backtesting, resampling and walk-forward evaluation;
 - paper and shadow trading;
 - scheduled spot order generation;
-- maker-oriented execution and order reconciliation;
-- portfolio, risk and drawdown controls;
+- maker- or taker-aware execution and order reconciliation;
+- portfolio, risk, drawdown and ruin-probability controls;
 - alerts, health checks and a kill switch;
 - Australian-dollar performance and tax records;
 - a private operations dashboard;
@@ -37,12 +40,16 @@ The complete product is intended to provide:
 
 - Primary: Kraken spot API, with a key restricted to balance queries and spot order management and with withdrawal/funding permissions disabled.
 - Secondary research candidate: CoinSpot, only after documented verification that the selected key can trade while withdrawal functions remain disabled.
-- Excluded for unattended execution: CoinJar Exchange under its current API security model because its documentation states each API key has full control of the Exchange account, including transfers.
+- Excluded for unattended execution: any venue or API-key model that grants transfer, withdrawal, address-management or unrestricted account authority.
 - Excluded: decentralised exchange and MetaMask automation, because it would require wallet signing authority and expose on-chain transaction, smart-contract, bridge and key-management risks.
 
-## Initial strategy direction
+## Strategy direction
 
-Begin with an explainable, low-turnover, maker-oriented momentum rotation strategy across a narrow high-liquidity spot universe. Hold AUD when no asset passes the trend and risk filters. Do not add machine learning until the deterministic baseline and evaluation framework are proven.
+Research must be aggressive and market-cap agnostic rather than limited to a narrow blue-chip universe. It may consider any approved venue-listed spot asset available to an Australian account, including micro-caps and newly listed assets, after explicit data, liquidity, spread, order-minimum, price-impact and survivorship checks.
+
+The initial research programme begins with explainable cross-sectional momentum and relative-strength rotation, then adds multi-timeframe breakouts, volatility expansion, high-volatility/new-listing lanes and separately tested mean-reversion candidates. It may test concentrated positions, up to 100% gross spot exposure, hourly decisions and multiple daily rebalances. Holding cash remains permitted when no candidate has positive expected after-cost edge.
+
+Do not add machine learning until the deterministic evaluation framework is proven. No model may bypass deterministic risk, permission, idempotency or execution controls.
 
 ## Capital stages
 
@@ -53,4 +60,4 @@ Begin with an explainable, low-turnover, maker-oriented momentum rotation strate
 5. Canary: a separately approved small live allocation.
 6. Graduated live: increases require evidence and explicit approval.
 
-The intended US$200 is not deposited or activated by repository work.
+The intended US$200 is not deposited or activated by repository work. No automatic top-up is permitted.
