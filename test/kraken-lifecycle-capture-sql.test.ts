@@ -5,6 +5,7 @@ import { DatabaseSync } from "node:sqlite";
 import {
   INSERT_KRAKEN_LIFECYCLE_CAPTURE_COMMIT_SQL,
   INSERT_KRAKEN_LIFECYCLE_CAPTURE_SQL,
+  INSERT_KRAKEN_LIFECYCLE_PAYLOAD_SQL,
   KrakenLifecycleCaptureRepository,
   prepareKrakenLifecycleCapturePersistence,
   type KrakenLifecycleCaptureStatement,
@@ -80,7 +81,7 @@ function count(db: DatabaseSync, table: string): number {
   ).count;
 }
 
-test("persists complete captures atomically and retries exact content idempotently", () => {
+test("persists captures atomically while deduplicating identical payload bytes", () => {
   const db = database();
   const first = capture();
   const second = {
@@ -97,9 +98,10 @@ test("persists complete captures atomically and retries exact content idempotent
   executeAtomically(db, statements);
   executeAtomically(db, statements);
 
-  assert.equal(statements.length, 6);
+  assert.equal(statements.length, 8);
+  assert.equal(count(db, "kraken_lifecycle_source_payloads"), 1);
+  assert.equal(count(db, "kraken_lifecycle_source_payload_chunks"), 1);
   assert.equal(count(db, "kraken_lifecycle_source_captures"), 2);
-  assert.equal(count(db, "kraken_lifecycle_source_capture_chunks"), 2);
   assert.equal(count(db, "kraken_lifecycle_source_capture_commits"), 2);
 });
 
@@ -120,6 +122,14 @@ test("rejects incomplete, changed and naturally conflicting capture identities",
       ),
     /capture payload conflict/,
   );
+  assert.equal(
+    db
+      .prepare(
+        "SELECT payload_sha256 FROM kraken_lifecycle_source_payloads WHERE payload_sha256 = ?",
+      )
+      .get(digest("e")),
+    undefined,
+  );
 
   const naturalConflict = { ...original, captureId: digest("f") };
   assert.throws(
@@ -132,14 +142,18 @@ test("rejects incomplete, changed and naturally conflicting capture identities",
   );
 
   const incompleteId = digest("9");
+  const incompletePayload = digest("8");
+  db.prepare(INSERT_KRAKEN_LIFECYCLE_PAYLOAD_SQL).run(
+    incompletePayload,
+    7,
+    1,
+  );
   db.prepare(INSERT_KRAKEN_LIFECYCLE_CAPTURE_SQL).run(
     incompleteId,
     "status-incidents",
     "https://status.kraken.com/api/v2/incidents.json?incomplete=1",
     NOW + 2,
-    digest("8"),
-    7,
-    1,
+    incompletePayload,
     "application/json",
     null,
     null,
@@ -154,7 +168,24 @@ test("rejects incomplete, changed and naturally conflicting capture identities",
   );
 });
 
-test("prevents mutation of committed capture evidence", () => {
+test("rejects a commit time before the source fetch", () => {
+  const db = database();
+  const prepared = prepareKrakenLifecycleCapturePersistence(
+    [capture()],
+    NOW + 1,
+  );
+  executeAtomically(db, prepared.slice(0, -1));
+  assert.throws(
+    () =>
+      db.prepare(INSERT_KRAKEN_LIFECYCLE_CAPTURE_COMMIT_SQL).run(
+        capture().captureId,
+        NOW - 1,
+      ),
+    /capture is incomplete/,
+  );
+});
+
+test("prevents mutation of committed capture and deduplicated payload evidence", () => {
   const db = database();
   executeAtomically(
     db,
@@ -170,8 +201,12 @@ test("prevents mutation of committed capture evidence", () => {
     /captures are immutable/,
   );
   assert.throws(
+    () => db.prepare("DELETE FROM kraken_lifecycle_source_payloads").run(),
+    /payloads are immutable/,
+  );
+  assert.throws(
     () =>
-      db.prepare("DELETE FROM kraken_lifecycle_source_capture_chunks").run(),
+      db.prepare("DELETE FROM kraken_lifecycle_source_payload_chunks").run(),
     /chunks are immutable/,
   );
   assert.throws(
@@ -181,7 +216,7 @@ test("prevents mutation of committed capture evidence", () => {
   );
 });
 
-test("repository submits one transactional three-statement group per capture", async () => {
+test("repository submits one transactional four-statement group per capture", async () => {
   const prepared: Array<{
     readonly sql: string;
     readonly values: readonly unknown[];
@@ -199,7 +234,7 @@ test("repository submits one transactional three-statement group per capture", a
     },
     async batch(statements: readonly unknown[]) {
       batches += 1;
-      assert.equal(statements.length, 6);
+      assert.equal(statements.length, 8);
       return [];
     },
   };
@@ -219,5 +254,5 @@ test("repository submits one transactional three-statement group per capture", a
     NOW + 1,
   );
   assert.equal(batches, 1);
-  assert.equal(prepared.length, 6);
+  assert.equal(prepared.length, 8);
 });
