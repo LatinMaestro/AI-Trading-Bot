@@ -34,6 +34,8 @@
     - [x] Add bounded rotation, retry/timeout controls, fresh AUD conversion and pre-strategy atomic persistence.
     - [x] Connect committed candle-count and volatility evidence to collected observations.
   - [ ] Establish complete lifecycle-source coverage and signed policy calibration by venue, period and equity scale.
+    - [x] Add a content-addressed official Kraken Help Center/Status source boundary with deterministic event extraction.
+    - [ ] Acquire, backfill and reconcile complete official lifecycle history, including asset-to-pair scope and Australian availability.
   - [ ] Persist signed policies/snapshots and connect eligible membership to strategy and backtest orchestration.
 - [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
   - [x] Add a deterministic pure target-weight rebalancing engine.
