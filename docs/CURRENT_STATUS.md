@@ -17,8 +17,9 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - Universe-ingestion pull request: #12, `agent/phase-1-universe-ingestion` into `agent/phase-1-benchmarks-reports`
 - Tax-export pull request: #13, `agent/phase-1-tax-exports` into `agent/phase-1-universe-ingestion`
 - Security-runbooks pull request: #14, `agent/phase-1-security-runbooks` into `agent/phase-1-tax-exports`
+- Universe-persistence pull request: #15, `agent/phase-1-universe-persistence` into `agent/phase-1-security-runbooks`
 - Pull requests #7 and #10 were closed as superseded duplicates.
-- All twelve active pull requests are draft and intentionally unmerged.
+- All thirteen active pull requests are draft and intentionally unmerged.
 - Live deployment: none
 - Credentials: none
 - Funds: none
@@ -142,15 +143,24 @@ Last verified: 26 July 2026 (Australia/Brisbane)
 - Incident evidence must contain redacted identifiers and content digests, never secrets or unredacted private payloads.
 - No runtime code, credential, dependency, migration, deployment, fund, wallet or live-order capability changed.
 
+## Verified universe-persistence checks
+
+- Migration `0006` adds immutable content-addressed batch headers, source memberships, definition/event/observation memberships and final commit markers.
+- A commit marker is rejected until actual membership counts match every declared batch count.
+- Exact retries are idempotent; changed record identity reuse aborts and transactional rollback prevents orphaned provenance.
+- Five focused tests cover persistence, conflict rollback, incomplete batches, immutable venue-bound membership and one-call D1 batching.
+- Completion-trigger SQL was exercised offline: incomplete membership was rejected and complete membership committed.
+- No private API, credential, deployment, wallet, fund or live-order capability changed.
+
 ## External validation blocker
 
 GitHub Actions runs currently fail before any job step starts and provide no job log. The account's private-repository Actions capacity is known to be unavailable until 1 August 2026. Full dependency installation, Wrangler-generated binding types and deployment dry-runs remain unverified on GitHub exact heads.
 
-Do not merge pull requests #1, #2, #3, #4, #5, #6, #8, #9, #11, #12, #13 or #14 until fresh exact-head CI runs complete successfully and the stack is merged in order.
+Do not merge pull requests #1, #2, #3, #4, #5, #6, #8, #9, #11, #12, #13, #14 or #15 until fresh exact-head CI runs complete successfully and the stack is merged in order.
 
 ## Highest-priority unblocked work
 
-1. Wire scheduled universe fetches and atomic persistence.
+1. Connect scheduled Kraken public metadata, ticker/depth quality and AUD-conversion fetches to atomic universe persistence.
 2. Persist immutable tax records from fills and reconcile them with exchange exports.
 3. Integrate validated walk-forward, holdout, benchmark and sensitivity inputs.
 4. Persist reports and bind approved strategy configurations to authorised approval records.
