@@ -59,3 +59,11 @@ Store market definitions, lifecycle events and market-quality observations as im
 Retain suspended, Australian-disabled and delisted markets in history rather than deleting them from the research dataset. Treat a documented relisting as a new listing era. Conflicting simultaneous states, changed immutable identities and missing chronology fail closed.
 
 Classify eligible assets into established, high-volatility or new-listing lanes using a signed policy. Nominal unit price and current survival do not confer eligibility. Every lane remains subject to instrument, Australian availability, valuation, data-quality, minimum-order, turnover, depth, spread and impact gates.
+
+## 2026-07-26 — Objective and ruin-risk scenario metrics
+
+Use a deterministic constant-compounding reference path for objective progress. Report remaining multiple and required forward rates without treating the path as a forecast.
+
+Separate terminal capital-loss frequency from maximum-drawdown breach frequency. Summarise target attainment, terminal wealth and drawdown percentiles over equal-horizon, equal-cadence scenarios.
+
+Use only seeded, versioned moving-block bootstrap scenarios when resampling is approved. Resampling output is a scenario frequency estimate, not a probability promise, and cannot repair biased universes, look-ahead leakage or unrealistic execution inputs.
