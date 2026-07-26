@@ -43,3 +43,11 @@ The universe is market-cap agnostic and may include approved blue chips, mid-cap
 The user accepts the possible complete loss of the approved allocation. This capital-risk direction does not weaken operational safety: no leverage, debt, negative-balance strategy, automatic top-up, withdrawal authority, transfer authority, wallet signing, permission bypass or access to other funds is permitted.
 
 Promotion requires objective-path reporting, risk-of-ruin and terminal-wealth analysis, realistic execution costs, survivorship-safe universe reconstruction, walk-forward evidence and a signed risk configuration. The target remains aspirational and must never be represented as promised or probable.
+
+## 2026-07-26 — Conservative deterministic execution model
+
+Use a pure target-weight backtest engine with a strict separation between signal time and later execution time. Model maker and taker fees, observed spread, taker slippage, maker adverse selection, explicit maker non-fill, participation limits, minimum orders, cash reserves and capped square-root price impact.
+
+Do not award automatic spread capture to maker orders. Preserve partial and completely missed executions in the result. Sell reductions before purchases, and scale cash-constrained multi-asset buys proportionally so results do not depend on pair sort order.
+
+The engine and synthetic fixtures validate arithmetic and invariants only. No fee, fill-rate, spread, depth, slippage or impact assumption may support a strategy conclusion until it is versioned and calibrated from time-appropriate venue and pair evidence.
