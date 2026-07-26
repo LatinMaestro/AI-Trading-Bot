@@ -15,6 +15,12 @@ export const INSERT_UNIVERSE_INGESTION_SOURCE_SQL = `INSERT INTO universe_ingest
  VALUES (?, ?)
  ON CONFLICT(batch_sha256, source_digest) DO NOTHING`;
 
+export const INSERT_UNIVERSE_INGESTION_COMMIT_SQL =
+  `INSERT INTO universe_ingestion_batch_commits
+    (batch_sha256)
+   VALUES (?)
+   ON CONFLICT(batch_sha256) DO NOTHING`;
+
 export const INSERT_UNIVERSE_DEFINITION_SQL = `INSERT INTO market_universe_definitions
   (definition_id, venue, canonical_pair, exchange_pair, base_asset, quote_asset,
    instrument_kind, available_at_ms, source_ref, payload_sha256)
@@ -153,6 +159,12 @@ export class UniverseIngestionRepository {
         ),
       );
     }
+
+    statements.push(
+      this.db.prepare(INSERT_UNIVERSE_INGESTION_COMMIT_SQL).bind(
+        batch.batchSha256,
+      ),
+    );
 
     await this.db.batch(statements);
     return batch;
