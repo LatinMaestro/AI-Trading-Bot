@@ -110,8 +110,14 @@ export class KrakenPublicMarketClient {
     }
     const raw = await this.fetchEvidence(url, "Ticker");
     const data = parseKrakenTickers(raw.result);
-    if (pairs !== undefined && data.length !== pairs.length) {
-      throw new Error("Kraken Ticker did not return every requested pair");
+    if (pairs !== undefined) {
+      const requested = new Set(pairs.map(normalizeKrakenDisplayPair));
+      if (
+        data.length !== requested.size ||
+        data.some((ticker) => !requested.has(ticker.canonicalPair))
+      ) {
+        throw new Error("Kraken Ticker did not return exactly the requested pairs");
+      }
     }
     return { ...raw, data };
   }
