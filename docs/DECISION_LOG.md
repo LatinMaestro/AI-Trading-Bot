@@ -51,3 +51,9 @@ Use a pure target-weight backtest engine with a strict separation between signal
 Do not award automatic spread capture to maker orders. Preserve partial and completely missed executions in the result. Sell reductions before purchases, and scale cash-constrained multi-asset buys proportionally so results do not depend on pair sort order.
 
 The engine and synthetic fixtures validate arithmetic and invariants only. No fee, fill-rate, spread, depth, slippage or impact assumption may support a strategy conclusion until it is versioned and calibrated from time-appropriate venue and pair evidence.
+
+## 2026-07-26 — Objective and ruin-risk scenario analysis
+
+Use a configurable constant-compounding reference path, required-forward-return calculations, target-hit and terminal-target probabilities, terminal-wealth percentiles, maximum-drawdown percentiles and minimum-equity breach probabilities for 50%, 75% and substantially complete loss.
+
+Use deterministic circular block bootstrap only as a dependence-preserving scenario generator. Store the input return series, block length, scenario count, horizon and seed. Scenario frequencies are sensitivity evidence, not forecasts. Promotion still requires after-cost walk-forward returns, final holdout evidence and regime-aware calibration.
