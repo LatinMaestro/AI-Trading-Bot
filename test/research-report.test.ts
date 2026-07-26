@@ -38,6 +38,11 @@ const OBJECTIVE: ObjectiveDefinition = {
   horizonMonths: 60,
 };
 
+function close(actual: number | undefined, expected: number, tolerance = 1e-9): void {
+  if (actual === undefined) throw new Error("Expected numeric value");
+  assert.ok(Math.abs(actual - expected) <= tolerance, `${actual} != ${expected}`);
+}
+
 function strategySeries(): ResearchEquitySeries {
   return createResearchEquitySeries({
     seriesId: "strategy-v1",
@@ -131,18 +136,18 @@ test("cash and BTC benchmarks compound from explicit inputs", () => {
   const cash = benchmarkSet().find((series) => series.kind === "aud-cash");
   const btc = benchmarkSet().find((series) => series.kind === "btc-hold");
   if (cash === undefined || btc === undefined) throw new Error("Missing benchmark");
-  assert.equal(cash.points[2]?.equity, 206.04);
-  assert.equal(btc.points[2]?.equity, 240);
-  assert.equal(summariseBenchmark(btc).totalReturnPct, 20);
+  close(cash.points[2]?.equity, 206.04);
+  close(btc.points[2]?.equity, 240);
+  close(summariseBenchmark(btc).totalReturnPct, 20);
 });
 
 test("equal-weight hold is unrebalanced and objective path preserves USD", () => {
   const equal = benchmarkSet().find((series) => series.kind === "equal-weight-hold");
   const objective = benchmarkSet().find((series) => series.kind === "objective-path");
   if (equal === undefined || objective === undefined) throw new Error("Missing benchmark");
-  assert.equal(equal.points[2]?.equity, 230);
+  close(equal.points[2]?.equity, 230);
   assert.equal(objective.currency, "USD");
-  assert.equal(objective.points[0]?.equity, 200);
+  close(objective.points[0]?.equity, 200);
   assert.ok((objective.points[2]?.equity ?? 0) > 200);
 });
 
