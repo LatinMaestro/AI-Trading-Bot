@@ -164,6 +164,25 @@ function evidenceEntry(
   };
 }
 
+function deduplicateManifestEntries(
+  entries: readonly KrakenQualityManifestEntry[],
+): readonly KrakenQualityManifestEntry[] {
+  const byIdentity = new Map<string, KrakenQualityManifestEntry>();
+  for (const entry of entries) {
+    const identity = `${entry.sourceId}:${entry.payloadSha256}`;
+    const previous = byIdentity.get(identity);
+    if (previous !== undefined && previous.sourceRef !== entry.sourceRef) {
+      throw new Error(`Conflicting evidence source ${entry.sourceId}`);
+    }
+    byIdentity.set(identity, entry);
+  }
+  return [...byIdentity.values()].sort((left, right) =>
+    `${left.sourceId}:${left.payloadSha256}`.localeCompare(
+      `${right.sourceId}:${right.payloadSha256}`,
+    ),
+  );
+}
+
 async function mapBounded<T, R>(
   values: readonly T[],
   concurrency: number,
@@ -171,17 +190,19 @@ async function mapBounded<T, R>(
 ): Promise<readonly R[]> {
   const results = new Array<R>(values.length);
   let nextIndex = 0;
-  const workerCount = Math.min(concurrency, values.length);
-  const workers = Array.from({ length: workerCount }, async () => {
-    while (true) {
-      const index = nextIndex;
-      nextIndex += 1;
-      if (index >= values.length) return;
-      const value = values[index];
-      if (value === undefined) throw new Error("Bounded work index is invalid");
-      results[index] = await task(value, index);
-    }
-  });
+  const workers = Array.from(
+    { length: Math.min(concurrency, values.length) },
+    async () => {
+      while (true) {
+        const index = nextIndex;
+        nextIndex += 1;
+        if (index >= values.length) return;
+        const value = values[index];
+        if (value === undefined) throw new Error("Bounded work index is invalid");
+        results[index] = await task(value, index);
+      }
+    },
+  );
   await Promise.all(workers);
   return results;
 }
@@ -192,14 +213,8 @@ function validateCandleEvidence(
   input: KrakenScheduledUniverseInput,
 ): void {
   assertCanonical("candle canonicalPair", evidence.canonicalPair);
-  assertNonNegativeInteger(
-    "dailyCommittedCandles",
-    evidence.dailyCommittedCandles,
-  );
-  assertNonNegativeInteger(
-    "hourlyCommittedCandles",
-    evidence.hourlyCommittedCandles,
-  );
+  assertNonNegativeInteger("dailyCommittedCandles", evidence.dailyCommittedCandles);
+  assertNonNegativeInteger("hourlyCommittedCandles", evidence.hourlyCommittedCandles);
   assertNonNegativeInteger(
     "latestDailyCommittedAtMs",
     evidence.latestDailyCommittedAtMs,
@@ -209,10 +224,7 @@ function validateCandleEvidence(
     evidence.latestHourlyCommittedAtMs,
   );
   assertNonNegativeInteger("candle availableAtMs", evidence.availableAtMs);
-  if (
-    !Number.isFinite(evidence.annualisedVolatility) ||
-    evidence.annualisedVolatility < 0
-  ) {
+  if (!Number.isFinite(evidence.annualisedVolatility) || evidence.annualisedVolatility < 0) {
     throw new Error(`${evidence.canonicalPair} annualised volatility is invalid`);
   }
   if (evidence.dataQualityState !== "complete") {
@@ -271,6 +283,13 @@ function validateInput(input: KrakenScheduledUniverseInput): readonly string[] {
   if (new Set(pairs).size !== pairs.length) {
     throw new Error("canonicalPairs contain duplicates");
   }
+  const pairSet = new Set(pairs);
+  for (const item of input.lifecycleAnnouncements ?? []) {
+    const pair = normalizeKrakenDisplayPair(item.announcement.canonicalPair);
+    if (!pairSet.has(pair)) {
+      throw new Error(`Lifecycle evidence ${pair} is outside canonicalPairs`);
+    }
+  }
   return pairs;
 }
 
@@ -304,20 +323,15 @@ export async function runKrakenScheduledUniverseIngestion(
     if (candleByPair.has(pair)) throw new Error(`Duplicate candle evidence ${pair}`);
     candleByPair.set(pair, evidence);
   }
-  if (
-    candleByPair.size !== pairs.length ||
-    pairs.some((pair) => !candleByPair.has(pair))
-  ) {
+  if (candleByPair.size !== pairs.length || pairs.some((pair) => !candleByPair.has(pair))) {
     throw new Error("Candle evidence must exactly match canonicalPairs");
   }
 
   const metadata = await dependencies.client.fetchAssetPairs("AU");
   const definitions = selectDefinitions(metadata.data, pairs);
   const tickers = await dependencies.client.fetchTickers(pairs);
-  const tickerByPair = new Map(
-    tickers.data.map((ticker) => [ticker.canonicalPair, ticker]),
-  );
-  if (tickerByPair.size !== pairs.length) {
+  const tickerByPair = new Map(tickers.data.map((ticker) => [ticker.canonicalPair, ticker]));
+  if (tickerByPair.size !== pairs.length || pairs.some((pair) => !tickerByPair.has(pair))) {
     throw new Error("Ticker evidence must exactly match canonicalPairs");
   }
 
@@ -330,6 +344,8 @@ export async function runKrakenScheduledUniverseIngestion(
   const markets: VenueMarketObservationInput[] = [];
   const depthManifest: KrakenQualityManifestEntry[] = [];
   const candleManifest: KrakenQualityManifestEntry[] = [];
+  const usedConversionDigests = new Set<string>();
+
   for (let index = 0; index < pairs.length; index += 1) {
     const pair = pairs[index];
     const definition = definitions[index];
@@ -345,15 +361,11 @@ export async function runKrakenScheduledUniverseIngestion(
     ) {
       throw new Error("Kraken universe join index is incomplete");
     }
-    if (
-      depth.data.canonicalPair !== pair ||
-      definition.canonicalSymbol !== pair
-    ) {
+    if (depth.data.canonicalPair !== pair || definition.canonicalSymbol !== pair) {
       throw new Error(`${pair} evidence definitions do not match`);
     }
     const observationAtMs = Math.min(tickers.fetchedAtMs, depth.fetchedAtMs);
-    const evidenceSkewMs = Math.abs(tickers.fetchedAtMs - depth.fetchedAtMs);
-    if (evidenceSkewMs > input.maximumEvidenceSkewMs) {
+    if (Math.abs(tickers.fetchedAtMs - depth.fetchedAtMs) > input.maximumEvidenceSkewMs) {
       throw new Error(`${pair} ticker/depth evidence skew is too large`);
     }
     validateCandleEvidence(candle, observationAtMs, input);
@@ -363,18 +375,18 @@ export async function runKrakenScheduledUniverseIngestion(
       observationAtMs,
       input.maximumAudQuoteAgeMs,
     );
-    const candidateOrderQuote = input.candidateOrderAud / valuation.rateToAud;
+    for (const digest of valuation.sourceDigests) usedConversionDigests.add(digest);
     const quality = summariseKrakenMarketQuality(
       ticker,
       depth.data,
-      candidateOrderQuote,
+      input.candidateOrderAud / valuation.rateToAud,
     );
     if (quality.estimatedImpactBps === null) {
       throw new Error(`${pair} displayed depth cannot fill the candidate order`);
     }
     const minimumOrderQuote = Math.max(
       definition.minimumOrderCostQuote,
-      definition.minimumOrderVolume * ticker.last,
+      definition.minimumOrderVolume * ticker.ask,
     );
     markets.push({
       canonicalPair: pair,
@@ -403,14 +415,14 @@ export async function runKrakenScheduledUniverseIngestion(
     candleManifest.push(evidenceEntry(candle.source));
   }
 
-  const clock = dependencies.clock ?? Date.now;
-  const recordedAtMs = clock();
+  const recordedAtMs = (dependencies.clock ?? Date.now)();
   assertNonNegativeInteger("recordedAtMs", recordedAtMs);
   const latestAvailability = Math.max(
     metadata.fetchedAtMs,
     tickers.fetchedAtMs,
     ...depthEvidence.map((entry) => entry.fetchedAtMs),
     ...input.candleEvidence.map((entry) => entry.availableAtMs),
+    ...(input.lifecycleAnnouncements ?? []).map((item) => item.source.fetchedAtMs),
   );
   if (recordedAtMs < latestAvailability) {
     throw new Error("recordedAtMs precedes joined evidence availability");
@@ -421,25 +433,16 @@ export async function runKrakenScheduledUniverseIngestion(
     recordedAtMs,
     candidateOrderAud: input.candidateOrderAud,
     ticker: evidenceEntry(tickers),
-    depth: depthManifest.sort((left, right) =>
-      left.sourceId.localeCompare(right.sourceId),
-    ),
-    candles: candleManifest.sort((left, right) =>
-      left.sourceId.localeCompare(right.sourceId),
-    ),
-    conversionQuoteDigests: [
-      ...new Set(input.conversionQuotes.map((quote) => quote.payloadSha256)),
-    ].sort(),
+    depth: deduplicateManifestEntries(depthManifest),
+    candles: deduplicateManifestEntries(candleManifest),
+    conversionQuoteDigests: [...usedConversionDigests].sort(),
   };
-  for (const digest of manifestContent.conversionQuoteDigests) {
-    assertDigest("conversion quote digest", digest);
-  }
-  const manifestSha256 = await sha256Hex(canonicalJson(manifestContent));
   const qualityManifest: KrakenQualityManifest = {
     ...manifestContent,
-    manifestSha256,
+    manifestSha256: await sha256Hex(canonicalJson(manifestContent)),
   };
 
+  const lifecycle = input.lifecycleAnnouncements;
   const batch = await dependencies.repository.persistBatch({
     venue: "kraken",
     recordedAtMs,
@@ -452,17 +455,15 @@ export async function runKrakenScheduledUniverseIngestion(
       payloadSha256: metadata.payloadSha256,
     },
     qualitySource: {
-      sourceId: `kraken:quality-manifest:${recordedAtMs}:${manifestSha256.slice(0, 16)}`,
+      sourceId: `kraken:quality-manifest:${recordedAtMs}:${qualityManifest.manifestSha256.slice(0, 16)}`,
       sourceKind: "venue-market-quality",
-      sourceRef: `urn:ai-trading-bot:kraken-quality-manifest:${manifestSha256}`,
+      sourceRef: `urn:ai-trading-bot:kraken-quality-manifest:${qualityManifest.manifestSha256}`,
       fetchedAtMs: recordedAtMs,
-      payloadSha256: manifestSha256,
+      payloadSha256: qualityManifest.manifestSha256,
     },
     conversionQuotes: input.conversionQuotes,
     markets,
-    ...(input.lifecycleAnnouncements === undefined
-      ? {}
-      : { lifecycleAnnouncements: input.lifecycleAnnouncements }),
+    ...(lifecycle === undefined ? {} : { lifecycleAnnouncements: lifecycle }),
   });
 
   return { batch, qualityManifest };
