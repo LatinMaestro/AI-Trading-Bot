@@ -1,6 +1,4 @@
-import type {
-  KrakenPublicEvidence,
-} from "../exchanges/krakenPublic.ts";
+import type { KrakenPublicEvidence } from "../exchanges/krakenPublic.ts";
 import {
   normalizeKrakenDisplayPair,
   summariseKrakenMarketQuality,
@@ -211,7 +209,10 @@ function validateCandleEvidence(
     evidence.latestHourlyCommittedAtMs,
   );
   assertNonNegativeInteger("candle availableAtMs", evidence.availableAtMs);
-  if (!Number.isFinite(evidence.annualisedVolatility) || evidence.annualisedVolatility < 0) {
+  if (
+    !Number.isFinite(evidence.annualisedVolatility) ||
+    evidence.annualisedVolatility < 0
+  ) {
     throw new Error(`${evidence.canonicalPair} annualised volatility is invalid`);
   }
   if (evidence.dataQualityState !== "complete") {
@@ -303,14 +304,19 @@ export async function runKrakenScheduledUniverseIngestion(
     if (candleByPair.has(pair)) throw new Error(`Duplicate candle evidence ${pair}`);
     candleByPair.set(pair, evidence);
   }
-  if (candleByPair.size !== pairs.length || pairs.some((pair) => !candleByPair.has(pair))) {
+  if (
+    candleByPair.size !== pairs.length ||
+    pairs.some((pair) => !candleByPair.has(pair))
+  ) {
     throw new Error("Candle evidence must exactly match canonicalPairs");
   }
 
   const metadata = await dependencies.client.fetchAssetPairs("AU");
   const definitions = selectDefinitions(metadata.data, pairs);
   const tickers = await dependencies.client.fetchTickers(pairs);
-  const tickerByPair = new Map(tickers.data.map((ticker) => [ticker.canonicalPair, ticker]));
+  const tickerByPair = new Map(
+    tickers.data.map((ticker) => [ticker.canonicalPair, ticker]),
+  );
   if (tickerByPair.size !== pairs.length) {
     throw new Error("Ticker evidence must exactly match canonicalPairs");
   }
@@ -339,7 +345,10 @@ export async function runKrakenScheduledUniverseIngestion(
     ) {
       throw new Error("Kraken universe join index is incomplete");
     }
-    if (depth.data.canonicalPair !== pair || definition.canonicalSymbol !== pair) {
+    if (
+      depth.data.canonicalPair !== pair ||
+      definition.canonicalSymbol !== pair
+    ) {
       throw new Error(`${pair} evidence definitions do not match`);
     }
     const observationAtMs = Math.min(tickers.fetchedAtMs, depth.fetchedAtMs);
@@ -412,9 +421,15 @@ export async function runKrakenScheduledUniverseIngestion(
     recordedAtMs,
     candidateOrderAud: input.candidateOrderAud,
     ticker: evidenceEntry(tickers),
-    depth: depthManifest.sort((left, right) => left.sourceId.localeCompare(right.sourceId)),
-    candles: candleManifest.sort((left, right) => left.sourceId.localeCompare(right.sourceId)),
-    conversionQuoteDigests: [...new Set(input.conversionQuotes.map((quote) => quote.payloadSha256))].sort(),
+    depth: depthManifest.sort((left, right) =>
+      left.sourceId.localeCompare(right.sourceId),
+    ),
+    candles: candleManifest.sort((left, right) =>
+      left.sourceId.localeCompare(right.sourceId),
+    ),
+    conversionQuoteDigests: [
+      ...new Set(input.conversionQuotes.map((quote) => quote.payloadSha256)),
+    ].sort(),
   };
   for (const digest of manifestContent.conversionQuoteDigests) {
     assertDigest("conversion quote digest", digest);
@@ -445,7 +460,9 @@ export async function runKrakenScheduledUniverseIngestion(
     },
     conversionQuotes: input.conversionQuotes,
     markets,
-    lifecycleAnnouncements: input.lifecycleAnnouncements,
+    ...(input.lifecycleAnnouncements === undefined
+      ? {}
+      : { lifecycleAnnouncements: input.lifecycleAnnouncements }),
   });
 
   return { batch, qualityManifest };
