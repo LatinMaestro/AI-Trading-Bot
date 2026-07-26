@@ -206,6 +206,21 @@ test("invalid look-ahead, gross exposure and missing marks fail closed", () => {
     /later than signal/,
   );
 
+  const firstStep = step(0, [market("BTC/AUD", 100)], []);
+  assert.throws(
+    () =>
+      runBacktest(config(), [
+        firstStep,
+        {
+          signalTimestampMs: firstStep.signalTimestampMs + HOUR_MS / 2,
+          executionTimestampMs: firstStep.executionTimestampMs + HOUR_MS,
+          markets: [market("BTC/AUD", 100)],
+          targets: [],
+        },
+      ]),
+    /cannot precede the prior execution/,
+  );
+
   assert.throws(
     () =>
       runBacktest(config(), [
