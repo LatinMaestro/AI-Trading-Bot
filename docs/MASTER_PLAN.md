@@ -28,7 +28,8 @@
   - [x] Prepare deterministic source-provenance ingestion batches.
   - [x] Require explicit official lifecycle evidence; never infer delisting from snapshot absence.
   - [x] Resolve fresh AUD valuation paths and produce tier calibration evidence summaries.
-  - [ ] Wire scheduled venue metadata, quality and conversion fetches and persist batches atomically.
+  - [x] Persist prepared snapshots atomically with immutable manifests and membership links.
+  - [ ] Wire scheduled venue metadata, quality and conversion fetches.
   - [ ] Establish complete lifecycle-source coverage and signed policy calibration by venue, period and equity scale.
   - [ ] Persist signed policies/snapshots and connect eligible membership to strategy and backtest orchestration.
 - [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
