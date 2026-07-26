@@ -2,7 +2,6 @@ import { bytesToHex } from "../utils/encoding.ts";
 
 const DAY_MS = 86_400_000;
 const MAXIMUM_PAYLOAD_BYTES = 1_048_576;
-const CHUNK_BYTES = 32_768;
 const DEFAULT_TIMEOUT_MS = 10_000;
 const DEFAULT_RETRY_DELAY_MS = 500;
 const MAXIMUM_ATTEMPTS = 2;
@@ -21,13 +20,6 @@ export interface KrakenLifecycleCaptureTarget {
   readonly acceptedContentTypes: readonly string[];
 }
 
-export interface KrakenLifecycleCaptureChunk {
-  readonly index: number;
-  readonly sha256: string;
-  readonly byteLength: number;
-  readonly text: string;
-}
-
 export interface KrakenLifecycleSourceCapture {
   readonly captureId: string;
   readonly sourceKind: KrakenLifecycleCaptureSourceKind;
@@ -35,10 +27,10 @@ export interface KrakenLifecycleSourceCapture {
   readonly fetchedAtMs: number;
   readonly payloadSha256: string;
   readonly payloadByteLength: number;
+  readonly payloadText: string;
   readonly contentType: string;
   readonly etag: string | null;
   readonly lastModified: string | null;
-  readonly chunks: readonly KrakenLifecycleCaptureChunk[];
 }
 
 export interface KrakenLifecycleCaptureSink {
@@ -121,30 +113,6 @@ function canonicalHeader(value: string | null): string | null {
 async function sha256Bytes(bytes: Uint8Array): Promise<string> {
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return bytesToHex(new Uint8Array(digest));
-}
-
-function splitUtf8(text: string): string[] {
-  const chunks: string[] = [];
-  let current = "";
-  let currentBytes = 0;
-  for (const character of text) {
-    const characterBytes = encoder.encode(character).byteLength;
-    if (characterBytes > CHUNK_BYTES) {
-      throw new Error("Lifecycle payload contains an oversized UTF-8 character");
-    }
-    if (currentBytes + characterBytes > CHUNK_BYTES && current.length > 0) {
-      chunks.push(current);
-      current = "";
-      currentBytes = 0;
-    }
-    current += character;
-    currentBytes += characterBytes;
-  }
-  if (current.length > 0) chunks.push(current);
-  if (chunks.length === 0 || chunks.length > 64) {
-    throw new Error("Lifecycle payload has an invalid chunk count");
-  }
-  return chunks;
 }
 
 function contentTypeOf(response: Response): string {
@@ -288,36 +256,19 @@ export async function captureKrakenLifecycleTarget(
     options.fetchImpl ?? fetch,
     timeoutMs,
   );
-  let text: string;
+  let payloadText: string;
   try {
-    text = decoder.decode(bytes);
+    payloadText = decoder.decode(bytes);
   } catch {
     throw new Error("Lifecycle response is not valid UTF-8");
   }
-  const roundTrip = encoder.encode(text);
+  const roundTrip = encoder.encode(payloadText);
   const payloadSha256 = await sha256Bytes(bytes);
   if (
     roundTrip.byteLength !== bytes.byteLength ||
     (await sha256Bytes(roundTrip)) !== payloadSha256
   ) {
     throw new Error("Lifecycle payload cannot be preserved as exact UTF-8 text");
-  }
-  const chunkTexts = splitUtf8(text);
-  const chunks: KrakenLifecycleCaptureChunk[] = [];
-  for (const [index, chunkText] of chunkTexts.entries()) {
-    const chunkBytes = encoder.encode(chunkText);
-    chunks.push({
-      index,
-      sha256: await sha256Bytes(chunkBytes),
-      byteLength: chunkBytes.byteLength,
-      text: chunkText,
-    });
-  }
-  if (
-    chunks.reduce((sum, chunk) => sum + chunk.byteLength, 0) !==
-    bytes.byteLength
-  ) {
-    throw new Error("Lifecycle capture chunks do not reconstruct the payload");
   }
   const etag = canonicalHeader(response.headers.get("etag"));
   const lastModified = canonicalHeader(response.headers.get("last-modified"));
@@ -331,11 +282,6 @@ export async function captureKrakenLifecycleTarget(
     contentType,
     etag,
     lastModified,
-    chunks: chunks.map((chunk) => ({
-      index: chunk.index,
-      sha256: chunk.sha256,
-      byteLength: chunk.byteLength,
-    })),
   });
   return {
     captureId: await sha256Bytes(encoder.encode(captureEnvelope)),
@@ -344,10 +290,10 @@ export async function captureKrakenLifecycleTarget(
     fetchedAtMs,
     payloadSha256,
     payloadByteLength: bytes.byteLength,
+    payloadText,
     contentType,
     etag,
     lastModified,
-    chunks,
   };
 }
 
