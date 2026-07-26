@@ -35,6 +35,10 @@
   - [ ] Add exchange-specific precision, tick-size and multi-event order-lifecycle simulation.
 - [ ] Add benchmark comparisons: AUD cash, BTC hold, equal-weight hold and the five-year constant-compounding objective path.
 - [ ] Add target-attainment, terminal-wealth and risk-of-ruin analysis.
+  - [x] Add objective-path and required-forward-return calculations.
+  - [x] Add target-hit, terminal-wealth, drawdown and 50%/75%/substantial-loss scenario summaries.
+  - [x] Add deterministic circular block-bootstrap scenario generation.
+  - [ ] Calibrate scenario sets from walk-forward after-cost returns and regime-aware evidence.
 - [ ] Produce repeatable research reports and signed strategy configurations.
 
 ## Phase 2 — Aggressive strategy portfolio
