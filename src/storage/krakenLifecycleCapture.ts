@@ -10,16 +10,15 @@ export interface KrakenLifecycleCaptureStatement {
   readonly params: readonly D1BindValue[];
 }
 
-export const INSERT_KRAKEN_LIFECYCLE_CAPTURE_SQL =
-  `INSERT INTO kraken_lifecycle_source_captures
-    (capture_id, source_kind, source_ref, fetched_at_ms, payload_sha256,
-     payload_byte_length, chunk_count, content_type, etag, last_modified)
-   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-   ON CONFLICT(capture_id) DO NOTHING`;
+export const INSERT_KRAKEN_LIFECYCLE_PAYLOAD_SQL =
+  `INSERT INTO kraken_lifecycle_source_payloads
+    (payload_sha256, payload_byte_length, chunk_count)
+   VALUES (?, ?, ?)
+   ON CONFLICT(payload_sha256) DO NOTHING`;
 
-export const INSERT_KRAKEN_LIFECYCLE_CAPTURE_CHUNKS_JSON_SQL =
-  `INSERT INTO kraken_lifecycle_source_capture_chunks
-    (capture_id, chunk_index, chunk_sha256, chunk_byte_length, chunk_text)
+export const INSERT_KRAKEN_LIFECYCLE_PAYLOAD_CHUNKS_JSON_SQL =
+  `INSERT INTO kraken_lifecycle_source_payload_chunks
+    (payload_sha256, chunk_index, chunk_sha256, chunk_byte_length, chunk_text)
    SELECT
      ?,
      json_extract(value, '$.index'),
@@ -28,7 +27,14 @@ export const INSERT_KRAKEN_LIFECYCLE_CAPTURE_CHUNKS_JSON_SQL =
      json_extract(value, '$.text')
    FROM json_each(?)
    WHERE 1
-   ON CONFLICT(capture_id, chunk_index) DO NOTHING`;
+   ON CONFLICT(payload_sha256, chunk_index) DO NOTHING`;
+
+export const INSERT_KRAKEN_LIFECYCLE_CAPTURE_SQL =
+  `INSERT INTO kraken_lifecycle_source_captures
+    (capture_id, source_kind, source_ref, fetched_at_ms, payload_sha256,
+     content_type, etag, last_modified)
+   VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+   ON CONFLICT(capture_id) DO NOTHING`;
 
 export const INSERT_KRAKEN_LIFECYCLE_CAPTURE_COMMIT_SQL =
   `INSERT INTO kraken_lifecycle_source_capture_commits
@@ -52,6 +58,7 @@ export function prepareKrakenLifecycleCapturePersistence(
   }
   const captureIds = new Set<string>();
   const naturalIdentities = new Set<string>();
+  const payloadIdentities = new Map<string, string>();
   const statements: KrakenLifecycleCaptureStatement[] = [];
   for (const capture of captures) {
     if (captureIds.has(capture.captureId)) {
@@ -81,7 +88,33 @@ export function prepareKrakenLifecycleCapturePersistence(
     if (chunkBytes !== capture.payloadByteLength) {
       throw new Error("Lifecycle capture chunk length does not match payload");
     }
+    const payloadIdentity = JSON.stringify({
+      payloadByteLength: capture.payloadByteLength,
+      chunks: capture.chunks,
+    });
+    const previousPayloadIdentity = payloadIdentities.get(capture.payloadSha256);
+    if (
+      previousPayloadIdentity !== undefined &&
+      previousPayloadIdentity !== payloadIdentity
+    ) {
+      throw new Error(
+        `Conflicting lifecycle payload ${capture.payloadSha256}`,
+      );
+    }
+    payloadIdentities.set(capture.payloadSha256, payloadIdentity);
     statements.push(
+      {
+        sql: INSERT_KRAKEN_LIFECYCLE_PAYLOAD_SQL,
+        params: [
+          capture.payloadSha256,
+          capture.payloadByteLength,
+          capture.chunks.length,
+        ],
+      },
+      {
+        sql: INSERT_KRAKEN_LIFECYCLE_PAYLOAD_CHUNKS_JSON_SQL,
+        params: [capture.payloadSha256, JSON.stringify(capture.chunks)],
+      },
       {
         sql: INSERT_KRAKEN_LIFECYCLE_CAPTURE_SQL,
         params: [
@@ -90,16 +123,10 @@ export function prepareKrakenLifecycleCapturePersistence(
           capture.sourceRef,
           capture.fetchedAtMs,
           capture.payloadSha256,
-          capture.payloadByteLength,
-          capture.chunks.length,
           capture.contentType,
           capture.etag,
           capture.lastModified,
         ],
-      },
-      {
-        sql: INSERT_KRAKEN_LIFECYCLE_CAPTURE_CHUNKS_JSON_SQL,
-        params: [capture.captureId, JSON.stringify(capture.chunks)],
       },
       {
         sql: INSERT_KRAKEN_LIFECYCLE_CAPTURE_COMMIT_SQL,
