@@ -139,3 +139,11 @@ Accept lifecycle declarations only when they bind an exact content digest to a K
 Do not extract lifecycle events from free text with a language model or keyword heuristic. Reviewed declarations must state canonical pair, event type, scope, effective time and publication time. Future-effective events are valid when already published, but historical reconstruction applies them only after their effective time.
 
 Audit listing, trading-status and Australian-availability coverage independently for every expected pair. Missing coverage remains explicit and blocks survivorship-safe venue-wide claims. Complete historical backfill and scheduled raw-source persistence remain separate work.
+
+## 2026-07-27 — Immutable raw lifecycle-source capture
+
+Fetch only explicit allowlisted Kraken lifecycle URLs with bounded public requests, no redirects, no credentials and strict text/JSON size and UTF-8 controls. Hash the exact response bytes and retain source class, URL, fetch time, content type, ETag, Last-Modified, byte length and exact payload text.
+
+Persist capture runs, raw source documents and memberships through one fixed four-statement transactional D1 batch. A database-verified commit marker proves membership completeness. Exact retries are idempotent; changed run identity or source URL/fetch-time reuse fails closed and rolls back.
+
+Raw capture does not infer events. Reviewed structured declarations and coverage audits remain authoritative, and a maintained target registry plus scheduled invocation remain separate work.
