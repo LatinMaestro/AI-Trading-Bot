@@ -67,3 +67,11 @@ Use a deterministic constant-compounding reference path for objective progress. 
 Separate terminal capital-loss frequency from maximum-drawdown breach frequency. Summarise target attainment, terminal wealth and drawdown percentiles over equal-horizon, equal-cadence scenarios.
 
 Use only seeded, versioned moving-block bootstrap scenarios when resampling is approved. Resampling output is a scenario frequency estimate, not a probability promise, and cannot repair biased universes, look-ahead leakage or unrealistic execution inputs.
+
+## 2026-07-26 — Mandatory benchmarks and content-addressed reports
+
+Every candidate report must include aligned AUD cash, BTC hold, equal-weight hold and objective-path series. Tradable benchmarks share the strategy currency; the USD objective remains separate unless a versioned FX-conversion digest is supplied.
+
+Research-report v1 binds strategy and benchmark series, objective/ruin metrics, evaluation split, exact period, warnings and code/data/universe/configuration provenance into a canonical SHA-256 digest.
+
+The digest proves content identity only. Live approval still requires a separately authorised signed strategy configuration and approval record after validated walk-forward, final-holdout, sensitivity, capacity and tax evidence.
