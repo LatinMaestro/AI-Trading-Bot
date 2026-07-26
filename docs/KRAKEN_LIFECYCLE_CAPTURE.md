@@ -31,7 +31,7 @@ The four responses are collected before persistence. Any missing or malformed re
 
 ## Content identity
 
-The system hashes the exact successful response bytes with SHA-256. Valid UTF-8 is split on character boundaries into chunks of no more than 32 KiB. Each chunk has its own SHA-256 and byte length.
+The system hashes the exact successful response bytes with SHA-256. Valid UTF-8 must encode back to the same byte length and digest before it is accepted as storable text.
 
 The capture identifier binds:
 
@@ -39,27 +39,26 @@ The capture identifier binds:
 - source kind and exact URL;
 - fetch time;
 - payload digest and byte length;
-- normalised media type;
-- bounded ETag and Last-Modified evidence when present; and
-- ordered chunk digests and lengths.
+- normalised media type; and
+- bounded ETag and Last-Modified evidence when present.
 
 A repeated fetch at a different time is a separate capture even when the payload is unchanged.
 
 ## Atomic immutable persistence
 
-D1 stores each distinct payload and its ordered chunks once, keyed by the exact payload SHA-256. Every scheduled observation receives a separate immutable capture header referencing that content-addressed payload and a final commit marker. This avoids storing unchanged index or status content again on every daily capture while preserving every fetch time and response identity.
+D1 stores each distinct exact payload text once, keyed by its payload SHA-256. Every scheduled observation receives a separate immutable capture header referencing that content-addressed payload and a final commit marker. This avoids storing unchanged index or status content again on every daily capture while preserving every fetch time and response identity.
+
+The 1 MiB accepted-payload ceiling remains below Cloudflare D1's documented 2 MB maximum string and row size. One payload, one capture header and one commit statement are used per source, avoiding oversized JSON expansion and keeping the scheduled transaction bounded.
 
 The database rejects:
 
 - changed reuse of a payload or capture identifier;
 - more than one payload for the same URL and fetch time;
-- changed reuse of a payload chunk index;
-- missing, excess or non-contiguous chunk membership;
 - a commit before the source fetch;
-- a commit whose chunk count or total byte length does not match the payload header; and
-- ordinary update or delete operations against payloads, chunks, captures or commit markers.
+- a commit without an existing payload-backed capture; and
+- ordinary update or delete operations against payloads, captures or commit markers.
 
-The payload, chunks, capture header and commit marker are submitted in one transactional D1 batch. Only captures with a commit marker are complete evidence.
+The four payloads, capture headers and commit markers are submitted in one transactional D1 batch. Only captures with a commit marker are complete evidence.
 
 ## Declaration boundary
 
