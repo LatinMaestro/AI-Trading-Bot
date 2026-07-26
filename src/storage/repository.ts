@@ -1,5 +1,6 @@
 export interface CycleAudit {
   readonly cycleId: string;
+  readonly eventType: "cycle.completed" | "cycle.failed";
   readonly mode: string;
   readonly outcome: string;
   readonly detail: Readonly<Record<string, unknown>>;
@@ -20,7 +21,7 @@ export class TradingRepository {
       outcome: audit.outcome,
       ...audit.detail,
     });
-    const hashInput = `${eventId}|${audit.cycleId}|cycle.completed|${detailJson}|${audit.createdAt}`;
+    const hashInput = `${eventId}|${audit.cycleId}|${audit.eventType}|${detailJson}|${audit.createdAt}`;
     const hash = await crypto.subtle.digest(
       "SHA-256",
       new TextEncoder().encode(hashInput),
@@ -33,9 +34,16 @@ export class TradingRepository {
       .prepare(
         `INSERT INTO audit_events
          (event_id, cycle_id, event_type, actor, detail_json, previous_hash, event_hash, created_at)
-         VALUES (?, ?, 'cycle.completed', 'system', ?, NULL, ?, ?)`,
+         VALUES (?, ?, ?, 'system', ?, NULL, ?, ?)`,
       )
-      .bind(eventId, audit.cycleId, detailJson, eventHash, audit.createdAt)
+      .bind(
+        eventId,
+        audit.cycleId,
+        audit.eventType,
+        detailJson,
+        eventHash,
+        audit.createdAt,
+      )
       .run();
   }
 }
