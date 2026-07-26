@@ -109,6 +109,10 @@ export function parseKrakenTickers(
     if (ask < bid) {
       throw new Error(`Kraken ticker ${pair} has a crossed market`);
     }
+    const quoteTurnover24h = baseVolume24h * vwap24h;
+    if (!Number.isFinite(quoteTurnover24h)) {
+      throw new Error(`Kraken ticker ${pair} quote turnover overflowed`);
+    }
     observations.push({
       canonicalPair: pair,
       ask,
@@ -116,7 +120,7 @@ export function parseKrakenTickers(
       last,
       baseVolume24h,
       vwap24h,
-      quoteTurnover24h: baseVolume24h * vwap24h,
+      quoteTurnover24h,
     });
   }
   return observations.sort((left, right) =>
@@ -154,11 +158,11 @@ function parseBookSide(
       throw new Error(`Kraken order book ${pair} ${side} are not strictly sorted`);
     }
     previousPrice = price;
-    levels.push({
-      price,
-      baseVolume,
-      timestampMs: timestampSeconds * 1_000,
-    });
+    const timestampMs = timestampSeconds * 1_000;
+    if (!Number.isSafeInteger(timestampMs)) {
+      throw new Error(`Kraken order book ${pair} has unsafe ${side} time`);
+    }
+    levels.push({ price, baseVolume, timestampMs });
   }
   return levels;
 }
@@ -246,6 +250,13 @@ export function summariseKrakenMarketQuality(
     (total, level) => total + level.price * level.baseVolume,
     0,
   );
+  if (
+    !Number.isFinite(spreadBps) ||
+    !Number.isFinite(askQuote) ||
+    !Number.isFinite(bidQuote)
+  ) {
+    throw new Error("Kraken market quality calculation overflowed");
+  }
   const buyImpact = buyImpactBps(book.asks, candidate, mid);
   const sellImpact = sellImpactBps(book.bids, candidate, mid);
   return {
