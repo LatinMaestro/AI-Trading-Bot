@@ -12,6 +12,7 @@ Trading-cycle orchestrator
       |
       +--> public market-data adapter
       +--> immutable market-data persistence and gap checks
+      +--> survivorship-safe universe reconstruction
       +--> strategy engine
       +--> risk engine
       +--> execution adapter (disabled unless live gates pass)
@@ -42,13 +43,15 @@ Trading-cycle orchestrator
 3. Discover current approved markets and fetch public committed candles.
 4. Persist accepted public-data batches and candles immutably.
 5. Detect missing, duplicate, stale, conflicting or unrecoverable market data and fail closed.
-6. Generate a strategy decision from a versioned configuration.
-7. Reconcile balances and orders when private access is available.
-8. Evaluate hard risk limits.
-9. Create an order intent with a deterministic idempotency key.
-10. In non-live modes, record the proposed action only.
-11. In live mode, verify API permissions, activation secret and execution limits again immediately before submission.
-12. Submit, reconcile and record every response.
+6. Reconstruct the Australian-available spot universe from definitions, lifecycle events and quality observations knowable at the signal time.
+7. Apply signed tier-specific listing-age, history, spread, turnover, depth, impact, minimum-order and instrument gates.
+8. Generate a strategy decision only from eligible universe members and a versioned configuration.
+9. Reconcile balances and orders when private access is available.
+10. Evaluate hard risk limits.
+11. Create an order intent with a deterministic idempotency key.
+12. In non-live modes, record the proposed action only.
+13. In live mode, verify API permissions, activation secret and execution limits again immediately before submission.
+14. Submit, reconcile and record every response.
 
 ## Data model
 
@@ -58,6 +61,9 @@ D1 stores:
 - cycle leases and scheduled-cycle outcomes;
 - immutable public market-data batch provenance;
 - immutable committed 60-minute and daily OHLCV candles;
+- versioned market definitions;
+- immutable listing, trading-status, delisting and Australian-availability events;
+- immutable market-quality observations for spread, turnover, depth, impact, minimums, valuation and data state;
 - strategy decisions;
 - order intents, exchange orders and fills;
 - balances and equity snapshots;
@@ -66,6 +72,8 @@ D1 stores:
 - Australian-dollar tax ledger entries.
 
 Market batches and candles use deterministic SHA-256 content digests. Database triggers reject identity reuse with different content and prevent ordinary update or delete operations. Gap detection is performed against explicit expected ranges before strategy research is allowed to rely on stored data.
+
+Universe definitions, lifecycle events and quality observations are also append-only and hashed. Historical reconstruction uses source publication and data-availability timestamps so later listings, suspensions, delistings or quality observations cannot leak into an earlier signal. The contract is defined in `docs/MARKET_UNIVERSE.md`.
 
 ## AI design
 
