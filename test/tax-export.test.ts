@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   australianFinancialYear,
   buildTaxExportBundle,
+  buildTaxRecordArchive,
   type TaxLotAllocation,
   type TaxTransactionRecord,
 } from "../src/tax/export.ts";
@@ -141,6 +142,16 @@ test("preserves paired crypto-to-crypto records and neutralises CSV formulas", a
     solAcquisition.recordId,
   );
   assert.equal(bundle.cgtAllocations[0]?.gainLossAud, 100);
+});
+
+test("exports factual records before lot allocation is complete", async () => {
+  const archive = await buildTaxRecordArchive(
+    [acquisition, disposal],
+    "2026-07-01T00:00:00.000Z",
+  );
+  assert.equal(archive.records.length, 2);
+  assert.match(archive.archiveSha256, /^[0-9a-f]{64}$/);
+  assert.ok(archive.transactionsCsv.includes("disp-btc"));
 });
 
 test("uses Australian financial-year boundaries", () => {
