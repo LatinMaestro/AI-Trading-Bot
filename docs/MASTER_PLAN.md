@@ -37,6 +37,8 @@
     - [x] Add an allowlisted official-source manifest, future-effective event handling and deterministic coverage audit.
     - [ ] Backfill complete listing, trading-status, delisting and Australian-availability history.
     - [ ] Add scheduled raw-source capture and immutable persistence.
+      - [x] Capture and atomically persist the official listing/delisting indexes and status feeds daily.
+      - [ ] Discover and capture exact individual listing, delisting and regional-availability documents.
   - [ ] Persist signed policies/snapshots and connect eligible membership to strategy and backtest orchestration.
 - [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
   - [x] Add a deterministic pure target-weight rebalancing engine.
