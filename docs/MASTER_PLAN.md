@@ -25,8 +25,11 @@
   - [x] Reconstruct established, high-volatility and new-listing tiers at historical signal times.
   - [x] Preserve listing, suspension, resumption, delisting, relisting and Australian-availability history.
   - [x] Enforce instrument, freshness, spread, turnover, depth, impact, minimum-order, data-quality and history gates.
-  - [ ] Ingest scheduled venue metadata and reproducible official lifecycle sources.
-  - [ ] Support complete Australian-dollar valuation paths and calibrate signed tier policies by venue, period and equity scale.
+  - [x] Prepare deterministic source-provenance ingestion batches.
+  - [x] Require explicit official lifecycle evidence; never infer delisting from snapshot absence.
+  - [x] Resolve fresh AUD valuation paths and produce tier calibration evidence summaries.
+  - [ ] Wire scheduled venue metadata, quality and conversion fetches and persist batches atomically.
+  - [ ] Establish complete lifecycle-source coverage and signed policy calibration by venue, period and equity scale.
   - [ ] Persist signed policies/snapshots and connect eligible membership to strategy and backtest orchestration.
 - [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
   - [x] Add a deterministic pure target-weight rebalancing engine.
