@@ -39,6 +39,8 @@
     - [ ] Add scheduled raw-source capture and immutable persistence.
       - [x] Capture and atomically persist the official listing/delisting indexes and status feeds daily.
       - [ ] Discover and capture exact individual listing, delisting and regional-availability documents.
+        - [x] Discover canonical listing-index pages, listing articles and support lifecycle documents from preserved index payloads.
+        - [ ] Capture and immutably persist discovered index pages and individual documents.
   - [ ] Persist signed policies/snapshots and connect eligible membership to strategy and backtest orchestration.
 - [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
   - [x] Add a deterministic pure target-weight rebalancing engine.
