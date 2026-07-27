@@ -42,8 +42,8 @@ Last verified: 27 July 2026 (Australia/Brisbane)
 - PR #30 adds registry-bound bounded feed polling and authenticated webhook payload acquisition for approved official, regulator, issuer and publisher sources. It enforces source-contract origin/mode/effective-date checks, conditional polling, bounded transient retry, redirect/media-type/body-size/query rejection, full streamed-body deadlines, exact byte digests and explicit request/receipt/availability latency.
 - PR #30 strict source TypeScript validation and 7/7 focused adapter tests pass in an isolated hosted Node 22 harness.
 - PR #31 adds bounded content-addressed queue envelopes for normalised intelligence evidence, consumer-side deterministic assessment reproduction, per-message acknowledgement/retry and minute-source orchestration that exposes source failures as stale or delayed.
-- PR #31 excludes raw provider bytes and binary content from queue messages, advances cache validators only after successful enqueue or confirmed no-change/no-item processing, and adds six focused queue/collector tests.
-- PR #31 strict TypeScript validation and 6/6 focused tests pass in an isolated hosted Node 22 harness.
+- PR #31 excludes raw provider bytes and binary content, binds every queued item to the exact acquisition payload digest and receipt chronology, and advances cache validators only after successful enqueue or confirmed no-change/no-item processing.
+- PR #31 strict TypeScript validation and 7/7 focused queue/collector tests pass in an isolated hosted Node 22 harness.
 - Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30 and #31 remain blocked before workflow steps.
 - Durable cache persistence, approved source manifests/parsers/signatures, deployed minute Cron and Queue/DLQ bindings, compliant Reddit OAuth collection, entity linking and paper-mode risk integration remain pending.
 - Missing, gapped, stale, delayed or insufficient evidence remains non-authoritative for strategy selection.
