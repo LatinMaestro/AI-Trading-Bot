@@ -8,10 +8,13 @@ const ASSET_LISTINGS_INDEX =
   "https://blog.kraken.com/category/product/asset-listings";
 const DELISTINGS_INDEX = "https://support.kraken.com/sections/delistings";
 const SHA256_PATTERN = /^[0-9a-f]{64}$/;
-const MAXIMUM_LINK_ATTRIBUTES = 5_000;
+const MAXIMUM_ANCHOR_TAGS = 5_000;
+const MAXIMUM_ANCHOR_TAG_LENGTH = 2_000;
 const MAXIMUM_DISCOVERED_TARGETS = 2_000;
 const MAXIMUM_LISTING_INDEX_PAGE = 500;
-const HREF_PATTERN = /\bhref\s*=\s*(?:"([^"]*)"|'([^']*)')/giu;
+const ANCHOR_START_PATTERN = /<a\b/giu;
+const HREF_ATTRIBUTE_PATTERN =
+  /\shref\s*=\s*(?:"([^"]*)"|'([^']*)')/giu;
 
 export type KrakenLifecycleDiscoveredTargetKind =
   | "asset-listing-document"
@@ -150,17 +153,46 @@ function targetFromUrl(
   };
 }
 
+function anchorTagAt(html: string, start: number): string {
+  let quote: '"' | "'" | null = null;
+  const limit = Math.min(html.length, start + MAXIMUM_ANCHOR_TAG_LENGTH);
+  for (let index = start + 2; index < limit; index += 1) {
+    const character = html[index];
+    if (character === undefined) break;
+    if (quote !== null) {
+      if (character === quote) quote = null;
+      continue;
+    }
+    if (character === '"' || character === "'") {
+      quote = character;
+      continue;
+    }
+    if (character === ">") return html.slice(start, index + 1);
+  }
+  throw new Error("Lifecycle index contains an invalid anchor tag");
+}
+
 function discoverFromHtml(
   capture: KrakenLifecycleSourceCapture,
 ): readonly KrakenLifecycleDiscoveredTarget[] {
   const targets: KrakenLifecycleDiscoveredTarget[] = [];
-  let attributeCount = 0;
-  for (const match of capture.payloadText.matchAll(HREF_PATTERN)) {
-    attributeCount += 1;
-    if (attributeCount > MAXIMUM_LINK_ATTRIBUTES) {
-      throw new Error("Lifecycle index contains too many link attributes");
+  let anchorCount = 0;
+  for (const match of capture.payloadText.matchAll(ANCHOR_START_PATTERN)) {
+    anchorCount += 1;
+    if (anchorCount > MAXIMUM_ANCHOR_TAGS) {
+      throw new Error("Lifecycle index contains too many anchor tags");
     }
-    const rawHref = match[1] ?? match[2];
+    const start = match.index;
+    if (start === undefined) {
+      throw new Error("Lifecycle index anchor has no position");
+    }
+    const anchorTag = anchorTagAt(capture.payloadText, start);
+    const hrefs = [...anchorTag.matchAll(HREF_ATTRIBUTE_PATTERN)];
+    if (hrefs.length > 1) {
+      throw new Error("Lifecycle index anchor contains multiple href attributes");
+    }
+    const href = hrefs[0];
+    const rawHref = href?.[1] ?? href?.[2];
     if (rawHref === undefined) continue;
     const candidate = canonicalCandidate(rawHref, capture.sourceRef);
     if (candidate === null) continue;
