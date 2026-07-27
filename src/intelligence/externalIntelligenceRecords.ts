@@ -87,7 +87,17 @@ function validateCorrectionInput(
   } else {
     throw new Error(`Unsupported correction kind ${String(input.correctionKind)}`);
   }
-  return input;
+  return {
+    itemId: input.itemId,
+    sourceId: input.sourceId,
+    externalId: input.externalId,
+    providerEventId: input.providerEventId,
+    correctionKind: input.correctionKind,
+    observedAtMs: input.observedAtMs,
+    reasonCode: input.reasonCode,
+    replacementPayloadSha256: input.replacementPayloadSha256,
+    replacementContentSha256: input.replacementContentSha256,
+  };
 }
 
 export async function createExternalIntelligenceCorrection(
