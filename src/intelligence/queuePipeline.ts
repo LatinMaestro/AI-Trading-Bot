@@ -267,6 +267,15 @@ function canonicaliseInput(
     if (record.item.sourceId !== input.sourceContract.sourceId) {
       throw new Error(`${record.item.itemId} uses the wrong source identity`);
     }
+    if (
+      record.item.acquisitionMode !== input.capture.acquisitionMode ||
+      record.item.payloadSha256 !== input.capture.payloadSha256 ||
+      record.item.receivedAtMs !== input.capture.receivedAtMs ||
+      record.item.availableAtMs < input.capture.availableAtMs ||
+      record.item.availableAtMs > input.recordedAtMs
+    ) {
+      throw new Error(`${record.item.itemId} is not bound to its acquisition capture`);
+    }
     if (itemIds.has(record.item.itemId)) {
       throw new Error(`Duplicate intelligence item ${record.item.itemId}`);
     }
