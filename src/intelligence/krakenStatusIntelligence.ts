@@ -27,6 +27,10 @@ export const KRAKEN_STATUS_INCIDENTS_SOURCE_REF =
 export const KRAKEN_STATUS_ORIGIN = "https://status.kraken.com/";
 export const KRAKEN_STATUS_PUBLISHER_ID = "kraken-status";
 export const KRAKEN_STATUS_PROVIDER_ID = "kraken-statuspage";
+export const KRAKEN_STATUS_PAGE_ID = "lfz25gyhcpjf";
+export const KRAKEN_STATUS_PAGE_NAME = "Kraken";
+export const KRAKEN_STATUS_PAGE_URL = "https://status.kraken.com";
+export const KRAKEN_STATUS_VENUE_SCOPE = "KRAKEN.VENUE";
 
 const MAXIMUM_INCIDENTS = 100;
 const MAXIMUM_UPDATES_PER_INCIDENT = 100;
@@ -205,9 +209,21 @@ function latestUpdate(updates: readonly KrakenStatusUpdate[]): KrakenStatusUpdat
   return latest;
 }
 
-async function parseIncident(value: unknown): Promise<KrakenStatusIncident> {
+async function parseIncident(
+  value: unknown,
+  pageId: string,
+): Promise<KrakenStatusIncident> {
   const incident = assertRecord(value, "Kraken incident");
   const id = canonicalProviderId(incident.id, "Kraken incident id");
+  const incidentPageId = canonicalProviderId(
+    incident.page_id,
+    "Kraken incident page id",
+  );
+  if (incidentPageId !== pageId) {
+    throw new Error(
+      "Kraken incident does not belong to the approved status page",
+    );
+  }
   const name = canonicalProviderText(incident.name, "Kraken incident name");
   const status = parseStatus(incident.status, "Kraken incident status");
   const impact = parseImpact(incident.impact);
@@ -307,7 +323,7 @@ async function itemRecordFor(
     externalId,
     acquisitionMode: "minute-poll",
     topicKey,
-    assetSymbols: ["KRAKEN.VENUE"],
+    assetSymbols: [KRAKEN_STATUS_VENUE_SCOPE],
     eventType: "network-incident",
     stance,
     publishedAtMs: update.displayedAtMs,
@@ -383,11 +399,19 @@ async function parseKrakenStatusPayload(
   }
   const root = assertRecord(parsed, "Kraken Status payload");
   const page = assertRecord(root.page, "Kraken Status page");
-  canonicalProviderId(page.id, "Kraken Status page id");
-  canonicalProviderText(page.name, "Kraken Status page name");
+  const pageId = canonicalProviderId(page.id, "Kraken Status page id");
+  const pageName = canonicalProviderText(page.name, "Kraken Status page name");
+  const pageUrl = canonicalProviderText(page.url, "Kraken Status page URL");
+  if (
+    pageId !== KRAKEN_STATUS_PAGE_ID ||
+    pageName !== KRAKEN_STATUS_PAGE_NAME ||
+    pageUrl !== KRAKEN_STATUS_PAGE_URL
+  ) {
+    throw new Error("Kraken Status payload is not from the approved status page");
+  }
   const incidents = await Promise.all(
     assertArray(root.incidents, "Kraken Status incidents", MAXIMUM_INCIDENTS).map(
-      parseIncident,
+      (entry) => parseIncident(entry, pageId),
     ),
   );
   const incidentIds = incidents.map((incident) => incident.id);
