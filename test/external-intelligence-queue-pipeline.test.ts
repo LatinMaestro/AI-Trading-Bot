@@ -147,6 +147,19 @@ test("queue identity is deterministic and contains no raw provider payload", asy
   assert.equal(JSON.stringify(first).includes("rawContent"), false);
 });
 
+test("items must bind the exact acquisition payload and receipt chronology", async () => {
+  const input = await queueInput();
+  const changed = structuredClone(input) as unknown as {
+    itemRecords: Array<{ item: { payloadSha256: string } }>;
+  };
+  changed.itemRecords[0]!.item.payloadSha256 = digest("8");
+
+  await assert.rejects(
+    () => prepareExternalIntelligenceQueueMessage(changed as never, BASE_TIME + 40),
+    /not bound to its acquisition capture/,
+  );
+});
+
 test("changed queue content is rejected when the deterministic identity is reused", async () => {
   const message = await prepareExternalIntelligenceQueueMessage(
     await queueInput(),
@@ -273,11 +286,21 @@ test("minute collection queues normalised metadata and advances cache state only
         },
         normaliseCapture: async (payloadCapture) => ({
           itemRecords: [
-            item(
-              sourceContract.sourceContractSha256,
-              "kraken-listing-btc",
-              payloadCapture.availableAtMs,
-            ),
+            (() => {
+              const record = item(
+                sourceContract.sourceContractSha256,
+                "kraken-listing-btc",
+                payloadCapture.availableAtMs,
+              );
+              return {
+                ...record,
+                item: {
+                  ...record.item,
+                  receivedAtMs: payloadCapture.receivedAtMs,
+                  payloadSha256: payloadCapture.payloadSha256,
+                },
+              };
+            })(),
           ],
           corrections: [],
           assessmentRequests: [
@@ -343,11 +366,21 @@ test("a queue outage leaves validators unchanged and surfaces the source as stal
         },
         normaliseCapture: async (payloadCapture) => ({
           itemRecords: [
-            item(
-              sourceContract.sourceContractSha256,
-              "kraken-listing-btc",
-              payloadCapture.availableAtMs,
-            ),
+            (() => {
+              const record = item(
+                sourceContract.sourceContractSha256,
+                "kraken-listing-btc",
+                payloadCapture.availableAtMs,
+              );
+              return {
+                ...record,
+                item: {
+                  ...record.item,
+                  receivedAtMs: payloadCapture.receivedAtMs,
+                  payloadSha256: payloadCapture.payloadSha256,
+                },
+              };
+            })(),
           ],
           corrections: [],
           assessmentRequests: [],
