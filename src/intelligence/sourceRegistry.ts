@@ -220,7 +220,27 @@ function validateContractInput(
       throw new Error("Reddit contracts require deletion handling and finite retention");
     }
   }
-  return { ...input, allowedAcquisitionModes };
+  return {
+    sourceId: input.sourceId,
+    contractVersion: input.contractVersion,
+    sourceKind: input.sourceKind,
+    authority: input.authority,
+    publisherId: input.publisherId,
+    providerId: input.providerId,
+    sourceOrigin: input.sourceOrigin,
+    allowedAcquisitionModes,
+    contentPolicy: input.contentPolicy,
+    licenceRef: input.licenceRef,
+    licenceSha256: input.licenceSha256,
+    attributionRequired: input.attributionRequired,
+    maximumRetentionMs: input.maximumRetentionMs,
+    deletionHandling: input.deletionHandling,
+    modelTrainingAllowed: false,
+    approvedAtMs: input.approvedAtMs,
+    effectiveFromMs: input.effectiveFromMs,
+    expiresAtMs: input.expiresAtMs,
+    enabled: input.enabled,
+  };
 }
 
 export async function createExternalIntelligenceSourceContract(
