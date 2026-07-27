@@ -46,8 +46,8 @@
   - [x] Define deterministic provenance, latency, source-authority, retention and reaction contracts.
   - [x] Prevent Reddit-only/social-only evidence from creating a risk-on candidate.
   - [x] Allow authoritative severe negative events to pause new risk without submitting an order.
-  - [ ] Persist immutable intelligence items, corrections and assessments.
-  - [ ] Add a versioned provider/source registry with licence, attribution, retention and model-use rules.
+  - [x] Persist immutable intelligence items, corrections and assessments.
+  - [x] Add a versioned provider/source registry with licence, attribution, retention and model-use rules.
   - [ ] Add official exchange, regulator, issuer and publisher RSS/webhook adapters.
   - [ ] Add compliant Reddit OAuth collection with adaptive rate limits, deletion handling and minimal storage.
   - [ ] Add dedicated one-minute collection and queue-backed at-least-once processing with idempotency.
@@ -128,34 +128,13 @@
 - [ ] Run shadow mode against the actual scoped account.
 - [ ] Complete failure injection for API outages, stale data, duplicate schedules, partial fills and D1 errors.
 - [ ] Complete tax/accounting review.
-- [ ] Approve one signed aggressive strategy configuration and its exact risk envelope.
-- [ ] Request explicit canary activation approval.
-- [ ] Activate only the approved canary amount.
+- [ ] Complete final human activation review.
+- [ ] Activate only with a small fixed capital ceiling and explicit signed approval.
 
-## Phase 7 — Graduated autonomous operation
+## Phase 7 — Controlled live operation
 
-- [ ] Require minimum observation periods and evidence before capital increases.
-- [ ] Preserve the signed strategy's hard drawdown, loss, permission and reconciliation limits.
-- [ ] Add drift detection and automatic return to paper/shadow mode.
-- [x] Define severity-based incident, credential-rotation, kill-switch and recovery runbooks.
-- [ ] Test runbooks, alert delivery, exchange-side revocation and quarterly rotation.
-- [ ] Maintain provider, market-universe, intelligence-source, capacity and fee reviews.
-- [ ] Prevent automatic capital top-ups even when the system is behind the five-year path.
-
-## Phase 8 — Adaptive models
-
-- [ ] Add adaptive strategy selection only after deterministic baselines are stable.
-- [ ] Train without external paid model APIs where practicable.
-- [ ] Version data, features, code, model and decision policy.
-- [ ] Require champion/challenger testing and automatic rollback.
-- [ ] Never permit a model to bypass the risk engine or execution limits.
-- [ ] Never train on Reddit or publisher content without explicit rights and approved provenance.
-- [ ] Optimise adaptive selection for after-cost objective attainment and ruin risk, not headline return alone.
-
-## Phase 9 — Objective tracking
-
-- [ ] Report progress against US$200 and US$1,000,000 over the five-year horizon without forecasts presented as promises.
-- [ ] Show the year-by-year reference path, required remaining multiple and required forward compound rate.
-- [ ] Show drawdown, after-fee return, terminal-wealth distribution, risk of ruin, capacity and tax-adjusted estimates.
-- [ ] Attribute deposits and withdrawals separately so they cannot be mistaken for trading performance.
-- [ ] Preserve user-controlled withdrawal at the exchange interface; the bot never receives withdrawal authority.
+- [ ] Run spot-only with capital ceiling and live kill switch.
+- [ ] Reconcile every cycle and halt on unexplained balance, order or ledger differences.
+- [ ] Review costs, capacity, drawdowns, taxes, strategy drift and target-path status regularly.
+- [ ] Require a new signed approval for any capital increase, strategy replacement or broader venue access.
+- [ ] Keep withdrawals, transfers, leverage, derivatives and wallet signing permanently out of scope unless the source-of-truth documents are formally changed and independently reviewed.
