@@ -105,6 +105,8 @@ test("ignores unrelated, ambiguous and noncanonical links", async () => {
     <a href="/category/product/asset-listings/page/501">too deep</a>
     <a href="/not-a-listing/article">other</a>
     <a href="https://support.kraken.com/articles/cross-index">cross index</a>
+    <a data-href="/product/asset-listings/data-attribute">data attribute</a>
+    <script>const fake = ' href="/product/asset-listings/script-string"';</script>
   `;
   const delistingHtml = `
     <a href="/sections/delistings">section</a>
@@ -200,11 +202,27 @@ test("fails closed on missing, duplicate or malformed index captures", async () 
     ]),
     /payload digest does not match/,
   );
+  const duplicateHref = await capture(
+    "asset-listings-index",
+    "https://blog.kraken.com/category/product/asset-listings",
+    `<a href="/product/asset-listings/one" href="/product/asset-listings/two">bad</a>`,
+    "3",
+  );
+  await assert.rejects(
+    discoverKrakenLifecycleDocumentTargets([duplicateHref, delisting]),
+    /multiple href attributes/,
+  );
 });
 
-test("bounds hostile index link volume", async () => {
+test("bounds hostile index anchor volume and anchor length", async () => {
   const repeated = `<a href="/product/asset-listings/example">x</a>`.repeat(
     5_001,
+  );
+  const delisting = await capture(
+    "delistings-index",
+    "https://support.kraken.com/sections/delistings",
+    `<a href="/articles/example">example</a>`,
+    "2",
   );
   await assert.rejects(
     discoverKrakenLifecycleDocumentTargets([
@@ -214,13 +232,20 @@ test("bounds hostile index link volume", async () => {
         repeated,
         "1",
       ),
-      await capture(
-        "delistings-index",
-        "https://support.kraken.com/sections/delistings",
-        `<a href="/articles/example">example</a>`,
-        "2",
-      ),
+      delisting,
     ]),
-    /too many link attributes/,
+    /too many anchor tags/,
+  );
+  await assert.rejects(
+    discoverKrakenLifecycleDocumentTargets([
+      await capture(
+        "asset-listings-index",
+        "https://blog.kraken.com/category/product/asset-listings",
+        `<a title="${"x".repeat(2_001)}" href="/product/asset-listings/example">x</a>`,
+        "4",
+      ),
+      delisting,
+    ]),
+    /invalid anchor tag/,
   );
 });
