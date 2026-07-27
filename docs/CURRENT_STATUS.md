@@ -38,7 +38,7 @@ Last verified: 27 July 2026 (Australia/Brisbane)
 - PR #28 defines near-real-time official/news/Reddit provenance, latency and deterministic reaction gates. Authoritative severe negative events may pause new risk; corroborated positive events create research candidates only; Reddit-only evidence remains watch-only.
 - PR #28 strict TypeScript validation and 7/7 focused reaction-gate tests pass in an isolated hosted Node 22 harness.
 - PR #29 adds versioned source contracts for provider, publisher, acquisition mode, licence, attribution, retention, deletion and model-use rules; immutable intelligence items; append-only corrections; deterministic assessment reproduction; content-addressed ingestion batches; and database-verified commit markers.
-- PR #29 strict source TypeScript validation plus focused hosted runtime and SQLite validation pass, including exact-retry idempotency, ten-statement atomic persistence, immutable-record enforcement and incomplete-commit rejection.
+- PR #29 strict source TypeScript validation plus focused hosted runtime and SQLite validation pass, including exact-retry idempotency, ten-statement atomic persistence, source-contract revocation, relational batch closure, post-commit membership immutability and incomplete-commit rejection.
 - Exact-head GitHub Actions for #23, #25, #27, #28 and #29 remain blocked before workflow steps.
 - Official/news provider adapters, compliant Reddit OAuth collection, minute collection, queues, entity linking and paper-mode risk integration remain pending.
 - Missing, gapped, stale, delayed or insufficient evidence remains non-authoritative for strategy selection.
