@@ -147,3 +147,11 @@ At the 00:00 UTC scheduled slot, capture the fixed Kraken asset-listing index, d
 Store each distinct exact payload text once, keyed by its SHA-256 and original byte length. Preserve every fetch as a separate immutable capture binding source kind, exact URL, fetch time, media type and bounded cache headers to that payload. The one MiB ceiling remains below D1's documented two MB string/row limit and permits one bounded statement per payload without JSON expansion.
 
 Persist payloads, capture headers and database-verified commit markers in one D1 transactional batch; reject changed identity reuse, commits before fetch time and ordinary mutation. Raw capture does not create lifecycle events and uses no free-text AI extraction. Individual listing, delisting and regional-availability documents still require deterministic discovery, exact capture and reviewed pair-level declarations. This public evidence capability adds no credential, private API, account, wallet, fund or order authority.
+
+## 2026-07-27 — Deterministic Kraken lifecycle document discovery
+
+Discover candidate lifecycle documents only from the exact preserved Kraken listing and delisting index payloads after verifying their SHA-256 identities again. Parse bounded quoted links and accept only source-specific canonical Kraken Blog listing articles, listing-index pagination pages and Kraken Support article targets.
+
+Bind every target to its exact index capture and payload digest, deduplicate and sort deterministically, and content-address the complete discovery result. Reject non-HTTPS, untrusted, queried, fragmented, encoded, cross-index or excessively large link sets.
+
+Do not infer lifecycle meaning from support titles, link text or URL words. Support targets remain generic until reviewed, captured and explicitly classified. This discovery step creates no lifecycle declarations and adds no private endpoint, credential, account, wallet, fund or order capability.
