@@ -25,7 +25,7 @@ Last verified: 27 July 2026 (Australia/Brisbane)
 - Mandatory benchmarks, content-addressed reports, AUD-valued universe ingestion and atomic batch persistence.
 - Australian tax exports and security/incident runbooks.
 - Kraken public quality: content-addressed AssetPairs/Ticker/Depth evidence and strict ticker/L2 quality calculations.
-- Scheduled universe cycle: bounded 15-minute depth rotation, fresh AUD paths, retry/timeout controls and atomic persistence before strategy evaluation.
+- Scheduled universe cycle: bounded 15-minute depth rotation, fresh AUD paths, retry/timeout/size controls and atomic persistence before strategy evaluation.
 - Five focused orchestration tests and strict TypeScript checking pass in an isolated Node 22 harness.
 - The cycle audit records committed batch digest, selected/skipped pair counts and actual HTTP attempts.
 - Lifecycle events are never inferred from snapshots.
