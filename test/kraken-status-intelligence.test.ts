@@ -4,6 +4,8 @@ import {
   createKrakenStatusIncidentMinuteSource,
   KRAKEN_STATUS_INCIDENTS_SOURCE_ID,
   KRAKEN_STATUS_INCIDENTS_SOURCE_REF,
+  KRAKEN_STATUS_PAGE_ID,
+  KRAKEN_STATUS_VENUE_SCOPE,
   normaliseKrakenStatusIncidentCapture,
 } from "../src/intelligence/krakenStatusIntelligence.ts";
 import { createExternalIntelligenceSourceContract } from "../src/intelligence/sourceRegistry.ts";
@@ -51,7 +53,11 @@ async function contract() {
 
 function payload(impact = "critical", status = "investigating") {
   return JSON.stringify({
-    page: { id: "page1", name: "Kraken", url: "https://status.kraken.com" },
+    page: {
+      id: KRAKEN_STATUS_PAGE_ID,
+      name: "Kraken",
+      url: "https://status.kraken.com",
+    },
     incidents: [
       {
         id: "incident1",
@@ -60,6 +66,7 @@ function payload(impact = "critical", status = "investigating") {
         impact,
         created_at: "2026-07-27T03:00:00.000Z",
         updated_at: "2026-07-27T03:02:00.000Z",
+        page_id: KRAKEN_STATUS_PAGE_ID,
         incident_updates: [
           {
             id: "update1",
@@ -81,10 +88,6 @@ async function capture(
 ): Promise<ExternalIntelligencePayloadCapture> {
   const sourceContract = await contract();
   const bytes = new TextEncoder().encode(text);
-  const payloadSha256 = Array.from(
-    new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)),
-    (byte) => byte.toString(16).padStart(2, "0"),
-  ).join("");
   return {
     captureId: "b".repeat(64),
     sourceId: sourceContract.sourceId,
@@ -99,7 +102,10 @@ async function capture(
     availableAtMs: Date.parse("2026-07-27T03:03:02.000Z"),
     responseLatencyMs: 1_000,
     availabilityLatencyMs: 1_000,
-    payloadSha256,
+    payloadSha256: Array.from(
+      new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)),
+      (byte) => byte.toString(16).padStart(2, "0"),
+    ).join(""),
     payloadByteLength: bytes.byteLength,
     payloadBytes: bytes,
     contentType: "application/json",
@@ -123,9 +129,10 @@ test("binds the approved Kraken unresolved-incidents manifest", async () => {
   });
 });
 
-test("normalises structured critical incidents without retaining raw body content", async () => {
+test("normalises structured critical incidents into platform-wide pause candidates without raw body retention", async () => {
+  const sourceContract = await contract();
   const result = await normaliseKrakenStatusIncidentCapture(
-    await contract(),
+    sourceContract,
     await capture(),
     policy,
   );
@@ -136,7 +143,7 @@ test("normalises structured critical incidents without retaining raw body conten
   const item = record.item;
   assert.equal(item.eventType, "network-incident");
   assert.equal(item.stance, "negative");
-  assert.deepEqual(item.assetSymbols, ["KRAKEN.VENUE"]);
+  assert.deepEqual(item.assetSymbols, [KRAKEN_STATUS_VENUE_SCOPE]);
   assert.equal(item.contentPolicy, "digest-only");
   assert.equal(result.assessmentRequests[0]?.stance, "negative");
   assert.match(item.itemId, /^[0-9a-f]{64}$/u);
@@ -157,9 +164,13 @@ test("keeps minor structured incidents neutral rather than pausing new risk", as
   assert.equal(result?.assessmentRequests[0]?.stance, "neutral");
 });
 
-test("returns no queue work when unresolved incidents are empty", async () => {
+test("returns no queue work when the unresolved incident set is empty", async () => {
   const empty = JSON.stringify({
-    page: { id: "page1", name: "Kraken" },
+    page: {
+      id: KRAKEN_STATUS_PAGE_ID,
+      name: "Kraken",
+      url: "https://status.kraken.com",
+    },
     incidents: [],
   });
   assert.equal(
@@ -203,7 +214,7 @@ test("is deterministic across provider incident ordering", async () => {
   );
 });
 
-test("fails closed on provider, state, manifest and digest conflicts", async () => {
+test("fails closed on unknown provider severity, resolved-state leakage and manifest mismatch", async () => {
   await assert.rejects(
     normaliseKrakenStatusIncidentCapture(
       await contract(),
@@ -219,6 +230,19 @@ test("fails closed on provider, state, manifest and digest conflicts", async () 
       policy,
     ),
     /not an unresolved Kraken incident status/,
+  );
+  const wrongPage = JSON.parse(payload()) as {
+    page: Record<string, unknown>;
+    incidents: unknown[];
+  };
+  wrongPage.page.id = "otherpage";
+  await assert.rejects(
+    normaliseKrakenStatusIncidentCapture(
+      await contract(),
+      await capture(JSON.stringify(wrongPage)),
+      policy,
+    ),
+    /not from the approved status page/,
   );
   const badCapture = {
     ...(await capture()),
