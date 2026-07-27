@@ -18,11 +18,13 @@ interface CacheRow {
 
 class FakeStatement {
   private params: readonly unknown[] = [];
+  private readonly sql: string;
+  private readonly rows: Map<string, CacheRow>;
 
-  constructor(
-    private readonly sql: string,
-    private readonly rows: Map<string, CacheRow>,
-  ) {}
+  constructor(sql: string, rows: Map<string, CacheRow>) {
+    this.sql = sql;
+    this.rows = rows;
+  }
 
   bind(...params: readonly unknown[]): FakeStatement {
     this.params = params;
@@ -148,11 +150,19 @@ test("D1 cache state loads, advances and rejects stale or conflicting saves", as
 
 test("cache validation rejects malformed source and validator state", async () => {
   assert.throws(
-    () => validateExternalIntelligenceCacheValidators({ etag: " bad ", lastModified: null }),
+    () =>
+      validateExternalIntelligenceCacheValidators({
+        etag: " bad ",
+        lastModified: null,
+      }),
     /canonical text/,
   );
   assert.throws(
-    () => validateExternalIntelligenceCacheValidators({ etag: null, lastModified: "" }),
+    () =>
+      validateExternalIntelligenceCacheValidators({
+        etag: null,
+        lastModified: "",
+      }),
     /canonical text/,
   );
 
