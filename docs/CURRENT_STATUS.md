@@ -5,9 +5,9 @@ Last verified: 27 July 2026 (Australia/Brisbane)
 ## Repository stack
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #19 scheduled universe cycle → #21 stored history evidence → #23 official lifecycle contracts → #25 lifecycle raw capture → #27 lifecycle document discovery → #28 external intelligence contracts → #29 external intelligence persistence → #30 external intelligence acquisition adapters.
+- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #19 scheduled universe cycle → #21 stored history evidence → #23 official lifecycle contracts → #25 lifecycle raw capture → #27 lifecycle document discovery → #28 external intelligence contracts → #29 external intelligence persistence → #30 external intelligence acquisition adapters → #31 minute intelligence queue pipeline.
 - #7, #10, #16, #18, #20, #22, #24 and #26 were closed as superseded, reset or duplicate work.
-- All 22 active pull requests remain draft and unmerged.
+- All 23 active pull requests remain draft and unmerged.
 - `main` remains a one-line placeholder.
 - Deployment, credentials, funds and wallet connection: none.
 
@@ -41,8 +41,11 @@ Last verified: 27 July 2026 (Australia/Brisbane)
 - PR #29 strict source TypeScript validation plus focused hosted runtime and SQLite validation pass, including exact-retry idempotency, ten-statement atomic persistence, source-contract revocation, relational batch closure, post-commit membership immutability and incomplete-commit rejection.
 - PR #30 adds registry-bound bounded feed polling and authenticated webhook payload acquisition for approved official, regulator, issuer and publisher sources. It enforces source-contract origin/mode/effective-date checks, conditional polling, bounded transient retry, redirect/media-type/body-size/query rejection, full streamed-body deadlines, exact byte digests and explicit request/receipt/availability latency.
 - PR #30 strict source TypeScript validation and 7/7 focused adapter tests pass in an isolated hosted Node 22 harness.
-- Exact-head GitHub Actions for #23, #25, #27, #28, #29 and #30 remain blocked before workflow steps.
-- Approved source manifests, source-specific parsers and signatures, compliant Reddit OAuth collection, minute collection, queues, entity linking and paper-mode risk integration remain pending.
+- PR #31 adds bounded content-addressed queue envelopes for normalised intelligence evidence, consumer-side deterministic assessment reproduction, per-message acknowledgement/retry and minute-source orchestration that exposes source failures as stale or delayed.
+- PR #31 excludes raw provider bytes and binary content from queue messages, advances cache validators only after successful enqueue or confirmed no-change/no-item processing, and adds six focused queue/collector tests.
+- PR #31 strict TypeScript validation and 6/6 focused tests pass in an isolated hosted Node 22 harness.
+- Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30 and #31 remain blocked before workflow steps.
+- Durable cache persistence, approved source manifests/parsers/signatures, deployed minute Cron and Queue/DLQ bindings, compliant Reddit OAuth collection, entity linking and paper-mode risk integration remain pending.
 - Missing, gapped, stale, delayed or insufficient evidence remains non-authoritative for strategy selection.
 - No private API, credential, fund, wallet or live-order capability changed.
 
@@ -50,14 +53,14 @@ Last verified: 27 July 2026 (Australia/Brisbane)
 
 GitHub Actions private-repository capacity remains unavailable until 1 August 2026. Exact-head jobs fail before steps or logs.
 
-Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29 or #30 until fresh exact-head checks pass and the stack merges in order.
+Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30 or #31 until fresh exact-head checks pass and the stack merges in order.
 
 ## Next unblocked work
 
 1. Capture and immutably persist discovered listing-index pages and individual lifecycle documents.
 2. Add approved external-intelligence source manifests, source-specific RSS/Atom/JSON/provider-event parsers, signature implementations and deployed endpoint wiring.
 3. Add compliant Reddit OAuth collection with adaptive rate limits, deletion handling and minimal storage.
-4. Add dedicated one-minute collection and queue-backed at-least-once processing with idempotency.
+4. Bind durable external-intelligence cache state, minute Cron, Queue/DLQ and the deployed queue consumer.
 5. Complete reviewed Kraken lifecycle historical backfill and bind declarations to committed payloads.
 6. Persist signed universe policies/snapshots and connect eligible membership to strategy/backtest orchestration.
 7. Persist immutable tax records from fills and reconcile exchange exports.
