@@ -158,8 +158,9 @@ function count(db: DatabaseSync, table: string): number {
 
 test("source contracts are deterministic and enforce Reddit rights boundaries", async () => {
   const contract = await sourceContract();
+  const { sourceContractSha256: _ignored, ...contractInput } = contract;
   const reordered = await createExternalIntelligenceSourceContract({
-    ...contract,
+    ...contractInput,
     allowedAcquisitionModes: ["webhook", "minute-poll"],
   });
   assert.equal(contract.sourceContractSha256, reordered.sourceContractSha256);
@@ -198,7 +199,10 @@ test("prepares a deterministic fixed-statement immutable batch", async () => {
   assert.equal(first.batch.batchSha256, second.batch.batchSha256);
   assert.equal(first.statements.length, 10);
   assert.equal(first.batch.assessmentRecords.length, 1);
-  assert.match(first.batch.assessmentRecords[0]?.policySha256 ?? "", /^[0-9a-f]{64}$/);
+  assert.match(
+    first.batch.assessmentRecords[0]?.policySha256 ?? "",
+    /^[0-9a-f]{64}$/,
+  );
 });
 
 test("persists exact retries atomically with commit membership evidence", async () => {
@@ -248,15 +252,6 @@ test("changed item identity aborts the complete batch without orphaned provenanc
       { assessment: changedAssessment, assessedAtMs: NOW, policy },
     ],
   };
-  assert.throws(
-    () =>
-      executeAtomically(
-        db,
-        (awaitablePrepared as unknown as { statements: readonly ExternalIntelligencePersistenceStatement[] }).statements,
-      ),
-    /never matches/,
-  );
-
   const changedPrepared = await prepareExternalIntelligencePersistence(changed);
   assert.throws(
     () => executeAtomically(db, changedPrepared.statements),
@@ -264,8 +259,6 @@ test("changed item identity aborts the complete batch without orphaned provenanc
   );
   assert.equal(count(db, "external_intelligence_ingestion_batches"), 1);
 });
-
-const awaitablePrepared = {};
 
 test("invalid assessments and source-contract mismatches fail before persistence", async () => {
   const input = await completeInput();
@@ -309,7 +302,12 @@ test("database blocks incomplete commits and mutation of committed evidence", as
   );
   executeAtomically(db, prepared.statements);
   assert.throws(
-    () => db.prepare("UPDATE external_intelligence_items SET credibility_bps = 1").run(),
+    () =>
+      db
+        .prepare(
+          "UPDATE external_intelligence_items SET credibility_bps = 1",
+        )
+        .run(),
     /items are immutable/,
   );
   const emptyBatch = digest("e");
