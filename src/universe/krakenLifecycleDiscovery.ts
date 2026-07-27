@@ -51,6 +51,7 @@ function assertIndexCapture(
     capture.payloadText.length === 0 ||
     !Number.isSafeInteger(capture.payloadByteLength) ||
     capture.payloadByteLength < 1 ||
+    capture.payloadByteLength > 1_048_576 ||
     new TextEncoder().encode(capture.payloadText).byteLength !==
       capture.payloadByteLength
   ) {
@@ -118,7 +119,8 @@ function targetFromUrl(
 ): KrakenLifecycleDiscoveredTarget | null {
   const pathname = stripTrailingSlash(url.pathname);
   let sourceKind: KrakenLifecycleDiscoveredTargetKind;
-  if (url.hostname === "blog.kraken.com") {
+  if (capture.sourceKind === "asset-listings-index") {
+    if (url.hostname !== "blog.kraken.com") return null;
     if (/^\/product\/asset-listings\/[a-z0-9][a-z0-9-]{0,199}$/u.test(pathname)) {
       sourceKind = "asset-listing-document";
     } else {
@@ -132,6 +134,7 @@ function targetFromUrl(
       sourceKind = "asset-listings-index-page";
     }
   } else if (
+    capture.sourceKind === "delistings-index" &&
     url.hostname === "support.kraken.com" &&
     /^\/articles\/[A-Za-z0-9][A-Za-z0-9_-]{0,199}$/u.test(pathname)
   ) {
@@ -187,6 +190,11 @@ export async function discoverKrakenLifecycleDocumentTargets(
     "delistings-index",
     DELISTINGS_INDEX,
   );
+  for (const capture of [listings, delistings]) {
+    if ((await sha256Hex(capture.payloadText)) !== capture.payloadSha256) {
+      throw new Error(`${capture.sourceKind} payload digest does not match`);
+    }
+  }
   const byIdentity = new Map<string, KrakenLifecycleDiscoveredTarget>();
   for (const target of [
     ...discoverFromHtml(listings),
