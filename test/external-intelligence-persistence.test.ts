@@ -129,6 +129,12 @@ function database(): DatabaseSync {
   const db = new DatabaseSync(":memory:");
   db.exec("PRAGMA foreign_keys = ON");
   db.exec(readFileSync("migrations/0008_external_intelligence.sql", "utf8"));
+  db.exec(
+    readFileSync(
+      "migrations/0009_external_intelligence_hardening.sql",
+      "utf8",
+    ),
+  );
   return db;
 }
 
@@ -310,6 +316,17 @@ test("database blocks incomplete commits and mutation of committed evidence", as
         .run(),
     /items are immutable/,
   );
+  assert.throws(
+    () =>
+      db
+        .prepare(
+          `INSERT INTO external_intelligence_batch_items
+            (batch_sha256, item_id) VALUES (?, ?)`,
+        )
+        .run(prepared.batch.batchSha256, "new-item"),
+    /Committed external intelligence batch is immutable/,
+  );
+
   const emptyBatch = digest("e");
   db.prepare(
     `INSERT INTO external_intelligence_ingestion_batches
@@ -319,6 +336,22 @@ test("database blocks incomplete commits and mutation of committed evidence", as
   ).run(emptyBatch, NOW);
   assert.throws(
     () => db.prepare(INSERT_EXTERNAL_INTELLIGENCE_BATCH_COMMIT_SQL).run(emptyBatch),
+    /batch is incomplete/,
+  );
+
+  const closureBatch = digest("f");
+  db.prepare(
+    `INSERT INTO external_intelligence_ingestion_batches
+      (batch_sha256, recorded_at_ms, source_contract_count, item_count,
+       correction_count, assessment_count)
+     VALUES (?, ?, 0, 1, 0, 0)`,
+  ).run(closureBatch, NOW + 2);
+  db.prepare(
+    `INSERT INTO external_intelligence_batch_items
+      (batch_sha256, item_id) VALUES (?, ?)`,
+  ).run(closureBatch, "official-item-1");
+  assert.throws(
+    () => db.prepare(INSERT_EXTERNAL_INTELLIGENCE_BATCH_COMMIT_SQL).run(closureBatch),
     /batch is incomplete/,
   );
 });
