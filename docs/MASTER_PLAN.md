@@ -42,6 +42,18 @@
         - [x] Discover canonical listing-index pages, listing articles and support lifecycle documents from preserved index payloads.
         - [ ] Capture and immutably persist discovered index pages and individual documents.
   - [ ] Persist signed policies/snapshots and connect eligible membership to strategy and backtest orchestration.
+- [ ] Add near-real-time external intelligence from official sources, news and Reddit.
+  - [x] Define deterministic provenance, latency, source-authority, retention and reaction contracts.
+  - [x] Prevent Reddit-only/social-only evidence from creating a risk-on candidate.
+  - [x] Allow authoritative severe negative events to pause new risk without submitting an order.
+  - [ ] Persist immutable intelligence items, corrections and assessments.
+  - [ ] Add a versioned provider/source registry with licence, attribution, retention and model-use rules.
+  - [ ] Add official exchange, regulator, issuer and publisher RSS/webhook adapters.
+  - [ ] Add compliant Reddit OAuth collection with adaptive rate limits, deletion handling and minimal storage.
+  - [ ] Add dedicated one-minute collection and queue-backed at-least-once processing with idempotency.
+  - [ ] Add deterministic entity/topic linking, syndication clustering and manipulation controls.
+  - [ ] Integrate `pause-new-risk` into paper-mode risk controls and incident reporting.
+  - [ ] Backtest news/social features with original publication and receipt timestamps and no look-ahead.
 - [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
   - [x] Add a deterministic pure target-weight rebalancing engine.
   - [x] Attribute maker/taker fees, spread, slippage, adverse selection and square-root price impact.
@@ -68,6 +80,7 @@
 - [ ] Add multi-timeframe breakout, volatility-expansion and trend-continuation candidates.
 - [ ] Add separate high-volatility and new-listing strategy lanes.
 - [ ] Research short-horizon mean reversion separately after realistic execution modelling.
+- [ ] Research external-intelligence features only after provenance, latency and manipulation controls are validated.
 - [ ] Test concentrated one-asset and small-portfolio configurations up to 100% gross spot exposure.
 - [ ] Test hourly decisions, multiple daily rebalances and maker/taker execution policies.
 - [ ] Add volatility targeting and regime-dependent risk allocation without forcing conservative exposure.
@@ -94,6 +107,7 @@
 - [ ] Show mode, health, strategy version, positions, pending orders and risk state.
 - [ ] Show actual equity against the five-year objective path without presenting it as a forecast.
 - [ ] Show probabilities and historical frequencies of substantial or complete capital loss.
+- [ ] Show source freshness, ingestion latency, intelligence coverage and rejected/stale evidence.
 - [ ] Show all actions required before live activation.
 - [ ] Add user-operated emergency stop and credential-revocation guidance.
 - [ ] Add export of complete audit and tax records.
@@ -125,7 +139,7 @@
 - [ ] Add drift detection and automatic return to paper/shadow mode.
 - [x] Define severity-based incident, credential-rotation, kill-switch and recovery runbooks.
 - [ ] Test runbooks, alert delivery, exchange-side revocation and quarterly rotation.
-- [ ] Maintain provider, market-universe, capacity and fee reviews.
+- [ ] Maintain provider, market-universe, intelligence-source, capacity and fee reviews.
 - [ ] Prevent automatic capital top-ups even when the system is behind the five-year path.
 
 ## Phase 8 — Adaptive models
@@ -135,6 +149,7 @@
 - [ ] Version data, features, code, model and decision policy.
 - [ ] Require champion/challenger testing and automatic rollback.
 - [ ] Never permit a model to bypass the risk engine or execution limits.
+- [ ] Never train on Reddit or publisher content without explicit rights and approved provenance.
 - [ ] Optimise adaptive selection for after-cost objective attainment and ruin risk, not headline return alone.
 
 ## Phase 9 — Objective tracking
