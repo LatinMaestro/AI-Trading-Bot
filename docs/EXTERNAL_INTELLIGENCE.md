@@ -68,6 +68,21 @@ Every collector requires a versioned source contract covering:
 
 Licensed APIs, provider webhooks and publisher RSS/Atom feeds are preferred. Search-engine snippets, copied articles and unsupported scraping are not authoritative source content.
 
+## Acquisition adapter boundary
+
+Registry-bound feed and webhook acquisition is a transport boundary, not a classification or trading boundary.
+
+- Polling accepts only an enabled, effective source-contract version whose source origin and acquisition mode match the target.
+- Official, regulator, issuer and approved publisher targets may use `minute-poll`, `scheduled-poll` or authenticated `webhook` delivery as permitted by their contract. Reddit is rejected and remains reserved for the separate approved OAuth collector.
+- Polling uses canonical HTTPS targets, rejects credential or signature query parameters, rejects redirects and unsupported media types, and applies one bounded retry for transient network, timeout, HTTP 408, HTTP 429 and server failures.
+- `Retry-After` is respected but bounded. Conditional `ETag` and `Last-Modified` requests preserve explicit not-modified observations instead of fabricating new content.
+- A single deadline remains active through response headers, streamed-body receipt and payload hashing. Bodies above one MiB, empty bodies and invalid declared lengths fail closed.
+- Webhook payloads require POST, an approved media type and a provider-specific signature verifier before they become available for downstream processing.
+- Every accepted payload records request start, receipt, availability, response latency, availability latency, exact byte length, SHA-256, cache validators, source-contract digest and a deterministic capture identity.
+- Raw bytes are transient unless the exact source contract permits full-content retention. Model-training permission remains false.
+
+The adapter output still requires source-specific RSS, Atom, JSON Feed or provider-event parsing, canonical item identity, publication-time extraction, retention enforcement, immutable batch persistence and deterministic assessment before it can influence research state.
+
 ## Evidence and latency
 
 Each item binds:
@@ -109,6 +124,8 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
 1. [x] Persist immutable intelligence items and assessments.
 2. [x] Add the versioned provider/source registry and retention rules.
 3. [ ] Add official exchange, regulator, issuer and publisher RSS/webhook adapters.
+   - [x] Add registry-bound bounded feed polling and authenticated webhook payload acquisition.
+   - [ ] Add approved source manifests, source-specific parsing, provider signature implementations and deployed endpoints.
 4. [ ] Add compliant Reddit OAuth collection with adaptive rate limiting.
 5. [ ] Add minute-level collectors and queue-backed deduplicated processing.
 6. [ ] Add deterministic entity/topic linking, syndication clustering and correction handling.
@@ -118,7 +135,7 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
 
 ## Current limitation
 
-The persistence and reaction boundaries are implemented, but no Reddit account, news provider, live webhook, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms and paid subscriptions remain separately approved client/provider actions.
+The persistence, reaction and generic acquisition-transport boundaries are implemented, but no approved source manifest, source-specific parser, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
 
 ## Official references
 
