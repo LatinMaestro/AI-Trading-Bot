@@ -10,20 +10,28 @@ import type {
 } from "../src/universe/krakenLifecycleCapture.ts";
 
 const CAPTURE_ID = "1".repeat(64);
-const PAYLOAD_SHA = "2".repeat(64);
+async function payloadSha256(payloadText: string): Promise<string> {
+  const digest = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(payloadText),
+  );
+  return [...new Uint8Array(digest)]
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
 
-function capture(
+async function capture(
   sourceKind: KrakenLifecycleCaptureSourceKind,
   sourceRef: string,
   payloadText: string,
   suffix: string,
-): KrakenLifecycleSourceCapture {
+): Promise<KrakenLifecycleSourceCapture> {
   return {
     captureId: `${CAPTURE_ID.slice(0, -1)}${suffix}`,
     sourceKind,
     sourceRef,
     fetchedAtMs: Date.UTC(2026, 6, 27),
-    payloadSha256: `${PAYLOAD_SHA.slice(0, -1)}${suffix}`,
+    payloadSha256: await payloadSha256(payloadText),
     payloadByteLength: new TextEncoder().encode(payloadText).byteLength,
     payloadText,
     contentType: "text/html",
@@ -51,13 +59,13 @@ test("discovers canonical listing pages and lifecycle documents from preserved i
     <a href='https://support.kraken.com/articles/notice-of-asset-delistings-in-india'>India</a>
   `;
   const result = await discoverKrakenLifecycleDocumentTargets([
-    capture(
+    await capture(
       "asset-listings-index",
       "https://blog.kraken.com/category/product/asset-listings",
       listingHtml,
       "1",
     ),
-    capture(
+    await capture(
       "delistings-index",
       "https://support.kraken.com/sections/delistings",
       delistingHtml,
@@ -96,21 +104,23 @@ test("ignores unrelated, ambiguous and noncanonical links", async () => {
     <a href="/category/product/asset-listings/page/1">page one</a>
     <a href="/category/product/asset-listings/page/501">too deep</a>
     <a href="/not-a-listing/article">other</a>
+    <a href="https://support.kraken.com/articles/cross-index">cross index</a>
   `;
   const delistingHtml = `
     <a href="/sections/delistings">section</a>
     <a href="/articles/valid-support-lifecycle-document">valid</a>
     <a href="/articles/bad%2Fsegment">encoded</a>
     <a href="https://support.kraken.com/articles/query?x=1">query</a>
+    <a href="https://blog.kraken.com/product/asset-listings/cross-index">cross index</a>
   `;
   const result = await discoverKrakenLifecycleDocumentTargets([
-    capture(
+    await capture(
       "asset-listings-index",
       "https://blog.kraken.com/category/product/asset-listings",
       listingHtml,
       "1",
     ),
-    capture(
+    await capture(
       "delistings-index",
       "https://support.kraken.com/sections/delistings",
       delistingHtml,
@@ -126,13 +136,13 @@ test("ignores unrelated, ambiguous and noncanonical links", async () => {
 });
 
 test("is deterministic across capture ordering and does not semantically classify support titles", async () => {
-  const listing = capture(
+  const listing = await capture(
     "asset-listings-index",
     "https://blog.kraken.com/category/product/asset-listings",
     `<a href="/product/asset-listings/example-is-available-for-trading">regional notice words are irrelevant</a>`,
     "1",
   );
-  const delisting = capture(
+  const delisting = await capture(
     "delistings-index",
     "https://support.kraken.com/sections/delistings",
     `<a href="/articles/australia-availability-example">Global delisting words are irrelevant</a>`,
@@ -156,13 +166,13 @@ test("is deterministic across capture ordering and does not semantically classif
 });
 
 test("fails closed on missing, duplicate or malformed index captures", async () => {
-  const listing = capture(
+  const listing = await capture(
     "asset-listings-index",
     "https://blog.kraken.com/category/product/asset-listings",
     `<a href="/product/asset-listings/example">example</a>`,
     "1",
   );
-  const delisting = capture(
+  const delisting = await capture(
     "delistings-index",
     "https://support.kraken.com/sections/delistings",
     `<a href="/articles/example">example</a>`,
@@ -183,6 +193,13 @@ test("fails closed on missing, duplicate or malformed index captures", async () 
     ]),
     /not canonical/,
   );
+  await assert.rejects(
+    discoverKrakenLifecycleDocumentTargets([
+      { ...listing, payloadSha256: "f".repeat(64) },
+      delisting,
+    ]),
+    /payload digest does not match/,
+  );
 });
 
 test("bounds hostile index link volume", async () => {
@@ -191,13 +208,13 @@ test("bounds hostile index link volume", async () => {
   );
   await assert.rejects(
     discoverKrakenLifecycleDocumentTargets([
-      capture(
+      await capture(
         "asset-listings-index",
         "https://blog.kraken.com/category/product/asset-listings",
         repeated,
         "1",
       ),
-      capture(
+      await capture(
         "delistings-index",
         "https://support.kraken.com/sections/delistings",
         `<a href="/articles/example">example</a>`,
