@@ -195,3 +195,11 @@ Use Kraken's official unresolved-incidents JSON endpoint as a dedicated one-minu
 Classify from structured Statuspage fields only. Unresolved `major` and `critical` impacts become authoritative negative `network-incident` evidence that may request `pause-new-risk`; `minor` and `none` remain neutral. Do not inspect incident names or update bodies to determine severity, assets, strategy direction or order action. Use the reserved `KRAKEN.VENUE` scope marker to identify a non-tradable venue-wide event.
 
 Retain only deterministic IDs, chronology, structured status/impact fields and content digests. Hash update body content transiently but do not retain or queue the raw body. Empty unresolved feeds create no queue work; malformed, resolved, conflicting, oversized, wrong-origin or digest-mismatched evidence fails closed. The source cannot create a positive candidate, approve an order or submit an order, and adds no credential, provider account, private API, fund, withdrawal, transfer, wallet, leverage, derivative or live-trading capability.
+
+## 2026-07-27 — Durable monotonic external-intelligence cache state
+
+Persist conditional `ETag` and `Last-Modified` validators in D1 by source ID so minute collectors retain transport state across Worker instances and restarts. Validator text is bounded and canonical, observation times are non-negative integers, and every write is verified by reading back the stored row.
+
+Exact retries at the same observation time are accepted only when the validator state is identical. Observation time may never regress, and a same-time changed validator is an identity conflict. A stale write is surfaced as an error rather than silently replacing or appearing to replace newer state.
+
+The collector remains responsible for saving cache state only after successful enqueue, confirmed not-modified handling or confirmed no-item normalisation. Cache validators are operational transport state, not authoritative market or intelligence evidence, and cannot classify an event, change exposure, approve an order or submit an order. This slice adds no provider credential, private exchange API, fund, withdrawal, transfer, wallet, leverage, derivative or live-trading capability.
