@@ -179,3 +179,11 @@ Acquire approved official exchange, regulator, issuer and publisher feed or webh
 Polling rejects redirects, credential-bearing query parameters, unsupported media types, invalid lengths, empty or oversized bodies and unsafe cache validators. Use conditional requests, one bounded transient retry, bounded `Retry-After` handling and one deadline spanning request, streamed-body receipt and payload hashing. Authenticated webhooks require a provider-specific signature verifier before payload availability.
 
 Record request, receipt and availability times, measured delays, exact byte length, SHA-256, cache validators, contract digest and deterministic capture identity. Raw bytes remain transient unless the exact contract permits full retention. Acquisition does not parse events, classify evidence, approve risk or submit orders.
+
+## 2026-07-27 — Normalised at-least-once external-intelligence queue
+
+Queue only source-contract-verified normalised intelligence records, acquisition metadata and content digests. Raw provider bytes and arbitrary binary content never enter the queue. Every queued item must bind the exact acquisition mode, payload digest, receipt time and availability chronology of its capture. The canonical message identity covers its source contract, evidence, deterministic assessment requests and enqueue time, and the envelope remains below a conservative 120,000-byte ceiling.
+
+The consumer verifies the canonical message, reproduces deterministic assessments from the referenced items and policy, and completes the existing content-addressed transactional D1 persistence before acknowledging delivery. Process at-least-once deliveries independently: acknowledge successful messages, retry failed messages with bounded exponential delay, and rely on database identity-conflict and exact-retry rules rather than assuming exactly-once transport.
+
+Advance conditional polling validators only after successful enqueue, confirmed not-modified handling or confirmed no-item normalisation. Queue or source failures remain explicit stale/delayed outcomes. Durable cache storage, minute Cron, Queue/DLQ bindings and deployed consumer wiring remain separate work. This queue cannot submit or approve orders and adds no credential, private exchange, fund, withdrawal, transfer, wallet or live-trading capability.
