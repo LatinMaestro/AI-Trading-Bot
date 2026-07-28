@@ -133,7 +133,7 @@ The official `ethereum/go-ethereum` GitHub repository's published releases are a
 
 The parser re-verifies exact payload length and SHA-256, accepts at most the API's default 30 releases, and requires positive safe-integer release IDs, canonical semantic-version Geth tags, exact repository release URLs, published non-draft state and creation/publication times no later than receipt. Release names and bodies contribute only to content digests and are never retained or queued.
 
-Every item remains neutral `other` evidence under non-tradable `ETH.GETH`. No release-note wording or prerelease flag is used to infer severity, asset direction or trading action. The source cannot pause risk, create a positive candidate, approve an order or submit an order. Collection must use conditional requests, remain within GitHub's unauthenticated 60-request-per-hour limit and surface rate limiting or unavailability as stale rather than retrying evasively.
+Every item remains neutral `other` evidence under non-tradable `ETH.GETH`. No release-note wording or prerelease flag is used to infer severity, asset direction or trading action. The source cannot pause risk, create a positive candidate, approve an order or submit an order. Collection must send the bound non-secret project User-Agent, use conditional requests, remain within GitHub's unauthenticated 60-request-per-hour limit and surface rate limiting or unavailability as stale rather than retrying evasively.
 
 ## Kraken active-maintenance boundary
 
