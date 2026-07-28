@@ -5,9 +5,9 @@ Last verified: 28 July 2026 (Australia/Brisbane)
 ## Repository stack
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #19 scheduled universe cycle → #21 stored history evidence → #23 official lifecycle contracts → #25 lifecycle raw capture → #27 lifecycle document discovery → #28 external intelligence contracts → #29 external intelligence persistence → #30 external intelligence acquisition adapters → #31 minute intelligence queue pipeline → #32 Kraken Status incident intelligence → #33 durable external-intelligence cache → #34 discovered lifecycle document capture → #35 scheduled recursive lifecycle document cycle → #36 SEC press-release RSS intelligence → #37 RBA media-release RSS intelligence → #38 Kraken active-maintenance intelligence → #39 Reddit OAuth transport → #40 transient Reddit post retention → #41 purge-enforced Reddit watch-state persistence → #42 AUSTRAC RSS intelligence.
+- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #19 scheduled universe cycle → #21 stored history evidence → #23 official lifecycle contracts → #25 lifecycle raw capture → #27 lifecycle document discovery → #28 external intelligence contracts → #29 external intelligence persistence → #30 external intelligence acquisition adapters → #31 minute intelligence queue pipeline → #32 Kraken Status incident intelligence → #33 durable external-intelligence cache → #34 discovered lifecycle document capture → #35 scheduled recursive lifecycle document cycle → #36 SEC press-release RSS intelligence → #37 RBA media-release RSS intelligence → #38 Kraken active-maintenance intelligence → #39 Reddit OAuth transport → #40 transient Reddit post retention → #41 purge-enforced Reddit watch-state persistence → #42 AUSTRAC RSS intelligence → #43 Bitcoin Core RSS intelligence.
 - #7, #10, #16, #18, #20, #22, #24 and #26 were closed as superseded, reset or duplicate work.
-- All 34 active pull requests remain draft and unmerged.
+- All 35 active pull requests remain draft and unmerged.
 - `main` remains a one-line placeholder.
 - Deployment, credentials, funds and wallet connection: none.
 
@@ -77,7 +77,10 @@ Last verified: 28 July 2026 (Australia/Brisbane)
 - PR #42 binds AUSTRAC's official media-release RSS feed to an account-free scheduled authoritative regulator manifest with exact payload verification, canonical current release links, matching GUIDs and publication/receipt chronology.
 - PR #42 retains no titles or raw XML and emits only neutral `regulatory-action` evidence under non-tradable `AUSTRAC.REGULATOR`; AUSTRAC's announced future feed withdrawal must surface as stale/unavailable without website-scraping fallback.
 - PR #42 isolated hosted strict TypeScript validation and 56/56 focused tests pass, including 6/6 AUSTRAC source tests. Official RSS-reader guidance, feed media type and copyright/attribution terms were verified on 28 July 2026; full live payload replay remains pending because the hosted web reader rejects RSS XML.
-- Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41 and #42 remain blocked or pending before workflow steps.
+- PR #43 binds Bitcoin Core's official English security/release announcement RSS feed to an account-free scheduled project-origin issuer manifest with exact payload verification, at most five canonical dated links, valid calendar dates, matching GUIDs and publication/receipt chronology.
+- PR #43 retains no titles or raw XML and emits only neutral `other` evidence under non-tradable `BTC.CORE`; authority is limited to Bitcoin Core software announcements and cannot pause risk, create a positive candidate or submit/approve an order.
+- PR #43 isolated hosted strict TypeScript validation and 62/62 focused tests pass, including 6/6 Bitcoin Core source tests. Official feed guidance, generator structure and the website repository's MIT licence notice were verified on 28 July 2026; full live feed replay remains pending because the hosted web reader rejects RSS XML.
+- Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41 and #42 and #43 remain blocked or pending before workflow steps.
 - A truthful runtime SEC contact, additional approved issuer/news manifests/parsers/signatures, deployed minute Cron and Queue/DLQ bindings, approved hosted Reddit OAuth credentials, entity linking and paper-mode risk integration remain pending.
 - Missing, gapped, stale, delayed or insufficient evidence remains non-authoritative for strategy selection.
 - No private API, credential, fund, wallet or live-order capability changed.
@@ -86,12 +89,12 @@ Last verified: 28 July 2026 (Australia/Brisbane)
 
 GitHub Actions private-repository capacity remains unavailable until 1 August 2026. Exact-head jobs fail before steps or logs.
 
-Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41 or #42 until fresh exact-head checks pass and the stack merges in order.
+Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41 or #42 or #43 until fresh exact-head checks pass and the stack merges in order.
 
 ## Next unblocked work
 
-1. Add an account-free approved issuer source manifest and deterministic parser; keep deployed SEC collection blocked until a truthful public contact is configured.
-2. Bind minute Cron, Queue/DLQ and the deployed external-intelligence consumer without credentials or deployment activation.
+1. Bind minute Cron, Queue/DLQ and the hosted external-intelligence consumer without credentials or deployment activation; keep deployed SEC collection blocked until a truthful public contact is configured.
+2. Add further account-free approved issuer/news manifests and deterministic parsers.
 3. Complete reviewed Kraken lifecycle historical backfill and bind declarations to committed payloads.
 4. Persist signed universe policies/snapshots and connect eligible membership to strategy/backtest orchestration.
 5. Persist immutable tax records from fills and reconcile exchange exports.
