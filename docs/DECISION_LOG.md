@@ -282,3 +282,11 @@ Use Bitcoin Core's official English announcement RSS feed as an account-free pro
 Re-verify exact payload length and SHA-256 through the bounded strict RSS parser. Accept at most the five items produced by the official feed, canonical dated English announcement paths, valid calendar dates, exact URL GUIDs and publication times no later than receipt. Retain identity, source URL, chronology and content digests, but never titles or raw XML.
 
 Emit only neutral `other` evidence under non-tradable `BTC.CORE`. Do not infer release type, severity, asset direction or trading action from titles. The source cannot pause risk, create a positive candidate, approve an order or submit an order until separately reviewed deterministic classification and entity-linking evidence exists.
+
+## 2026-07-28 — Fail-closed external-intelligence runtime bindings
+
+Route the exact every-minute Cron expression to the approved minute external-intelligence collector and preserve the existing exact 15-minute trading-cycle route. Reject unknown Cron expressions. Bind the Kraken active-maintenance source to conditional D1 cache state, a bounded Queue producer and the existing idempotent D1 consumer. Queue processing uses batches of at most ten, a five-second batch timeout, five retries, serial consumer concurrency and an explicit dead-letter queue.
+
+Keep `EXTERNAL_INTELLIGENCE_ENABLED` exactly `false` and the source-contract JSON empty in committed configuration. An enabled runtime requires one exact reviewed contract and an available Queue binding before any network request. Ambiguous flags, missing contracts, missing bindings and unexpected queue identities fail closed.
+
+The Queue, consumer, DLQ and every-minute Cron are Preview configuration only and are not provisioned by this change. Production explicitly declares empty Queue bindings and empty Cron triggers. No deployment, secret, credential, provider account, fund, wallet or trading authority is added.
