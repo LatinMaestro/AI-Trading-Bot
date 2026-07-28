@@ -54,8 +54,8 @@ Last verified: 28 July 2026 (Australia/Brisbane)
 - PR #34 adds immutable D1 document-capture headers and commit markers linked to the exact committed index capture and payload that discovered each target; exact retries are idempotent and changed identities, incomplete provenance, mutation and commits before fetch fail closed.
 - PR #34 repository-equivalent strict TypeScript validation and 8/8 focused Node 22/SQLite tests pass in an isolated hosted harness.
 - PR #35 advances lifecycle discovery from the current fixed indexes plus the latest committed capture of each listing-index page, selects exact provenance deterministically, skips committed source references and captures at most ten documents in the daily lifecycle slot before universe evaluation.
-- PR #35 allows a captured listing-index page to serve as provenance only after its immutable document capture is committed, loads at most 499 latest committed pages, records the recursive frontier and capture counts in cycle audit detail, and performs no document work outside the daily slot.
-- PR #35 focused strict TypeScript validation and 11/11 Node 22/SQLite tests pass in an isolated hosted harness.
+- PR #35 allows a captured listing-index page to serve as provenance only after its immutable document capture is committed, rotates through at most 32 latest page captures and 8 MiB of exact payloads per daily run, records the recursive frontier and capture counts in cycle audit detail, and performs no document work outside the daily slot.
+- PR #35 focused strict TypeScript validation and 12/12 Node 22/SQLite tests pass in an isolated hosted harness.
 - Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30, #31, #32, #33, #34 and #35 remain blocked before workflow steps.
 - Additional approved source manifests/parsers/signatures, deployed minute Cron and Queue/DLQ bindings, compliant Reddit OAuth collection, entity linking and paper-mode risk integration remain pending.
 - Missing, gapped, stale, delayed or insufficient evidence remains non-authoritative for strategy selection.
