@@ -74,7 +74,7 @@ Last verified: 28 July 2026 (Australia/Brisbane)
 - PR #41 adds dedicated transient D1 persistence with stable retry identity, non-extendable deletion deadlines, transaction-local purge authorization and expiry deletion that does not depend on provider availability.
 - PR #41 atomically invalidates aggregate watch state after removal and retains only content-free source-level audit/event counts; post identifiers and provider content never enter the immutable ledger or durable Queue.
 - PR #41 isolated hosted strict TypeScript validation and 50/50 focused tests pass, including 5/5 transient retention persistence tests.
-- Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39 #40 and #41 remain blocked or pending before workflow steps.
+- Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40 and #41 remain blocked or pending before workflow steps.
 - A truthful runtime SEC contact, additional approved issuer/news manifests/parsers/signatures, deployed minute Cron and Queue/DLQ bindings, approved hosted Reddit OAuth credentials, entity linking and paper-mode risk integration remain pending.
 - Missing, gapped, stale, delayed or insufficient evidence remains non-authoritative for strategy selection.
 - No private API, credential, fund, wallet or live-order capability changed.
@@ -83,7 +83,7 @@ Last verified: 28 July 2026 (Australia/Brisbane)
 
 GitHub Actions private-repository capacity remains unavailable until 1 August 2026. Exact-head jobs fail before steps or logs.
 
-Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39 or #40 or #41 until fresh exact-head checks pass and the stack merges in order.
+Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40 or #41 until fresh exact-head checks pass and the stack merges in order.
 
 ## Next unblocked work
 
