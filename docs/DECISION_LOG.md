@@ -290,3 +290,10 @@ Route the exact every-minute Cron expression to the approved minute external-int
 Keep `EXTERNAL_INTELLIGENCE_ENABLED` exactly `false` and the source-contract JSON empty in committed configuration. An enabled runtime requires one exact reviewed contract and an available Queue binding before any network request. Ambiguous flags, missing contracts, missing bindings and unexpected queue identities fail closed.
 
 The Queue, consumer, DLQ and every-minute Cron are Preview configuration only and are not provisioned by this change. Production explicitly declares empty Queue bindings and empty Cron triggers. No deployment, secret, credential, provider account, fund, wallet or trading authority is added.
+
+
+## 2026-07-28 — Content-addressed Preview intelligence activation manifest
+
+Generate any Kraken maintenance Preview activation candidate from the exact reviewed source-evidence SHA-256, approval time, effective time and finite expiry. The expiry cannot exceed 366 days after the effective time. Bind the resulting enabled version-1 source contract to the exact minute Cron, Queue name and Preview-only deployment target, then content-address both the canonical contract and complete activation manifest.
+
+Do not commit a placeholder evidence digest, enabled contract or activation variables. Manifest generation does not authorize provider-term acceptance, hosted resource creation, deployment or collection. Those remain explicit owner gates under the Preview activation runbook. Production remains disabled with no Queue or Cron resources, and external intelligence remains unable to submit or approve an order.
