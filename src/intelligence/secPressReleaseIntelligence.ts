@@ -269,12 +269,34 @@ async function parsePayload(
   ) {
     throw new Error("SEC RSS payload contains forbidden or oversized XML");
   }
-  if (!/<rss(?:\s+[^<>]*)?>[\s\S]*<channel(?:\s+[^<>]*)?>/u.test(xml)) {
-    throw new Error("SEC RSS payload must contain an RSS channel");
+  const rss = /^\s*(?:<\?xml\s+[^<>]*\?>\s*)?<rss(?:\s+[^<>]*)?>([\s\S]*)<\/rss>\s*$/u.exec(
+    xml,
+  );
+  if (rss === null) {
+    throw new Error("SEC RSS payload must contain one canonical RSS root");
   }
-  const itemBlocks = [...xml.matchAll(/<item(?:\s+[^<>]*)?>([\s\S]*?)<\/item>/gu)];
-  const itemOpenings = [...xml.matchAll(/<item(?:\s+[^<>]*)?>/gu)].length;
-  const itemClosings = [...xml.matchAll(/<\/item>/gu)].length;
+  const channels = [
+    ...(rss[1] ?? "").matchAll(
+      /<channel(?:\s+[^<>]*)?>([\s\S]*?)<\/channel>/gu,
+    ),
+  ];
+  const channelOpenings = [
+    ...(rss[1] ?? "").matchAll(/<channel(?:\s+[^<>]*)?>/gu),
+  ].length;
+  const channelClosings = [...(rss[1] ?? "").matchAll(/<\/channel>/gu)].length;
+  if (
+    channels.length !== 1 ||
+    channelOpenings !== 1 ||
+    channelClosings !== 1
+  ) {
+    throw new Error("SEC RSS payload must contain exactly one channel");
+  }
+  const channel = channels[0]?.[1] ?? "";
+  const itemBlocks = [
+    ...channel.matchAll(/<item(?:\s+[^<>]*)?>([\s\S]*?)<\/item>/gu),
+  ];
+  const itemOpenings = [...channel.matchAll(/<item(?:\s+[^<>]*)?>/gu)].length;
+  const itemClosings = [...channel.matchAll(/<\/item>/gu)].length;
   if (
     itemOpenings !== itemBlocks.length ||
     itemClosings !== itemBlocks.length
