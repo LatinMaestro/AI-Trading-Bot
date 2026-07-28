@@ -344,3 +344,11 @@ Content-address the baseline and intelligence-gated backtest results separately,
 Persist one compact immutable D1 manifest containing the comparison, replay and result identities plus aggregate equity, return, suppression and frame evidence. Do not duplicate potentially large execution and equity arrays in one D1 row. Exact retries preserve the first persistence time; changed identity reuse, ordinary updates and deletes fail closed.
 
 Every research report must bind a sorted unique list of external-intelligence comparison identities, using an explicit empty list when none was evaluated. A comparison digest proves reproducible evidence identity only; it cannot promote a strategy, approve exposure or submit an order. This slice adds no provider connection, deployment, credential, fund, wallet or live-execution authority.
+
+## 2026-07-29 — Account-free Ethereum Geth release intelligence
+
+Reject automated collection from the Ethereum Foundation Blog even though the Foundation publishes RSS: the current website terms expressly prohibit robots or other automatic devices from accessing the websites. Do not encode a source contract whose collection method contradicts current provider terms.
+
+Use the official `ethereum/go-ethereum` repository's published releases through GitHub's versioned REST API instead. GitHub documents that public published releases are available without authentication, subject to API terms and an unauthenticated limit of 60 requests per hour. Bind the exact repository endpoint and API origin, scheduled polling, digest-only retention, required attribution, reviewed API terms and model-training prohibition.
+
+Re-verify exact JSON bytes and accept only bounded published non-draft releases with safe integer IDs, canonical semantic-version tags, exact Geth repository release links and creation/publication times no later than receipt. Hash release names and bodies without retaining or queueing them. Emit only neutral `other` evidence under non-tradable `ETH.GETH`; Geth release evidence cannot establish general network state, pause risk, create a positive candidate, approve an order or submit an order. No deployment, account, credential, fund, wallet or live authority is added.
