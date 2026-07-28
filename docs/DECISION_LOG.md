@@ -219,3 +219,11 @@ After the daily fixed Kraken lifecycle sources commit, rotate deterministically 
 Skip every already committed source reference and fetch at most ten remaining canonical HTML documents per daily run. A newly captured pagination page may extend discovery only on a later daily run after its commit marker exists, so recursion advances as a bounded durable frontier rather than an in-memory crawler. Outside the daily lifecycle slot, perform no document lookup, discovery or network work.
 
 Permit recursive provenance in D1 only when the parent is a committed `asset-listings-index-page` capture with the exact preserved payload digest. Record discovery, frontier and request counts in the scheduled cycle audit before strategy evaluation. This public evidence path creates no lifecycle declaration and adds no credential, private API, account, fund, wallet, withdrawal, transfer, leverage, derivative or order authority.
+
+## 2026-07-28 — Scheduled SEC press-release metadata intelligence
+
+Use the SEC's official press-release RSS endpoint only through an enabled authoritative regulator contract that binds the exact SEC origin, scheduled-poll mode, digest-only retention, attribution, official RSS policy snapshot and model-training prohibition. Automated requests require a truthful contact-bearing User-Agent supplied at runtime; do not invent or commit that contact.
+
+Re-verify payload length and SHA-256 before bounded UTF-8 RSS parsing. Accept only canonical current or legacy SEC press-release paths, matching GUIDs and publication times no later than receipt. Retain content-addressed identity, source URL and chronology, but never the title or raw XML.
+
+Until a separately reviewed deterministic entity/event linker exists, emit only neutral `other` evidence under the non-tradable `SEC.REGULATOR` scope. This source cannot pause new risk, create a positive candidate, approve an order or submit an order. No collector deployment, credential, provider account, paid term, private API, fund, wallet or live-trading capability is added.
