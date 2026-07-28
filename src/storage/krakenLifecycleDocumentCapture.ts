@@ -43,32 +43,58 @@ export const SELECT_COMMITTED_KRAKEN_LIFECYCLE_DOCUMENT_REFS_SQL =
    ORDER BY capture.source_ref`;
 
 export const SELECT_LATEST_COMMITTED_KRAKEN_LISTING_INDEX_PAGES_SQL =
-  `SELECT capture.capture_id, capture.source_ref, capture.payload_sha256,
-          payload.payload_byte_length, payload.payload_text,
-          capture.content_type
-   FROM kraken_lifecycle_document_captures capture
-   JOIN kraken_lifecycle_document_capture_commits committed
-     ON committed.capture_id = capture.capture_id
-   JOIN kraken_lifecycle_source_payloads payload
-     ON payload.payload_sha256 = capture.payload_sha256
-   WHERE capture.source_kind = 'asset-listings-index-page'
-     AND NOT EXISTS (
-       SELECT 1
-       FROM kraken_lifecycle_document_captures newer
-       JOIN kraken_lifecycle_document_capture_commits newer_committed
-         ON newer_committed.capture_id = newer.capture_id
-       WHERE newer.source_kind = 'asset-listings-index-page'
-         AND newer.source_ref = capture.source_ref
-         AND (
-           newer.fetched_at_ms > capture.fetched_at_ms
-           OR (
-             newer.fetched_at_ms = capture.fetched_at_ms
-             AND newer.capture_id > capture.capture_id
+  `WITH latest AS (
+     SELECT capture.capture_id, capture.source_ref, capture.payload_sha256,
+            payload.payload_byte_length, payload.payload_text,
+            capture.content_type,
+            CAST(substr(
+              capture.source_ref,
+              length('https://blog.kraken.com/category/product/asset-listings/page/') + 1
+            ) AS INTEGER) AS page_number
+     FROM kraken_lifecycle_document_captures capture
+     JOIN kraken_lifecycle_document_capture_commits committed
+       ON committed.capture_id = capture.capture_id
+     JOIN kraken_lifecycle_source_payloads payload
+       ON payload.payload_sha256 = capture.payload_sha256
+     WHERE capture.source_kind = 'asset-listings-index-page'
+       AND NOT EXISTS (
+         SELECT 1
+         FROM kraken_lifecycle_document_captures newer
+         JOIN kraken_lifecycle_document_capture_commits newer_committed
+           ON newer_committed.capture_id = newer.capture_id
+         WHERE newer.source_kind = 'asset-listings-index-page'
+           AND newer.source_ref = capture.source_ref
+           AND (
+             newer.fetched_at_ms > capture.fetched_at_ms
+             OR (
+               newer.fetched_at_ms = capture.fetched_at_ms
+               AND newer.capture_id > capture.capture_id
+             )
            )
-         )
-     )
-   ORDER BY capture.source_ref
-   LIMIT 499`;
+       )
+   ),
+   rotated AS (
+     SELECT latest.*,
+            row_number() OVER (
+              ORDER BY CASE
+                WHEN page_number >= ?1 THEN page_number
+                ELSE page_number + 499
+              END
+            ) AS page_ordinal,
+            sum(payload_byte_length) OVER (
+              ORDER BY CASE
+                WHEN page_number >= ?1 THEN page_number
+                ELSE page_number + 499
+              END
+            ) AS cumulative_payload_bytes
+     FROM latest
+   )
+   SELECT capture_id, source_ref, payload_sha256, payload_byte_length,
+          payload_text, content_type
+   FROM rotated
+   WHERE page_ordinal <= 32
+     AND cumulative_payload_bytes <= 8388608
+   ORDER BY page_ordinal`;
 
 interface KrakenListingIndexPageRow {
   readonly capture_id: string;
@@ -245,11 +271,21 @@ export class KrakenLifecycleDocumentCaptureRepository
     return refs;
   }
 
-  async loadLatestCommittedListingIndexPages(): Promise<
+  async loadLatestCommittedListingIndexPages(
+    rotationStartPage: number,
+  ): Promise<
     readonly KrakenLifecycleListingIndexPageCapture[]
   > {
+    if (
+      !Number.isSafeInteger(rotationStartPage) ||
+      rotationStartPage < 2 ||
+      rotationStartPage > 500
+    ) {
+      throw new Error("Lifecycle listing-page rotation start is invalid");
+    }
     const result = await this.db
       .prepare(SELECT_LATEST_COMMITTED_KRAKEN_LISTING_INDEX_PAGES_SQL)
+      .bind(rotationStartPage)
       .all<KrakenListingIndexPageRow>();
     return result.results.map(listingIndexPageFromRow);
   }
