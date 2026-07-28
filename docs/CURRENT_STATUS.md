@@ -5,9 +5,9 @@ Last verified: 28 July 2026 (Australia/Brisbane)
 ## Repository stack
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #19 scheduled universe cycle → #21 stored history evidence → #23 official lifecycle contracts → #25 lifecycle raw capture → #27 lifecycle document discovery → #28 external intelligence contracts → #29 external intelligence persistence → #30 external intelligence acquisition adapters → #31 minute intelligence queue pipeline → #32 Kraken Status incident intelligence → #33 durable external-intelligence cache → #34 discovered lifecycle document capture → #35 scheduled recursive lifecycle document cycle → #36 SEC press-release RSS intelligence → #37 RBA media-release RSS intelligence → #38 Kraken active-maintenance intelligence → #39 Reddit OAuth transport → #40 transient Reddit post retention.
+- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #19 scheduled universe cycle → #21 stored history evidence → #23 official lifecycle contracts → #25 lifecycle raw capture → #27 lifecycle document discovery → #28 external intelligence contracts → #29 external intelligence persistence → #30 external intelligence acquisition adapters → #31 minute intelligence queue pipeline → #32 Kraken Status incident intelligence → #33 durable external-intelligence cache → #34 discovered lifecycle document capture → #35 scheduled recursive lifecycle document cycle → #36 SEC press-release RSS intelligence → #37 RBA media-release RSS intelligence → #38 Kraken active-maintenance intelligence → #39 Reddit OAuth transport → #40 transient Reddit post retention → #41 purge-enforced Reddit watch-state persistence.
 - #7, #10, #16, #18, #20, #22, #24 and #26 were closed as superseded, reset or duplicate work.
-- All 32 active pull requests remain draft and unmerged.
+- All 33 active pull requests remain draft and unmerged.
 - `main` remains a one-line placeholder.
 - Deployment, credentials, funds and wallet connection: none.
 
@@ -71,8 +71,11 @@ Last verified: 28 July 2026 (Australia/Brisbane)
 - PR #40 adds bounded canonical OAuth `/api/info` refresh targets, transient post metadata normalisation, immediate purge actions for missing/removed/expired observations and content-free aggregate compliance audits.
 - PR #40 discards titles, bodies, authors and provider permalinks, prevents post-level Reddit data from entering the durable intelligence queue, and avoids the immutable correction ledger because Reddit prohibits retaining deleted data even when de-identified.
 - PR #40 isolated hosted strict TypeScript validation and 44/44 focused tests pass, including 13 Reddit transport/lifecycle tests.
-- Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39 and #40 remain blocked or pending before workflow steps.
-- A truthful runtime SEC contact, additional approved issuer/news manifests/parsers/signatures, deployed minute Cron and Queue/DLQ bindings, purge-enforced Reddit transient persistence and downstream watch-state invalidation, approved hosted Reddit OAuth credentials, entity linking and paper-mode risk integration remain pending.
+- PR #41 adds dedicated transient D1 persistence with stable retry identity, non-extendable deletion deadlines, transaction-local purge authorization and expiry deletion that does not depend on provider availability.
+- PR #41 atomically invalidates aggregate watch state after removal and retains only content-free source-level audit/event counts; post identifiers and provider content never enter the immutable ledger or durable Queue.
+- PR #41 isolated hosted strict TypeScript validation and 50/50 focused tests pass, including 5/5 transient retention persistence tests.
+- Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39 #40 and #41 remain blocked or pending before workflow steps.
+- A truthful runtime SEC contact, additional approved issuer/news manifests/parsers/signatures, deployed minute Cron and Queue/DLQ bindings, approved hosted Reddit OAuth credentials, entity linking and paper-mode risk integration remain pending.
 - Missing, gapped, stale, delayed or insufficient evidence remains non-authoritative for strategy selection.
 - No private API, credential, fund, wallet or live-order capability changed.
 
@@ -80,16 +83,15 @@ Last verified: 28 July 2026 (Australia/Brisbane)
 
 GitHub Actions private-repository capacity remains unavailable until 1 August 2026. Exact-head jobs fail before steps or logs.
 
-Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39 or #40 until fresh exact-head checks pass and the stack merges in order.
+Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39 or #40 or #41 until fresh exact-head checks pass and the stack merges in order.
 
 ## Next unblocked work
 
-1. Add purge-enforced Reddit transient persistence plus downstream watch-state invalidation; keep deployment blocked until approved OAuth credentials are supplied through hosted secrets.
-2. Add another account-free approved issuer or news source manifest and deterministic parser; keep deployed SEC collection blocked until a truthful public contact is configured.
-3. Bind minute Cron, Queue/DLQ and the deployed external-intelligence consumer.
-4. Complete reviewed Kraken lifecycle historical backfill and bind declarations to committed payloads.
-5. Persist signed universe policies/snapshots and connect eligible membership to strategy/backtest orchestration.
-6. Persist immutable tax records from fills and reconcile exchange exports.
-7. Integrate walk-forward, holdout, benchmark and sensitivity inputs.
+1. Add another account-free approved issuer or news source manifest and deterministic parser; keep deployed SEC collection blocked until a truthful public contact is configured.
+2. Bind minute Cron, Queue/DLQ and the deployed external-intelligence consumer without credentials or deployment activation.
+3. Complete reviewed Kraken lifecycle historical backfill and bind declarations to committed payloads.
+4. Persist signed universe policies/snapshots and connect eligible membership to strategy/backtest orchestration.
+5. Persist immutable tax records from fills and reconcile exchange exports.
+6. Integrate walk-forward, holdout, benchmark and sensitivity inputs.
 
 Do not deploy, request credentials, create provider accounts, accept paid terms, move funds or enable live execution.
