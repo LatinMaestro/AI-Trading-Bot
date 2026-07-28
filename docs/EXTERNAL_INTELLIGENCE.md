@@ -119,6 +119,14 @@ The parser re-verifies payload length and SHA-256 through the bounded strict RSS
 
 Every item is neutral `regulatory-action` evidence under the non-tradable `AUSTRAC.REGULATOR` scope until a separately reviewed deterministic entity/event linker exists. It cannot pause new risk, create a positive candidate, approve an order or submit an order. AUSTRAC announced that the RSS feed will be withdrawn in favour of email subscriptions; collection must therefore expose any feed failure as stale/unavailable and must not silently scrape the website as a replacement.
 
+## Bitcoin Core announcement RSS boundary
+
+Bitcoin Core's official English announcement RSS feed is an approved account-free project-origin `issuer` source using `scheduled-poll`. The project explicitly publishes security and release announcements through this feed. Its source contract binds the exact feed, origin and publisher/provider identities, digest-only retention, attribution, the reviewed website-repository MIT licence notice and model-training prohibition. Authority is limited to Bitcoin Core software announcements, not general claims about Bitcoin or market direction.
+
+The parser re-verifies payload length and SHA-256 through the bounded strict RSS boundary. It accepts at most the five items produced by the official feed, canonical dated English announcement paths, valid calendar dates, exact matching GUIDs and publication times no later than receipt. It retains deterministic identities, source URLs, chronology and content digests, but never titles or raw XML.
+
+Every item remains neutral `other` evidence under non-tradable `BTC.CORE`. No title text is used to infer release type, severity, asset direction or trading action; this source cannot pause risk, create a positive candidate, approve an order or submit an order until separately reviewed deterministic classification and entity-linking evidence exists.
+
 ## Kraken active-maintenance boundary
 
 Kraken's official Status API active-maintenance endpoint is an approved account-free official-exchange source using `minute-poll`. Kraken documents the endpoint specifically for programmatic access. The source contract binds the exact API origin and endpoint, digest-only retention, transient payload handling and explicit model-training prohibition.
@@ -171,6 +179,8 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
    - [x] Add registry-bound bounded feed polling and authenticated webhook payload acquisition.
    - [x] Add a scheduled SEC press-release RSS manifest and deterministic metadata-only normaliser.
    - [x] Add a scheduled RBA media-release RSS manifest and deterministic metadata-only normaliser.
+   - [x] Add a scheduled AUSTRAC media-release RSS manifest and deterministic metadata-only normaliser with retirement monitoring.
+   - [x] Add a scheduled Bitcoin Core announcement RSS manifest and deterministic digest-only normaliser.
    - [x] Add a one-minute Kraken active-maintenance Status API manifest and deterministic digest-only normaliser.
    - [ ] Add further approved exchange/issuer/news manifests, source-specific parsing, provider signature implementations and deployed endpoints.
 4. [ ] Add compliant Reddit OAuth collection with adaptive rate limiting.
@@ -186,7 +196,7 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
 
 ## Current limitation
 
-The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC, RBA and AUSTRAC RSS parsers, and the Kraken active-maintenance minute-source normaliser are implemented. Reddit OAuth transport, transient post normalisation, bounded deletion checks, purge-enforced transient D1 persistence and downstream watch-state invalidation are implemented, but approved hosted credentials remain pending. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
+The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC, RBA, AUSTRAC and Bitcoin Core RSS parsers, and the Kraken active-maintenance minute-source normaliser are implemented. Reddit OAuth transport, transient post normalisation, bounded deletion checks, purge-enforced transient D1 persistence and downstream watch-state invalidation are implemented, but approved hosted credentials remain pending. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
 
 ## Official references
 
@@ -197,6 +207,9 @@ The persistence, reaction and generic acquisition-transport boundaries, schedule
 - RBA copyright and attribution: https://www.rba.gov.au/copyright/
 - AUSTRAC RSS guidance: https://www.austrac.gov.au/subscribing-media-release-alerts
 - AUSTRAC copyright and attribution: https://www.austrac.gov.au/copyright
+- Bitcoin Core RSS feeds: https://bitcoincore.org/en/rss/
+- Bitcoin Core announcements subscription: https://bitcoincore.org/en/list/announcements/join/
+- Bitcoin Core website licence notice: https://github.com/bitcoin-core/bitcoincore.org/blob/master/COPYING
 - Reddit Data API Terms: https://redditinc.com/policies/data-api-terms
 - Reddit Developer Terms: https://redditinc.com/policies/developer-terms
 - Cloudflare Cron Triggers: https://developers.cloudflare.com/workers/configuration/cron-triggers/
