@@ -190,6 +190,7 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
    - [ ] Supply approved hosted credentials and deploy the Reddit collector.
 5. [ ] Add minute-level collectors and queue-backed deduplicated processing.
    - [x] Bind an inactive-by-default Preview minute Cron, bounded Queue/DLQ and D1 consumer while Production explicitly has no Cron or Queue resources.
+   - [x] Generate a content-addressed Kraken Preview activation manifest from exact reviewed evidence and document owner-gated activation and rollback.
    - [ ] Provision approved Preview resources, install an exact reviewed source contract and activate collection.
 6. [ ] Add deterministic entity/topic linking, syndication clustering and correction handling.
 7. [ ] Integrate `pause-new-risk` with paper-mode risk controls.
@@ -198,7 +199,7 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
 
 ## Current limitation
 
-The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC, RBA, AUSTRAC and Bitcoin Core RSS parsers, and the Kraken active-maintenance minute-source normaliser are implemented. Reddit OAuth transport, transient post normalisation, bounded deletion checks, purge-enforced transient D1 persistence and downstream watch-state invalidation are implemented, but approved hosted credentials remain pending. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, active minute Cron Trigger, provisioned queue, model or order path is connected. The Preview Cron and Queue/DLQ runtime blueprint is implemented but disabled and unprovisioned; Production explicitly has no such bindings. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
+The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC, RBA, AUSTRAC and Bitcoin Core RSS parsers, and the Kraken active-maintenance minute-source normaliser are implemented. Reddit OAuth transport, transient post normalisation, bounded deletion checks, purge-enforced transient D1 persistence and downstream watch-state invalidation are implemented, but approved hosted credentials remain pending. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, active minute Cron Trigger, provisioned queue, model or order path is connected. The Preview Cron and Queue/DLQ runtime blueprint and deterministic activation-manifest builder are implemented, but no real evidence digest, enabled contract, hosted resource or activation is committed. The reviewed activation and rollback runbook is documented; Production explicitly has no such bindings. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
 
 ## Official references
 
