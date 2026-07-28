@@ -75,7 +75,31 @@ assessments, active pause evidence, research candidates, watch-only evidence,
 ignored evidence, expired assessments and latency measurements for every
 hourly decision.
 
+## Execution-request binding
+
+An intelligence-aware comparison binds exactly one verified replay frame to
+every backtest step. Partial coverage, duplicate frame reuse, signal-time
+mismatch, malformed evidence identities and changed frame/replay digests fail
+closed.
+
+The target-weight engine first constructs reductions and additions from the
+actual simulated portfolio. A fresh pause removes every generated buy request
+before participation, cash, fill, fee or impact modelling. It does not remove
+sell requests. This also blocks a later increase after an earlier partial fill;
+retaining the prior target is not treated as permission to spend toward it.
+
+Each suppressed request records its signal time, intended execution time, pair,
+execution style, requested AUD notional, exact frame SHA-256 and exact pause
+evidence identities. Suppression is distinct from a market miss and therefore
+does not appear as a fill or missed-fill execution.
+
+The comparison artifact runs the same steps twice: once without intelligence
+and once with the verified replay gates. It content-addresses both complete
+results and records final-equity/return deltas, suppressed request count and
+notional, pause-frame count and research-candidate-frame count. Research
+candidates are measured but cannot alter targets or create a request.
+
 This is a research primitive, not evidence of strategy profitability or
-approval for live use. A later execution-engine integration must bind each
-order intent to its exact replay frame and prove that blocked additions cannot
-enter the execution request set.
+approval for live use. Durable comparison persistence, calibrated historical
+inputs, walk-forward/holdout evaluation and signed promotion evidence remain
+separate requirements.
