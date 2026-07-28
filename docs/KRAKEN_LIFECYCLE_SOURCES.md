@@ -22,7 +22,9 @@ The preserved listing and delisting indexes are processed through a deterministi
 
 Kraken Support targets remain generic lifecycle candidates until reviewed. Link text, title fragments and URL words are not used to infer global delisting, suspension or Australian availability.
 
-Raw capture and discovery do not create lifecycle events. Complete pair-level evidence still requires exact document capture and reviewed declarations tied to committed source payloads.
+Discovered targets are captured in deterministic bounded batches. Each exact HTML payload is content-addressed, and its immutable capture header binds the discovery digest plus the exact committed index capture and payload that produced the target. Exact retries are idempotent; incomplete or cross-class provenance, changed identities, redirects, unsupported content and mutation fail closed.
+
+Raw capture, discovery and document preservation do not create lifecycle events. Complete pair-level evidence still requires reviewed declarations tied to committed source payloads.
 
 ## Source classes
 
@@ -66,7 +68,7 @@ Missing classes remain explicit. Coverage completeness does not imply current el
 
 ## Remaining work
 
-- Capture and immutably persist discovered listing-index pages and individual listing, delisting and regional-availability documents.
+- Wire committed-source lookup, recursive listing-index discovery and bounded document capture into the daily scheduled cycle.
 - Backfill the complete Kraken listing, delisting, suspension/resumption and Australian-availability history.
 - Reconcile asset-level announcements to every affected canonical spot pair.
 - Persist reviewed declarations with an explicit link to committed raw captures.
