@@ -314,7 +314,10 @@ export async function normaliseRedditPostListing(
     const observationId = await sha256CanonicalIntelligence({
       schemaVersion: "reddit-transient-post-observation-v1",
       sourceContractSha256: contract.sourceContractSha256,
-      captureId: capture.captureId,
+      sourceId: contract.sourceId,
+      subreddit: target.subreddit,
+      fullname: post.fullname,
+      publishedAtMs: post.publishedAtMs,
       metadataSha256,
     });
     observations.push({
