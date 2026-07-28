@@ -65,6 +65,7 @@
     - [ ] Supply approved hosted credentials and deploy the Reddit collector.
   - [ ] Add dedicated one-minute collection and queue-backed at-least-once processing with idempotency.
     - [x] Bind an inactive-by-default Preview minute Cron, Queue/DLQ producer-consumer and D1 persistence runtime.
+    - [x] Generate a content-addressed Preview activation manifest from exact reviewed licence evidence and document owner-gated activation and rollback.
     - [ ] Provision approved hosted Preview resources, install an exact reviewed source contract and activate collection.
     - [x] Add deterministic bounded queue envelopes, per-message acknowledgement/retry and source-level stale outcomes.
     - [x] Persist conditional cache validators durably with monotonic conflict controls.
