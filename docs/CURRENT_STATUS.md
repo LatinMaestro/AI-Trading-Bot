@@ -96,6 +96,7 @@ Last verified: 29 July 2026 (Australia/Brisbane)
 - PR #52 separately hashes complete baseline and gated results, re-verifies exact replay/frame/suppression evidence, persists a compact immutable D1 comparison manifest and binds sorted unique comparison identities into research-report provenance. Isolated hosted strict TypeScript validation and 122/122 tests pass.
 - PR #53 binds the official account-free GitHub Releases API for `ethereum/go-ethereum` to a scheduled issuer manifest, validates bounded published non-draft release identity and chronology, and retains release names and bodies only through digests. Every item is neutral `other` evidence under non-tradable `ETH.GETH`.
 - PR #53 isolated hosted strict TypeScript validation and 128/128 tests pass, including 6/6 Geth release source tests. The Ethereum Foundation Blog feed was explicitly rejected because the current site terms prohibit automated access despite advertising RSS.
+- The next stacked slice binds every reviewed Kraken lifecycle declaration to an exact immutable source/document capture with a database commit marker before evidence preparation. Source class, URL, fetch time, payload SHA-256 and commit availability must all match; the sorted binding is content-addressed.
 - Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #48, #49, #50, #51, #52 and #53 remain blocked before workflow steps.
 - A truthful runtime SEC contact, exact reviewed Kraken source evidence and owner-approved Preview Queue/DLQ provisioning and collector activation, additional approved issuer/news manifests/parsers/signatures and approved hosted Reddit OAuth credentials remain pending.
 - Missing, gapped, stale, delayed or insufficient evidence remains non-authoritative for strategy selection.
@@ -110,7 +111,7 @@ Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29,
 ## Next unblocked work
 
 1. Add further account-free approved issuer/news manifests and deterministic parsers; keep deployed SEC collection blocked until a truthful public contact is configured.
-2. Complete reviewed Kraken lifecycle historical backfill and bind declarations to committed payloads.
+2. Complete the reviewed Kraken lifecycle historical declaration backfill using only the committed-payload binding.
 3. Persist signed universe policies/snapshots and connect eligible membership to strategy/backtest orchestration.
 4. Persist immutable tax records from fills and reconcile exchange exports.
 5. Integrate walk-forward, holdout, benchmark and sensitivity inputs.
