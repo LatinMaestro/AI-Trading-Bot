@@ -1,13 +1,13 @@
 # Current status
 
-Last verified: 28 July 2026 (Australia/Brisbane)
+Last verified: 29 July 2026 (Australia/Brisbane)
 
 ## Repository stack
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #19 scheduled universe cycle → #21 stored history evidence → #23 official lifecycle contracts → #25 lifecycle raw capture → #27 lifecycle document discovery → #28 external intelligence contracts → #29 external intelligence persistence → #30 external intelligence acquisition adapters → #31 minute intelligence queue pipeline → #32 Kraken Status incident intelligence → #33 durable external-intelligence cache → #34 discovered lifecycle document capture → #35 scheduled recursive lifecycle document cycle → #36 SEC press-release RSS intelligence → #37 RBA media-release RSS intelligence → #38 Kraken active-maintenance intelligence → #39 Reddit OAuth transport → #40 transient Reddit post retention → #41 purge-enforced Reddit watch-state persistence → #42 AUSTRAC RSS intelligence → #43 Bitcoin Core RSS intelligence → #44 fail-closed intelligence runtime bindings → #45 reviewed intelligence activation manifest.
+- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #19 scheduled universe cycle → #21 stored history evidence → #23 official lifecycle contracts → #25 lifecycle raw capture → #27 lifecycle document discovery → #28 external intelligence contracts → #29 external intelligence persistence → #30 external intelligence acquisition adapters → #31 minute intelligence queue pipeline → #32 Kraken Status incident intelligence → #33 durable external-intelligence cache → #34 discovered lifecycle document capture → #35 scheduled recursive lifecycle document cycle → #36 SEC press-release RSS intelligence → #37 RBA media-release RSS intelligence → #38 Kraken active-maintenance intelligence → #39 Reddit OAuth transport → #40 transient Reddit post retention → #41 purge-enforced Reddit watch-state persistence → #42 AUSTRAC RSS intelligence → #43 Bitcoin Core RSS intelligence → #44 fail-closed intelligence runtime bindings → #45 reviewed intelligence activation manifest → #46 deterministic intelligence evidence linking.
 - #7, #10, #16, #18, #20, #22, #24 and #26 were closed as superseded, reset or duplicate work.
-- All 37 active pull requests remain draft and unmerged.
+- All 38 active pull requests remain draft and unmerged.
 - `main` remains a one-line placeholder.
 - Deployment, credentials, funds and wallet connection: none.
 
@@ -85,8 +85,10 @@ Last verified: 28 July 2026 (Australia/Brisbane)
 - PR #44 isolated hosted strict TypeScript validation and 67/67 focused tests pass, including 5/5 runtime-binding tests. Wrangler 4.114.0 type generation and Preview/Production dry-run bundles completed without deployment or resource creation.
 - PR #45 adds a deterministic content-addressed Kraken maintenance Preview activation manifest that requires an exact reviewed licence-evidence SHA-256, valid chronology and renewal within 366 days; it does not commit real evidence or activation configuration.
 - PR #45 documents the owner-gated activation, evidence, verification and fail-closed rollback procedure. Isolated hosted strict TypeScript validation and 71/71 tests pass, including 4/4 activation-manifest tests.
-- Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41 and #42, #43, #44 and #45 remain blocked or pending before workflow steps.
-- A truthful runtime SEC contact, exact reviewed Kraken source evidence and owner-approved Preview Queue/DLQ provisioning and collector activation, additional approved issuer/news manifests/parsers/signatures, approved hosted Reddit OAuth credentials, entity linking and paper-mode risk integration remain pending.
+- PR #46 adds a content-addressed reviewed topic/entity registry, correction-effective evidence views and exact-content syndication clusters. One authority-ranked representative per cluster prevents copied content from inflating publisher corroboration; retractions/deletions remove active evidence while retaining correction digests.
+- PR #46 isolated hosted strict TypeScript validation and 79/79 tests pass, including 8/8 linkage tests. Near-duplicate/repost and coordinated-manipulation evidence remains pending before assessment/persistence integration.
+- Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41 and #42, #43, #44, #45 and #46 remain blocked or pending before workflow steps.
+- A truthful runtime SEC contact, exact reviewed Kraken source evidence and owner-approved Preview Queue/DLQ provisioning and collector activation, additional approved issuer/news manifests/parsers/signatures, approved hosted Reddit OAuth credentials, near-duplicate manipulation controls, linkage persistence integration and paper-mode risk integration remain pending.
 - Missing, gapped, stale, delayed or insufficient evidence remains non-authoritative for strategy selection.
 - No private API, credential, fund, wallet or live-order capability changed.
 
@@ -94,11 +96,11 @@ Last verified: 28 July 2026 (Australia/Brisbane)
 
 GitHub Actions private-repository capacity remains unavailable until 1 August 2026. Exact-head jobs fail before steps or logs.
 
-Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41 or #42, #43, #44 or #45 until fresh exact-head checks pass and the stack merges in order.
+Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41 or #42, #43, #44, #45 or #46 until fresh exact-head checks pass and the stack merges in order.
 
 ## Next unblocked work
 
-1. Add deterministic external-intelligence entity/topic linking and correction clustering before any paper-mode risk integration.
+1. Add permitted-content near-duplicate/repost clustering and coordinated-manipulation evidence, then integrate deterministic linkage into assessment persistence.
 2. Add further account-free approved issuer/news manifests and deterministic parsers; keep deployed SEC collection blocked until a truthful public contact is configured.
 3. Complete reviewed Kraken lifecycle historical backfill and bind declarations to committed payloads.
 4. Persist signed universe policies/snapshots and connect eligible membership to strategy/backtest orchestration.
