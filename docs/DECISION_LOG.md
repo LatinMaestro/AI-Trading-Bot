@@ -227,3 +227,11 @@ Use the SEC's official press-release RSS endpoint only through an enabled author
 Re-verify payload length and SHA-256 before bounded UTF-8 RSS parsing. Accept only canonical current or legacy SEC press-release paths, matching GUIDs and publication times no later than receipt. Retain content-addressed identity, source URL and chronology, but never the title or raw XML.
 
 Until a separately reviewed deterministic entity/event linker exists, emit only neutral `other` evidence under the non-tradable `SEC.REGULATOR` scope. This source cannot pause new risk, create a positive candidate, approve an order or submit an order. No collector deployment, credential, provider account, paid term, private API, fund, wallet or live-trading capability is added.
+
+## 2026-07-28 — Scheduled RBA media-release macro intelligence
+
+Use the Reserve Bank of Australia's official media-release RSS feed as an authoritative regulator source in scheduled-poll mode. Bind the exact RBA origin, feed, publisher/provider identities, digest-only retention, attribution, reviewed copyright/licence snapshot and model-training prohibition. The RBA explicitly provides RSS for automated updates; respect its WAF controls and surface access failures as stale or delayed.
+
+Re-verify payload length and SHA-256 through a bounded strict RSS parser. Accept only one canonical RSS root/channel, bounded complete items, canonical RBA media-release paths, matching GUIDs and publication times no later than receipt. Reject document types, custom entities, malformed structure, identity conflicts and unsupported origins. Retain only deterministic identities, source URLs, chronology and content digests, not titles or raw XML.
+
+Emit only neutral `macro` evidence under the non-tradable `AUD.MACRO` scope. Do not infer direction or severity from titles. This source cannot pause new risk, create a positive candidate, approve an order or submit an order, and adds no deployment, credential, provider account, paid service, private API, funds, wallet or live-trading capability.
