@@ -77,7 +77,7 @@
   - [x] Backtest news/social features with original publication, receipt, availability and assessment timestamps and no look-ahead.
     - [x] Add content-addressed complete-snapshot replay with reaction expiry, latency evidence and deterministic intent gates.
     - [x] Bind every backtest request to its exact replay frame and suppress paused additions before fill modelling.
-    - [ ] Persist content-addressed comparative research outputs.
+    - [x] Persist content-addressed comparative research outputs.
 - [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
   - [x] Add a deterministic pure target-weight rebalancing engine.
   - [x] Attribute maker/taker fees, spread, slippage, adverse selection and square-root price impact.
@@ -95,7 +95,7 @@
   - [x] Add reproducible seeded moving-block bootstrap primitives.
   - [ ] Integrate validated walk-forward, holdout, benchmark and sensitivity inputs.
 - [ ] Produce repeatable research reports and signed strategy configurations.
-  - [x] Add content-addressed research-report v1 with mandatory provenance and benchmarks.
+  - [x] Add content-addressed research-report v1 with mandatory provenance, benchmarks and explicit external-intelligence comparison identities.
   - [ ] Persist reports and bind approved strategy configurations to authorised signatures/approval records.
 
 ## Phase 2 — Aggressive strategy portfolio
