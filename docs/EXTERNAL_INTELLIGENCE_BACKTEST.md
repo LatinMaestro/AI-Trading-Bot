@@ -94,12 +94,22 @@ evidence identities. Suppression is distinct from a market miss and therefore
 does not appear as a fill or missed-fill execution.
 
 The comparison artifact runs the same steps twice: once without intelligence
-and once with the verified replay gates. It content-addresses both complete
-results and records final-equity/return deltas, suppressed request count and
-notional, pause-frame count and research-candidate-frame count. Research
-candidates are measured but cannot alter targets or create a request.
+and once with the verified replay gates. It separately content-addresses both
+complete results, then content-addresses the complete comparison and records
+final-equity/return deltas, suppressed request count and notional, pause-frame
+count and research-candidate-frame count. Verification binds the gated result
+to every exact replay frame and binds each suppression to the frame's exact
+pause evidence. Research candidates are measured but cannot alter targets or
+create a request.
+
+D1 persists an immutable compact manifest containing the comparison, replay
+and two result digests plus the aggregate differences. It does not duplicate
+potentially large execution or equity arrays into a single D1 row. Exact
+retries preserve the original persistence time; changed identity reuse,
+updates and deletes fail closed. Research-report provenance includes a sorted,
+unique list of exact comparison digests, including an explicit empty list when
+no external-intelligence comparison was used.
 
 This is a research primitive, not evidence of strategy profitability or
-approval for live use. Durable comparison persistence, calibrated historical
-inputs, walk-forward/holdout evaluation and signed promotion evidence remain
-separate requirements.
+approval for live use. Calibrated historical inputs, walk-forward/holdout
+evaluation and signed promotion evidence remain separate requirements.
