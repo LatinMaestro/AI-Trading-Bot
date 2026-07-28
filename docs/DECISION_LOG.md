@@ -312,3 +312,11 @@ Create near-duplicate fingerprints only from exact effective publisher content w
 Compare only evidence with the same reviewed topic, event type and stance. Use a content-addressed policy, bounded publication window, integer Jaccard threshold and deterministic complete-link clustering so a transitive similarity bridge cannot combine materially different stories. Exact and near-duplicate clusters each contribute one corroboration unit regardless of publisher count.
 
 Record rapid near-duplicate publication across multiple publishers as a `rapid-multi-publisher-repost` pattern with watch-only handling. This is evidence of coordination risk, not identity proof or an accusation of manipulation. Missing permitted fingerprints, changed identities, unsafe thresholds, future chronology and digest conflicts fail closed. Reddit post content, identifiers and content-derived hashes remain excluded under the transient deletion contract. This stage cannot classify an event, approve risk, submit an order or change paper/live state.
+
+## 2026-07-29 — Immutable paper-only external-intelligence pause gate
+
+Load only immutable integrated assessments whose effective reaction is `pause-new-risk`, whose assessment time is no later than the scheduled decision time and whose age is at most one hour. Re-verify every content-addressed integration artifact against its D1 row before it can affect a paper decision; malformed, conflicting, future or over-cap evidence fails the cycle.
+
+Suppress only proposed paper `buy` actions, converting them to `hold` with zero target exposure. Preserve `sell` actions because a pause on new risk is not a forced liquidation instruction. Record every fresh pause assessment as an idempotent content-addressed `pause` risk event and bind proposed/resulting actions plus exact assessment digests into the immutable cycle audit.
+
+Research, shadow, validate and live modes remain disconnected. External intelligence cannot submit or approve an order, and no deployment, credential, provider activation, fund, wallet or live-execution capability is added.
