@@ -36,6 +36,7 @@
   - [ ] Establish complete lifecycle-source coverage and signed policy calibration by venue, period and equity scale.
     - [x] Add an allowlisted official-source manifest, future-effective event handling and deterministic coverage audit.
     - [ ] Backfill complete listing, trading-status, delisting and Australian-availability history.
+      - [x] Persist immutable partial/complete coverage manifests and keep partial history non-authoritative.
     - [ ] Add scheduled raw-source capture and immutable persistence.
       - [x] Capture and atomically persist the official listing/delisting indexes and status feeds daily.
       - [ ] Discover and capture exact individual listing, delisting and regional-availability documents.
