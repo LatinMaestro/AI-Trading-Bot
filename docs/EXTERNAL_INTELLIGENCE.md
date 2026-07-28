@@ -127,6 +127,14 @@ The parser re-verifies payload length and SHA-256 through the bounded strict RSS
 
 Every item remains neutral `other` evidence under non-tradable `BTC.CORE`. No title text is used to infer release type, severity, asset direction or trading action; this source cannot pause risk, create a positive candidate, approve an order or submit an order until separately reviewed deterministic classification and entity-linking evidence exists.
 
+## Ethereum Geth release boundary
+
+The official `ethereum/go-ethereum` GitHub repository's published releases are an approved account-free project-origin `issuer` source using the versioned GitHub Releases REST API in `scheduled-poll` mode. GitHub documents that published public-repository releases are available without authentication and permits API use for data collection subject to its terms and rate limits. The source contract binds the exact public endpoint, GitHub API origin, Ethereum Geth publisher identity, digest-only retention, required attribution, the reviewed GitHub API terms and model-training prohibition. Authority is limited to releases published by the Geth project; it does not establish general Ethereum-network state or market direction.
+
+The parser re-verifies exact payload length and SHA-256, accepts at most the API's default 30 releases, and requires positive safe-integer release IDs, canonical semantic-version Geth tags, exact repository release URLs, published non-draft state and creation/publication times no later than receipt. Release names and bodies contribute only to content digests and are never retained or queued.
+
+Every item remains neutral `other` evidence under non-tradable `ETH.GETH`. No release-note wording or prerelease flag is used to infer severity, asset direction or trading action. The source cannot pause risk, create a positive candidate, approve an order or submit an order. Collection must send the bound non-secret project User-Agent, use conditional requests, remain within GitHub's unauthenticated 60-request-per-hour limit and surface rate limiting or unavailability as stale rather than retrying evasively.
+
 ## Kraken active-maintenance boundary
 
 Kraken's official Status API active-maintenance endpoint is an approved account-free official-exchange source using `minute-poll`. Kraken documents the endpoint specifically for programmatic access. The source contract binds the exact API origin and endpoint, digest-only retention, transient payload handling and explicit model-training prohibition.
@@ -181,6 +189,7 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
    - [x] Add a scheduled RBA media-release RSS manifest and deterministic metadata-only normaliser.
    - [x] Add a scheduled AUSTRAC media-release RSS manifest and deterministic metadata-only normaliser with retirement monitoring.
    - [x] Add a scheduled Bitcoin Core announcement RSS manifest and deterministic digest-only normaliser.
+   - [x] Add a scheduled Ethereum Geth GitHub Releases API manifest and deterministic digest-only normaliser.
    - [x] Add a one-minute Kraken active-maintenance Status API manifest and deterministic digest-only normaliser.
    - [ ] Add further approved exchange/issuer/news manifests, source-specific parsing, provider signature implementations and deployed endpoints.
 4. [ ] Add compliant Reddit OAuth collection with adaptive rate limiting.
@@ -204,7 +213,7 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
 
 ## Current limitation
 
-The persistence, reaction, generic acquisition-transport and deterministic exact-content linkage boundaries, scheduled SEC, RBA, AUSTRAC and Bitcoin Core RSS parsers, and the Kraken active-maintenance minute-source normaliser are implemented. Reddit OAuth transport, transient post normalisation, bounded deletion checks, purge-enforced transient D1 persistence and downstream watch-state invalidation are implemented, but approved hosted credentials remain pending. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, active minute Cron Trigger, provisioned queue, model or order path is connected. The Preview Cron and Queue/DLQ runtime blueprint and deterministic activation-manifest builder are implemented, but no real evidence digest, enabled contract, hosted resource or activation is committed. The reviewed activation and rollback runbook is documented; Production explicitly has no such bindings. Permitted-content near-duplicate/repost and rapid multi-publisher coordination evidence, immutable integrated-assessment persistence, a fresh paper-only `pause-new-risk` gate and no-look-ahead hourly research replay are implemented. Replay selects only complete snapshots assessed by the simulated decision time, preserves publication/receipt/availability/assessment latency and prevents later corrections from rewriting earlier frames. Intelligence-aware backtests bind every request to an exact verified frame, remove paused buys before fill modelling and preserve exits. Compact immutable comparison manifests persist exact replay and result identities, and research-report provenance binds the exact comparison digests. The paper gate suppresses new paper buys while preserving exits, records immutable risk evidence and remains disconnected from live mode. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
+The persistence, reaction, generic acquisition-transport and deterministic exact-content linkage boundaries, scheduled SEC, RBA, AUSTRAC and Bitcoin Core RSS parsers, the scheduled Ethereum Geth GitHub Releases API parser, and the Kraken active-maintenance minute-source normaliser are implemented. Reddit OAuth transport, transient post normalisation, bounded deletion checks, purge-enforced transient D1 persistence and downstream watch-state invalidation are implemented, but approved hosted credentials remain pending. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, active minute Cron Trigger, provisioned queue, model or order path is connected. The Preview Cron and Queue/DLQ runtime blueprint and deterministic activation-manifest builder are implemented, but no real evidence digest, enabled contract, hosted resource or activation is committed. The reviewed activation and rollback runbook is documented; Production explicitly has no such bindings. Permitted-content near-duplicate/repost and rapid multi-publisher coordination evidence, immutable integrated-assessment persistence, a fresh paper-only `pause-new-risk` gate and no-look-ahead hourly research replay are implemented. Replay selects only complete snapshots assessed by the simulated decision time, preserves publication/receipt/availability/assessment latency and prevents later corrections from rewriting earlier frames. Intelligence-aware backtests bind every request to an exact verified frame, remove paused buys before fill modelling and preserve exits. Compact immutable comparison manifests persist exact replay and result identities, and research-report provenance binds the exact comparison digests. The paper gate suppresses new paper buys while preserving exits, records immutable risk evidence and remains disconnected from live mode. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
 
 ## Official references
 
@@ -218,6 +227,10 @@ The persistence, reaction, generic acquisition-transport and deterministic exact
 - Bitcoin Core RSS feeds: https://bitcoincore.org/en/rss/
 - Bitcoin Core announcements subscription: https://bitcoincore.org/en/list/announcements/join/
 - Bitcoin Core website licence notice: https://github.com/bitcoin-core/bitcoincore.org/blob/master/COPYING
+- GitHub Releases API: https://docs.github.com/en/rest/releases/releases#list-releases
+- GitHub REST API rate limits: https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api
+- GitHub API terms: https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms
+- Ethereum Geth repository: https://github.com/ethereum/go-ethereum
 - Reddit Data API Terms: https://redditinc.com/policies/data-api-terms
 - Reddit Developer Terms: https://redditinc.com/policies/developer-terms
 - Cloudflare Cron Triggers: https://developers.cloudflare.com/workers/configuration/cron-triggers/
