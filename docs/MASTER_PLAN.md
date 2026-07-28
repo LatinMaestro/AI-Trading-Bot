@@ -64,6 +64,8 @@
     - [x] Add purge-enforced transient persistence and downstream watch-state invalidation.
     - [ ] Supply approved hosted credentials and deploy the Reddit collector.
   - [ ] Add dedicated one-minute collection and queue-backed at-least-once processing with idempotency.
+    - [x] Bind an inactive-by-default Preview minute Cron, Queue/DLQ producer-consumer and D1 persistence runtime.
+    - [ ] Provision approved hosted Preview resources, install an exact reviewed source contract and activate collection.
     - [x] Add deterministic bounded queue envelopes, per-message acknowledgement/retry and source-level stale outcomes.
     - [x] Persist conditional cache validators durably with monotonic conflict controls.
     - [ ] Bind approved source manifests, minute Cron, Queue/DLQ and the deployed consumer.
