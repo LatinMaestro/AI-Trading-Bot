@@ -4,6 +4,7 @@ import test from "node:test";
 import { DatabaseSync } from "node:sqlite";
 import {
   prepareKrakenLifecycleDocumentCapturePersistence,
+  SELECT_LATEST_COMMITTED_KRAKEN_LISTING_INDEX_PAGES_SQL,
   type KrakenLifecycleDocumentCaptureStatement,
 } from "../src/storage/krakenLifecycleDocumentCapture.ts";
 import type { KrakenLifecycleDocumentCapture } from "../src/universe/krakenLifecycleDocumentCapture.ts";
@@ -243,5 +244,43 @@ test("accepts a committed listing page as exact recursive provenance", () => {
       )
       .get("8".repeat(64))?.discovered_from_capture_id,
     pageCapture.captureId,
+  );
+});
+
+test("loads a bounded latest-page window from the requested rotation", () => {
+  const db = database();
+  execute(
+    db,
+    prepareKrakenLifecycleDocumentCapturePersistence(
+      [
+        capture({
+          captureId: "6".repeat(64),
+          sourceKind: "asset-listings-index-page",
+          sourceRef:
+            "https://blog.kraken.com/category/product/asset-listings/page/2",
+          fetchedAtMs: NOW,
+          payloadSha256: "7".repeat(64),
+        }),
+        capture({
+          captureId: "8".repeat(64),
+          sourceKind: "asset-listings-index-page",
+          sourceRef:
+            "https://blog.kraken.com/category/product/asset-listings/page/10",
+          fetchedAtMs: NOW + 1,
+          payloadSha256: "9".repeat(64),
+        }),
+      ],
+      NOW + 2,
+    ),
+  );
+  const rows = db
+    .prepare(SELECT_LATEST_COMMITTED_KRAKEN_LISTING_INDEX_PAGES_SQL)
+    .all(10);
+  assert.deepEqual(
+    rows.map((row) => row.source_ref),
+    [
+      "https://blog.kraken.com/category/product/asset-listings/page/10",
+      "https://blog.kraken.com/category/product/asset-listings/page/2",
+    ],
   );
 });
