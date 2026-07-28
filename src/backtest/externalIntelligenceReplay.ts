@@ -60,7 +60,8 @@ export interface ExternalIntelligenceReplayFrame {
   readonly visibleIntegrationSha256s: readonly string[];
   readonly activePauseNewRiskSha256s: readonly string[];
   readonly activeResearchCandidateSha256s: readonly string[];
-  readonly watchOnlySha256s: readonly string[];
+  readonly activeWatchSha256s: readonly string[];
+  readonly activeIgnoredSha256s: readonly string[];
   readonly expiredIntegrationSha256s: readonly string[];
   readonly latency: ExternalIntelligenceReplayLatency;
   readonly frameSha256: string;
@@ -286,7 +287,8 @@ async function frameFor(
     visibleIntegrationSha256s,
     activePauseNewRiskSha256s: idsFor("pause-new-risk"),
     activeResearchCandidateSha256s: idsFor("research-candidate"),
-    watchOnlySha256s: [...idsFor("watch"), ...idsFor("ignore")].sort(),
+    activeWatchSha256s: idsFor("watch"),
+    activeIgnoredSha256s: idsFor("ignore"),
     expiredIntegrationSha256s: visibleIntegrationSha256s.filter(
       (sha256) => !activeIds.has(sha256),
     ),
