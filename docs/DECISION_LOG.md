@@ -214,7 +214,7 @@ This slice establishes the capture and persistence boundary only. Daily committe
 
 ## 2026-07-28 — Bounded recursive lifecycle document cycle
 
-After the daily fixed Kraken lifecycle sources commit, load at most the latest committed capture for each of 499 canonical listing-index pages and use those exact payloads as additional discovery sources. Prefer the root listing index, then the lowest page number, when the same target appears more than once; bind each selected target to the exact committed capture and payload that supplied it.
+After the daily fixed Kraken lifecycle sources commit, rotate deterministically through at most 32 latest committed listing-index page captures whose combined exact payloads do not exceed 8 MiB, and use those payloads as additional discovery sources. Prefer the root listing index, then the lowest page number, when the same target appears more than once; bind each selected target to the exact committed capture and payload that supplied it.
 
 Skip every already committed source reference and fetch at most ten remaining canonical HTML documents per daily run. A newly captured pagination page may extend discovery only on a later daily run after its commit marker exists, so recursion advances as a bounded durable frontier rather than an in-memory crawler. Outside the daily lifecycle slot, perform no document lookup, discovery or network work.
 
