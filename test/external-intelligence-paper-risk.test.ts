@@ -217,7 +217,15 @@ test("pause-new-risk never blocks a paper exit", async () => {
   assert.equal(result.decision.action, "sell");
   assert.equal(
     sqlite.prepare("SELECT COUNT(*) AS count FROM risk_events").get()?.count,
-    0,
+    1,
+  );
+  assert.equal(
+    JSON.parse(
+      String(
+        sqlite.prepare("SELECT detail_json FROM risk_events").get()?.detail_json,
+      ),
+    ).appliedToProposedBuy,
+    false,
   );
   sqlite.close();
 });
