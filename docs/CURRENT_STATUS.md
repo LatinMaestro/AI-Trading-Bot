@@ -92,7 +92,7 @@ Last verified: 29 July 2026 (Australia/Brisbane)
 - PR #48 adds immutable content-addressed linkage, manipulation-evidence and integrated-assessment persistence. Rapid reposts remain watch-only while authoritative severe negatives retain the fail-safe `pause-new-risk` boundary. Isolated hosted strict TypeScript validation and 92/92 tests pass.
 - PR #49 loads only fresh persisted effective pauses in paper mode, suppresses proposed buys while preserving exits, records immutable content-addressed risk events and binds evidence digests into the cycle audit. Isolated hosted strict TypeScript validation and 97/97 tests pass, including 5/5 paper-risk tests.
 - PR #50 adds deterministic complete-snapshot intelligence replay at hourly signal time, rejects look-ahead chronology and later-snapshot leakage, records publication/receipt/availability/assessment latency, expires reactions by versioned policy and keeps research candidates observational. Isolated hosted strict TypeScript validation and 103/103 tests pass, including 6/6 replay tests.
-- Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #48 #49 and #50 remain blocked before workflow steps.
+- Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #48, #49 and #50 remain blocked before workflow steps.
 - A truthful runtime SEC contact, exact reviewed Kraken source evidence and owner-approved Preview Queue/DLQ provisioning and collector activation, additional approved issuer/news manifests/parsers/signatures and approved hosted Reddit OAuth credentials remain pending.
 - Missing, gapped, stale, delayed or insufficient evidence remains non-authoritative for strategy selection.
 - No private API, credential, fund, wallet or live-order capability changed.
@@ -101,7 +101,7 @@ Last verified: 29 July 2026 (Australia/Brisbane)
 
 GitHub Actions private-repository capacity remains unavailable until 1 August 2026. Exact-head jobs fail before steps or logs.
 
-Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #48 or #49 or #50 until fresh exact-head checks pass and the stack merges in order.
+Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #48, #49 or #50 until fresh exact-head checks pass and the stack merges in order.
 
 ## Next unblocked work
 
