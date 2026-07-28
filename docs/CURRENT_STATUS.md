@@ -5,9 +5,9 @@ Last verified: 28 July 2026 (Australia/Brisbane)
 ## Repository stack
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #19 scheduled universe cycle → #21 stored history evidence → #23 official lifecycle contracts → #25 lifecycle raw capture → #27 lifecycle document discovery → #28 external intelligence contracts → #29 external intelligence persistence → #30 external intelligence acquisition adapters → #31 minute intelligence queue pipeline → #32 Kraken Status incident intelligence → #33 durable external-intelligence cache → #34 discovered lifecycle document capture.
+- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #19 scheduled universe cycle → #21 stored history evidence → #23 official lifecycle contracts → #25 lifecycle raw capture → #27 lifecycle document discovery → #28 external intelligence contracts → #29 external intelligence persistence → #30 external intelligence acquisition adapters → #31 minute intelligence queue pipeline → #32 Kraken Status incident intelligence → #33 durable external-intelligence cache → #34 discovered lifecycle document capture → #35 scheduled recursive lifecycle document cycle.
 - #7, #10, #16, #18, #20, #22, #24 and #26 were closed as superseded, reset or duplicate work.
-- All 26 active pull requests remain draft and unmerged.
+- All 27 active pull requests remain draft and unmerged.
 - `main` remains a one-line placeholder.
 - Deployment, credentials, funds and wallet connection: none.
 
@@ -53,7 +53,10 @@ Last verified: 28 July 2026 (Australia/Brisbane)
 - PR #34 adds exact bounded HTML capture for discovered Kraken listing pages, listing documents and support lifecycle documents, with canonical target enforcement, redirect/media/size/UTF-8 controls, deterministic discovery provenance and retry-safe batches of at most ten targets.
 - PR #34 adds immutable D1 document-capture headers and commit markers linked to the exact committed index capture and payload that discovered each target; exact retries are idempotent and changed identities, incomplete provenance, mutation and commits before fetch fail closed.
 - PR #34 repository-equivalent strict TypeScript validation and 8/8 focused Node 22/SQLite tests pass in an isolated hosted harness.
-- Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30, #31, #32, #33 and #34 remain blocked before workflow steps.
+- PR #35 advances lifecycle discovery from the current fixed indexes plus the latest committed capture of each listing-index page, selects exact provenance deterministically, skips committed source references and captures at most ten documents in the daily lifecycle slot before universe evaluation.
+- PR #35 allows a captured listing-index page to serve as provenance only after its immutable document capture is committed, loads at most 499 latest committed pages, records the recursive frontier and capture counts in cycle audit detail, and performs no document work outside the daily slot.
+- PR #35 focused strict TypeScript validation and 11/11 Node 22/SQLite tests pass in an isolated hosted harness.
+- Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30, #31, #32, #33, #34 and #35 remain blocked before workflow steps.
 - Additional approved source manifests/parsers/signatures, deployed minute Cron and Queue/DLQ bindings, compliant Reddit OAuth collection, entity linking and paper-mode risk integration remain pending.
 - Missing, gapped, stale, delayed or insufficient evidence remains non-authoritative for strategy selection.
 - No private API, credential, fund, wallet or live-order capability changed.
@@ -62,17 +65,16 @@ Last verified: 28 July 2026 (Australia/Brisbane)
 
 GitHub Actions private-repository capacity remains unavailable until 1 August 2026. Exact-head jobs fail before steps or logs.
 
-Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32, #33 or #34 until fresh exact-head checks pass and the stack merges in order.
+Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32, #33, #34 or #35 until fresh exact-head checks pass and the stack merges in order.
 
 ## Next unblocked work
 
-1. Bind committed-source lookup, recursive listing-index discovery and bounded document capture into the daily lifecycle cycle.
-2. Add further approved official/regulator/issuer/news manifests, source-specific RSS/Atom/JSON/provider-event parsers, signature implementations and deployed endpoint wiring.
-3. Add compliant Reddit OAuth collection with adaptive rate limits, deletion handling and minimal storage.
-4. Bind minute Cron, Queue/DLQ and the deployed external-intelligence consumer.
-5. Complete reviewed Kraken lifecycle historical backfill and bind declarations to committed payloads.
-6. Persist signed universe policies/snapshots and connect eligible membership to strategy/backtest orchestration.
-7. Persist immutable tax records from fills and reconcile exchange exports.
-8. Integrate walk-forward, holdout, benchmark and sensitivity inputs.
+1. Add further approved official/regulator/issuer/news manifests, source-specific RSS/Atom/JSON/provider-event parsers, signature implementations and deployed endpoint wiring.
+2. Add compliant Reddit OAuth collection with adaptive rate limits, deletion handling and minimal storage.
+3. Bind minute Cron, Queue/DLQ and the deployed external-intelligence consumer.
+4. Complete reviewed Kraken lifecycle historical backfill and bind declarations to committed payloads.
+5. Persist signed universe policies/snapshots and connect eligible membership to strategy/backtest orchestration.
+6. Persist immutable tax records from fills and reconcile exchange exports.
+7. Integrate walk-forward, holdout, benchmark and sensitivity inputs.
 
 Do not deploy, request credentials, create provider accounts, accept paid terms, move funds or enable live execution.
