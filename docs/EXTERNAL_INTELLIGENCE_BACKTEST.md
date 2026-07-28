@@ -72,7 +72,8 @@ zero-latency information.
 Each snapshot, policy, frame and complete replay has a canonical SHA-256
 identity. The replay output includes the exact selected snapshot, visible
 assessments, active pause evidence, research candidates, watch-only evidence,
-expired assessments and latency measurements for every hourly decision.
+ignored evidence, expired assessments and latency measurements for every
+hourly decision.
 
 This is a research primitive, not evidence of strategy profitability or
 approval for live use. A later execution-engine integration must bind each
