@@ -110,7 +110,9 @@ export interface ExternalIntelligenceBacktestComparison {
   readonly schemaVersion: "external-intelligence-backtest-comparison-v1";
   readonly replaySha256: string;
   readonly baselineResult: BacktestResult;
+  readonly baselineResultSha256: string;
   readonly intelligenceGatedResult: BacktestResult;
+  readonly intelligenceGatedResultSha256: string;
   readonly finalEquityDeltaAud: number;
   readonly totalReturnDeltaPct: number;
   readonly suppressedRequestCount: number;
@@ -618,11 +620,17 @@ export async function runExternalIntelligenceBacktestComparison(
   );
   const baselineResult = runBacktest(config, steps);
   const intelligenceGatedResult = runBacktest(config, gatedSteps);
+  const baselineResultSha256 =
+    await sha256CanonicalIntelligence(baselineResult);
+  const intelligenceGatedResultSha256 =
+    await sha256CanonicalIntelligence(intelligenceGatedResult);
   const canonical = {
     schemaVersion: "external-intelligence-backtest-comparison-v1",
     replaySha256: replay.replaySha256,
     baselineResult,
+    baselineResultSha256,
     intelligenceGatedResult,
+    intelligenceGatedResultSha256,
     finalEquityDeltaAud:
       intelligenceGatedResult.finalEquityAud -
       baselineResult.finalEquityAud,
@@ -647,6 +655,188 @@ export async function runExternalIntelligenceBacktestComparison(
     ...canonical,
     comparisonSha256: await sha256CanonicalIntelligence(canonical),
   };
+}
+
+function assertFiniteComparisonNumber(
+  name: string,
+  value: number,
+  minimum = Number.NEGATIVE_INFINITY,
+): void {
+  if (!Number.isFinite(value) || value < minimum) {
+    throw new Error(`${name} must be finite and at least ${minimum}`);
+  }
+}
+
+function assertEqualNumber(
+  name: string,
+  actual: number,
+  expected: number,
+): void {
+  if (actual !== expected) {
+    throw new Error(`${name} does not match the comparison results`);
+  }
+}
+
+export async function verifyExternalIntelligenceBacktestComparison(
+  comparison: ExternalIntelligenceBacktestComparison,
+  replay: ExternalIntelligenceReplay,
+): Promise<void> {
+  if (
+    comparison.schemaVersion !==
+    "external-intelligence-backtest-comparison-v1"
+  ) {
+    throw new Error("Unsupported external-intelligence backtest comparison");
+  }
+  await verifyExternalIntelligenceReplay(replay);
+  for (const [name, digest] of [
+    ["replaySha256", comparison.replaySha256],
+    ["baselineResultSha256", comparison.baselineResultSha256],
+    [
+      "intelligenceGatedResultSha256",
+      comparison.intelligenceGatedResultSha256,
+    ],
+    ["comparisonSha256", comparison.comparisonSha256],
+  ] as const) {
+    assertDigest(name, digest);
+  }
+  if (comparison.replaySha256 !== replay.replaySha256) {
+    throw new Error("Comparison does not belong to the supplied replay");
+  }
+
+  const expectedBaselineResultSha256 =
+    await sha256CanonicalIntelligence(comparison.baselineResult);
+  const expectedIntelligenceGatedResultSha256 =
+    await sha256CanonicalIntelligence(comparison.intelligenceGatedResult);
+  if (
+    expectedBaselineResultSha256 !== comparison.baselineResultSha256 ||
+    expectedIntelligenceGatedResultSha256 !==
+      comparison.intelligenceGatedResultSha256
+  ) {
+    throw new Error("Comparison backtest-result digest does not match");
+  }
+  if (
+    comparison.baselineResult.executionGateFrameSha256s.length !== 0 ||
+    comparison.baselineResult.suppressedExecutions.length !== 0
+  ) {
+    throw new Error("Comparison baseline must not contain intelligence gates");
+  }
+  const replayFrameSha256s = replay.frames.map((frame) => frame.frameSha256);
+  if (
+    canonicalIntelligenceJson(
+      comparison.intelligenceGatedResult.executionGateFrameSha256s,
+    ) !== canonicalIntelligenceJson(replayFrameSha256s)
+  ) {
+    throw new Error("Comparison gated result does not cover the exact replay");
+  }
+  const frameBySha256 = new Map(
+    replay.frames.map((frame) => [frame.frameSha256, frame]),
+  );
+  for (const suppressed of
+    comparison.intelligenceGatedResult.suppressedExecutions) {
+    const frame = frameBySha256.get(suppressed.frameSha256);
+    if (
+      frame === undefined ||
+      suppressed.pauseEvidenceSha256s.length === 0 ||
+      canonicalIntelligenceJson(suppressed.pauseEvidenceSha256s) !==
+        canonicalIntelligenceJson(frame.activePauseNewRiskSha256s)
+    ) {
+      throw new Error(
+        "Suppressed execution does not bind exact replay pause evidence",
+      );
+    }
+    assertFiniteComparisonNumber(
+      "suppressed requestedNotionalAud",
+      suppressed.requestedNotionalAud,
+      0,
+    );
+  }
+
+  assertFiniteComparisonNumber(
+    "finalEquityDeltaAud",
+    comparison.finalEquityDeltaAud,
+  );
+  assertFiniteComparisonNumber(
+    "totalReturnDeltaPct",
+    comparison.totalReturnDeltaPct,
+  );
+  assertFiniteComparisonNumber(
+    "suppressedRequestedNotionalAud",
+    comparison.suppressedRequestedNotionalAud,
+    0,
+  );
+  for (const [name, value] of [
+    ["suppressedRequestCount", comparison.suppressedRequestCount],
+    ["pauseFrameCount", comparison.pauseFrameCount],
+    ["researchCandidateFrameCount", comparison.researchCandidateFrameCount],
+  ] as const) {
+    if (!Number.isSafeInteger(value) || value < 0) {
+      throw new Error(`${name} must be a non-negative safe integer`);
+    }
+  }
+
+  assertEqualNumber(
+    "finalEquityDeltaAud",
+    comparison.finalEquityDeltaAud,
+    comparison.intelligenceGatedResult.finalEquityAud -
+      comparison.baselineResult.finalEquityAud,
+  );
+  assertEqualNumber(
+    "totalReturnDeltaPct",
+    comparison.totalReturnDeltaPct,
+    comparison.intelligenceGatedResult.totalReturnPct -
+      comparison.baselineResult.totalReturnPct,
+  );
+  assertEqualNumber(
+    "suppressedRequestCount",
+    comparison.suppressedRequestCount,
+    comparison.intelligenceGatedResult.suppressedExecutions.length,
+  );
+  assertEqualNumber(
+    "suppressedRequestedNotionalAud",
+    comparison.suppressedRequestedNotionalAud,
+    comparison.intelligenceGatedResult.suppressedExecutions.reduce(
+      (sum, execution) => sum + execution.requestedNotionalAud,
+      0,
+    ),
+  );
+  assertEqualNumber(
+    "pauseFrameCount",
+    comparison.pauseFrameCount,
+    replay.frames.filter(
+      (frame) => frame.activePauseNewRiskSha256s.length > 0,
+    ).length,
+  );
+  assertEqualNumber(
+    "researchCandidateFrameCount",
+    comparison.researchCandidateFrameCount,
+    replay.frames.filter(
+      (frame) => frame.activeResearchCandidateSha256s.length > 0,
+    ).length,
+  );
+
+  const expectedComparisonSha256 =
+    await sha256CanonicalIntelligence({
+      schemaVersion: comparison.schemaVersion,
+      replaySha256: comparison.replaySha256,
+      baselineResult: comparison.baselineResult,
+      baselineResultSha256: comparison.baselineResultSha256,
+      intelligenceGatedResult: comparison.intelligenceGatedResult,
+      intelligenceGatedResultSha256:
+        comparison.intelligenceGatedResultSha256,
+      finalEquityDeltaAud: comparison.finalEquityDeltaAud,
+      totalReturnDeltaPct: comparison.totalReturnDeltaPct,
+      suppressedRequestCount: comparison.suppressedRequestCount,
+      suppressedRequestedNotionalAud:
+        comparison.suppressedRequestedNotionalAud,
+      pauseFrameCount: comparison.pauseFrameCount,
+      researchCandidateFrameCount:
+        comparison.researchCandidateFrameCount,
+    });
+  if (expectedComparisonSha256 !== comparison.comparisonSha256) {
+    throw new Error(
+      "External-intelligence backtest comparison digest does not match",
+    );
+  }
 }
 
 export function evaluateExternalIntelligenceBacktestGate(
