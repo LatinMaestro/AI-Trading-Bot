@@ -91,6 +91,14 @@ The parser re-verifies payload length and SHA-256, accepts only bounded UTF-8 RS
 
 Every item remains a neutral `other` event scoped to the non-tradable `SEC.REGULATOR` marker until a separately reviewed deterministic entity/event linker exists. It cannot pause new risk, create a positive research candidate, approve an order or submit an order. Automated requests require a truthful contact-bearing User-Agent supplied at runtime; no contact address is committed.
 
+## RBA media-release RSS boundary
+
+The Reserve Bank of Australia media-release RSS feed is an approved lower-priority regulator source using `scheduled-poll`. The RBA explicitly provides the feed for automated updates and identifies WAF-protected RSS access. Its source contract binds the exact feed and RBA origin, digest-only retention, required attribution, a copyright/licence snapshot and model-training prohibition.
+
+The parser re-verifies payload length and SHA-256 through a reusable strict RSS boundary, rejects malformed roots/channels/items, document types and custom entities, and requires canonical RBA media-release paths, matching GUIDs and publication times no later than receipt. It retains deterministic identity, chronology and digests but not titles or raw XML.
+
+Every item remains neutral `macro` evidence under the non-tradable `AUD.MACRO` scope. No headline wording is used to infer direction, severity or order action; the feed cannot pause new risk, create a positive research candidate, approve an order or submit an order.
+
 ## Evidence and latency
 
 Each item binds:
@@ -134,7 +142,8 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
 3. [ ] Add official exchange, regulator, issuer and publisher RSS/webhook adapters.
    - [x] Add registry-bound bounded feed polling and authenticated webhook payload acquisition.
    - [x] Add a scheduled SEC press-release RSS manifest and deterministic metadata-only normaliser.
-   - [ ] Add further approved source manifests, source-specific parsing, provider signature implementations and deployed endpoints.
+   - [x] Add a scheduled RBA media-release RSS manifest and deterministic metadata-only normaliser.
+   - [ ] Add further approved exchange/issuer/news manifests, source-specific parsing, provider signature implementations and deployed endpoints.
 4. [ ] Add compliant Reddit OAuth collection with adaptive rate limiting.
 5. [ ] Add minute-level collectors and queue-backed deduplicated processing.
 6. [ ] Add deterministic entity/topic linking, syndication clustering and correction handling.
@@ -144,10 +153,13 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
 
 ## Current limitation
 
-The persistence, reaction and generic acquisition-transport boundaries plus one scheduled SEC RSS manifest and neutral metadata-only parser are implemented. No truthful SEC runtime contact, deployed SEC collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
+The persistence, reaction and generic acquisition-transport boundaries plus scheduled SEC and RBA RSS manifests with neutral metadata-only parsers are implemented. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
 
 ## Official references
 
+- RBA RSS feeds: https://www.rba.gov.au/updates/rss-feeds.html
+- RBA RSS access guidance: https://www.rba.gov.au/qa/rss.html
+- RBA copyright and attribution: https://www.rba.gov.au/copyright/
 - Reddit Data API Terms: https://redditinc.com/policies/data-api-terms
 - Reddit Developer Terms: https://redditinc.com/policies/developer-terms
 - Cloudflare Cron Triggers: https://developers.cloudflare.com/workers/configuration/cron-triggers/
