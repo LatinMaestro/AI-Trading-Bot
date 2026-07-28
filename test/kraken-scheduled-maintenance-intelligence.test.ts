@@ -272,4 +272,24 @@ test("fails closed on unsupported severity, inactive state, page and digest conf
     ),
     /digest does not match/,
   );
+  const future = JSON.parse(payload()) as {
+    scheduled_maintenances: {
+      updated_at: string;
+      incident_updates: { updated_at: string }[];
+    }[];
+  };
+  const maintenance = future.scheduled_maintenances[0];
+  if (maintenance === undefined) throw new Error("expected fixture maintenance");
+  maintenance.updated_at = "2026-07-28T09:04:00.000Z";
+  const latestUpdate = maintenance.incident_updates[0];
+  if (latestUpdate === undefined) throw new Error("expected fixture update");
+  latestUpdate.updated_at = "2026-07-28T09:04:00.000Z";
+  await assert.rejects(
+    normaliseKrakenActiveMaintenanceCapture(
+      contract(),
+      await capture(JSON.stringify(future)),
+      policy,
+    ),
+    /chronology extends after receipt/,
+  );
 });
