@@ -29,6 +29,8 @@ const DIGESTS = {
   cash: "3".repeat(64),
   btc: "4".repeat(64),
   equal: "5".repeat(64),
+  comparisonOne: "6".repeat(64),
+  comparisonTwo: "7".repeat(64),
 } as const;
 const TIMESTAMPS = [Date.UTC(2026, 0, 1), Date.UTC(2026, 1, 1), Date.UTC(2026, 2, 1)] as const;
 const OBJECTIVE: ObjectiveDefinition = {
@@ -127,6 +129,10 @@ function reportInput() {
       executionConfigSha256: DIGESTS.execution,
       objectiveConfigSha256: DIGESTS.objective,
       benchmarkConfigSha256: DIGESTS.benchmark,
+      externalIntelligenceComparisonSha256s: [
+        DIGESTS.comparisonTwo,
+        DIGESTS.comparisonOne,
+      ],
     },
     warnings: ["scenario-frequencies-are-not-forecasts", "synthetic-fixture"],
   };
@@ -170,7 +176,22 @@ test("research report is deterministic and content-addressed", async () => {
     warnings: [...reportInput().warnings].reverse(),
   });
   assert.equal(first.reportSha256, second.reportSha256);
+  const withoutIntelligenceComparison = await prepareResearchReport({
+    ...reportInput(),
+    provenance: {
+      ...reportInput().provenance,
+      externalIntelligenceComparisonSha256s: [],
+    },
+  });
+  assert.notEqual(
+    first.reportSha256,
+    withoutIntelligenceComparison.reportSha256,
+  );
   assert.match(first.reportSha256, /^[0-9a-f]{64}$/);
+  assert.deepEqual(
+    first.provenance.externalIntelligenceComparisonSha256s,
+    [DIGESTS.comparisonOne, DIGESTS.comparisonTwo],
+  );
   assert.deepEqual(first.benchmarks.map((benchmark) => benchmark.seriesId), [
     "aud-cash",
     "btc-hold-aud",
@@ -204,6 +225,20 @@ test("report fails closed for incomplete, misaligned or unproven comparisons", a
   await assert.rejects(
     prepareResearchReport({ ...input, benchmarks: misaligned }),
     /does not share the strategy cadence/,
+  );
+
+  await assert.rejects(
+    prepareResearchReport({
+      ...input,
+      provenance: {
+        ...input.provenance,
+        externalIntelligenceComparisonSha256s: [
+          DIGESTS.comparisonOne,
+          DIGESTS.comparisonOne,
+        ],
+      },
+    }),
+    /cannot contain duplicates/u,
   );
 
   const convertedObjective = input.benchmarks.map((benchmark) =>
