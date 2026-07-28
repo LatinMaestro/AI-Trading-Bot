@@ -192,16 +192,16 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
    - [x] Bind an inactive-by-default Preview minute Cron, bounded Queue/DLQ and D1 consumer while Production explicitly has no Cron or Queue resources.
    - [x] Generate a content-addressed Kraken Preview activation manifest from exact reviewed evidence and document owner-gated activation and rollback.
    - [ ] Provision approved Preview resources, install an exact reviewed source contract and activate collection.
-6. [ ] Add deterministic entity/topic linking, syndication clustering and correction handling.
+6. [x] Add deterministic entity/topic linking, syndication clustering and correction handling.
    - [x] Add reviewed entity/topic rules, exact-content syndication clustering and correction-safe representative selection.
-   - [ ] Add permitted-content near-duplicate/repost clustering and coordinated-manipulation evidence.
+   - [x] Add permitted-content near-duplicate/repost clustering and coordinated-manipulation evidence.
 7. [ ] Integrate `pause-new-risk` with paper-mode risk controls.
 8. [ ] Backtest news/social features without look-ahead using original publication and receipt timestamps.
 9. [ ] Promote any risk-on use only after walk-forward, holdout, manipulation and cost evidence.
 
 ## Current limitation
 
-The persistence, reaction, generic acquisition-transport and deterministic exact-content linkage boundaries, scheduled SEC, RBA, AUSTRAC and Bitcoin Core RSS parsers, and the Kraken active-maintenance minute-source normaliser are implemented. Reddit OAuth transport, transient post normalisation, bounded deletion checks, purge-enforced transient D1 persistence and downstream watch-state invalidation are implemented, but approved hosted credentials remain pending. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, active minute Cron Trigger, provisioned queue, model or order path is connected. The Preview Cron and Queue/DLQ runtime blueprint and deterministic activation-manifest builder are implemented, but no real evidence digest, enabled contract, hosted resource or activation is committed. The reviewed activation and rollback runbook is documented; Production explicitly has no such bindings. Near-duplicate/repost and coordinated-manipulation evidence remains pending before linkage can be integrated into deterministic assessment persistence. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
+The persistence, reaction, generic acquisition-transport and deterministic exact-content linkage boundaries, scheduled SEC, RBA, AUSTRAC and Bitcoin Core RSS parsers, and the Kraken active-maintenance minute-source normaliser are implemented. Reddit OAuth transport, transient post normalisation, bounded deletion checks, purge-enforced transient D1 persistence and downstream watch-state invalidation are implemented, but approved hosted credentials remain pending. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, active minute Cron Trigger, provisioned queue, model or order path is connected. The Preview Cron and Queue/DLQ runtime blueprint and deterministic activation-manifest builder are implemented, but no real evidence digest, enabled contract, hosted resource or activation is committed. The reviewed activation and rollback runbook is documented; Production explicitly has no such bindings. Permitted-content near-duplicate/repost and rapid multi-publisher coordination evidence is implemented. Linkage and manipulation evidence still require deterministic assessment-persistence integration before influencing research state. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
 
 ## Official references
 
