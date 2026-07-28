@@ -26,6 +26,7 @@ export interface ResearchProvenance {
   readonly executionConfigSha256: string;
   readonly objectiveConfigSha256: string;
   readonly benchmarkConfigSha256: string;
+  readonly externalIntelligenceComparisonSha256s: readonly string[];
   readonly fxConversionSha256?: string;
 }
 
@@ -106,6 +107,25 @@ function validateProvenance(provenance: ResearchProvenance): ResearchProvenance 
   assertDigest("executionConfigSha256", provenance.executionConfigSha256);
   assertDigest("objectiveConfigSha256", provenance.objectiveConfigSha256);
   assertDigest("benchmarkConfigSha256", provenance.benchmarkConfigSha256);
+  if (provenance.externalIntelligenceComparisonSha256s.length > 1_000) {
+    throw new Error(
+      "externalIntelligenceComparisonSha256s cannot exceed 1000 values",
+    );
+  }
+  const externalIntelligenceComparisonSha256s = [
+    ...provenance.externalIntelligenceComparisonSha256s,
+  ].sort();
+  if (
+    new Set(externalIntelligenceComparisonSha256s).size !==
+    externalIntelligenceComparisonSha256s.length
+  ) {
+    throw new Error(
+      "externalIntelligenceComparisonSha256s cannot contain duplicates",
+    );
+  }
+  for (const digest of externalIntelligenceComparisonSha256s) {
+    assertDigest("externalIntelligenceComparisonSha256s", digest);
+  }
   if (provenance.fxConversionSha256 !== undefined) {
     assertDigest("fxConversionSha256", provenance.fxConversionSha256);
   }
@@ -117,6 +137,7 @@ function validateProvenance(provenance: ResearchProvenance): ResearchProvenance 
     executionConfigSha256: provenance.executionConfigSha256,
     objectiveConfigSha256: provenance.objectiveConfigSha256,
     benchmarkConfigSha256: provenance.benchmarkConfigSha256,
+    externalIntelligenceComparisonSha256s,
     ...(provenance.fxConversionSha256 === undefined
       ? {}
       : { fxConversionSha256: provenance.fxConversionSha256 }),
