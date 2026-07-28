@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   acquireRedditOAuthListing,
+  createRedditOAuthInfoTarget,
   createRedditOAuthListingTarget,
   createRedditOAuthUserAgent,
   REDDIT_DATA_API_TERMS_REF,
@@ -118,9 +119,24 @@ test("builds canonical OAuth-only targets and truthful-format user agents", () =
     USER_AGENT,
     "cloudflare-worker:ai-crypto-trader:v1.0 (by /u/approved_bot)",
   );
+  assert.equal(
+    createRedditOAuthInfoTarget(SOURCE_ID, "CryptoCurrency", [
+      "t3_def456",
+      "t3_abc123",
+    ]).sourceRef,
+    "https://oauth.reddit.com/r/CryptoCurrency/api/info?id=t3_abc123%2Ct3_def456&raw_json=1",
+  );
   assert.throws(
     () => createRedditOAuthListingTarget(SOURCE_ID, "../all"),
     /subreddit is not canonical/,
+  );
+  assert.throws(
+    () =>
+      createRedditOAuthInfoTarget(SOURCE_ID, "CryptoCurrency", [
+        "t3_same",
+        "t3_same",
+      ]),
+    /duplicate post fullnames/,
   );
   assert.throws(
     () => createRedditOAuthUserAgent("not a user"),
