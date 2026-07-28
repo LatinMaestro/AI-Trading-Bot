@@ -5,9 +5,9 @@ Last verified: 29 July 2026 (Australia/Brisbane)
 ## Repository stack
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #19 scheduled universe cycle → #21 stored history evidence → #23 official lifecycle contracts → #25 lifecycle raw capture → #27 lifecycle document discovery → #28 external intelligence contracts → #29 external intelligence persistence → #30 external intelligence acquisition adapters → #31 minute intelligence queue pipeline → #32 Kraken Status incident intelligence → #33 durable external-intelligence cache → #34 discovered lifecycle document capture → #35 scheduled recursive lifecycle document cycle → #36 SEC press-release RSS intelligence → #37 RBA media-release RSS intelligence → #38 Kraken active-maintenance intelligence → #39 Reddit OAuth transport → #40 transient Reddit post retention → #41 purge-enforced Reddit watch-state persistence → #42 AUSTRAC RSS intelligence → #43 Bitcoin Core RSS intelligence → #44 fail-closed intelligence runtime bindings → #45 reviewed intelligence activation manifest → #46 deterministic intelligence evidence linking → #47 permitted-content repost and manipulation evidence → #48 manipulation-aware assessment persistence → #49 paper intelligence risk gate → #50 no-look-ahead intelligence replay → #51 replay-bound execution gate.
+- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #19 scheduled universe cycle → #21 stored history evidence → #23 official lifecycle contracts → #25 lifecycle raw capture → #27 lifecycle document discovery → #28 external intelligence contracts → #29 external intelligence persistence → #30 external intelligence acquisition adapters → #31 minute intelligence queue pipeline → #32 Kraken Status incident intelligence → #33 durable external-intelligence cache → #34 discovered lifecycle document capture → #35 scheduled recursive lifecycle document cycle → #36 SEC press-release RSS intelligence → #37 RBA media-release RSS intelligence → #38 Kraken active-maintenance intelligence → #39 Reddit OAuth transport → #40 transient Reddit post retention → #41 purge-enforced Reddit watch-state persistence → #42 AUSTRAC RSS intelligence → #43 Bitcoin Core RSS intelligence → #44 fail-closed intelligence runtime bindings → #45 reviewed intelligence activation manifest → #46 deterministic intelligence evidence linking → #47 permitted-content repost and manipulation evidence → #48 manipulation-aware assessment persistence → #49 paper intelligence risk gate → #50 no-look-ahead intelligence replay → #51 replay-bound execution gate → #52 immutable comparison persistence and report provenance.
 - #7, #10, #16, #18, #20, #22, #24 and #26 were closed as superseded, reset or duplicate work.
-- All 43 active pull requests remain draft and unmerged.
+- All 44 active pull requests remain draft and unmerged.
 - `main` remains a one-line placeholder.
 - Deployment, credentials, funds and wallet connection: none.
 
@@ -93,6 +93,7 @@ Last verified: 29 July 2026 (Australia/Brisbane)
 - PR #49 loads only fresh persisted effective pauses in paper mode, suppresses proposed buys while preserving exits, records immutable content-addressed risk events and binds evidence digests into the cycle audit. Isolated hosted strict TypeScript validation and 97/97 tests pass, including 5/5 paper-risk tests.
 - PR #50 adds deterministic complete-snapshot intelligence replay at hourly signal time, rejects look-ahead chronology and later-snapshot leakage, records publication/receipt/availability/assessment latency, expires reactions by versioned policy and keeps research candidates observational. Isolated hosted strict TypeScript validation and 103/103 tests pass, including 6/6 replay tests.
 - PR #51 binds exactly one verified replay frame to every backtest step, removes paused buy requests before fill modelling, preserves exits and partial-position reductions, audits suppressed notional/evidence and emits a content-addressed baseline comparison. Isolated hosted strict TypeScript validation and 116/116 tests pass, including 11/11 replay and 8/8 backtest-engine tests.
+- PR #52 separately hashes complete baseline and gated results, re-verifies exact replay/frame/suppression evidence, persists a compact immutable D1 comparison manifest and binds sorted unique comparison identities into research-report provenance. Isolated hosted strict TypeScript validation and 122/122 tests pass.
 - Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #48, #49, #50 and #51 remain blocked before workflow steps.
 - A truthful runtime SEC contact, exact reviewed Kraken source evidence and owner-approved Preview Queue/DLQ provisioning and collector activation, additional approved issuer/news manifests/parsers/signatures and approved hosted Reddit OAuth credentials remain pending.
 - Missing, gapped, stale, delayed or insufficient evidence remains non-authoritative for strategy selection.
@@ -102,15 +103,14 @@ Last verified: 29 July 2026 (Australia/Brisbane)
 
 GitHub Actions private-repository capacity remains unavailable until 1 August 2026. Exact-head jobs fail before steps or logs.
 
-Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #48, #49, #50 or #51 until fresh exact-head checks pass and the stack merges in order.
+Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #48, #49, #50, #51 or #52 until fresh exact-head checks pass and the stack merges in order.
 
 ## Next unblocked work
 
-1. Persist immutable content-addressed intelligence backtest comparisons and bind them into research-report provenance.
-2. Add further account-free approved issuer/news manifests and deterministic parsers; keep deployed SEC collection blocked until a truthful public contact is configured.
-3. Complete reviewed Kraken lifecycle historical backfill and bind declarations to committed payloads.
-4. Persist signed universe policies/snapshots and connect eligible membership to strategy/backtest orchestration.
-5. Persist immutable tax records from fills and reconcile exchange exports.
-6. Integrate walk-forward, holdout, benchmark and sensitivity inputs.
+1. Add further account-free approved issuer/news manifests and deterministic parsers; keep deployed SEC collection blocked until a truthful public contact is configured.
+2. Complete reviewed Kraken lifecycle historical backfill and bind declarations to committed payloads.
+3. Persist signed universe policies/snapshots and connect eligible membership to strategy/backtest orchestration.
+4. Persist immutable tax records from fills and reconcile exchange exports.
+5. Integrate walk-forward, holdout, benchmark and sensitivity inputs.
 
 Do not deploy, request credentials, create provider accounts, accept paid terms, move funds or enable live execution.
