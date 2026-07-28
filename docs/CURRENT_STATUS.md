@@ -1,13 +1,13 @@
 # Current status
 
-Last verified: 27 July 2026 (Australia/Brisbane)
+Last verified: 28 July 2026 (Australia/Brisbane)
 
 ## Repository stack
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #19 scheduled universe cycle → #21 stored history evidence → #23 official lifecycle contracts → #25 lifecycle raw capture → #27 lifecycle document discovery → #28 external intelligence contracts → #29 external intelligence persistence → #30 external intelligence acquisition adapters → #31 minute intelligence queue pipeline → #32 Kraken Status incident intelligence → #33 durable external-intelligence cache.
+- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #19 scheduled universe cycle → #21 stored history evidence → #23 official lifecycle contracts → #25 lifecycle raw capture → #27 lifecycle document discovery → #28 external intelligence contracts → #29 external intelligence persistence → #30 external intelligence acquisition adapters → #31 minute intelligence queue pipeline → #32 Kraken Status incident intelligence → #33 durable external-intelligence cache → #34 discovered lifecycle document capture.
 - #7, #10, #16, #18, #20, #22, #24 and #26 were closed as superseded, reset or duplicate work.
-- All 25 active pull requests remain draft and unmerged.
+- All 26 active pull requests remain draft and unmerged.
 - `main` remains a one-line placeholder.
 - Deployment, credentials, funds and wallet connection: none.
 
@@ -50,7 +50,10 @@ Last verified: 27 July 2026 (Australia/Brisbane)
 - PR #33 adds D1-backed conditional ETag/Last-Modified cache state with bounded canonical validation, monotonic observation time, exact-retry support and same-time conflict rejection.
 - PR #33 verifies every cache write by reading back the stored state; stale writes fail visibly instead of silently replacing newer validators.
 - PR #33 strict source TypeScript validation and 3/3 focused Node 22/SQLite tests pass in an isolated hosted harness.
-- Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30, #31, #32 and #33 remain blocked before workflow steps.
+- PR #34 adds exact bounded HTML capture for discovered Kraken listing pages, listing documents and support lifecycle documents, with canonical target enforcement, redirect/media/size/UTF-8 controls, deterministic discovery provenance and retry-safe batches of at most ten targets.
+- PR #34 adds immutable D1 document-capture headers and commit markers linked to the exact committed index capture and payload that discovered each target; exact retries are idempotent and changed identities, incomplete provenance, mutation and commits before fetch fail closed.
+- PR #34 repository-equivalent strict TypeScript validation and 8/8 focused Node 22/SQLite tests pass in an isolated hosted harness.
+- Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30, #31, #32, #33 and #34 remain blocked before workflow steps.
 - Additional approved source manifests/parsers/signatures, deployed minute Cron and Queue/DLQ bindings, compliant Reddit OAuth collection, entity linking and paper-mode risk integration remain pending.
 - Missing, gapped, stale, delayed or insufficient evidence remains non-authoritative for strategy selection.
 - No private API, credential, fund, wallet or live-order capability changed.
@@ -59,11 +62,11 @@ Last verified: 27 July 2026 (Australia/Brisbane)
 
 GitHub Actions private-repository capacity remains unavailable until 1 August 2026. Exact-head jobs fail before steps or logs.
 
-Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32 or #33 until fresh exact-head checks pass and the stack merges in order.
+Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32, #33 or #34 until fresh exact-head checks pass and the stack merges in order.
 
 ## Next unblocked work
 
-1. Capture and immutably persist discovered listing-index pages and individual lifecycle documents.
+1. Bind committed-source lookup, recursive listing-index discovery and bounded document capture into the daily lifecycle cycle.
 2. Add further approved official/regulator/issuer/news manifests, source-specific RSS/Atom/JSON/provider-event parsers, signature implementations and deployed endpoint wiring.
 3. Add compliant Reddit OAuth collection with adaptive rate limits, deletion handling and minimal storage.
 4. Bind minute Cron, Queue/DLQ and the deployed external-intelligence consumer.
