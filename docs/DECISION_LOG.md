@@ -304,3 +304,11 @@ Bind external-intelligence evidence to a content-addressed reviewed topic regist
 Apply verified append-only corrections as an effective evidence view without rewriting immutable items. Content updates replace only effective payload/content digests; retractions and deletions remove the item from active clusters while retaining correction digests. Terminal corrections cannot be reversed by a later update.
 
 Cluster exact effective content only within the same topic, event type and stance. Select one deterministic representative per cluster, preferring authoritative over reputable over social evidence, so syndicated copies cannot inflate publisher corroboration. This linkage remains pre-assessment research infrastructure; near-duplicate/repost manipulation controls, persistence integration and any paper risk reaction remain separate reviewed work.
+
+## 2026-07-29 — Permitted-content repost and manipulation evidence
+
+Create near-duplicate fingerprints only from exact effective publisher content whose reviewed retention policy is `permitted-excerpt` or `permitted-full`. Reject digest-only, metadata-only and Reddit evidence. Verify the exact content digest before transient NFKC/lowercase tokenisation, discard raw text and retain only a bounded, content-addressed set of five-token shingle digests.
+
+Compare only evidence with the same reviewed topic, event type and stance. Use a content-addressed policy, bounded publication window, integer Jaccard threshold and deterministic complete-link clustering so a transitive similarity bridge cannot combine materially different stories. Exact and near-duplicate clusters each contribute one corroboration unit regardless of publisher count.
+
+Record rapid near-duplicate publication across multiple publishers as a `rapid-multi-publisher-repost` pattern with watch-only handling. This is evidence of coordination risk, not identity proof or an accusation of manipulation. Missing permitted fingerprints, changed identities, unsafe thresholds, future chronology and digest conflicts fail closed. Reddit post content, identifiers and content-derived hashes remain excluded under the transient deletion contract. This stage cannot classify an event, approve risk, submit an order or change paper/live state.
