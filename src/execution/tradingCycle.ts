@@ -15,6 +15,10 @@ import { KrakenLifecycleCaptureRepository } from "../storage/krakenLifecycleCapt
 import { runScheduledKrakenLifecycleCapture } from "../universe/krakenLifecycleCapture.ts";
 import { KrakenLifecycleDocumentCaptureRepository } from "../storage/krakenLifecycleDocumentCapture.ts";
 import { runScheduledKrakenLifecycleDocumentCycle } from "../universe/krakenLifecycleDocumentCycle.ts";
+import {
+  ExternalIntelligencePaperRiskRepository,
+  PAPER_INTELLIGENCE_PAUSE_MAXIMUM_AGE_MS,
+} from "../risk/externalIntelligencePaperRisk.ts";
 
 export interface CycleResult {
   readonly cycleId: string;
@@ -109,6 +113,16 @@ export async function runTradingCycle(
       candlesEntries.push([pair.canonicalSymbol, candles]);
     }
     const decision = decideMomentumRotation(Object.fromEntries(candlesEntries));
+    const intelligenceRisk =
+      await new ExternalIntelligencePaperRiskRepository(env.DB).apply({
+        cycleId,
+        mode: config.mode,
+        decision,
+        evaluatedAtMs: invocation.scheduledAtMs,
+        maximumAssessmentAgeMs:
+          PAPER_INTELLIGENCE_PAUSE_MAXIMUM_AGE_MS,
+      });
+    const gatedDecision = intelligenceRisk.decision;
 
     if (config.mode === "live") {
       if (!config.liveTradingEnabled) {
@@ -123,8 +137,8 @@ export async function runTradingCycle(
     const result: CycleResult = {
       cycleId,
       mode: config.mode,
-      outcome: decision.action === "hold" ? "no-order" : "proposed",
-      reason: decision.reason,
+      outcome: gatedDecision.action === "hold" ? "no-order" : "proposed",
+      reason: gatedDecision.reason,
     };
     await repository.appendCycleAudit({
       cycleId,
@@ -133,10 +147,18 @@ export async function runTradingCycle(
       outcome: result.outcome,
       detail: {
         scheduleKey,
-        strategyVersion: decision.strategyVersion,
-        action: decision.action,
-        targetPair: decision.targetPair ?? null,
-        targetExposurePct: decision.targetExposurePct,
+        strategyVersion: gatedDecision.strategyVersion,
+        proposedAction: decision.action,
+        action: gatedDecision.action,
+        targetPair: gatedDecision.targetPair ?? null,
+        targetExposurePct: gatedDecision.targetExposurePct,
+        externalIntelligenceRiskEvaluated: intelligenceRisk.evaluated,
+        externalIntelligencePausedNewRisk: intelligenceRisk.pausedNewRisk,
+        externalIntelligenceAssessmentSha256s:
+          intelligenceRisk.assessmentSha256s,
+        externalIntelligenceIntegrationSha256s:
+          intelligenceRisk.integrationSha256s,
+        externalIntelligenceRiskReason: intelligenceRisk.reason,
         lifecycleCaptureDue: lifecycleCapture.due,
         lifecycleCaptureCount: lifecycleCapture.captures.length,
         lifecycleCaptureRequestCount: lifecycleCapture.requestCount,
