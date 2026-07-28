@@ -35,6 +35,7 @@ async function sourceCapture(
 class FakeRepository
   implements KrakenLifecycleDocumentCycleRepository {
   readonly persisted: KrakenLifecycleDocumentCapture[][] = [];
+  readonly rotationStarts: number[] = [];
   private readonly pages: readonly KrakenLifecycleListingIndexPageCapture[];
   private readonly refs: ReadonlySet<string>;
 
@@ -50,9 +51,12 @@ class FakeRepository
     return this.refs;
   }
 
-  async loadLatestCommittedListingIndexPages(): Promise<
+  async loadLatestCommittedListingIndexPages(
+    rotationStartPage: number,
+  ): Promise<
     readonly KrakenLifecycleListingIndexPageCapture[]
   > {
+    this.rotationStarts.push(rotationStartPage);
     return this.pages;
   }
 
@@ -68,6 +72,7 @@ test("does no recursive work outside the daily source-capture window", async () 
   const result = await runScheduledKrakenLifecycleDocumentCycle(
     { due: false, captures: [], requestCount: 0 },
     repository,
+    { scheduledAtMs: 0 },
   );
   assert.equal(result.due, false);
   assert.equal(result.requestCount, 0);
@@ -120,6 +125,7 @@ test("advances a bounded frontier from committed listing index pages", async () 
     sourceResult,
     repository,
     {
+      scheduledAtMs: 0,
       maximumTargets: 2,
       nowMs: () => {
         now += 1;
@@ -149,4 +155,5 @@ test("advances a bounded frontier from committed listing index pages", async () 
   assert.equal(result.captures[0]?.discoveredFromCaptureId, page.captureId);
   assert.equal(result.captures[1]?.discoveredFromCaptureId, page.captureId);
   assert.equal(repository.persisted.length, 1);
+  assert.deepEqual(repository.rotationStarts, [2]);
 });
