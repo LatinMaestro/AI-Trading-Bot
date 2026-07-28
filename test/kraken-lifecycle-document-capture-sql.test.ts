@@ -200,3 +200,48 @@ test("accepts canonical multi-digit listing index pages", () => {
     "https://blog.kraken.com/category/product/asset-listings/page/10",
   );
 });
+
+test("accepts a committed listing page as exact recursive provenance", () => {
+  const db = database();
+  const pagePayloadText =
+    '<a href="https://blog.kraken.com/product/asset-listings/older">older</a>';
+  const pagePayload = "6".repeat(64);
+  const pageCapture = capture({
+    captureId: "7".repeat(64),
+    sourceKind: "asset-listings-index-page",
+    sourceRef:
+      "https://blog.kraken.com/category/product/asset-listings/page/2",
+    payloadSha256: pagePayload,
+    payloadByteLength: new TextEncoder().encode(pagePayloadText).byteLength,
+    payloadText: pagePayloadText,
+  });
+  execute(
+    db,
+    prepareKrakenLifecycleDocumentCapturePersistence([pageCapture], NOW + 1),
+  );
+  execute(
+    db,
+    prepareKrakenLifecycleDocumentCapturePersistence(
+      [
+        capture({
+          captureId: "8".repeat(64),
+          sourceRef:
+            "https://blog.kraken.com/product/asset-listings/older",
+          discoveredFromCaptureId: pageCapture.captureId,
+          discoveredFromPayloadSha256: pagePayload,
+          fetchedAtMs: NOW + 2,
+          payloadSha256: "9".repeat(64),
+        }),
+      ],
+      NOW + 3,
+    ),
+  );
+  assert.equal(
+    db
+      .prepare(
+        "SELECT discovered_from_capture_id FROM kraken_lifecycle_document_captures WHERE capture_id = ?",
+      )
+      .get("8".repeat(64))?.discovered_from_capture_id,
+    pageCapture.captureId,
+  );
+});
