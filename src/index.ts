@@ -1,5 +1,10 @@
 import { loadConfig } from "./config.ts";
 import { runTradingCycle } from "./execution/tradingCycle.ts";
+import {
+  consumeExternalIntelligenceQueue,
+  runExternalIntelligenceMinuteCycle,
+  scheduledWorkKind,
+} from "./intelligence/externalIntelligenceRuntime.ts";
 
 function json(data: unknown, status = 200): Response {
   return Response.json(data, {
@@ -10,6 +15,12 @@ function json(data: unknown, status = 200): Response {
       "X-Content-Type-Options": "nosniff",
     },
   });
+}
+
+function safeError(error: unknown): string {
+  return (error instanceof Error ? error.message : "Unknown error")
+    .replace(/\s+/gu, " ")
+    .slice(0, 300);
 }
 
 export default {
@@ -32,6 +43,25 @@ export default {
     env: Env,
     ctx: ExecutionContext,
   ): Promise<void> {
+    const workKind = scheduledWorkKind(controller.cron);
+    if (workKind === "external-intelligence-minute") {
+      ctx.waitUntil(
+        runExternalIntelligenceMinuteCycle(
+          env,
+          controller.scheduledTime,
+        ).catch((error: unknown) => {
+          console.error(
+            JSON.stringify({
+              event: "external-intelligence-minute-cycle-failed",
+              message: safeError(error),
+            }),
+          );
+          throw error;
+        }),
+      );
+      return;
+    }
+
     const config = loadConfig(env);
     ctx.waitUntil(
       runTradingCycle(env, config, {
@@ -40,11 +70,26 @@ export default {
         console.error(
           JSON.stringify({
             event: "trading-cycle-failed",
-            message: error instanceof Error ? error.message : "Unknown error",
+            message: safeError(error),
             mode: config.mode,
           }),
         );
         throw error;
+      }),
+    );
+  },
+
+  async queue(batch: MessageBatch<unknown>, env: Env): Promise<void> {
+    const outcomes = await consumeExternalIntelligenceQueue(batch, env);
+    console.log(
+      JSON.stringify({
+        event: "external-intelligence-queue-processed",
+        queue: batch.queue,
+        deliveries: outcomes.length,
+        persisted: outcomes.filter((outcome) => outcome.status === "persisted")
+          .length,
+        retried: outcomes.filter((outcome) => outcome.status === "retry")
+          .length,
       }),
     );
   },
