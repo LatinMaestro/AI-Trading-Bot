@@ -1,10 +1,13 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
+import { DatabaseSync } from "node:sqlite";
 import {
   bindExternalIntelligenceReplayToBacktestSteps,
   evaluateExternalIntelligenceBacktestGate,
   prepareExternalIntelligenceBacktestReplay,
   runExternalIntelligenceBacktestComparison,
+  verifyExternalIntelligenceBacktestComparison,
   type ExternalIntelligenceReplayPolicy,
   type ExternalIntelligenceReplaySnapshot,
 } from "../src/backtest/externalIntelligenceReplay.ts";
@@ -26,6 +29,9 @@ import {
   createPermittedContentFingerprint,
   prepareExternalIntelligenceManipulationEvidence,
 } from "../src/intelligence/externalIntelligenceManipulation.ts";
+import {
+  prepareExternalIntelligenceBacktestComparisonPersistence,
+} from "../src/storage/externalIntelligenceBacktestComparison.ts";
 import { sha256Hex } from "../src/utils/crypto.ts";
 
 const HOUR_MS = 3_600_000;
@@ -455,6 +461,120 @@ test("binds every request to its exact frame and blocks paused buys before fills
     replay.frames[0]?.activePauseNewRiskSha256s[0],
   );
   assert.match(comparison.comparisonSha256, /^[0-9a-f]{64}$/u);
+  assert.match(comparison.baselineResultSha256, /^[0-9a-f]{64}$/u);
+  assert.match(
+    comparison.intelligenceGatedResultSha256,
+    /^[0-9a-f]{64}$/u,
+  );
+  await verifyExternalIntelligenceBacktestComparison(comparison, replay);
+});
+
+test("persists an immutable compact comparison manifest with exact retry semantics", async () => {
+  const risk = await item(
+    "persisted-risk",
+    "official-exchange",
+    "security-incident",
+    "negative",
+    DECISION_HOUR - 60_000,
+    DECISION_HOUR - 40_000,
+    DECISION_HOUR - 20_000,
+  );
+  const replay = await prepareExternalIntelligenceBacktestReplay({
+    decisionTimestampsMs: [DECISION_HOUR],
+    snapshots: [await snapshot(DECISION_HOUR, [risk])],
+    policy: REPLAY_POLICY,
+  });
+  const comparison = await runExternalIntelligenceBacktestComparison(
+    BACKTEST_CONFIG,
+    [
+      backtestStep(DECISION_HOUR, [
+        {
+          pair: "BTC/AUD",
+          targetWeight: 1,
+          executionStyle: "taker",
+        },
+      ]),
+    ],
+    replay,
+  );
+  const first =
+    await prepareExternalIntelligenceBacktestComparisonPersistence({
+      comparison,
+      replay,
+      persistedAtMs: DECISION_HOUR + 2 * HOUR_MS,
+    });
+  const retry =
+    await prepareExternalIntelligenceBacktestComparisonPersistence({
+      comparison,
+      replay,
+      persistedAtMs: DECISION_HOUR + 3 * HOUR_MS,
+    });
+  const db = new DatabaseSync(":memory:");
+  db.exec(
+    readFileSync(
+      new URL(
+        "../migrations/0015_external_intelligence_backtest_comparisons.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
+  db.prepare(first.sql).run(...first.params);
+  db.prepare(retry.sql).run(...retry.params);
+  const row = db
+    .prepare(
+      `SELECT comparison_sha256, replay_sha256, baseline_result_sha256,
+              intelligence_gated_result_sha256, suppressed_request_count,
+              persisted_at_ms
+       FROM external_intelligence_backtest_comparisons`,
+    )
+    .get() as Record<string, string | number>;
+  assert.deepEqual({ ...row }, {
+    comparison_sha256: comparison.comparisonSha256,
+    replay_sha256: replay.replaySha256,
+    baseline_result_sha256: comparison.baselineResultSha256,
+    intelligence_gated_result_sha256:
+      comparison.intelligenceGatedResultSha256,
+    suppressed_request_count: 1,
+    persisted_at_ms: DECISION_HOUR + 2 * HOUR_MS,
+  });
+
+  const conflicting = [...first.params];
+  conflicting[10] = 2;
+  assert.throws(
+    () => db.prepare(first.sql).run(...conflicting),
+    /comparison conflict/u,
+  );
+  assert.throws(
+    () =>
+      db
+        .prepare(
+          `UPDATE external_intelligence_backtest_comparisons
+           SET persisted_at_ms = persisted_at_ms + 1`,
+        )
+        .run(),
+    /immutable/u,
+  );
+  assert.throws(
+    () =>
+      db
+        .prepare("DELETE FROM external_intelligence_backtest_comparisons")
+        .run(),
+    /immutable/u,
+  );
+  db.close();
+
+  await assert.rejects(
+    prepareExternalIntelligenceBacktestComparisonPersistence({
+      comparison: {
+        ...comparison,
+        suppressedRequestCount: 2,
+      },
+      replay,
+      persistedAtMs: DECISION_HOUR + 2 * HOUR_MS,
+    }),
+    /does not match/u,
+  );
 });
 
 test("preserves an exit while a fresh pause is active", async () => {
