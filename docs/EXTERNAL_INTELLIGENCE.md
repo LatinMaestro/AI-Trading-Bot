@@ -61,7 +61,9 @@ The runtime must supply an approved OAuth access token and a truthful canonical 
 
 The transport parses `X-Ratelimit-Used`, `X-Ratelimit-Remaining` and `X-Ratelimit-Reset` into integer milliquery state. It caps free access at the documented 100 QPM averaged across the current ten-minute window, preserves a ten-percent reserve, spaces requests by at least one second and defers without network access when the prior budget is active. HTTP 429 requires a bounded `Retry-After` and produces an explicit rate-limited outcome without retaining the response body.
 
-This boundary captures transient listing bytes and deletion deadlines only. Minimal post normalisation, recurring deletion sweeps, immutable deletion corrections and deployed credentials remain separate work. Reddit evidence remains social/watch-only and cannot approve or submit an order.
+Post normalisation now validates only bounded structured post identity, subreddit, publication time and canonical permalink shape while discarding titles, bodies, authors and provider permalinks. Post-level observations remain transient, are explicitly prohibited from the durable intelligence queue, and receive a deletion deadline no later than 48 hours after availability.
+
+Recurring retention checks use Reddit's documented OAuth `[/r/subreddit]/api/info` listing for at most 100 exact post fullnames. Missing, Reddit-deleted, moderator-removed or expired observations produce immediate purge actions. Only source-level sweep time and aggregate counts enter the content-free compliance audit; post IDs, account IDs, content and content-derived hashes do not. Purge-enforced transient persistence, downstream watch-state invalidation and deployed credentials remain separate work. Reddit evidence remains social/watch-only and cannot approve or submit an order.
 
 ## News and official-source compliance
 
@@ -165,7 +167,8 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
    - [ ] Add further approved exchange/issuer/news manifests, source-specific parsing, provider signature implementations and deployed endpoints.
 4. [ ] Add compliant Reddit OAuth collection with adaptive rate limiting.
    - [x] Add OAuth-only watchlist transport with truthful runtime identity, adaptive rate-limit state and a maximum 48-hour deletion contract.
-   - [ ] Add minimal post normalisation, deletion sweeps/corrections and deployed approved credentials.
+   - [x] Add transient minimal post normalisation, bounded deletion checks, purge planning and content-free compliance audits.
+   - [ ] Add purge-enforced transient persistence, downstream watch-state invalidation and deployed approved credentials.
 5. [ ] Add minute-level collectors and queue-backed deduplicated processing.
 6. [ ] Add deterministic entity/topic linking, syndication clustering and correction handling.
 7. [ ] Integrate `pause-new-risk` with paper-mode risk controls.
@@ -174,7 +177,7 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
 
 ## Current limitation
 
-The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC and RBA RSS parsers, and the Kraken active-maintenance minute-source normaliser are implemented. The Reddit OAuth transport contract is implemented but has no post normaliser, deletion sweep or approved credentials. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
+The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC and RBA RSS parsers, and the Kraken active-maintenance minute-source normaliser are implemented. Reddit OAuth transport, transient post normalisation and bounded deletion/purge planning are implemented, but purge-enforced transient persistence, watch-state invalidation and approved credentials remain pending. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
 
 ## Official references
 
