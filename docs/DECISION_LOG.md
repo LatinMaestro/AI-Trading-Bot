@@ -235,3 +235,9 @@ Use the Reserve Bank of Australia's official media-release RSS feed as an author
 Re-verify payload length and SHA-256 through a bounded strict RSS parser. Accept only one canonical RSS root/channel, bounded complete items, canonical RBA media-release paths, matching GUIDs and publication times no later than receipt. Reject document types, custom entities, malformed structure, identity conflicts and unsupported origins. Retain only deterministic identities, source URLs, chronology and content digests, not titles or raw XML.
 
 Emit only neutral `macro` evidence under the non-tradable `AUD.MACRO` scope. Do not infer direction or severity from titles. This source cannot pause new risk, create a positive candidate, approve an order or submit an order, and adds no deployment, credential, provider account, paid service, private API, funds, wallet or live-trading capability.
+
+## 2026-07-28 — Structured Kraken active-maintenance intelligence
+
+Use Kraken's official programmatic Status API active-maintenance endpoint as an account-free one-minute official-exchange source. Bind the exact Kraken Status identity and endpoint, re-verify payload bytes and SHA-256, and validate only bounded structured maintenance state, impact, schedule chronology and update identities.
+
+Retain provider names and update bodies only through content digests. Statuspage `maintenance`, `none` and `minor` impacts remain neutral; only structured `major` or `critical` active maintenance becomes negative `market-structure` evidence under the non-tradable `KRAKEN.VENUE` scope and may request `pause-new-risk`. Unknown values fail closed. The source cannot approve or submit an order and adds no deployment, credential, account, paid service, private API, funds, wallet or live-trading capability.
