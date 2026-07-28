@@ -220,6 +220,12 @@ Skip every already committed source reference and fetch at most ten remaining ca
 
 Permit recursive provenance in D1 only when the parent is a committed `asset-listings-index-page` capture with the exact preserved payload digest. Record discovery, frontier and request counts in the scheduled cycle audit before strategy evaluation. This public evidence path creates no lifecycle declaration and adds no credential, private API, account, fund, wallet, withdrawal, transfer, leverage, derivative or order authority.
 
+## 2026-07-29 — Database-bound reviewed lifecycle declarations
+
+Before reviewed pair-level declarations enter lifecycle preparation, resolve every declared document through one bounded lookup of immutable Kraken lifecycle capture tables. Require an exact capture ID, source URL, fetch time and payload SHA-256 match plus an available database commit marker. Listing declarations may bind only discovered listing documents, delisting and regional declarations only discovered support documents, and status declarations only committed fixed incident-feed captures.
+
+Content-address the sorted declaration-to-capture bindings with their commit times. Missing, duplicate, ambiguous, changed or future-unavailable commits fail closed. This proves provenance but does not classify free text, complete the historical backfill or make lifecycle coverage authoritative.
+
 ## 2026-07-28 — Scheduled SEC press-release metadata intelligence
 
 Use the SEC's official press-release RSS endpoint only through an enabled authoritative regulator contract that binds the exact SEC origin, scheduled-poll mode, digest-only retention, attribution, official RSS policy snapshot and model-training prohibition. Automated requests require a truthful contact-bearing User-Agent supplied at runtime; do not invent or commit that contact.
