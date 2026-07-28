@@ -63,7 +63,7 @@ The transport parses `X-Ratelimit-Used`, `X-Ratelimit-Remaining` and `X-Ratelimi
 
 Post normalisation now validates only bounded structured post identity, subreddit, publication time and canonical permalink shape while discarding titles, bodies, authors and provider permalinks. Post-level observations remain transient, are explicitly prohibited from the durable intelligence queue, and receive a deletion deadline no later than 48 hours after availability.
 
-Recurring retention checks use Reddit's documented OAuth `[/r/subreddit]/api/info` listing for at most 100 exact post fullnames. Missing, Reddit-deleted, moderator-removed or expired observations produce immediate purge actions. Only source-level sweep time and aggregate counts enter the content-free compliance audit; post IDs, account IDs, content and content-derived hashes do not. Purge-enforced transient persistence, downstream watch-state invalidation and deployed credentials remain separate work. Reddit evidence remains social/watch-only and cannot approve or submit an order.
+Recurring retention checks use Reddit's documented OAuth `[/r/subreddit]/api/info` listing for at most 100 exact post fullnames. Missing, Reddit-deleted, moderator-removed or expired observations produce immediate purge actions. Only source-level sweep time and aggregate counts enter the content-free compliance audit; post IDs, account IDs, content and content-derived hashes do not. Transient D1 persistence requires explicit per-operation deletion authorization, preserves the first deletion deadline, purges expired rows even when Reddit is unavailable and invalidates downstream aggregate watch state after every removal. Immutable retention audits and watch-state events contain counts and state only. Deployed approved credentials remain separate work. Reddit evidence remains social/watch-only and cannot approve or submit an order.
 
 ## News and official-source compliance
 
@@ -177,7 +177,7 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
 
 ## Current limitation
 
-The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC and RBA RSS parsers, and the Kraken active-maintenance minute-source normaliser are implemented. Reddit OAuth transport, transient post normalisation and bounded deletion/purge planning are implemented, but purge-enforced transient persistence, watch-state invalidation and approved credentials remain pending. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
+The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC and RBA RSS parsers, and the Kraken active-maintenance minute-source normaliser are implemented. Reddit OAuth transport, transient post normalisation, bounded deletion checks, purge-enforced transient D1 persistence and downstream watch-state invalidation are implemented, but approved hosted credentials remain pending. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
 
 ## Official references
 
