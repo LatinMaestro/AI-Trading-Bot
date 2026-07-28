@@ -12,6 +12,7 @@ const MAXIMUM_ANCHOR_TAGS = 5_000;
 const MAXIMUM_ANCHOR_TAG_LENGTH = 2_000;
 const MAXIMUM_DISCOVERED_TARGETS = 2_000;
 const MAXIMUM_LISTING_INDEX_PAGE = 500;
+const MAXIMUM_RECURSIVE_INDEX_SOURCES = 32;
 const ANCHOR_START_PATTERN = /<a\b/giu;
 const HREF_ATTRIBUTE_PATTERN =
   /\shref\s*=\s*(?:"([^"]*)"|'([^']*)')/giu;
@@ -267,7 +268,7 @@ export async function discoverKrakenLifecycleDocumentTargets(
   if (
     captures.length < 2 ||
     captures.length > 4 ||
-    committedListingIndexPages.length > MAXIMUM_LISTING_INDEX_PAGE - 1
+    committedListingIndexPages.length > MAXIMUM_RECURSIVE_INDEX_SOURCES
   ) {
     throw new Error("Lifecycle discovery requires the bounded capture set");
   }
