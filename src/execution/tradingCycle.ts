@@ -81,7 +81,7 @@ export async function runTradingCycle(
       await runScheduledKrakenLifecycleDocumentCycle(
         lifecycleCapture,
         lifecycleDocuments,
-        { nowMs: clock },
+        { scheduledAtMs: invocation.scheduledAtMs, nowMs: clock },
       );
     const universe = await runScheduledKrakenUniverseCycle(
       new UniverseIngestionRepository(env.DB),
