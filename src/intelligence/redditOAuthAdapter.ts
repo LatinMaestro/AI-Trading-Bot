@@ -320,7 +320,8 @@ function assertPreviousRateLimit(value: RedditRateLimitState): void {
     value.usedMilliqueries + value.remainingMilliqueries >
       REDDIT_FREE_WINDOW_MAXIMUM_MILLIQUERIES ||
     value.resetAtMs < value.observedAtMs ||
-    value.nextAllowedRequestAtMs < value.observedAtMs
+    value.nextAllowedRequestAtMs < value.observedAtMs ||
+    value.nextAllowedRequestAtMs > value.resetAtMs
   ) {
     throw new Error("Previous Reddit rate-limit state is invalid");
   }
