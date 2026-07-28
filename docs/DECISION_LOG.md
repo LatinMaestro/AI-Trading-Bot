@@ -266,3 +266,11 @@ Store bounded Reddit post identity metadata only in a dedicated transient D1 tab
 After a provider removal or retention expiry, atomically remove transient rows, persist only source-level aggregate counts and timestamps, and invalidate downstream aggregate watch state. Immutable audits and watch events contain no post identifiers, account identifiers, provider content or content-derived hashes. Stable observation identity enables exact retries without extending retention; changed immutable metadata fails closed.
 
 This storage path remains social/watch-only. It cannot create a positive research candidate, pause risk, approve an order or submit an order. Approved OAuth credentials and hosted deployment remain owner-gated separate work.
+
+## 2026-07-28 — Scheduled AUSTRAC media-release regulator intelligence
+
+Use AUSTRAC's official media-release RSS feed as an account-free scheduled Australian regulator source. Bind the exact feed, publisher/provider identity, digest-only retention, required attribution, reviewed AUSTRAC copyright snapshot and model-training prohibition. AUSTRAC expressly documents automatic RSS-reader polling and attributed reuse of AUSTRAC-produced material.
+
+Re-verify exact payload length and SHA-256 through the bounded strict RSS parser. Accept only canonical current AUSTRAC media-release paths, matching URL GUIDs and publication times no later than receipt. Retain identity, source URL, chronology and content digests, but never titles or raw XML.
+
+Emit only neutral `regulatory-action` evidence under non-tradable `AUSTRAC.REGULATOR`. Do not infer severity, direction or asset scope from titles. The source cannot pause risk, create a positive candidate, approve an order or submit an order. Because AUSTRAC has announced future RSS withdrawal, any loss of the feed must surface as unavailable or stale; unsupported website scraping is not an allowed fallback.
