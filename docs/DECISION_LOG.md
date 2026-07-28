@@ -258,3 +258,11 @@ Do not place Reddit post identifiers, provider permalinks, authors, titles, bodi
 Normalise only bounded post identity, subreddit and publication metadata in transient state. Discard title, body, author and provider permalink immediately. Recheck at most 100 exact post fullnames through the documented OAuth `[/r/subreddit]/api/info` listing, purge missing, removed or expired observations, and retain only source-level sweep timestamps and aggregate counts in a content-free compliance audit.
 
 Post-level Reddit observations are explicitly ineligible for the durable intelligence queue until purge-enforced transient persistence and downstream watch-state invalidation are implemented. Reddit remains social/watch-only and cannot create a risk-on candidate, approve an order or submit an order. No account, credential, deployment, paid service, private exchange API, funds, wallet or live-trading capability is added.
+
+## 2026-07-28 — Purge-enforced transient Reddit persistence
+
+Store bounded Reddit post identity metadata only in a dedicated transient D1 table, never in the immutable intelligence ledger or durable Queue. Preserve the first deletion deadline across refreshes and require a transaction-local authorization before any post row can be deleted. The expiry path must run independently of provider availability so an API failure cannot extend retention.
+
+After a provider removal or retention expiry, atomically remove transient rows, persist only source-level aggregate counts and timestamps, and invalidate downstream aggregate watch state. Immutable audits and watch events contain no post identifiers, account identifiers, provider content or content-derived hashes. Stable observation identity enables exact retries without extending retention; changed immutable metadata fails closed.
+
+This storage path remains social/watch-only. It cannot create a positive research candidate, pause risk, approve an order or submit an order. Approved OAuth credentials and hosted deployment remain owner-gated separate work.
