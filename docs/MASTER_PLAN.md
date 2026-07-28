@@ -71,6 +71,8 @@
     - [x] Persist conditional cache validators durably with monotonic conflict controls.
     - [ ] Bind approved source manifests, minute Cron, Queue/DLQ and the deployed consumer.
   - [ ] Add deterministic entity/topic linking, syndication clustering and manipulation controls.
+    - [x] Add reviewed entity/topic rules, exact-content syndication clustering and correction-safe representative selection.
+    - [ ] Add permitted-content near-duplicate/repost clustering and coordinated-manipulation evidence.
   - [ ] Integrate `pause-new-risk` into paper-mode risk controls and incident reporting.
   - [ ] Backtest news/social features with original publication and receipt timestamps and no look-ahead.
 - [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
