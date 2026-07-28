@@ -53,6 +53,16 @@ Reddit access must use an approved Reddit Data API or another expressly permitte
 
 Reddit posts and comments may support attention, novelty, topic velocity, cross-community spread and rumour detection. They cannot independently create a risk-on candidate or a live order.
 
+## Reddit OAuth acquisition boundary
+
+Reddit collection uses a separate OAuth-only transport rather than the generic publisher-feed adapter. An enabled Reddit source contract must bind `https://oauth.reddit.com/`, the Reddit Data API terms, required attribution, metadata-only storage, deletion handling, model-training prohibition and a finite retention limit no longer than 48 hours.
+
+The runtime must supply an approved OAuth access token and a truthful canonical User-Agent containing the actual Reddit username. Neither value is returned in captures or durable state. Targets are exact canonical `/r/{subreddit}/new?limit=100&raw_json=1` endpoints; redirects, unauthenticated traffic, non-JSON media, invalid listings and bodies over one MiB fail closed.
+
+The transport parses `X-Ratelimit-Used`, `X-Ratelimit-Remaining` and `X-Ratelimit-Reset` into integer milliquery state. It caps free access at the documented 100 QPM averaged across the current ten-minute window, preserves a ten-percent reserve, spaces requests by at least one second and defers without network access when the prior budget is active. HTTP 429 requires a bounded `Retry-After` and produces an explicit rate-limited outcome without retaining the response body.
+
+This boundary captures transient listing bytes and deletion deadlines only. Minimal post normalisation, recurring deletion sweeps, immutable deletion corrections and deployed credentials remain separate work. Reddit evidence remains social/watch-only and cannot approve or submit an order.
+
 ## News and official-source compliance
 
 Every collector requires a versioned source contract covering:
@@ -154,6 +164,8 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
    - [x] Add a one-minute Kraken active-maintenance Status API manifest and deterministic digest-only normaliser.
    - [ ] Add further approved exchange/issuer/news manifests, source-specific parsing, provider signature implementations and deployed endpoints.
 4. [ ] Add compliant Reddit OAuth collection with adaptive rate limiting.
+   - [x] Add OAuth-only watchlist transport with truthful runtime identity, adaptive rate-limit state and a maximum 48-hour deletion contract.
+   - [ ] Add minimal post normalisation, deletion sweeps/corrections and deployed approved credentials.
 5. [ ] Add minute-level collectors and queue-backed deduplicated processing.
 6. [ ] Add deterministic entity/topic linking, syndication clustering and correction handling.
 7. [ ] Integrate `pause-new-risk` with paper-mode risk controls.
@@ -162,7 +174,7 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
 
 ## Current limitation
 
-The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC and RBA RSS parsers, and the Kraken active-maintenance minute-source normaliser are implemented. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
+The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC and RBA RSS parsers, and the Kraken active-maintenance minute-source normaliser are implemented. The Reddit OAuth transport contract is implemented but has no post normaliser, deletion sweep or approved credentials. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
 
 ## Official references
 
