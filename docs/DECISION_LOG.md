@@ -249,3 +249,12 @@ Collect Reddit only through an approved OAuth Data API identity and the exact `o
 Bind each Reddit source contract to metadata-only storage, required attribution, deletion handling, model-training prohibition and a maximum 48-hour retention period. Parse official rate-limit headers into deterministic integer milliquery state, cap the free-access window at the documented 100 QPM averaged over ten minutes, retain a ten-percent reserve, space requests by at least one second and honour bounded `Retry-After` responses without retaining their bodies.
 
 This slice provides bounded OAuth listing acquisition only. Post normalisation, deletion sweeps/corrections, an approved Reddit app and deployed credentials remain pending. Reddit remains social/watch-only and cannot create a risk-on candidate, approve an order or submit an order. No account, credential, deployment, paid service, private exchange API, funds, wallet or live-trading capability is added.
+
+
+## 2026-07-28 — Transient Reddit post lifecycle and content-free purge audits
+
+Do not place Reddit post identifiers, provider permalinks, authors, titles, bodies or content-derived hashes into the existing immutable external-intelligence ledger. Reddit requires deleted content and associated data to be removed even when de-identified, and recommends routinely deleting stored user data and content within 48 hours. An append-only post-level tombstone would therefore conflict with the approved deletion boundary.
+
+Normalise only bounded post identity, subreddit and publication metadata in transient state. Discard title, body, author and provider permalink immediately. Recheck at most 100 exact post fullnames through the documented OAuth `[/r/subreddit]/api/info` listing, purge missing, removed or expired observations, and retain only source-level sweep timestamps and aggregate counts in a content-free compliance audit.
+
+Post-level Reddit observations are explicitly ineligible for the durable intelligence queue until purge-enforced transient persistence and downstream watch-state invalidation are implemented. Reddit remains social/watch-only and cannot create a risk-on candidate, approve an order or submit an order. No account, credential, deployment, paid service, private exchange API, funds, wallet or live-trading capability is added.
