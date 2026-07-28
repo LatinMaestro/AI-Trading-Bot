@@ -1,12 +1,14 @@
 import type {
   BacktestConfig,
   BacktestEquityPoint,
+  BacktestExternalIntelligenceGate,
   BacktestExecution,
   BacktestMarket,
   BacktestOrderSide,
   BacktestPosition,
   BacktestResult,
   BacktestStep,
+  BacktestSuppressedExecution,
   ExecutionAssumptions,
   ExecutionStyle,
   TargetAllocation,
@@ -14,6 +16,7 @@ import type {
 
 const BPS_DENOMINATOR = 10_000;
 const EPSILON = 1e-9;
+const SHA256_PATTERN = /^[0-9a-f]{64}$/u;
 
 interface MutablePortfolio {
   cashAud: number;
@@ -45,6 +48,51 @@ function assertExecutionStyle(name: string, value: string): void {
   if (value !== "maker" && value !== "taker") {
     throw new Error(`${name} must be maker or taker`);
   }
+}
+
+function assertSortedUniqueDigests(
+  name: string,
+  values: readonly string[],
+): void {
+  if (
+    values.length > 500 ||
+    new Set(values).size !== values.length ||
+    values.some((value) => !SHA256_PATTERN.test(value)) ||
+    values.some(
+      (value, index) => index > 0 && value <= (values[index - 1] ?? ""),
+    )
+  ) {
+    throw new Error(`${name} must be sorted, unique, bounded SHA-256 values`);
+  }
+}
+
+function validateExternalIntelligenceGate(
+  step: BacktestStep,
+): BacktestExternalIntelligenceGate | null {
+  const gate = step.externalIntelligenceGate;
+  if (gate === undefined) return null;
+  if (
+    gate.schemaVersion !== "backtest-external-intelligence-gate-v1" ||
+    gate.decisionAtMs !== step.signalTimestampMs ||
+    !SHA256_PATTERN.test(gate.frameSha256)
+  ) {
+    throw new Error("External-intelligence execution gate is invalid");
+  }
+  assertSortedUniqueDigests(
+    "pauseNewRiskEvidenceSha256s",
+    gate.pauseNewRiskEvidenceSha256s,
+  );
+  assertSortedUniqueDigests(
+    "researchCandidateSha256s",
+    gate.researchCandidateSha256s,
+  );
+  const pauseIds = new Set(gate.pauseNewRiskEvidenceSha256s);
+  if (
+    gate.researchCandidateSha256s.some((sha256) => pauseIds.has(sha256))
+  ) {
+    throw new Error("External-intelligence gate reactions must be disjoint");
+  }
+  return gate;
 }
 
 function validateAssumptions(config: BacktestConfig): void {
@@ -495,6 +543,17 @@ export function runBacktest(
   if (steps.length === 0) {
     throw new Error("Backtest requires at least one step");
   }
+  const usesExternalIntelligenceGate = steps.some(
+    (step) => step.externalIntelligenceGate !== undefined,
+  );
+  if (
+    usesExternalIntelligenceGate &&
+    steps.some((step) => step.externalIntelligenceGate === undefined)
+  ) {
+    throw new Error(
+      "External-intelligence execution gates must cover every backtest step",
+    );
+  }
 
   const portfolio: MutablePortfolio = {
     cashAud: config.initialCashAud,
@@ -502,10 +561,32 @@ export function runBacktest(
   };
   const executions: BacktestExecution[] = [];
   const equityCurve: BacktestEquityPoint[] = [];
+  const executionGateFrameSha256s: string[] = [];
+  const executionGateFrameIdentities = new Set<string>();
+  const suppressedExecutions: BacktestSuppressedExecution[] = [];
   let previousExecutionTimestampMs: number | undefined;
   let highWaterMarkAud = config.initialCashAud;
 
   for (const step of steps) {
+    const externalIntelligenceGate =
+      validateExternalIntelligenceGate(step);
+    if (externalIntelligenceGate !== null) {
+      if (
+        executionGateFrameIdentities.has(
+          externalIntelligenceGate.frameSha256,
+        )
+      ) {
+        throw new Error(
+          "External-intelligence replay frame cannot gate multiple steps",
+        );
+      }
+      executionGateFrameIdentities.add(
+        externalIntelligenceGate.frameSha256,
+      );
+      executionGateFrameSha256s.push(
+        externalIntelligenceGate.frameSha256,
+      );
+    }
     const indexed = indexStep(
       step,
       previousExecutionTimestampMs,
@@ -519,6 +600,27 @@ export function runBacktest(
       indexed.targets,
       config.defaultExitStyle,
     );
+    const pausesNewRisk =
+      (externalIntelligenceGate?.pauseNewRiskEvidenceSha256s.length ?? 0) > 0;
+    const executableBuys = pausesNewRisk ? [] : requests.buys;
+    if (executableBuys.length !== requests.buys.length) {
+      if (externalIntelligenceGate === null) {
+        throw new Error("Suppressed requests require an intelligence gate");
+      }
+      for (const request of requests.buys) {
+        suppressedExecutions.push({
+          signalTimestampMs: step.signalTimestampMs,
+          executionTimestampMs: step.executionTimestampMs,
+          pair: request.pair,
+          side: "buy",
+          executionStyle: request.executionStyle,
+          requestedNotionalAud: request.requestedNotionalAud,
+          frameSha256: externalIntelligenceGate.frameSha256,
+          pauseEvidenceSha256s:
+            externalIntelligenceGate.pauseNewRiskEvidenceSha256s,
+        });
+      }
+    }
 
     for (const request of requests.sells) {
       executions.push(
@@ -536,11 +638,11 @@ export function runBacktest(
       portfolio.cashAud - config.assumptions.cashReserveAud,
     );
     const buyFillLimits = proportionalBuyFillLimits(
-      requests.buys,
+      executableBuys,
       availableCashAud,
       config.assumptions,
     );
-    for (const [index, request] of requests.buys.entries()) {
+    for (const [index, request] of executableBuys.entries()) {
       executions.push(
         executeOrder(
           request,
@@ -629,5 +731,7 @@ export function runBacktest(
     equityCurve,
     finalPositions,
     costs,
+    executionGateFrameSha256s,
+    suppressedExecutions,
   };
 }
