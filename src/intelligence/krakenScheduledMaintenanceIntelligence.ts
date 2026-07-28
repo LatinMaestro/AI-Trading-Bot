@@ -429,8 +429,13 @@ async function itemRecordFor(
   capture: ExternalIntelligencePayloadCapture,
 ): Promise<ExternalIntelligenceItemRecord> {
   const update = maintenance.latestUpdate;
-  if (update.displayedAtMs > capture.receivedAtMs) {
-    throw new Error("Kraken maintenance was published after receipt");
+  if (
+    maintenance.createdAtMs > capture.receivedAtMs ||
+    maintenance.updatedAtMs > capture.receivedAtMs ||
+    update.updatedAtMs > capture.receivedAtMs ||
+    update.displayedAtMs > capture.receivedAtMs
+  ) {
+    throw new Error("Kraken maintenance chronology extends after receipt");
   }
   const externalId = `maintenance:${maintenance.id}:update:${update.id}`;
   const stance = stanceForImpact(maintenance.impact);
