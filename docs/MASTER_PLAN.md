@@ -43,6 +43,7 @@
         - [ ] Capture and immutably persist discovered index pages and individual documents.
           - [x] Add bounded exact-document capture and immutable D1 persistence linked to discovery provenance.
           - [x] Wire committed-source lookup, recursive index-page discovery and scheduled orchestration.
+    - [x] Bind reviewed lifecycle declarations to exact database-committed source payloads before evidence preparation.
   - [ ] Persist signed policies/snapshots and connect eligible membership to strategy and backtest orchestration.
 - [ ] Add near-real-time external intelligence from official sources, news and Reddit.
   - [x] Define deterministic provenance, latency, source-authority, retention and reaction contracts.
