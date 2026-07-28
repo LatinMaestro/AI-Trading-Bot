@@ -59,14 +59,17 @@ test("polls an approved feed with exact payload identity and measured latency", 
       sourceRef: SOURCE_REF,
       acquisitionMode: "minute-poll",
       acceptedContentTypes: ["application/rss+xml"],
+      userAgent: "Example-Intelligence-Collector/1 operations@example.com",
     },
     {
       scheduledAtMs: 2_000,
       nowMs: clock([2_000, 2_025, 2_040]),
       fetchImpl: async (_input, init) => {
+        const requestHeaders = new Headers(init?.headers);
+        assert.equal(requestHeaders.get("accept"), "application/rss+xml");
         assert.equal(
-          new Headers(init?.headers).get("accept"),
-          "application/rss+xml",
+          requestHeaders.get("user-agent"),
+          "Example-Intelligence-Collector/1 operations@example.com",
         );
         assert.equal(init?.redirect, "error");
         return new Response(payload, {
@@ -268,6 +271,23 @@ test("rejects redirects, unsupported content, oversized bodies and credential qu
       optionsForRejectedBeforeFetch(),
     ),
     /must not contain credentials/u,
+  );
+});
+
+test("rejects an unsafe configured User-Agent before fetch", async () => {
+  await assert.rejects(
+    pollExternalIntelligenceFeed(
+      await contract(),
+      {
+        sourceId: "official-feed",
+        sourceRef: SOURCE_REF,
+        acquisitionMode: "minute-poll",
+        acceptedContentTypes: ["application/rss+xml"],
+        userAgent: "Example/1 operations@example.com\\r\\nInjected: true",
+      },
+      optionsForRejectedBeforeFetch(),
+    ),
+    /userAgent must be canonical text/u,
   );
 });
 
