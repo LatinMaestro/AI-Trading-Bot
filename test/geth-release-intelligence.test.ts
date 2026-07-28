@@ -8,6 +8,7 @@ import {
   GETH_RELEASES_SOURCE_REF,
   GETH_SCOPE,
   GITHUB_API_ORIGIN,
+  GITHUB_API_USER_AGENT,
   GITHUB_RELEASES_PROVIDER_ID,
   GITHUB_TERMS_REF,
   normaliseGethReleaseCapture,
@@ -124,6 +125,7 @@ test("binds the account-free GitHub releases API manifest", async () => {
       "application/json",
       "application/vnd.github+json",
     ],
+    userAgent: GITHUB_API_USER_AGENT,
   });
 });
 
