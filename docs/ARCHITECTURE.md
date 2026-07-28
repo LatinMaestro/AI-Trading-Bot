@@ -76,7 +76,7 @@ D1 stores:
 - immutable market-quality observations for spread, turnover, depth, impact, minimums, valuation and data state;
 - content-addressed universe-ingestion batch headers, source digests, record memberships and verified commit markers;
 - versioned external-intelligence source contracts covering provider, publisher, licence, attribution, retention, deletion and model-use rules;
-- immutable external-intelligence items, append-only corrections and deterministic assessments;
+- immutable external-intelligence items, append-only corrections, content-addressed entity/syndication linkages and deterministic assessments;
 - content-addressed external-intelligence ingestion batches, memberships and database-verified commit markers;
 - purge-enforced transient Reddit post metadata with non-extendable deletion deadlines;
 - content-free aggregate Reddit watch state, retention audits and invalidation events;
@@ -94,6 +94,8 @@ Discovered lifecycle pages and documents use a separate immutable capture table 
 Market batches and candles use deterministic SHA-256 content digests. Database triggers reject identity reuse with different content and prevent ordinary update or delete operations. Gap detection is performed against explicit expected ranges before strategy research is allowed to rely on stored data.
 
 Universe definitions, lifecycle events and quality observations are also append-only and hashed. Prepared universe evidence is submitted through one transactional D1 batch and is complete only when a final database-verified commit marker proves that every declared source and record membership exists. Historical reconstruction uses source publication and data-availability timestamps so later listings, suspensions, delistings or quality observations cannot leak into an earlier signal. The contract is defined in `docs/MARKET_UNIVERSE.md`.
+
+External-intelligence linkages bind each reviewed topic to exact entity keys and allowed event types, apply append-only corrections as an effective view, remove retracted/deleted evidence, and collapse exact syndicated content to one authority-ranked representative before corroboration. Linkage manifests and clusters are content-addressed; near-duplicate and coordinated-repost controls remain a separate gate.
 
 External-intelligence batches use deterministic source-contract, correction, policy, assessment and batch digests. Application validation binds every item to an effective source-contract version and reproduces every assessment from the referenced items and policy. Database constraints reject changed identities, enforce chronology and source-contract compatibility, preserve corrections instead of rewriting history and expose a batch only after its declared memberships are complete. Collection and assessment remain isolated from execution by Queue and deterministic reaction boundaries.
 
