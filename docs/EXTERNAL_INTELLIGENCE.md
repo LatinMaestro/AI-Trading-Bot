@@ -199,7 +199,7 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
 8. [x] Backtest news/social features without look-ahead using original publication, receipt, availability and assessment timestamps.
    - [x] Add complete correction-effective snapshot replay, versioned reaction expiry, content-addressed frames and deterministic intent gates.
    - [x] Bind every execution request to its exact replay frame, suppress paused additions before fill modelling and emit content-addressed comparisons.
-   - [ ] Persist comparative research outputs.
+   - [x] Persist immutable compact comparison manifests and bind their identities into research-report provenance.
 9. [ ] Promote any risk-on use only after walk-forward, holdout, manipulation and cost evidence.
 
 ## Current limitation
