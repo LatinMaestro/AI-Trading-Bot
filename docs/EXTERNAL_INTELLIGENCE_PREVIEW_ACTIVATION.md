@@ -69,7 +69,7 @@ Production.
 ## Evidence record
 
 Retain the exact commit, check runs, source-evidence digest, source-contract
- digest, activation-manifest digest, deployed version identifier, migration
+digest, activation-manifest digest, deployed version identifier, migration
 state, Queue and dead-letter queue identifiers, first successful capture,
 latency/staleness proof, failure-path proof, and rollback proof.
 
