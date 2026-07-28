@@ -284,3 +284,37 @@ test("loads a bounded latest-page window from the requested rotation", () => {
     ],
   );
 });
+
+test("caps the recursive page window at 32 rows and eight MiB", () => {
+  const db = database();
+  const seeds = ["3", "4", "5", "6", "7", "8", "9", "a", "b"];
+  const payloadSeeds = ["0", "3", "4", "5", "6", "7", "8", "9", "a"];
+  const captures = seeds.map((seed, index) => {
+    const payloadText = `${index}` + "x".repeat(1_048_575);
+    return capture({
+      captureId: seed.repeat(64),
+      sourceKind: "asset-listings-index-page",
+      sourceRef:
+        `https://blog.kraken.com/category/product/asset-listings/page/${index + 2}`,
+      fetchedAtMs: NOW + index,
+      payloadSha256: (payloadSeeds[index] ?? "f").repeat(64),
+      payloadByteLength: 1_048_576,
+      payloadText,
+    });
+  });
+  execute(
+    db,
+    prepareKrakenLifecycleDocumentCapturePersistence(captures, NOW + 10),
+  );
+  const rows = db
+    .prepare(SELECT_LATEST_COMMITTED_KRAKEN_LISTING_INDEX_PAGES_SQL)
+    .all(2);
+  assert.equal(rows.length, 8);
+  assert.equal(
+    rows.reduce(
+      (total, row) => total + Number(row.payload_byte_length),
+      0,
+    ),
+    8_388_608,
+  );
+});
