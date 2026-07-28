@@ -13,6 +13,8 @@ import { MarketCandleHistoryRepository } from "../marketData/historyEvidence.ts"
 import { runScheduledKrakenUniverseCycle } from "../universe/krakenPublicCycle.ts";
 import { KrakenLifecycleCaptureRepository } from "../storage/krakenLifecycleCapture.ts";
 import { runScheduledKrakenLifecycleCapture } from "../universe/krakenLifecycleCapture.ts";
+import { KrakenLifecycleDocumentCaptureRepository } from "../storage/krakenLifecycleDocumentCapture.ts";
+import { runScheduledKrakenLifecycleDocumentCycle } from "../universe/krakenLifecycleDocumentCycle.ts";
 
 export interface CycleResult {
   readonly cycleId: string;
@@ -39,6 +41,7 @@ export async function runTradingCycle(
   const repository = new TradingRepository(env.DB);
   const candleHistory = new MarketCandleHistoryRepository(env.DB);
   const lifecycleCaptures = new KrakenLifecycleCaptureRepository(env.DB);
+  const lifecycleDocuments = new KrakenLifecycleDocumentCaptureRepository(env.DB);
 
   const globalLeaseAcquired = await control.acquireGlobalLease(holderId, clock());
   if (!globalLeaseAcquired) {
@@ -74,6 +77,12 @@ export async function runTradingCycle(
         nowMs: clock,
       },
     );
+    const lifecycleDocumentCapture =
+      await runScheduledKrakenLifecycleDocumentCycle(
+        lifecycleCapture,
+        lifecycleDocuments,
+        { nowMs: clock },
+      );
     const universe = await runScheduledKrakenUniverseCycle(
       new UniverseIngestionRepository(env.DB),
       {
@@ -132,6 +141,22 @@ export async function runTradingCycle(
         lifecycleCaptureCount: lifecycleCapture.captures.length,
         lifecycleCaptureRequestCount: lifecycleCapture.requestCount,
         lifecycleCaptureIds: lifecycleCapture.captures.map(
+          (capture) => capture.captureId,
+        ),
+        lifecycleDocumentDiscoverySha256:
+          lifecycleDocumentCapture.discoverySha256,
+        lifecycleDocumentCommittedIndexPageCount:
+          lifecycleDocumentCapture.committedListingIndexPageCount,
+        lifecycleDocumentDiscoveredTargetCount:
+          lifecycleDocumentCapture.discoveredTargetCount,
+        lifecycleDocumentCaptureCount:
+          lifecycleDocumentCapture.captures.length,
+        lifecycleDocumentSelectedTargetCount:
+          lifecycleDocumentCapture.selectedTargetCount,
+        lifecycleDocumentRemainingTargetCount:
+          lifecycleDocumentCapture.remainingTargetCount,
+        lifecycleDocumentRequestCount: lifecycleDocumentCapture.requestCount,
+        lifecycleDocumentCaptureIds: lifecycleDocumentCapture.captures.map(
           (capture) => capture.captureId,
         ),
         universeBatchSha256: universe.batch.batchSha256,
