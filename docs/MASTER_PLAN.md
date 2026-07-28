@@ -58,7 +58,8 @@
     - [ ] Add further approved exchange/issuer/news manifests, source-specific parsing, provider signature implementations and deployed endpoints.
   - [ ] Add compliant Reddit OAuth collection with adaptive rate limits, deletion handling and minimal storage.
     - [x] Add OAuth-only watchlist transport with truthful runtime identity, adaptive header budgets and a maximum 48-hour deletion contract.
-    - [ ] Add minimal post normalisation, deletion sweeps/corrections and deployed approved credentials.
+    - [x] Add transient minimal post normalisation, bounded `/api/info` deletion checks, retention purge planning and content-free compliance audits.
+    - [ ] Add purge-enforced transient persistence, downstream watch-state invalidation and deployed approved credentials.
   - [ ] Add dedicated one-minute collection and queue-backed at-least-once processing with idempotency.
     - [x] Add deterministic bounded queue envelopes, per-message acknowledgement/retry and source-level stale outcomes.
     - [x] Persist conditional cache validators durably with monotonic conflict controls.
