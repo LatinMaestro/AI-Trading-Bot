@@ -23,6 +23,8 @@ Each backtest step contains:
 
 Execution timestamps must be strictly increasing. A held position must have a valid mark at every step. Duplicate markets, duplicate targets, missing target markets, non-finite values, negative costs and gross target weights above 100% fail closed.
 
+An intelligence-aware run must bind exactly one verified replay frame to every step. The frame decision time must equal the signal time. Partial coverage, duplicate frame reuse, malformed evidence identities and replay/frame digest mismatch fail closed.
+
 The separation between signal time and execution time prevents a strategy from using the same observation as both the decision input and a guaranteed fill. Historical data construction must still prove that every feature and universe-membership record was available at signal time.
 
 ## Execution sequence
@@ -35,8 +37,9 @@ For each step the engine:
 4. executes sells before buys so rotations can fund replacement positions;
 5. calculates capacity- and cash-constrained buy limits;
 6. scales multiple buy requests proportionally when fees or the cash reserve make the full target set unaffordable;
-7. records filled, partially filled and completely missed executions; and
-8. marks the resulting portfolio and updates drawdown.
+7. removes buy requests before fill modelling when the bound frame contains active `pause-new-risk` evidence, while preserving sells;
+8. records each suppression separately from filled, partially filled and missed executions; and
+9. marks the resulting portfolio and updates drawdown.
 
 The engine never creates a negative cash balance, negative asset position, short exposure or more than 100% gross spot target exposure.
 
@@ -107,6 +110,8 @@ The result includes:
 - the equity curve;
 - final positions; and
 - aggregate fees, spread, slippage, impact and missed-fill notional.
+
+Intelligence-aware output additionally records every gated frame and suppressed buy request with signal/execution time, pair, style, requested AUD notional and exact pause-evidence identities. A content-addressed comparison runs identical steps with and without intelligence gates and reports equity/return deltas, suppression counts/notional and observed pause/research-candidate frame counts.
 
 ## Required calibration before strategy conclusions
 
