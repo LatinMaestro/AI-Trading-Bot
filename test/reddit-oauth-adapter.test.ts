@@ -223,6 +223,27 @@ test("defers without network access while prior adaptive state is active", async
   assert.equal(called, false);
 });
 
+test("rejects prior adaptive state scheduled beyond its reset", async () => {
+  await assert.rejects(
+    acquireRedditOAuthListing({
+      contract: contract(),
+      target: TARGET,
+      accessToken: ACCESS_TOKEN,
+      userAgent: USER_AGENT,
+      scheduledAtMs: 4_999,
+      previousRateLimit: {
+        observedAtMs: 1_000,
+        usedMilliqueries: 100_000,
+        remainingMilliqueries: 900_000,
+        resetAtMs: 5_000,
+        nextAllowedRequestAtMs: 5_001,
+      },
+      fetcher: fetcher(response()),
+    }),
+    /Previous Reddit rate-limit state is invalid/,
+  );
+});
+
 test("honours bounded Retry-After without reading a 429 body", async () => {
   const limited = new Response("provider detail must not be retained", {
     status: 429,
