@@ -328,3 +328,11 @@ Replay external intelligence from complete correction-effective snapshots rather
 Content-address the replay policy, snapshots, frames and complete run. Version maximum reaction ages, retain expired evidence explicitly, and measure publication-to-receipt, receipt-to-availability, availability-to-assessment and publication-to-assessment delay. Later corrections replace the complete state only for later frames and cannot rewrite prior decisions.
 
 Fresh `pause-new-risk` evidence may block only new or increased risk; reductions and exits remain permitted. `research-candidate`, `watch` and `ignore` remain observational and cannot authorise exposure or an order. This research primitive adds no provider connection, deployment, credential, fund, wallet or live-execution authority.
+
+## 2026-07-29 — Replay-bound backtest execution-request gate
+
+Require an intelligence-aware backtest to bind exactly one verified replay frame to every step. The frame decision time must equal the strategy signal time; partial coverage, duplicate frame reuse, changed frame/replay digests and malformed evidence identities fail closed.
+
+Construct target-weight reductions and additions from the actual simulated portfolio before applying intelligence. Fresh `pause-new-risk` evidence removes every buy request before cash, participation, fill, fee or impact modelling, including an increase toward a target after an earlier partial fill. Preserve sell reductions and exits. Record suppressed requests separately from market misses with their exact frame, pause evidence, pair, execution style and requested AUD notional.
+
+Run identical ungated and gated steps to create one content-addressed comparison containing both complete results and their equity/return, suppression-notional, pause-frame and research-candidate differences. Research candidates remain observational and cannot alter targets or create requests. This research-only integration adds no provider connection, deployment, credential, fund, wallet or live-execution authority.
