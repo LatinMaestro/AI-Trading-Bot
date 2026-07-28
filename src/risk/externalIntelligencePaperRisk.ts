@@ -159,7 +159,10 @@ export class ExternalIntelligencePaperRiskRepository {
       ),
     ].sort();
     const integrationSha256s = [...integrations.keys()].sort();
-    if (appliesToNewRisk) {
+    if (assessments.length > 0) {
+      const resultingDecision = appliesToNewRisk
+        ? pausedDecision(input.decision)
+        : input.decision;
       const detail = {
         schemaVersion: "external-intelligence-paper-risk-event-v1",
         cycleId: input.cycleId,
@@ -169,7 +172,8 @@ export class ExternalIntelligencePaperRiskRepository {
         proposedTargetPair: input.decision.targetPair ?? null,
         assessmentSha256s,
         integrationSha256s,
-        resultingAction: "hold",
+        appliedToProposedBuy: appliesToNewRisk,
+        resultingAction: resultingDecision.action,
       } as const;
       const eventId = await sha256CanonicalIntelligence(detail);
       await this.db
