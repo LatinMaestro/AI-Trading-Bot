@@ -226,6 +226,12 @@ Before reviewed pair-level declarations enter lifecycle preparation, resolve eve
 
 Content-address the sorted declaration-to-capture bindings with their commit times. Missing, duplicate, ambiguous, changed or future-unavailable commits fail closed. This proves provenance but does not classify free text, complete the historical backfill or make lifecycle coverage authoritative.
 
+## 2026-07-29 — Immutable lifecycle backfill completeness
+
+Persist each reviewed lifecycle backfill state as a content-addressed manifest binding the exact committed-capture binding digest, prepared-evidence digest and one coverage row for every expected canonical AUD pair. Permit partial manifests so historical work can advance incrementally without being mistaken for complete evidence.
+
+Only an exact all-pair complete manifest may set `coverage_authoritative`. A database commit marker is rejected until the declared pair and complete-pair counts match immutable membership rows. Coverage authority concerns lifecycle history only; current venue state, data quality, liquidity, impact, strategy, signed-policy and risk gates remain separately mandatory.
+
 ## 2026-07-28 — Scheduled SEC press-release metadata intelligence
 
 Use the SEC's official press-release RSS endpoint only through an enabled authoritative regulator contract that binds the exact SEC origin, scheduled-poll mode, digest-only retention, attribution, official RSS policy snapshot and model-training prohibition. Automated requests require a truthful contact-bearing User-Agent supplied at runtime; do not invent or commit that contact.
