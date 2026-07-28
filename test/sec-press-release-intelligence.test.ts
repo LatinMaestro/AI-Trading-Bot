@@ -215,6 +215,16 @@ test("fails closed on unsafe XML, duplicate ids and unapproved links", async () 
     ),
     /duplicate/u,
   );
+  await assert.rejects(
+    normaliseSecPressReleaseCapture(
+      contract(),
+      await capture(
+        rss([item("2026-70").replace("</item>", "")]),
+      ),
+      policy,
+    ),
+    /malformed item markup/u,
+  );
   const badHost = item("2026-70").replace(
     /https:\/\/www\.sec\.gov/gu,
     "https://example.com",
