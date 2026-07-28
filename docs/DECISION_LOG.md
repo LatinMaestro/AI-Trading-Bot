@@ -274,3 +274,11 @@ Use AUSTRAC's official media-release RSS feed as an account-free scheduled Austr
 Re-verify exact payload length and SHA-256 through the bounded strict RSS parser. Accept only canonical current AUSTRAC media-release paths, matching URL GUIDs and publication times no later than receipt. Retain identity, source URL, chronology and content digests, but never titles or raw XML.
 
 Emit only neutral `regulatory-action` evidence under non-tradable `AUSTRAC.REGULATOR`. Do not infer severity, direction or asset scope from titles. The source cannot pause risk, create a positive candidate, approve an order or submit an order. Because AUSTRAC has announced future RSS withdrawal, any loss of the feed must surface as unavailable or stale; unsupported website scraping is not an allowed fallback.
+
+## 2026-07-28 — Scheduled Bitcoin Core security and release intelligence
+
+Use Bitcoin Core's official English announcement RSS feed as an account-free project-origin `issuer` source in scheduled-poll mode. Bind the exact feed, origin and publisher/provider identity, digest-only retention, required attribution, the reviewed website-repository MIT licence notice and model-training prohibition. Treat it as authoritative only for Bitcoin Core software security and release announcements, not for general Bitcoin-network or market claims.
+
+Re-verify exact payload length and SHA-256 through the bounded strict RSS parser. Accept at most the five items produced by the official feed, canonical dated English announcement paths, valid calendar dates, exact URL GUIDs and publication times no later than receipt. Retain identity, source URL, chronology and content digests, but never titles or raw XML.
+
+Emit only neutral `other` evidence under non-tradable `BTC.CORE`. Do not infer release type, severity, asset direction or trading action from titles. The source cannot pause risk, create a positive candidate, approve an order or submit an order until separately reviewed deterministic classification and entity-linking evidence exists.
