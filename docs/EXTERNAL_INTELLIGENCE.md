@@ -111,6 +111,14 @@ The parser re-verifies payload length and SHA-256 through a reusable strict RSS 
 
 Every item remains neutral `macro` evidence under the non-tradable `AUD.MACRO` scope. No headline wording is used to infer direction, severity or order action; the feed cannot pause new risk, create a positive research candidate, approve an order or submit an order.
 
+## AUSTRAC media-release RSS boundary
+
+AUSTRAC's official media-release RSS feed is an approved lower-priority Australian regulator source using `scheduled-poll`. AUSTRAC explicitly documents automatic RSS-reader polling and licenses its own website material for attributed reuse. The source contract binds the exact official feed and AUSTRAC origin, digest-only retention, required attribution, the reviewed copyright snapshot and model-training prohibition.
+
+The parser re-verifies payload length and SHA-256 through the bounded strict RSS boundary. It accepts only canonical current AUSTRAC media-release paths, exact matching GUIDs and publication times no later than receipt. It retains deterministic identities, source URLs, chronology and content digests, but never titles or raw XML.
+
+Every item is neutral `regulatory-action` evidence under the non-tradable `AUSTRAC.REGULATOR` scope until a separately reviewed deterministic entity/event linker exists. It cannot pause new risk, create a positive candidate, approve an order or submit an order. AUSTRAC announced that the RSS feed will be withdrawn in favour of email subscriptions; collection must therefore expose any feed failure as stale/unavailable and must not silently scrape the website as a replacement.
+
 ## Kraken active-maintenance boundary
 
 Kraken's official Status API active-maintenance endpoint is an approved account-free official-exchange source using `minute-poll`. Kraken documents the endpoint specifically for programmatic access. The source contract binds the exact API origin and endpoint, digest-only retention, transient payload handling and explicit model-training prohibition.
@@ -168,7 +176,8 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
 4. [ ] Add compliant Reddit OAuth collection with adaptive rate limiting.
    - [x] Add OAuth-only watchlist transport with truthful runtime identity, adaptive rate-limit state and a maximum 48-hour deletion contract.
    - [x] Add transient minimal post normalisation, bounded deletion checks, purge planning and content-free compliance audits.
-   - [ ] Add purge-enforced transient persistence, downstream watch-state invalidation and deployed approved credentials.
+   - [x] Add purge-enforced transient persistence and downstream watch-state invalidation.
+   - [ ] Supply approved hosted credentials and deploy the Reddit collector.
 5. [ ] Add minute-level collectors and queue-backed deduplicated processing.
 6. [ ] Add deterministic entity/topic linking, syndication clustering and correction handling.
 7. [ ] Integrate `pause-new-risk` with paper-mode risk controls.
@@ -177,7 +186,7 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
 
 ## Current limitation
 
-The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC and RBA RSS parsers, and the Kraken active-maintenance minute-source normaliser are implemented. Reddit OAuth transport, transient post normalisation, bounded deletion checks, purge-enforced transient D1 persistence and downstream watch-state invalidation are implemented, but approved hosted credentials remain pending. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
+The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC, RBA and AUSTRAC RSS parsers, and the Kraken active-maintenance minute-source normaliser are implemented. Reddit OAuth transport, transient post normalisation, bounded deletion checks, purge-enforced transient D1 persistence and downstream watch-state invalidation are implemented, but approved hosted credentials remain pending. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
 
 ## Official references
 
@@ -186,6 +195,8 @@ The persistence, reaction and generic acquisition-transport boundaries, schedule
 - RBA RSS feeds: https://www.rba.gov.au/updates/rss-feeds.html
 - RBA RSS access guidance: https://www.rba.gov.au/qa/rss.html
 - RBA copyright and attribution: https://www.rba.gov.au/copyright/
+- AUSTRAC RSS guidance: https://www.austrac.gov.au/subscribing-media-release-alerts
+- AUSTRAC copyright and attribution: https://www.austrac.gov.au/copyright
 - Reddit Data API Terms: https://redditinc.com/policies/data-api-terms
 - Reddit Developer Terms: https://redditinc.com/policies/developer-terms
 - Cloudflare Cron Triggers: https://developers.cloudflare.com/workers/configuration/cron-triggers/
