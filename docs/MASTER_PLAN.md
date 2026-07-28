@@ -53,7 +53,8 @@
   - [ ] Add official exchange, regulator, issuer and publisher RSS/webhook adapters.
     - [x] Add registry-bound bounded feed polling and authenticated webhook payload acquisition.
     - [x] Add a scheduled SEC press-release RSS manifest and deterministic metadata-only normaliser.
-    - [ ] Add further approved source manifests, source-specific parsing, provider signature implementations and deployed endpoints.
+    - [x] Add a scheduled RBA media-release RSS manifest and deterministic metadata-only normaliser.
+    - [ ] Add further approved exchange/issuer/news manifests, source-specific parsing, provider signature implementations and deployed endpoints.
   - [ ] Add compliant Reddit OAuth collection with adaptive rate limits, deletion handling and minimal storage.
   - [ ] Add dedicated one-minute collection and queue-backed at-least-once processing with idempotency.
     - [x] Add deterministic bounded queue envelopes, per-message acknowledgement/retry and source-level stale outcomes.
