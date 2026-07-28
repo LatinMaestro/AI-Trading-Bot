@@ -9,15 +9,22 @@ import {
   type KrakenLifecycleListingIndexPageCapture,
 } from "./krakenLifecycleDiscovery.ts";
 
+const DAY_MS = 86_400_000;
+const LISTING_PAGE_COUNT = 499;
+const LISTING_PAGE_ROTATION_STEP = 32;
+
 export interface KrakenLifecycleDocumentCycleRepository
   extends KrakenLifecycleDocumentCaptureSink {
   loadCommittedSourceRefs(): Promise<ReadonlySet<string>>;
-  loadLatestCommittedListingIndexPages(): Promise<
+  loadLatestCommittedListingIndexPages(
+    rotationStartPage: number,
+  ): Promise<
     readonly KrakenLifecycleListingIndexPageCapture[]
   >;
 }
 
 export interface ScheduledKrakenLifecycleDocumentCycleOptions {
+  readonly scheduledAtMs: number;
   readonly maximumTargets?: number;
   readonly nowMs?: () => number;
   readonly fetchImpl?: typeof fetch;
@@ -41,7 +48,7 @@ export interface ScheduledKrakenLifecycleDocumentCycleResult {
 export async function runScheduledKrakenLifecycleDocumentCycle(
   lifecycleCapture: ScheduledKrakenLifecycleCaptureResult,
   repository: KrakenLifecycleDocumentCycleRepository,
-  options: ScheduledKrakenLifecycleDocumentCycleOptions = {},
+  options: ScheduledKrakenLifecycleDocumentCycleOptions,
 ): Promise<ScheduledKrakenLifecycleDocumentCycleResult> {
   if (!lifecycleCapture.due) {
     if (
@@ -61,8 +68,17 @@ export async function runScheduledKrakenLifecycleDocumentCycle(
       requestCount: 0,
     };
   }
+  if (
+    !Number.isSafeInteger(options.scheduledAtMs) ||
+    options.scheduledAtMs < 0
+  ) {
+    throw new Error("scheduledAtMs must be a non-negative safe integer");
+  }
+  const scheduledDay = Math.floor(options.scheduledAtMs / DAY_MS);
+  const rotationStartPage =
+    ((scheduledDay * LISTING_PAGE_ROTATION_STEP) % LISTING_PAGE_COUNT) + 2;
   const [committedPages, committedRefs] = await Promise.all([
-    repository.loadLatestCommittedListingIndexPages(),
+    repository.loadLatestCommittedListingIndexPages(rotationStartPage),
     repository.loadCommittedSourceRefs(),
   ]);
   const discovery = await discoverKrakenLifecycleDocumentTargets(
