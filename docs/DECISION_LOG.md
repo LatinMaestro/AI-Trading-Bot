@@ -241,3 +241,11 @@ Emit only neutral `macro` evidence under the non-tradable `AUD.MACRO` scope. Do 
 Use Kraken's official programmatic Status API active-maintenance endpoint as an account-free one-minute official-exchange source. Bind the exact Kraken Status identity and endpoint, re-verify payload bytes and SHA-256, and validate only bounded structured maintenance state, impact, schedule chronology and update identities.
 
 Retain provider names and update bodies only through content digests. Statuspage `maintenance`, `none` and `minor` impacts remain neutral; only structured `major` or `critical` active maintenance becomes negative `market-structure` evidence under the non-tradable `KRAKEN.VENUE` scope and may request `pause-new-risk`. Unknown values fail closed. The source cannot approve or submit an order and adds no deployment, credential, account, paid service, private API, funds, wallet or live-trading capability.
+
+## 2026-07-28 — OAuth-only adaptive Reddit transport
+
+Collect Reddit only through an approved OAuth Data API identity and the exact `oauth.reddit.com` origin. Require a truthful runtime User-Agent containing the actual Reddit username, and never return or persist the bearer token or User-Agent in capture evidence.
+
+Bind each Reddit source contract to metadata-only storage, required attribution, deletion handling, model-training prohibition and a maximum 48-hour retention period. Parse official rate-limit headers into deterministic integer milliquery state, cap the free-access window at the documented 100 QPM averaged over ten minutes, retain a ten-percent reserve, space requests by at least one second and honour bounded `Retry-After` responses without retaining their bodies.
+
+This slice provides bounded OAuth listing acquisition only. Post normalisation, deletion sweeps/corrections, an approved Reddit app and deployed credentials remain pending. Reddit remains social/watch-only and cannot create a risk-on candidate, approve an order or submit an order. No account, credential, deployment, paid service, private exchange API, funds, wallet or live-trading capability is added.
