@@ -83,6 +83,14 @@ Registry-bound feed and webhook acquisition is a transport boundary, not a class
 
 The adapter output still requires source-specific RSS, Atom, JSON Feed or provider-event parsing, canonical item identity, publication-time extraction, retention enforcement, immutable batch persistence and deterministic assessment before it can influence research state.
 
+## SEC press-release RSS boundary
+
+The SEC press-release RSS feed is an approved lower-priority regulator source using `scheduled-poll`, not a zero-delay or minute-level claim. Its source contract binds the exact official feed, SEC origin, publisher/provider identities, digest-only retention, attribution, licence snapshot and explicit model-training prohibition.
+
+The parser re-verifies payload length and SHA-256, accepts only bounded UTF-8 RSS without declarations or custom entities, and requires canonical SEC press-release links, matching GUIDs and publication times no later than receipt. It retains deterministic identity, chronology and digests but not titles or raw XML.
+
+Every item remains a neutral `other` event scoped to the non-tradable `SEC.REGULATOR` marker until a separately reviewed deterministic entity/event linker exists. It cannot pause new risk, create a positive research candidate, approve an order or submit an order. Automated requests require a truthful contact-bearing User-Agent supplied at runtime; no contact address is committed.
+
 ## Evidence and latency
 
 Each item binds:
@@ -125,7 +133,8 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
 2. [x] Add the versioned provider/source registry and retention rules.
 3. [ ] Add official exchange, regulator, issuer and publisher RSS/webhook adapters.
    - [x] Add registry-bound bounded feed polling and authenticated webhook payload acquisition.
-   - [ ] Add approved source manifests, source-specific parsing, provider signature implementations and deployed endpoints.
+   - [x] Add a scheduled SEC press-release RSS manifest and deterministic metadata-only normaliser.
+   - [ ] Add further approved source manifests, source-specific parsing, provider signature implementations and deployed endpoints.
 4. [ ] Add compliant Reddit OAuth collection with adaptive rate limiting.
 5. [ ] Add minute-level collectors and queue-backed deduplicated processing.
 6. [ ] Add deterministic entity/topic linking, syndication clustering and correction handling.
@@ -135,7 +144,7 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
 
 ## Current limitation
 
-The persistence, reaction and generic acquisition-transport boundaries are implemented, but no approved source manifest, source-specific parser, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
+The persistence, reaction and generic acquisition-transport boundaries plus one scheduled SEC RSS manifest and neutral metadata-only parser are implemented. No truthful SEC runtime contact, deployed SEC collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
 
 ## Official references
 
