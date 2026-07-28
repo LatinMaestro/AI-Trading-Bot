@@ -76,13 +76,14 @@ async function capture(
   sourceRef = LISTING_TARGET.sourceRef,
   availableAtMs = 2_100,
   deleteByMs = availableAtMs + REDDIT_MAXIMUM_RETENTION_MS,
+  captureId = "c".repeat(64),
 ): Promise<RedditOAuthListingCapture> {
   const payloadBytes = new TextEncoder().encode(body);
   const payloadSha256 = bytesToHex(
     new Uint8Array(await crypto.subtle.digest("SHA-256", payloadBytes)),
   );
   return {
-    captureId: "c".repeat(64),
+    captureId,
     sourceId: SOURCE_ID,
     sourceContractSha256: contract().sourceContractSha256,
     sourceRef,
@@ -132,6 +133,30 @@ test("normalises only transient post metadata and excludes provider content", as
   ]) {
     assert.equal(serialised.includes(forbidden), false);
   }
+});
+
+test("keeps transient observation identity stable across listing captures", async () => {
+  const first = await normaliseRedditPostListing(
+    contract(),
+    LISTING_TARGET,
+    await capture(listing([post("abc123")]), LISTING_TARGET.sourceRef, 2_100),
+  );
+  const second = await normaliseRedditPostListing(
+    contract(),
+    LISTING_TARGET,
+    await capture(
+      listing([post("abc123")]),
+      LISTING_TARGET.sourceRef,
+      3_100,
+      3_100 + REDDIT_MAXIMUM_RETENTION_MS,
+      "d".repeat(64),
+    ),
+  );
+  assert.equal(
+    first.observations[0]?.observationId,
+    second.observations[0]?.observationId,
+  );
+  assert.notEqual(first.captureId, second.captureId);
 });
 
 test("ignores posts already marked unavailable by Reddit", async () => {
