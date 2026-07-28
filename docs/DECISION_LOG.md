@@ -336,3 +336,11 @@ Require an intelligence-aware backtest to bind exactly one verified replay frame
 Construct target-weight reductions and additions from the actual simulated portfolio before applying intelligence. Fresh `pause-new-risk` evidence removes every buy request before cash, participation, fill, fee or impact modelling, including an increase toward a target after an earlier partial fill. Preserve sell reductions and exits. Record suppressed requests separately from market misses with their exact frame, pause evidence, pair, execution style and requested AUD notional.
 
 Run identical ungated and gated steps to create one content-addressed comparison containing both complete results and their equity/return, suppression-notional, pause-frame and research-candidate differences. Research candidates remain observational and cannot alter targets or create requests. This research-only integration adds no provider connection, deployment, credential, fund, wallet or live-execution authority.
+
+## 2026-07-29 — Immutable intelligence comparison manifests and report provenance
+
+Content-address the baseline and intelligence-gated backtest results separately, then bind both result digests, the exact replay and every derived comparison metric into the complete comparison identity. Before persistence, re-verify the replay, result identities, full frame coverage, suppressed-request pause evidence and all derivable aggregate metrics.
+
+Persist one compact immutable D1 manifest containing the comparison, replay and result identities plus aggregate equity, return, suppression and frame evidence. Do not duplicate potentially large execution and equity arrays in one D1 row. Exact retries preserve the first persistence time; changed identity reuse, ordinary updates and deletes fail closed.
+
+Every research report must bind a sorted unique list of external-intelligence comparison identities, using an explicit empty list when none was evaluated. A comparison digest proves reproducible evidence identity only; it cannot promote a strategy, approve exposure or submit an order. This slice adds no provider connection, deployment, credential, fund, wallet or live-execution authority.
