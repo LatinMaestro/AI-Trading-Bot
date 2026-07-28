@@ -87,7 +87,7 @@ The adapter output still requires source-specific RSS, Atom, JSON Feed or provid
 
 The SEC press-release RSS feed is an approved lower-priority regulator source using `scheduled-poll`, not a zero-delay or minute-level claim. Its source contract binds the exact official feed, SEC origin, publisher/provider identities, digest-only retention, attribution, licence snapshot and explicit model-training prohibition.
 
-The parser re-verifies payload length and SHA-256, accepts only bounded UTF-8 RSS without declarations or custom entities, and requires canonical SEC press-release links, matching GUIDs and publication times no later than receipt. It retains deterministic identity, chronology and digests but not titles or raw XML.
+The parser re-verifies payload length and SHA-256, accepts only bounded UTF-8 RSS without document-type or custom-entity declarations, and requires canonical SEC press-release links, matching GUIDs and publication times no later than receipt. It retains deterministic identity, chronology and digests but not titles or raw XML.
 
 Every item remains a neutral `other` event scoped to the non-tradable `SEC.REGULATOR` marker until a separately reviewed deterministic entity/event linker exists. It cannot pause new risk, create a positive research candidate, approve an order or submit an order. Automated requests require a truthful contact-bearing User-Agent supplied at runtime; no contact address is committed.
 
