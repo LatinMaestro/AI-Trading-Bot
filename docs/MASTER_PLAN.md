@@ -74,7 +74,8 @@
     - [x] Add reviewed entity/topic rules, exact-content syndication clustering and correction-safe representative selection.
     - [x] Add permitted-content near-duplicate/repost clustering and coordinated-manipulation evidence.
   - [x] Integrate `pause-new-risk` into paper-mode risk controls and incident reporting.
-  - [ ] Backtest news/social features with original publication and receipt timestamps and no look-ahead.
+  - [x] Backtest news/social features with original publication, receipt, availability and assessment timestamps and no look-ahead.
+    - [x] Add content-addressed complete-snapshot replay with reaction expiry, latency evidence and deterministic intent gates.
 - [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
   - [x] Add a deterministic pure target-weight rebalancing engine.
   - [x] Attribute maker/taker fees, spread, slippage, adverse selection and square-root price impact.
