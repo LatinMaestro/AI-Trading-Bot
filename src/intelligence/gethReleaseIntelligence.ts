@@ -31,6 +31,7 @@ export const GITHUB_RATE_LIMIT_REF =
   "https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api";
 export const GITHUB_TERMS_REF =
   "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms";
+export const GITHUB_API_USER_AGENT = "LatinMaestro-AI-Trading-Bot/1.0";
 export const GETH_REPOSITORY_REF = "https://github.com/ethereum/go-ethereum";
 export const GETH_PUBLISHER_ID = "ethereum-go-ethereum";
 export const GITHUB_RELEASES_PROVIDER_ID = "github-rest-api";
@@ -390,6 +391,7 @@ export async function createGethReleaseScheduledSource(
         "application/json",
         "application/vnd.github+json",
       ],
+      userAgent: GITHUB_API_USER_AGENT,
     },
     normaliseCapture: (capture) =>
       normaliseGethReleaseCapture(contract, capture, policy),
