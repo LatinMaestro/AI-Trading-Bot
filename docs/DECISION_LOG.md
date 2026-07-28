@@ -203,3 +203,11 @@ Persist conditional `ETag` and `Last-Modified` validators in D1 by source ID so 
 Exact retries at the same observation time are accepted only when the validator state is identical. Observation time may never regress, and a same-time changed validator is an identity conflict. A stale write is surfaced as an error rather than silently replacing or appearing to replace newer state.
 
 The collector remains responsible for saving cache state only after successful enqueue, confirmed not-modified handling or confirmed no-item normalisation. Cache validators are operational transport state, not authoritative market or intelligence evidence, and cannot classify an event, change exposure, approve an order or submit an order. This slice adds no provider credential, private exchange API, fund, withdrawal, transfer, wallet, leverage, derivative or live-trading capability.
+
+## 2026-07-28 — Provenance-bound lifecycle document capture
+
+Capture only canonical Kraken lifecycle targets produced by the deterministic discovery contract. Each bounded batch accepts at most ten HTML documents, skips already committed source references, applies strict HTTPS host/path, redirect, media-type, timeout, response-size, UTF-8 and cache-header controls, and commits nothing when any selected target fails.
+
+Persist each exact document payload content-addressably with an immutable capture header that binds source kind and URL, fetch time, discovery digest, originating committed index capture and originating index payload digest. A database commit marker is permitted only when the exact discovery provenance and document payload exist; exact retries are idempotent, while changed identities, incomplete provenance, mutation and commits before fetch fail closed.
+
+This slice establishes the capture and persistence boundary only. Daily committed-source lookup, recursive discovery from captured listing-index pages and scheduled orchestration remain separate work. Public Kraken documents add no credential, private API, account, fund, wallet, withdrawal, transfer, leverage, derivative or order authority.
