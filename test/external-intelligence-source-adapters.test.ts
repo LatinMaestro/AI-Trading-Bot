@@ -283,7 +283,7 @@ test("rejects an unsafe configured User-Agent before fetch", async () => {
         sourceRef: SOURCE_REF,
         acquisitionMode: "minute-poll",
         acceptedContentTypes: ["application/rss+xml"],
-        userAgent: "Example/1 operations@example.com\\r\\nInjected: true",
+        userAgent: "Example/1 operations@example.com\r\nInjected: true",
       },
       optionsForRejectedBeforeFetch(),
     ),
