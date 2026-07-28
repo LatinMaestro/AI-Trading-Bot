@@ -28,11 +28,20 @@ export interface TargetAllocation {
   readonly executionStyle: ExecutionStyle;
 }
 
+export interface BacktestExternalIntelligenceGate {
+  readonly schemaVersion: "backtest-external-intelligence-gate-v1";
+  readonly decisionAtMs: number;
+  readonly frameSha256: string;
+  readonly pauseNewRiskEvidenceSha256s: readonly string[];
+  readonly researchCandidateSha256s: readonly string[];
+}
+
 export interface BacktestStep {
   readonly signalTimestampMs: number;
   readonly executionTimestampMs: number;
   readonly markets: readonly BacktestMarket[];
   readonly targets: readonly TargetAllocation[];
+  readonly externalIntelligenceGate?: BacktestExternalIntelligenceGate;
 }
 
 export interface BacktestConfig {
@@ -83,6 +92,17 @@ export interface BacktestCostSummary {
   readonly missedFillNotionalAud: number;
 }
 
+export interface BacktestSuppressedExecution {
+  readonly signalTimestampMs: number;
+  readonly executionTimestampMs: number;
+  readonly pair: string;
+  readonly side: "buy";
+  readonly executionStyle: ExecutionStyle;
+  readonly requestedNotionalAud: number;
+  readonly frameSha256: string;
+  readonly pauseEvidenceSha256s: readonly string[];
+}
+
 export interface BacktestResult {
   readonly initialEquityAud: number;
   readonly finalEquityAud: number;
@@ -93,4 +113,6 @@ export interface BacktestResult {
   readonly equityCurve: readonly BacktestEquityPoint[];
   readonly finalPositions: readonly BacktestPosition[];
   readonly costs: BacktestCostSummary;
+  readonly executionGateFrameSha256s: readonly string[];
+  readonly suppressedExecutions: readonly BacktestSuppressedExecution[];
 }
