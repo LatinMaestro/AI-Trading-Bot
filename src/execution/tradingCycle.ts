@@ -23,6 +23,7 @@ import {
   PAPER_INTELLIGENCE_PAUSE_MAXIMUM_AGE_MS,
 } from "../risk/externalIntelligencePaperRisk.ts";
 import { UniversePolicySnapshotRepository } from "../storage/universePolicySnapshot.ts";
+import { UniverseBoundStrategyDecisionRepository } from "../storage/universeBoundStrategyDecision.ts";
 
 export interface CycleResult {
   readonly cycleId: string;
@@ -131,6 +132,12 @@ export async function runTradingCycle(
       Object.fromEntries(candlesEntries),
     );
     const decision = boundDecision.decision;
+    await new UniverseBoundStrategyDecisionRepository(env.DB).persist({
+      cycleId,
+      membership: universeMembership,
+      artifact: boundDecision,
+      persistedAtMs: clock(),
+    });
     const intelligenceRisk =
       await new ExternalIntelligencePaperRiskRepository(env.DB).apply({
         cycleId,
