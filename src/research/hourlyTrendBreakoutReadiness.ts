@@ -16,72 +16,84 @@ export const REQUIRED_HOURLY_TREND_BREAKOUT_READINESS_GATES = [
     stage: "research",
     reviewGate: "B",
     requiresAuthoritativeEvidence: true,
+    requiresFiniteValidity: false,
   },
   {
     id: "survivorship-safe-signal-time-universe",
     stage: "research",
     reviewGate: "B",
     requiresAuthoritativeEvidence: true,
+    requiresFiniteValidity: false,
   },
   {
     id: "complete-after-cost-evaluation",
     stage: "research",
     reviewGate: "B",
     requiresAuthoritativeEvidence: true,
+    requiresFiniteValidity: false,
   },
   {
     id: "live-like-execution-calibration",
     stage: "research",
     reviewGate: "B",
     requiresAuthoritativeEvidence: true,
+    requiresFiniteValidity: true,
   },
   {
     id: "capacity-path-stress",
     stage: "research",
     reviewGate: "B",
     requiresAuthoritativeEvidence: true,
+    requiresFiniteValidity: true,
   },
   {
     id: "tax-and-audit-export",
     stage: "promotion",
     reviewGate: "C",
     requiresAuthoritativeEvidence: true,
+    requiresFiniteValidity: false,
   },
   {
     id: "signed-versioned-strategy-configuration",
     stage: "promotion",
     reviewGate: "B/E",
     requiresAuthoritativeEvidence: true,
+    requiresFiniteValidity: false,
   },
   {
     id: "paper-accounting-observation",
     stage: "promotion",
     reviewGate: "C",
     requiresAuthoritativeEvidence: true,
+    requiresFiniteValidity: false,
   },
   {
     id: "shadow-permission-and-reconciliation",
     stage: "promotion",
     reviewGate: "D",
     requiresAuthoritativeEvidence: true,
+    requiresFiniteValidity: false,
   },
   {
     id: "independent-security-review",
     stage: "promotion",
     reviewGate: "E",
     requiresAuthoritativeEvidence: true,
+    requiresFiniteValidity: false,
   },
   {
     id: "high-severity-issue-clearance",
     stage: "promotion",
     reviewGate: "E",
     requiresAuthoritativeEvidence: true,
+    requiresFiniteValidity: false,
   },
   {
     id: "owner-canary-approval",
     stage: "promotion",
     reviewGate: "E",
     requiresAuthoritativeEvidence: true,
+    requiresFiniteValidity: false,
   },
 ] as const;
 
@@ -181,6 +193,11 @@ function assessGate(
     evidence.evidenceClass !== "authoritative"
   ) {
     status = "non-authoritative";
+  } else if (
+    definition.requiresFiniteValidity &&
+    evidence.validUntilMs === null
+  ) {
+    status = "partial";
   } else if (
     evidence.validUntilMs !== null &&
     evidence.validUntilMs < assessedAtMs
