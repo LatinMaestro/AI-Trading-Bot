@@ -30,6 +30,10 @@ import {
   type HourlyTrendBreakoutWalkForwardFoldInput,
 } from "../src/research/hourlyTrendBreakoutEvaluation.ts";
 import {
+  prepareHourlyTrendBreakoutExecutionCalibration,
+  prepareHourlyTrendBreakoutExecutionStressManifest,
+} from "../src/research/hourlyTrendBreakoutExecutionStress.ts";
+import {
   analyseScenarioRisk,
   calculateObjectiveProgress,
   type ObjectiveDefinition,
@@ -181,6 +185,24 @@ async function fixture(): Promise<{
   ];
   const sensitivityManifest =
     await prepareHourlyTrendBreakoutSensitivityManifest(sensitivityVariants);
+  const executionCalibration =
+    await prepareHourlyTrendBreakoutExecutionCalibration(
+      finalHoldout.plan,
+      finalHoldout.run,
+      {
+        calibratedAtMs: (251 * HOUR_MS) + 1,
+        availableAtMs: (251 * HOUR_MS) + 2,
+        validUntilMs: 300 * HOUR_MS,
+        sourceSha256s: ["c".repeat(64), "d".repeat(64)],
+      },
+    );
+  const executionStressManifest =
+    await prepareHourlyTrendBreakoutExecutionStressManifest(
+      finalHoldout.plan,
+      finalHoldout.run,
+      executionCalibration,
+      (251 * HOUR_MS) + 3,
+    );
   const timestamps = finalHoldout.run.result.equityCurve.map(
     (point) => point.timestampMs,
   );
@@ -265,7 +287,7 @@ async function fixture(): Promise<{
   ].filter((value, index, values) => values.indexOf(value) === index);
   const report: ResearchReportInput = {
     reportId: "hourly-trend-breakout-final-holdout-0001",
-    generatedAt: new Date((251 * HOUR_MS) + 1).toISOString(),
+    generatedAt: new Date((251 * HOUR_MS) + 4).toISOString(),
     evaluationSplit: "final-holdout",
     periodStartMs: timestamps[0]!,
     periodEndMs: timestamps.at(-1)!,
@@ -287,6 +309,7 @@ async function fixture(): Promise<{
       externalIntelligenceComparisonSha256s: [],
       strategyBacktestRunSha256s,
       strategyEvaluationManifestSha256s: [
+        executionStressManifest.manifestSha256,
         sensitivityManifest.manifestSha256,
         walkForwardManifest.manifestSha256,
       ],
@@ -298,6 +321,8 @@ async function fixture(): Promise<{
       walkForwardManifest,
       sensitivityManifest,
       finalHoldout,
+      executionCalibration,
+      executionStressManifest,
       report,
     },
     report,
@@ -319,6 +344,15 @@ test("binds complete final-holdout evidence without selecting a strategy", async
   });
   assert.equal(first.evaluationSha256, second.evaluationSha256);
   assert.equal(first.report.benchmarks.length, 4);
+  assert.equal(
+    first.executionStressManifestSha256,
+    input.executionStressManifest.manifestSha256,
+  );
+  assert.ok(
+    first.report.provenance.strategyEvaluationManifestSha256s.includes(
+      input.executionStressManifest.manifestSha256,
+    ),
+  );
   assert.equal(first.report.scenarioRisk.terminalSubstantialLossProbability, 0.5);
   assert.equal("selectedRunSha256" in first, false);
   assert.equal("promoted" in first, false);
@@ -377,6 +411,18 @@ test("fails closed for incomplete or inconsistent evaluation evidence", async ()
     }),
     /requires warning/u,
   );
+  await assert.rejects(
+    prepareHourlyTrendBreakoutCompleteEvaluation({
+      ...input,
+      report: {
+        ...report,
+        generatedAt: new Date(
+          input.executionStressManifest.evaluatedAtMs - 1,
+        ).toISOString(),
+      },
+    }),
+    /predates execution stress evidence/u,
+  );
 });
 
 function completeEvaluationDatabase(): DatabaseSync {
@@ -386,6 +432,7 @@ function completeEvaluationDatabase(): DatabaseSync {
     "../migrations/0020_hourly_trend_breakout_research_runs.sql",
     "../migrations/0021_hourly_trend_breakout_evaluation_manifests.sql",
     "../migrations/0022_hourly_trend_breakout_complete_evaluations.sql",
+    "../migrations/0023_hourly_trend_breakout_execution_stress.sql",
   ]) {
     db.exec(readFileSync(new URL(migration, import.meta.url), "utf8"));
   }
@@ -483,6 +530,20 @@ test("persists a chunked immutable complete evaluation with exact retries", asyn
     ).count,
     1,
   );
+  for (const table of [
+    "hourly_trend_breakout_execution_calibrations",
+    "hourly_trend_breakout_execution_stress_manifests",
+    "hourly_trend_breakout_complete_evaluation_stress_bindings",
+  ]) {
+    assert.equal(
+      (
+        db
+          .prepare(`SELECT COUNT(*) AS count FROM ${table}`)
+          .get() as { readonly count: number }
+      ).count,
+      1,
+    );
+  }
   assert.equal(
     (
       db
@@ -519,6 +580,25 @@ test("persists a chunked immutable complete evaluation with exact retries", asyn
     () => db.prepare("DELETE FROM research_report_chunks").run(),
     /immutable/u,
   );
+  assert.throws(
+    () =>
+      db
+        .prepare(
+          `UPDATE hourly_trend_breakout_execution_stress_manifests
+           SET persisted_at_ms = persisted_at_ms + 1`,
+        )
+        .run(),
+    /immutable/u,
+  );
+  assert.throws(
+    () =>
+      db
+        .prepare(
+          "DELETE FROM hourly_trend_breakout_complete_evaluation_stress_bindings",
+        )
+        .run(),
+    /immutable/u,
+  );
 });
 
 test("rejects incomplete, unpersisted or changed complete evaluations", async () => {
@@ -552,12 +632,22 @@ test("rejects incomplete, unpersisted or changed complete evaluations", async ()
   );
 
   const db = completeEvaluationDatabase();
-  const header = statements[0]!;
+  const header = statements.find((statement) =>
+    statement.sql.includes("INSERT INTO research_reports")
+  );
   const commit = statements.find((statement) =>
     statement.sql.includes("INSERT INTO research_report_commits")
   );
-  const evaluationStatement = statements.at(-1);
-  if (commit === undefined || evaluationStatement === undefined) {
+  const evaluationStatement = statements.find((statement) =>
+    statement.sql.includes(
+      "INSERT INTO hourly_trend_breakout_complete_evaluations",
+    )
+  );
+  if (
+    header === undefined ||
+    commit === undefined ||
+    evaluationStatement === undefined
+  ) {
     throw new Error("Missing complete evaluation statements");
   }
   db.prepare(header.sql).run(...header.params);
@@ -565,9 +655,17 @@ test("rejects incomplete, unpersisted or changed complete evaluations", async ()
     () => db.prepare(commit.sql).run(...commit.params),
     /chunks are incomplete/u,
   );
-  for (const statement of statements.slice(1, -1)) {
+  for (const statement of statements.filter(
+    (statement) =>
+      statement !== header &&
+      statement !== commit &&
+      statement !== evaluationStatement &&
+      (statement.sql.includes("INSERT INTO research_report_chunks") ||
+        statement.sql.includes("INSERT INTO research_report_commits")),
+  )) {
     db.prepare(statement.sql).run(...statement.params);
   }
+  db.prepare(commit.sql).run(...commit.params);
   assert.throws(
     () =>
       db

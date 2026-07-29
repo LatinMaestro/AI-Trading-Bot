@@ -224,6 +224,15 @@ async function verifyCalibration(
   }
 }
 
+export async function verifyHourlyTrendBreakoutExecutionCalibration(
+  plan: HourlyTrendBreakoutBacktestPlan,
+  run: HourlyTrendBreakoutResearchRun,
+  calibration: HourlyTrendBreakoutExecutionCalibration,
+): Promise<void> {
+  await verifyHourlyTrendBreakoutResearchRun(plan, run);
+  await verifyCalibration(plan, run, calibration);
+}
+
 export async function prepareHourlyTrendBreakoutExecutionCalibration(
   plan: HourlyTrendBreakoutBacktestPlan,
   run: HourlyTrendBreakoutResearchRun,
@@ -403,4 +412,28 @@ export async function prepareHourlyTrendBreakoutExecutionStressManifest(
     ...envelope,
     manifestSha256: await sha256CanonicalIntelligence(envelope),
   };
+}
+
+export async function verifyHourlyTrendBreakoutExecutionStressManifest(
+  plan: HourlyTrendBreakoutBacktestPlan,
+  run: HourlyTrendBreakoutResearchRun,
+  calibration: HourlyTrendBreakoutExecutionCalibration,
+  manifest: HourlyTrendBreakoutExecutionStressManifest,
+): Promise<void> {
+  const reproduced =
+    await prepareHourlyTrendBreakoutExecutionStressManifest(
+      plan,
+      run,
+      calibration,
+      manifest.evaluatedAtMs,
+    );
+  if (
+    manifest.manifestSha256 !== reproduced.manifestSha256 ||
+    canonicalIntelligenceJson(manifest) !==
+      canonicalIntelligenceJson(reproduced)
+  ) {
+    throw new Error(
+      "hourly trend/breakout execution stress manifest is not reproducible",
+    );
+  }
 }

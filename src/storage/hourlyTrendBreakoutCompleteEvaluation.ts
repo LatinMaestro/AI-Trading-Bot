@@ -6,6 +6,9 @@ import {
   type HourlyTrendBreakoutCompleteEvaluation,
   type HourlyTrendBreakoutCompleteEvaluationInput,
 } from "../research/hourlyTrendBreakoutCompleteEvaluation.ts";
+import {
+  prepareHourlyTrendBreakoutExecutionStressPersistence,
+} from "./hourlyTrendBreakoutExecutionStress.ts";
 import { sha256Hex } from "../utils/crypto.ts";
 
 type D1BindValue = string | number | null;
@@ -72,6 +75,13 @@ interface PersistedCompleteEvaluationRow {
   readonly persisted_at_ms: number;
 }
 
+interface PersistedStressBindingRow {
+  readonly evaluation_sha256: string;
+  readonly report_sha256: string;
+  readonly stress_manifest_sha256: string;
+  readonly persisted_at_ms: number;
+}
+
 export const INSERT_RESEARCH_REPORT_SQL =
   `INSERT INTO research_reports
     (report_sha256, schema_version, report_id, generated_at,
@@ -101,6 +111,13 @@ export const INSERT_HOURLY_TREND_BREAKOUT_COMPLETE_EVALUATION_SQL =
    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
    ON CONFLICT(evaluation_sha256) DO NOTHING`;
 
+export const INSERT_COMPLETE_EVALUATION_STRESS_BINDING_SQL =
+  `INSERT INTO hourly_trend_breakout_complete_evaluation_stress_bindings
+    (evaluation_sha256, report_sha256, stress_manifest_sha256,
+     persisted_at_ms)
+   VALUES (?, ?, ?, ?)
+   ON CONFLICT(evaluation_sha256) DO NOTHING`;
+
 const SELECT_RESEARCH_REPORT_SQL =
   `SELECT report_sha256, schema_version, report_id, generated_at,
           evaluation_split, period_start_at_ms, period_end_at_ms,
@@ -125,6 +142,12 @@ const SELECT_COMPLETE_EVALUATION_SQL =
           final_holdout_plan_sha256, final_holdout_run_sha256,
           final_holdout_result_sha256, report_sha256, persisted_at_ms
    FROM hourly_trend_breakout_complete_evaluations
+   WHERE evaluation_sha256 = ?`;
+
+const SELECT_COMPLETE_EVALUATION_STRESS_BINDING_SQL =
+  `SELECT evaluation_sha256, report_sha256, stress_manifest_sha256,
+          persisted_at_ms
+   FROM hourly_trend_breakout_complete_evaluation_stress_bindings
    WHERE evaluation_sha256 = ?`;
 
 function splitUtf8(value: string): readonly string[] {
@@ -198,7 +221,16 @@ export async function prepareHourlyTrendBreakoutCompleteEvaluationPersistence(
   const reportJson = canonicalIntelligenceJson(report);
   const reportByteLength = encoder.encode(reportJson).byteLength;
   const chunks = await prepareChunks(reportJson);
+  const stressStatements =
+    await prepareHourlyTrendBreakoutExecutionStressPersistence({
+      plan: persistence.input.finalHoldout.plan,
+      run: persistence.input.finalHoldout.run,
+      calibration: persistence.input.executionCalibration,
+      manifest: persistence.input.executionStressManifest,
+      persistedAtMs: persistence.persistedAtMs,
+    });
   return [
+    ...stressStatements,
     {
       sql: INSERT_RESEARCH_REPORT_SQL,
       params: [
@@ -245,6 +277,15 @@ export async function prepareHourlyTrendBreakoutCompleteEvaluationPersistence(
         reproduced.finalHoldoutRunSha256,
         reproduced.finalHoldoutResultSha256,
         report.reportSha256,
+        persistence.persistedAtMs,
+      ],
+    },
+    {
+      sql: INSERT_COMPLETE_EVALUATION_STRESS_BINDING_SQL,
+      params: [
+        reproduced.evaluationSha256,
+        report.reportSha256,
+        reproduced.executionStressManifestSha256,
         persistence.persistedAtMs,
       ],
     },
@@ -335,6 +376,21 @@ function evaluationRowMatches(
   );
 }
 
+function stressBindingRowMatches(
+  row: PersistedStressBindingRow,
+  evaluation: HourlyTrendBreakoutCompleteEvaluation,
+  persistedAtMs: number,
+): boolean {
+  return (
+    row.evaluation_sha256 === evaluation.evaluationSha256 &&
+    row.report_sha256 === evaluation.report.reportSha256 &&
+    row.stress_manifest_sha256 ===
+      evaluation.executionStressManifestSha256 &&
+    row.persisted_at_ms >= evaluation.report.periodEndMs &&
+    row.persisted_at_ms <= persistedAtMs
+  );
+}
+
 export class HourlyTrendBreakoutCompleteEvaluationRepository {
   private readonly db: D1Database;
 
@@ -353,7 +409,13 @@ export class HourlyTrendBreakoutCompleteEvaluationRepository {
       ),
     );
     const reportSha256 = input.evaluation.report.reportSha256;
-    const [reportRow, chunkResult, commitRow, evaluationRow] =
+    const [
+      reportRow,
+      chunkResult,
+      commitRow,
+      evaluationRow,
+      stressBindingRow,
+    ] =
       await Promise.all([
         this.db
           .prepare(SELECT_RESEARCH_REPORT_SQL)
@@ -371,6 +433,10 @@ export class HourlyTrendBreakoutCompleteEvaluationRepository {
           .prepare(SELECT_COMPLETE_EVALUATION_SQL)
           .bind(input.evaluation.evaluationSha256)
           .first<PersistedCompleteEvaluationRow>(),
+        this.db
+          .prepare(SELECT_COMPLETE_EVALUATION_STRESS_BINDING_SQL)
+          .bind(input.evaluation.evaluationSha256)
+          .first<PersistedStressBindingRow>(),
       ]);
     const reportJson = canonicalIntelligenceJson(input.evaluation.report);
     const reportByteLength = encoder.encode(reportJson).byteLength;
@@ -380,6 +446,7 @@ export class HourlyTrendBreakoutCompleteEvaluationRepository {
       reportRow === null ||
       commitRow === null ||
       evaluationRow === null ||
+      stressBindingRow === null ||
       !reportRowMatches(
         reportRow,
         input.evaluation.report,
@@ -399,6 +466,11 @@ export class HourlyTrendBreakoutCompleteEvaluationRepository {
       ) ||
       !evaluationRowMatches(
         evaluationRow,
+        input.evaluation,
+        input.persistedAtMs,
+      ) ||
+      !stressBindingRowMatches(
+        stressBindingRow,
         input.evaluation,
         input.persistedAtMs,
       )
