@@ -56,4 +56,6 @@ Execution-stress evidence requires one reviewed finite-validity calibration arti
 
 Calibration and all 40 stress outcomes are persisted as canonical immutable JSON only after the exact baseline research run is present. The database enforces calibration availability/validity, exact plan/run/result agreement, fixed matrix cardinality and one immutable complete-evaluation binding. The research report must include the stress-manifest digest alongside walk-forward and sensitivity identities; its generation time cannot predate the stress evidence. A mandatory warning states that capacity stress does not prove live fillability.
 
+A deterministic readiness assessment enumerates the fixed Gate B–E evidence required for research review and later promotion. It derives missing, partial, non-authoritative, stale, evidence-present and external-review-required outcomes from bounded content-addressed references. Synthetic fixtures cannot satisfy authoritative gates; selection, ranking, approval and runtime authority are structurally absent.
+
 The module produces targets only. It does not submit or approve orders, activate paper/live mode, connect credentials or weaken any market-data, liquidity, intelligence, risk or execution gate.
