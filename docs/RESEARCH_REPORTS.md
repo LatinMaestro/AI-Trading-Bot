@@ -29,6 +29,7 @@ Strategy, AUD cash, BTC and equal-weight series must use one reporting currency.
 - objective progress and scenario-risk metrics;
 - code, data, universe, strategy, execution, objective and benchmark configuration digests;
 - a sorted unique list of exact strategy-backtest run digests, explicitly empty when no strategy run was evaluated;
+- a sorted unique list of exact strategy-evaluation manifest digests, explicitly empty when no walk-forward, holdout or sensitivity manifest was evaluated;
 - a sorted unique list of exact external-intelligence backtest comparison digests, explicitly empty when that evidence was not evaluated;
 - optional versioned FX-conversion digest;
 - canonical warnings; and
@@ -36,6 +37,6 @@ Strategy, AUD cash, BTC and equal-weight series must use one reporting currency.
 
 Reports fail closed for missing/duplicate benchmarks, mismatched cadence, invalid provenance, inconsistent objective references, unsupported currencies, non-finite metrics or generation before the evaluated period ends.
 
-The digest proves content identity, not approval or authenticity. Strategy-backtest run identities are re-runnable evidence references, not promotion records. A later signed-strategy gate must bind an approved configuration and report digest to an authorised approval record.
+The digest proves content identity, not approval or authenticity. Strategy-backtest run and strategy-evaluation manifest identities are re-runnable evidence references, not ranking, selection or promotion records. A later signed-strategy gate must bind an approved configuration and report digest to an authorised approval record.
 
 Synthetic fixtures validate arithmetic and report reproducibility only. Promotion still requires validated after-cost walk-forward, final-holdout, sensitivity, universe, capacity and tax evidence.
