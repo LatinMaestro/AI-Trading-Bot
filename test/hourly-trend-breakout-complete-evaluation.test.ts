@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 import {
   prepareHourlyTrendBreakoutBacktestPlan,
@@ -24,6 +26,8 @@ import {
   prepareHourlyTrendBreakoutSensitivityManifest,
   prepareHourlyTrendBreakoutWalkForwardManifest,
   type HourlyTrendBreakoutEvaluationRunInput,
+  type HourlyTrendBreakoutSensitivityVariantInput,
+  type HourlyTrendBreakoutWalkForwardFoldInput,
 } from "../src/research/hourlyTrendBreakoutEvaluation.ts";
 import {
   analyseScenarioRisk,
@@ -35,6 +39,15 @@ import {
   HOURLY_TREND_BREAKOUT_BASELINE_POLICY,
   type HourlyTrendBreakoutPolicy,
 } from "../src/strategies/hourlyTrendBreakout.ts";
+import {
+  prepareHourlyTrendBreakoutCompleteEvaluationPersistence,
+} from "../src/storage/hourlyTrendBreakoutCompleteEvaluation.ts";
+import {
+  prepareHourlyTrendBreakoutEvaluationManifestPersistence,
+} from "../src/storage/hourlyTrendBreakoutEvaluationManifest.ts";
+import {
+  prepareHourlyTrendBreakoutResearchRunPersistence,
+} from "../src/storage/hourlyTrendBreakoutResearchRun.ts";
 import type {
   UniverseSignalTimeMembership,
 } from "../src/universe/signalTimeMembership.ts";
@@ -137,32 +150,37 @@ async function fixture(): Promise<{
     typeof prepareHourlyTrendBreakoutCompleteEvaluation
   >[0];
   readonly report: ResearchReportInput;
+  readonly folds: readonly HourlyTrendBreakoutWalkForwardFoldInput[];
+  readonly sensitivityVariants:
+    readonly HourlyTrendBreakoutSensitivityVariantInput[];
 }> {
   const finalHoldout = await evaluationRun(248, 3);
+  const folds = [
+    {
+      foldIndex: 0,
+      training: await evaluationRun(240, 2),
+      validation: await evaluationRun(242, 2),
+    },
+    {
+      foldIndex: 1,
+      training: await evaluationRun(244, 1),
+      validation: await evaluationRun(246, 2),
+    },
+  ];
   const walkForwardManifest =
     await prepareHourlyTrendBreakoutWalkForwardManifest(
-      [
-        {
-          foldIndex: 0,
-          training: await evaluationRun(240, 2),
-          validation: await evaluationRun(242, 2),
-        },
-        {
-          foldIndex: 1,
-          training: await evaluationRun(244, 1),
-          validation: await evaluationRun(246, 2),
-        },
-      ],
+      folds,
       finalHoldout,
     );
+  const sensitivityVariants = [
+    finalHoldout,
+    await evaluationRun(248, 3, {
+      ...HOURLY_TREND_BREAKOUT_BASELINE_POLICY,
+      entryLookbackHours: 192,
+    }),
+  ];
   const sensitivityManifest =
-    await prepareHourlyTrendBreakoutSensitivityManifest([
-      finalHoldout,
-      await evaluationRun(248, 3, {
-        ...HOURLY_TREND_BREAKOUT_BASELINE_POLICY,
-        entryLookbackHours: 192,
-      }),
-    ]);
+    await prepareHourlyTrendBreakoutSensitivityManifest(sensitivityVariants);
   const timestamps = finalHoldout.run.result.equityCurve.map(
     (point) => point.timestampMs,
   );
@@ -283,6 +301,8 @@ async function fixture(): Promise<{
       report,
     },
     report,
+    folds,
+    sensitivityVariants,
   };
 }
 
@@ -356,5 +376,203 @@ test("fails closed for incomplete or inconsistent evaluation evidence", async ()
       },
     }),
     /requires warning/u,
+  );
+});
+
+function completeEvaluationDatabase(): DatabaseSync {
+  const db = new DatabaseSync(":memory:");
+  db.exec("PRAGMA foreign_keys = ON");
+  for (const migration of [
+    "../migrations/0020_hourly_trend_breakout_research_runs.sql",
+    "../migrations/0021_hourly_trend_breakout_evaluation_manifests.sql",
+    "../migrations/0022_hourly_trend_breakout_complete_evaluations.sql",
+  ]) {
+    db.exec(readFileSync(new URL(migration, import.meta.url), "utf8"));
+  }
+  return db;
+}
+
+test("persists a chunked immutable complete evaluation with exact retries", async () => {
+  const base = await fixture();
+  const input = {
+    ...base.input,
+    report: {
+      ...base.report,
+      warnings: [
+        ...base.report.warnings,
+        `large-report-fixture-${"x".repeat(600_000)}`,
+      ],
+    },
+  };
+  const evaluation = await prepareHourlyTrendBreakoutCompleteEvaluation(input);
+  const persistedAtMs = 252 * HOUR_MS;
+  const statements =
+    await prepareHourlyTrendBreakoutCompleteEvaluationPersistence({
+      input,
+      evaluation,
+      persistedAtMs,
+    });
+  const retryStatements =
+    await prepareHourlyTrendBreakoutCompleteEvaluationPersistence({
+      input,
+      evaluation,
+      persistedAtMs: persistedAtMs + HOUR_MS,
+    });
+  const db = completeEvaluationDatabase();
+  const allRuns = [
+    ...base.folds.flatMap((fold) => [fold.training, fold.validation]),
+    ...base.sensitivityVariants,
+  ].filter(
+    (run, index, values) =>
+      values.findIndex(
+        (candidate) => candidate.run.runSha256 === run.run.runSha256,
+      ) === index,
+  );
+  for (const run of allRuns) {
+    const statement = await prepareHourlyTrendBreakoutResearchRunPersistence({
+      ...run,
+      persistedAtMs,
+    });
+    db.prepare(statement.sql).run(...statement.params);
+  }
+  for (const manifestStatement of [
+    ...await prepareHourlyTrendBreakoutEvaluationManifestPersistence({
+      kind: "walk-forward",
+      folds: base.folds,
+      finalHoldout: base.input.finalHoldout,
+      manifest: base.input.walkForwardManifest,
+      persistedAtMs,
+    }),
+    ...await prepareHourlyTrendBreakoutEvaluationManifestPersistence({
+      kind: "sensitivity",
+      variants: base.sensitivityVariants,
+      manifest: base.input.sensitivityManifest,
+      persistedAtMs,
+    }),
+  ]) {
+    db.prepare(manifestStatement.sql).run(...manifestStatement.params);
+  }
+  for (const statement of statements) {
+    db.prepare(statement.sql).run(...statement.params);
+  }
+  for (const statement of retryStatements) {
+    db.prepare(statement.sql).run(...statement.params);
+  }
+
+  const report = db
+    .prepare(
+      `SELECT report_sha256, canonical_byte_length, chunk_count,
+              persisted_at_ms
+       FROM research_reports`,
+    )
+    .get() as {
+      readonly report_sha256: string;
+      readonly canonical_byte_length: number;
+      readonly chunk_count: number;
+      readonly persisted_at_ms: number;
+    };
+  assert.equal(report.report_sha256, evaluation.report.reportSha256);
+  assert.ok(report.canonical_byte_length > 524_288);
+  assert.ok(report.chunk_count > 1);
+  assert.equal(report.persisted_at_ms, persistedAtMs);
+  assert.equal(
+    (
+      db
+        .prepare("SELECT COUNT(*) AS count FROM research_report_commits")
+        .get() as { readonly count: number }
+    ).count,
+    1,
+  );
+  assert.equal(
+    (
+      db
+        .prepare(
+          `SELECT COUNT(*) AS count
+           FROM hourly_trend_breakout_complete_evaluations`,
+        )
+        .get() as { readonly count: number }
+    ).count,
+    1,
+  );
+
+  const chunkStatement = statements.find((statement) =>
+    statement.sql.includes("INSERT INTO research_report_chunks")
+  );
+  if (chunkStatement === undefined) throw new Error("Missing chunk statement");
+  const conflictingChunk = [...chunkStatement.params];
+  conflictingChunk[2] = "f".repeat(64);
+  assert.throws(
+    () => db.prepare(chunkStatement.sql).run(...conflictingChunk),
+    /chunk conflict/u,
+  );
+  assert.throws(
+    () =>
+      db
+        .prepare(
+          `UPDATE hourly_trend_breakout_complete_evaluations
+           SET persisted_at_ms = persisted_at_ms + 1`,
+        )
+        .run(),
+    /immutable/u,
+  );
+  assert.throws(
+    () => db.prepare("DELETE FROM research_report_chunks").run(),
+    /immutable/u,
+  );
+});
+
+test("rejects incomplete, unpersisted or changed complete evaluations", async () => {
+  const base = await fixture();
+  const evaluation =
+    await prepareHourlyTrendBreakoutCompleteEvaluation(base.input);
+  const statements =
+    await prepareHourlyTrendBreakoutCompleteEvaluationPersistence({
+      input: base.input,
+      evaluation,
+      persistedAtMs: 252 * HOUR_MS,
+    });
+  await assert.rejects(
+    prepareHourlyTrendBreakoutCompleteEvaluationPersistence({
+      input: base.input,
+      evaluation: {
+        ...evaluation,
+        finalHoldoutResultSha256: "f".repeat(64),
+      },
+      persistedAtMs: 252 * HOUR_MS,
+    }),
+    /not reproducible/u,
+  );
+  await assert.rejects(
+    prepareHourlyTrendBreakoutCompleteEvaluationPersistence({
+      input: base.input,
+      evaluation,
+      persistedAtMs: evaluation.report.periodEndMs - 1,
+    }),
+    /chronology/u,
+  );
+
+  const db = completeEvaluationDatabase();
+  const header = statements[0]!;
+  const commit = statements.find((statement) =>
+    statement.sql.includes("INSERT INTO research_report_commits")
+  );
+  const evaluationStatement = statements.at(-1);
+  if (commit === undefined || evaluationStatement === undefined) {
+    throw new Error("Missing complete evaluation statements");
+  }
+  db.prepare(header.sql).run(...header.params);
+  assert.throws(
+    () => db.prepare(commit.sql).run(...commit.params),
+    /chunks are incomplete/u,
+  );
+  for (const statement of statements.slice(1, -1)) {
+    db.prepare(statement.sql).run(...statement.params);
+  }
+  assert.throws(
+    () =>
+      db
+        .prepare(evaluationStatement.sql)
+        .run(...evaluationStatement.params),
+    /evidence is not persisted/u,
   );
 });
