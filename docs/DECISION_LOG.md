@@ -418,3 +418,11 @@ Collect the configured Australian Kraken spot pairs at both 60-minute and 1,440-
 Discard Kraken's always-present current row. Require strict eight-field rows, exact canonical response identity, interval alignment, contiguity, internally consistent positive OHLC, non-negative volume, closed intervals and interval-specific freshness. Persist immutable canonical candles and batch provenance that binds the exact request, acquisition chronology, response byte length, response SHA-256 and source cursor.
 
 After persistence, re-read the database at acquisition availability and require at least 220 complete hourly and 220 complete daily candles for every configured pair. Missing, stale, gapped, conflicting or insufficient evidence fails the cycle before universe or strategy work. Keep the committed initial scope at BTC/AUD and ETH/AUD. This public-data path adds no credential, private endpoint, account, wallet, fund or order authority.
+
+## 2026-07-29 — Bounded scheduled gap repair and official historical OHLCVT source
+
+After each primary scheduled candle capture, scan the exact current 719-committed-row Kraken REST window for that pair and interval. If a repairable gap exists, permit exactly one additional overlapping capture beginning one interval before the earliest gap, then re-read the exact range and fail closed if any gap remains. Record detected repairable gaps, missing-candle count and repair-capture count in the cycle audit. Do not loop indefinitely or treat an incomplete repair as acceptable evidence.
+
+Approve Kraken's official downloadable historical OHLCVT archive and quarterly updates as the reproducible account-free research source beyond the REST horizon. Pin the exact official support page, complete archive and quarterly folder in a versioned contract; require SHA-256 digests for each raw ZIP and selected CSV; restrict scope to BTC/AUD and ETH/AUD at 60 and 1,440 minutes; keep raw archives transient; and preserve missing no-trade intervals without forward-filling.
+
+Exact archive capture, member validation, REST-overlap reconciliation and immutable derived-candle persistence remain pending. Until those steps complete, older history is non-authoritative and cannot influence strategy. This public-data boundary adds no deployment, credential, account, fund, wallet or live-order authority.

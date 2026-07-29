@@ -5,7 +5,11 @@ import {
   MIN_DAILY_CANDLES,
   MIN_HOURLY_CANDLES,
 } from "./candleQuality.ts";
-import type { CandleIntervalMinutes } from "./candleIntervals.ts";
+import {
+  intervalMs,
+  type CandleIntervalMinutes,
+} from "./candleIntervals.ts";
+import { findCandleGaps, planKrakenRestGapRepair } from "./gaps.ts";
 import type {
   MarketCandleBatchSink,
   PreparedMarketDataBatch,
@@ -71,6 +75,9 @@ export interface ScheduledKrakenCandleCapture {
 export interface ScheduledKrakenCandleResult {
   readonly captures: readonly ScheduledKrakenCandleCapture[];
   readonly requestCount: number;
+  readonly detectedRepairableGapCount: number;
+  readonly detectedMissingCandleCount: number;
+  readonly repairCaptureCount: number;
   readonly historyAsOfMs: number;
 }
 
@@ -438,102 +445,196 @@ export async function runScheduledKrakenCandleCycle(
   const sortedPairs = [...options.pairs].sort((left, right) =>
     left.canonicalSymbol.localeCompare(right.canonicalSymbol),
   );
+  const captureInterval = async (
+    pair: SpotPairDefinition,
+    intervalMinutes: CandleIntervalMinutes,
+    sinceSeconds: number | null,
+  ): Promise<ScheduledKrakenCandleCapture> => {
+    if (captures.length > 0 && requestSpacingMs > 0) {
+      await sleep(requestSpacingMs);
+    }
+    const url = buildRequestUrl(
+      pair.exchangeSymbol,
+      intervalMinutes,
+      sinceSeconds,
+    );
+    const acquired = await fetchWithRetry(
+      fetchImpl,
+      url,
+      maximumAttempts,
+      retryBaseDelayMs,
+      requestTimeoutMs,
+      maximumResponseBytes,
+      sleep,
+      clock,
+      requestCounter,
+    );
+    if (acquired.requestStartedAtMs < options.scheduledAtMs) {
+      throw new Error(
+        "Kraken OHLC request cannot precede its scheduled cycle",
+      );
+    }
+    const responseSha256 = await sha256Hex(acquired.text);
+    let parsedJson: unknown;
+    try {
+      parsedJson = JSON.parse(acquired.text) as unknown;
+    } catch {
+      throw new Error("Kraken OHLC returned invalid JSON");
+    }
+    const parsed = parseKrakenOhlc(
+      pair.canonicalSymbol,
+      intervalMinutes,
+      parsedJson,
+    );
+    assertCandlesUsable(
+      pair.canonicalSymbol,
+      intervalMinutes,
+      parsed.candles,
+      {
+        nowMs: acquired.availableAtMs,
+        minimumCandles: 1,
+      },
+    );
+    const sourceCursor =
+      `last=${parsed.sourceCursor};response-sha256=${responseSha256}`;
+    const batchId = await sha256Hex(
+      JSON.stringify([
+        "scheduled-kraken-ohlc-v1",
+        pair.canonicalSymbol,
+        pair.exchangeSymbol,
+        intervalMinutes,
+        url.toString(),
+        acquired.requestStartedAtMs,
+        acquired.receivedAtMs,
+        acquired.availableAtMs,
+        acquired.byteLength,
+        responseSha256,
+      ]),
+    );
+    const batch = await options.store.persistBatch({
+      batchId,
+      venue: "kraken",
+      canonicalPair: pair.canonicalSymbol,
+      exchangePair: pair.exchangeSymbol,
+      intervalMinutes,
+      ...(sinceSeconds === null
+        ? {}
+        : { requestedSinceSeconds: sinceSeconds }),
+      sourceCursor,
+      fetchedAt: new Date(acquired.availableAtMs).toISOString(),
+      candles: parsed.candles,
+    });
+    const capture: ScheduledKrakenCandleCapture = {
+      canonicalPair: pair.canonicalSymbol,
+      exchangePair: pair.exchangeSymbol,
+      intervalMinutes,
+      requestUrl: url.toString(),
+      requestedSinceSeconds: sinceSeconds,
+      requestStartedAtMs: acquired.requestStartedAtMs,
+      receivedAtMs: acquired.receivedAtMs,
+      availableAtMs: acquired.availableAtMs,
+      responseByteLength: acquired.byteLength,
+      responseSha256,
+      sourceCursor,
+      batch,
+    };
+    captures.push(capture);
+    return capture;
+  };
+
+  const primaryCaptures = new Map<string, ScheduledKrakenCandleCapture>();
   for (const pair of sortedPairs) {
     for (const intervalMinutes of INTERVALS) {
-      if (captures.length > 0 && requestSpacingMs > 0) {
-        await sleep(requestSpacingMs);
-      }
       const latestOpenTimeMs = await options.store.loadLatestOpenTimeMs(
         pair.canonicalSymbol,
         intervalMinutes,
       );
       const sinceSeconds =
         latestOpenTimeMs === null ? null : latestOpenTimeMs / 1000;
-      const url = buildRequestUrl(
-        pair.exchangeSymbol,
+      const capture = await captureInterval(
+        pair,
         intervalMinutes,
         sinceSeconds,
       );
-      const acquired = await fetchWithRetry(
-        fetchImpl,
-        url,
-        maximumAttempts,
-        retryBaseDelayMs,
-        requestTimeoutMs,
-        maximumResponseBytes,
-        sleep,
-        clock,
-        requestCounter,
+      primaryCaptures.set(
+        `${pair.canonicalSymbol}:${intervalMinutes}`,
+        capture,
       );
-      if (acquired.requestStartedAtMs < options.scheduledAtMs) {
+    }
+  }
+
+  let detectedRepairableGapCount = 0;
+  let detectedMissingCandleCount = 0;
+  let repairCaptureCount = 0;
+  for (const pair of sortedPairs) {
+    for (const intervalMinutes of INTERVALS) {
+      const primary = primaryCaptures.get(
+        `${pair.canonicalSymbol}:${intervalMinutes}`,
+      );
+      if (primary === undefined) {
+        throw new Error("Scheduled candle primary capture is missing");
+      }
+      const stepMs = intervalMs(intervalMinutes);
+      const currentOpenTimeMs =
+        Math.floor(primary.availableAtMs / stepMs) * stepMs;
+      const expectedEndOpenTimeMs = currentOpenTimeMs - stepMs;
+      const expectedStartOpenTimeMs =
+        currentOpenTimeMs - 719 * stepMs;
+      const storedOpenTimes = await options.store.loadOpenTimesMs(
+        pair.canonicalSymbol,
+        intervalMinutes,
+        expectedStartOpenTimeMs,
+        expectedEndOpenTimeMs,
+      );
+      const gaps = findCandleGaps(
+        storedOpenTimes,
+        intervalMinutes,
+        expectedStartOpenTimeMs,
+        expectedEndOpenTimeMs,
+      );
+      const plan = planKrakenRestGapRepair(
+        gaps,
+        intervalMinutes,
+        currentOpenTimeMs,
+      );
+      if (plan.unavailableFromRest.length > 0) {
+        throw new Error("Scheduled Kraken REST repair plan is inconsistent");
+      }
+      if (plan.repairable.length === 0) continue;
+
+      detectedRepairableGapCount += plan.repairable.length;
+      detectedMissingCandleCount += plan.repairable.reduce(
+        (total, gap) => total + gap.missingCount,
+        0,
+      );
+      const earliestGap = plan.repairable[0];
+      if (earliestGap === undefined) {
+        throw new Error("Scheduled Kraken repair gap is missing");
+      }
+      const repairSinceSeconds = Math.max(
+        0,
+        earliestGap.startOpenTimeMs / 1000 - intervalMinutes * 60,
+      );
+      await captureInterval(pair, intervalMinutes, repairSinceSeconds);
+      repairCaptureCount += 1;
+
+      const repairedOpenTimes = await options.store.loadOpenTimesMs(
+        pair.canonicalSymbol,
+        intervalMinutes,
+        expectedStartOpenTimeMs,
+        expectedEndOpenTimeMs,
+      );
+      const remaining = findCandleGaps(
+        repairedOpenTimes,
+        intervalMinutes,
+        expectedStartOpenTimeMs,
+        expectedEndOpenTimeMs,
+      );
+      if (remaining.length > 0) {
         throw new Error(
-          "Kraken OHLC request cannot precede its scheduled cycle",
+          `${pair.canonicalSymbol} ${intervalMinutes}-minute REST gap repair is incomplete`,
         );
       }
-      const responseSha256 = await sha256Hex(acquired.text);
-      let parsedJson: unknown;
-      try {
-        parsedJson = JSON.parse(acquired.text) as unknown;
-      } catch {
-        throw new Error("Kraken OHLC returned invalid JSON");
-      }
-      const parsed = parseKrakenOhlc(
-        pair.canonicalSymbol,
-        intervalMinutes,
-        parsedJson,
-      );
-      assertCandlesUsable(
-        pair.canonicalSymbol,
-        intervalMinutes,
-        parsed.candles,
-        {
-          nowMs: acquired.availableAtMs,
-          minimumCandles: 1,
-        },
-      );
-      const sourceCursor =
-        `last=${parsed.sourceCursor};response-sha256=${responseSha256}`;
-      const batchId = await sha256Hex(
-        JSON.stringify([
-          "scheduled-kraken-ohlc-v1",
-          pair.canonicalSymbol,
-          pair.exchangeSymbol,
-          intervalMinutes,
-          url.toString(),
-          acquired.requestStartedAtMs,
-          acquired.receivedAtMs,
-          acquired.availableAtMs,
-          acquired.byteLength,
-          responseSha256,
-        ]),
-      );
-      const batch = await options.store.persistBatch({
-        batchId,
-        venue: "kraken",
-        canonicalPair: pair.canonicalSymbol,
-        exchangePair: pair.exchangeSymbol,
-        intervalMinutes,
-        ...(sinceSeconds === null
-          ? {}
-          : { requestedSinceSeconds: sinceSeconds }),
-        sourceCursor,
-        fetchedAt: new Date(acquired.availableAtMs).toISOString(),
-        candles: parsed.candles,
-      });
-      captures.push({
-        canonicalPair: pair.canonicalSymbol,
-        exchangePair: pair.exchangeSymbol,
-        intervalMinutes,
-        requestUrl: url.toString(),
-        requestedSinceSeconds: sinceSeconds,
-        requestStartedAtMs: acquired.requestStartedAtMs,
-        receivedAtMs: acquired.receivedAtMs,
-        availableAtMs: acquired.availableAtMs,
-        responseByteLength: acquired.byteLength,
-        responseSha256,
-        sourceCursor,
-        batch,
-      });
     }
   }
   const historyAsOfMs = Math.max(
@@ -547,6 +648,9 @@ export async function runScheduledKrakenCandleCycle(
   return {
     captures,
     requestCount: requestCounter.value,
+    detectedRepairableGapCount,
+    detectedMissingCandleCount,
+    repairCaptureCount,
     historyAsOfMs,
   };
 }

@@ -49,17 +49,18 @@ Trading-cycle orchestrator
 4. Load only committed external-intelligence assessments available by the decision timestamp. External intelligence may pause new risk or create a research candidate; it cannot submit or approve an order.
 5. Discover the configured Australian Kraken spot markets and incrementally fetch both 60-minute and 1,440-minute OHLC with `assetVersion=1`, bounded retries, a streamed byte limit, strict UTF-8 and exact response digests.
 6. Discard Kraken's always-present current row, apply interval-specific alignment, contiguity, OHLCV, closure and freshness gates, then persist accepted batches and candles immutably before universe or strategy evaluation.
-7. Re-read aggregate committed history at the acquisition-availability time and require at least 220 complete candles at both intervals for every configured pair. Missing, duplicate, stale, conflicting or unrecoverable data fails the cycle closed.
-8. Reconstruct the Australian-available spot universe from definitions, lifecycle events and quality observations knowable at the signal time.
-9. Apply signed tier-specific listing-age, history, spread, turnover, depth, impact, minimum-order and instrument gates.
-10. Load the exact persisted snapshot requested for the decision, re-verify its signed policy and content identities, and reject evidence persisted after or stale at that decision.
-11. Generate a strategy decision only from the verified signal-time eligible membership and a versioned configuration.
-11. Reconcile balances and orders when private access is available.
-12. Evaluate hard risk limits.
-13. Create an order intent with a deterministic idempotency key.
-14. In non-live modes, record the proposed action only.
-15. In live mode, verify API permissions, activation secret and execution limits again immediately before submission.
-16. Submit, reconcile and record every response.
+7. Scan the exact current 719-committed-row REST window for every pair/interval, perform at most one overlapping repair capture from one interval before the earliest detected gap, then re-read the range and fail closed if any repairable gap remains.
+8. Re-read aggregate committed history at the acquisition-availability time and require at least 220 complete candles at both intervals for every configured pair. Missing, duplicate, stale, conflicting or unrecoverable data fails the cycle closed.
+9. Reconstruct the Australian-available spot universe from definitions, lifecycle events and quality observations knowable at the signal time.
+10. Apply signed tier-specific listing-age, history, spread, turnover, depth, impact, minimum-order and instrument gates.
+11. Load the exact persisted snapshot requested for the decision, re-verify its signed policy and content identities, and reject evidence persisted after or stale at that decision.
+12. Generate a strategy decision only from the verified signal-time eligible membership and a versioned configuration.
+13. Reconcile balances and orders when private access is available.
+14. Evaluate hard risk limits.
+15. Create an order intent with a deterministic idempotency key.
+16. In non-live modes, record the proposed action only.
+17. In live mode, verify API permissions, activation secret and execution limits again immediately before submission.
+18. Submit, reconcile and record every response.
 
 ## Data model
 
@@ -100,7 +101,7 @@ Lifecycle backfill manifests bind the exact committed-evidence and prepared-evid
 
 Market batches and candles use deterministic SHA-256 content digests. Database triggers reject identity reuse with different content and prevent ordinary update or delete operations. Gap detection is performed against explicit expected ranges before strategy research is allowed to rely on stored data.
 
-Scheduled Kraken OHLC capture uses the latest immutable open time as an overlapping `since` cursor. Each canonical request uses display-name response keys, records request/receipt/availability chronology, exact response byte length and SHA-256 in the immutable batch identity, and validates the aggregate persisted hourly/daily history after writes. The scheduled acquisition may build evidence for later cycles, but history remains usable at a decision only when its batch was available by that exact decision time.
+Scheduled Kraken OHLC capture uses the latest immutable open time as an overlapping `since` cursor. Each canonical request uses display-name response keys, records request/receipt/availability chronology, exact response byte length and SHA-256 in the immutable batch identity, and validates the aggregate persisted hourly/daily history after writes. It then scans the exact current 719-committed-row REST window and permits at most one bounded overlapping repair capture per pair/interval before failing closed on any remaining repairable gap. The scheduled acquisition may build evidence for later cycles, but history remains usable at a decision only when its batch was available by that exact decision time. Older research history may come only from the exact official Kraken downloadable OHLCVT archives under a content-addressed source contract; raw ZIP bytes remain transient, selected CSV and archive digests are mandatory, missing no-trade rows are preserved, and derived candles are unusable until immutable persistence and REST-overlap reconciliation succeed.
 
 Universe definitions, lifecycle events and quality observations are also append-only and hashed. Prepared universe evidence is submitted through one transactional D1 batch and is complete only when a final database-verified commit marker proves that every declared source and record membership exists. Historical reconstruction uses source publication and data-availability timestamps so later listings, suspensions, delistings or quality observations cannot leak into an earlier signal. The contract is defined in `docs/MARKET_UNIVERSE.md`.
 
