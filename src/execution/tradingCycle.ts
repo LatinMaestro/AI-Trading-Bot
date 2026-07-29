@@ -13,6 +13,8 @@ import {
 } from "../storage/cycleControl.ts";
 import { UniverseIngestionRepository } from "../storage/universeIngestion.ts";
 import { MarketCandleHistoryRepository } from "../marketData/historyEvidence.ts";
+import { MarketCandleRepository } from "../storage/marketCandles.ts";
+import { runScheduledKrakenCandleCycle } from "../marketData/scheduledKrakenCandles.ts";
 import { runScheduledKrakenUniverseCycle } from "../universe/krakenPublicCycle.ts";
 import { KrakenLifecycleCaptureRepository } from "../storage/krakenLifecycleCapture.ts";
 import { runScheduledKrakenLifecycleCapture } from "../universe/krakenLifecycleCapture.ts";
@@ -99,6 +101,20 @@ export async function runTradingCycle(
         lifecycleDocuments,
         { scheduledAtMs: invocation.scheduledAtMs, nowMs: clock },
       );
+    const exchange = new KrakenSpotAdapter();
+    const availablePairs = await exchange.getSpotPairs("AU");
+    const scheduledCandlePairs = selectApprovedAudPairs(
+      availablePairs,
+      config.approvedPairs,
+    );
+    const scheduledCandles = await runScheduledKrakenCandleCycle({
+      scheduledAtMs: invocation.scheduledAtMs,
+      pairs: scheduledCandlePairs,
+      store: new MarketCandleRepository(env.DB),
+      historyProvider: (pairs, asOfMs) =>
+        candleHistory.loadKrakenHistoryByPair(pairs, asOfMs),
+      nowMs: clock,
+    });
     const universe = await runScheduledKrakenUniverseCycle(
       new UniverseIngestionRepository(env.DB),
       {
@@ -109,9 +125,6 @@ export async function runTradingCycle(
           candleHistory.loadKrakenHistoryByPair(pairs, asOfMs),
       },
     );
-
-    const exchange = new KrakenSpotAdapter();
-    const availablePairs = await exchange.getSpotPairs("AU");
     const configuredEligiblePairs = config.approvedPairs
       .filter((pair) => universeMembership.eligiblePairs.includes(pair))
       .sort((left, right) => left.localeCompare(right));
@@ -217,6 +230,15 @@ export async function runTradingCycle(
         universeSelectedPairCount: universe.selectedPairs.length,
         universeSkippedPairCount: universe.skippedPairs.length,
         universePublicRequestCount: universe.requestCount,
+        scheduledCandleCaptureCount: scheduledCandles.captures.length,
+        scheduledCandleRequestCount: scheduledCandles.requestCount,
+        scheduledCandleHistoryAsOfMs: scheduledCandles.historyAsOfMs,
+        scheduledCandleBatchSha256s: scheduledCandles.captures.map(
+          (capture) => capture.batch.payloadSha256,
+        ),
+        scheduledCandleResponseSha256s: scheduledCandles.captures.map(
+          (capture) => capture.responseSha256,
+        ),
       },
       createdAt: new Date(clock()).toISOString(),
     });

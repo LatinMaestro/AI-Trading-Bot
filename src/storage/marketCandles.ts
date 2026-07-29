@@ -65,7 +65,9 @@ export interface PreparedMarketDataBatch {
 
 function assertCanonicalText(name: string, value: string): void {
   if (value.length === 0) throw new Error(`${name} must not be empty`);
-  if (value !== value.trim()) throw new Error(`${name} must not contain surrounding whitespace`);
+  if (value !== value.trim()) {
+    throw new Error(`${name} must not contain surrounding whitespace`);
+  }
 }
 
 function canonicalCandlePayload(
@@ -127,15 +129,21 @@ export async function prepareMarketDataBatch(
     assertCanonicalText("sourceCursor", input.sourceCursor);
   }
   assertSupportedInterval(input.intervalMinutes);
-  if (input.candles.length === 0) throw new Error("Market data batch must contain candles");
+  if (input.candles.length === 0) {
+    throw new Error("Market data batch must contain candles");
+  }
 
   const fetchedAtMs = Date.parse(input.fetchedAt);
-  if (!Number.isFinite(fetchedAtMs) || new Date(fetchedAtMs).toISOString() !== input.fetchedAt) {
+  if (
+    !Number.isFinite(fetchedAtMs) ||
+    new Date(fetchedAtMs).toISOString() !== input.fetchedAt
+  ) {
     throw new Error("fetchedAt must be a canonical ISO-8601 timestamp");
   }
   if (
     input.requestedSinceSeconds !== undefined &&
-    (!Number.isSafeInteger(input.requestedSinceSeconds) || input.requestedSinceSeconds < 0)
+    (!Number.isSafeInteger(input.requestedSinceSeconds) ||
+      input.requestedSinceSeconds < 0)
   ) {
     throw new Error("requestedSinceSeconds must be a non-negative integer");
   }
@@ -147,16 +155,22 @@ export async function prepareMarketDataBatch(
   for (const candle of input.candles) {
     assertCandleValues(input.canonicalPair, candle);
     if (!Number.isSafeInteger(candle.timestampMs) || candle.timestampMs < 0) {
-      throw new Error(`${input.canonicalPair} contains an invalid candle timestamp`);
+      throw new Error(
+        `${input.canonicalPair} contains an invalid candle timestamp`,
+      );
     }
     if (candle.timestampMs % stepMs !== 0) {
-      throw new Error(`${input.canonicalPair} contains a misaligned candle timestamp`);
+      throw new Error(
+        `${input.canonicalPair} contains a misaligned candle timestamp`,
+      );
     }
     if (
       previousOpenTimeMs !== undefined &&
       candle.timestampMs - previousOpenTimeMs !== stepMs
     ) {
-      throw new Error(`${input.canonicalPair} batch must be contiguous and strictly ordered`);
+      throw new Error(
+        `${input.canonicalPair} batch must be contiguous and strictly ordered`,
+      );
     }
     previousOpenTimeMs = candle.timestampMs;
 
@@ -221,14 +235,50 @@ export async function prepareMarketDataBatch(
   };
 }
 
-export class MarketCandleRepository {
+export interface MarketCandleBatchSink {
+  loadLatestOpenTimeMs(
+    canonicalPair: string,
+    intervalMinutes: CandleIntervalMinutes,
+  ): Promise<number | null>;
+  persistBatch(input: MarketDataBatchInput): Promise<PreparedMarketDataBatch>;
+}
+
+export class MarketCandleRepository implements MarketCandleBatchSink {
   private readonly db: D1Database;
 
   constructor(db: D1Database) {
     this.db = db;
   }
 
-  async persistBatch(input: MarketDataBatchInput): Promise<PreparedMarketDataBatch> {
+  async loadLatestOpenTimeMs(
+    canonicalPair: string,
+    intervalMinutes: CandleIntervalMinutes,
+  ): Promise<number | null> {
+    assertSupportedInterval(intervalMinutes);
+    assertCanonicalText("canonicalPair", canonicalPair);
+    const row = await this.db
+      .prepare(
+        `SELECT MAX(open_time_ms) AS latestOpenTimeMs
+         FROM market_candles
+         WHERE venue = ? AND canonical_pair = ? AND interval_minutes = ?`,
+      )
+      .bind("kraken", canonicalPair, intervalMinutes)
+      .first<{ readonly latestOpenTimeMs: number | null }>();
+    const value = row?.latestOpenTimeMs ?? null;
+    if (
+      value !== null &&
+      (!Number.isSafeInteger(value) ||
+        value < 0 ||
+        value % intervalMs(intervalMinutes) !== 0)
+    ) {
+      throw new Error("Stored market candle cursor is invalid");
+    }
+    return value;
+  }
+
+  async persistBatch(
+    input: MarketDataBatchInput,
+  ): Promise<PreparedMarketDataBatch> {
     const batch = await prepareMarketDataBatch(input);
     const statements: D1PreparedStatement[] = [
       this.db.prepare(INSERT_MARKET_DATA_BATCH_SQL).bind(
@@ -266,7 +316,6 @@ export class MarketCandleRepository {
         ),
       );
     }
-
     await this.db.batch(statements);
     return batch;
   }

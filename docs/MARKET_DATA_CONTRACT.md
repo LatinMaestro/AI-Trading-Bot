@@ -41,7 +41,15 @@ Committed 60-minute and 1,440-minute candles may be persisted only through the i
 
 The D1 identity is venue, canonical pair, interval and open timestamp. Exact duplicate content is idempotent. Reuse of a batch identity with different provenance, or reuse of a candle identity with different OHLCV content, is a hard conflict. Stored batches and candles cannot be updated or deleted through normal application SQL.
 
-The scheduled ingestion path must record the public request provenance, persist only closed intervals, inspect the expected range for gaps and stop research evaluation when required data is missing or unreconciled.
+The scheduled ingestion path records canonical public-request provenance, exact response digests and request/receipt/availability chronology. It persists only closed intervals, re-reads aggregate committed history after persistence and stops research evaluation when required data is missing, stale, gapped or unreconciled.
+
+## Scheduled hourly and daily acquisition
+
+Every trading schedule incrementally collects the configured Australian Kraken spot pairs at exactly 60 and 1,440 minutes before universe or strategy evaluation. Requests use the canonical public OHLC endpoint, `assetVersion=1`, an overlapping latest-stored-open `since` cursor, a bounded streamed response size, strict UTF-8, timeout, spacing and at most one transient retry.
+
+The response must be JSON with one exact canonical display pair, a safe `last` cursor and no more than 720 strict eight-field rows. The always-present final current row is discarded. Accepted committed rows must be interval-aligned, strictly contiguous, internally consistent, closed by availability and fresh for that interval.
+
+Each immutable batch binds the request URL, request/receipt/availability times, response byte length, exact response SHA-256, source cursor and canonical candle digests. After all writes, every configured pair must have at least 220 complete committed hourly candles and 220 complete committed daily candles. Otherwise the cycle fails closed. The committed default scope is BTC/AUD and ETH/AUD.
 
 ## Known limitation
 

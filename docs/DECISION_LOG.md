@@ -410,3 +410,11 @@ Persist every verified universe-bound runtime decision before external-intellige
 Re-verify the complete decision identity and reproduce its binding from the exact signal-time membership before preparing D1 writes. Persist artifact and cycle membership atomically, read both records back and compare every identity and decision field. Exact retries preserve the first cycle persistence time; digest collisions, changed artifact content, cycle rebinding, updates and deletes fail closed through application and database constraints.
 
 This is an audit boundary for the proposed deterministic decision. External-intelligence gating remains downstream and may only suppress new paper risk; market-data, liquidity, impact, signed-policy and risk gates remain mandatory. No deployment, credential, signing key, account, fund, wallet or live-order authority is added.
+
+## 2026-07-29 — Scheduled immutable hourly and daily Kraken candles
+
+Collect the configured Australian Kraken spot pairs at both 60-minute and 1,440-minute intervals before universe and strategy evaluation. Use the public OHLC endpoint with display-name response identity, the latest immutable open time as an overlapping incremental cursor, bounded timeout/spacing/size controls and at most one transient retry.
+
+Discard Kraken's always-present current row. Require strict eight-field rows, exact canonical response identity, interval alignment, contiguity, internally consistent positive OHLC, non-negative volume, closed intervals and interval-specific freshness. Persist immutable canonical candles and batch provenance that binds the exact request, acquisition chronology, response byte length, response SHA-256 and source cursor.
+
+After persistence, re-read the database at acquisition availability and require at least 220 complete hourly and 220 complete daily candles for every configured pair. Missing, stale, gapped, conflicting or insufficient evidence fails the cycle before universe or strategy work. Keep the committed initial scope at BTC/AUD and ETH/AUD. This public-data path adds no credential, private endpoint, account, wallet, fund or order authority.
