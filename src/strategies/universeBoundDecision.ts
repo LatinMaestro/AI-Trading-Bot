@@ -37,6 +37,9 @@ export function requireUniverseSnapshotSha256(value: string): string {
 }
 
 function assertDecision(decision: StrategyDecision): void {
+  if (!["hold", "buy", "sell"].includes(decision.action)) {
+    throw new Error("strategy action is invalid");
+  }
   if (
     decision.strategyVersion.trim() !== decision.strategyVersion ||
     decision.strategyVersion.length === 0 ||
