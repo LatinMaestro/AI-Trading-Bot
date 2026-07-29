@@ -2,6 +2,7 @@ import type { Candle } from "../domain/types.ts";
 import { HOUR_MS, MIN_HOURLY_CANDLES } from "../marketData/candleQuality.ts";
 
 const CANONICAL_AUD_PAIR = /^[A-Z0-9]{2,20}\/AUD$/u;
+const MAX_HOURLY_HISTORY_CANDLES = 24 * 366 + 1;
 
 export const HOURLY_TREND_BREAKOUT_STRATEGY_VERSION =
   "hourly-trend-breakout-v0.1.0";
@@ -25,6 +26,7 @@ export const HOURLY_TREND_BREAKOUT_BASELINE_POLICY: HourlyTrendBreakoutPolicy =
 
 export interface HourlyTrendBreakoutSignal {
   readonly pair: string;
+  readonly signalTimestampMs: number;
   readonly entryEligible: boolean;
   readonly exitTriggered: boolean;
   readonly latestClose: number;
@@ -41,6 +43,7 @@ export interface HourlyTrendBreakoutSignal {
 export interface HourlyTrendBreakoutDecision {
   readonly strategyVersion: typeof HOURLY_TREND_BREAKOUT_STRATEGY_VERSION;
   readonly policy: HourlyTrendBreakoutPolicy;
+  readonly signalTimestampMs: number;
   readonly targetPair: string | null;
   readonly targetExposurePct: number;
   readonly reason: string;
@@ -81,11 +84,16 @@ function assertHourlyHistory(
       MIN_HOURLY_CANDLES,
       policy.entryLookbackHours + 1,
       policy.exitLookbackHours + 1,
-      policy.emaPeriodHours,
+      policy.emaPeriodHours + 1,
       policy.momentumLookbackHours + 1,
     );
-  if (candles.length < required) {
-    throw new Error(`${pair} requires at least ${required} hourly candles`);
+  if (
+    candles.length < required ||
+    candles.length > MAX_HOURLY_HISTORY_CANDLES
+  ) {
+    throw new Error(
+      `${pair} hourly history is insufficient or exceeds the bounded window`,
+    );
   }
 
   let previousTimestampMs: number | undefined;
@@ -184,6 +192,7 @@ export function buildHourlyTrendBreakoutSignal(
 
   return {
     pair,
+    signalTimestampMs: latest.timestampMs,
     entryEligible,
     exitTriggered,
     latestClose: latest.close,
@@ -221,6 +230,12 @@ export function decideHourlyTrendBreakout(
   const signals = entries.map(([pair, candles]) =>
     buildHourlyTrendBreakoutSignal(pair, candles, policy),
   );
+  const signalTimestampMs = signals[0]!.signalTimestampMs;
+  if (
+    signals.some((signal) => signal.signalTimestampMs !== signalTimestampMs)
+  ) {
+    throw new Error("Hourly trend/breakout evidence has mismatched signal times");
+  }
 
   if (currentPair !== null) {
     if (!CANONICAL_AUD_PAIR.test(currentPair)) {
@@ -234,6 +249,7 @@ export function decideHourlyTrendBreakout(
       return {
         strategyVersion: HOURLY_TREND_BREAKOUT_STRATEGY_VERSION,
         policy: decisionPolicy,
+        signalTimestampMs,
         targetPair: null,
         targetExposurePct: 0,
         reason: `${currentPair} triggered a deterministic exit to AUD cash`,
@@ -243,6 +259,7 @@ export function decideHourlyTrendBreakout(
     return {
       strategyVersion: HOURLY_TREND_BREAKOUT_STRATEGY_VERSION,
       policy: decisionPolicy,
+      signalTimestampMs,
       targetPair: currentPair,
       targetExposurePct: policy.targetExposurePct,
       reason: `${currentPair} has not breached a deterministic exit gate`,
@@ -260,6 +277,7 @@ export function decideHourlyTrendBreakout(
     return {
       strategyVersion: HOURLY_TREND_BREAKOUT_STRATEGY_VERSION,
       policy: decisionPolicy,
+      signalTimestampMs,
       targetPair: null,
       targetExposurePct: 0,
       reason: "No pair passed the hourly Donchian, EMA and momentum entry gates",
@@ -269,6 +287,7 @@ export function decideHourlyTrendBreakout(
   return {
     strategyVersion: HOURLY_TREND_BREAKOUT_STRATEGY_VERSION,
     policy: decisionPolicy,
+    signalTimestampMs,
     targetPair: winner.pair,
     targetExposurePct: policy.targetExposurePct,
     reason: `${winner.pair} has the strongest eligible hourly breakout score`,
