@@ -495,3 +495,12 @@ Represent strategy-configuration signers and external strategy authorisers as se
 Record compromise, rotation, withdrawn review and retirement as immutable revocation evidence with explicit review and effective times. Verification may use an anchor only when both the signed artifact and current check are inside its validity interval and no known effective revocation applies. Database triggers independently enforce the same rule so omitting revocation input cannot persist a signed configuration or authorisation.
 
 Trust records and revocations carry `none` execution authority and retain no private key. No real anchor, revocation, strategy selection, approval, activation record, deployment, credential, fund, wallet or live authority is committed.
+
+
+## 2026-07-30 — Point-in-time signed-configuration loading
+
+Load a strategy configuration only by exact signed digest and an explicit decision timestamp. Re-verify its canonical envelope and signature against role-scoped trust that was persisted and active at that time, apply only revocations then known, and reject an ineffective or expired configuration.
+
+Reproduce the persisted readiness input and all 12 ordered gates, require finite evidence to remain valid, and bind the exact complete evaluation, committed research report, execution calibration and stress manifest. Use the immutable report commit as bounded per-cycle evidence because full report chunks were already verified at persistence and can approach tens of MiB.
+
+Content-address the verification result with `none` selection and execution authority. The loader does not discover a latest record, rank or select a strategy, consume external authorisation, activate paper/live mode or submit an order. No real signed configuration, trust record, deployment, credential, fund, wallet or live authority is committed.
