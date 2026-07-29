@@ -53,7 +53,9 @@ Historical gaps outside the Kraken REST horizon require one of:
 2. a separately approved, reproducible historical source with documented provenance and reconciliation;
 3. exclusion of the affected period from research and reporting.
 
-Scheduled ingestion is now connected for the configured Australian Kraken pairs at 60 and 1,440 minutes. It overlaps the latest stored candle with Kraken's incremental `since` cursor, preserves the exact response SHA-256 in immutable batch provenance and requires aggregate complete history after persistence. Automated repair of discovered gaps and an approved source outside Kraken's REST horizon remain separate Phase 1 tasks.
+Scheduled ingestion is connected for the configured Australian Kraken pairs at 60 and 1,440 minutes. It overlaps the latest stored candle with Kraken's incremental `since` cursor, preserves the exact response SHA-256 in immutable batch provenance and requires aggregate complete history after persistence. After each primary capture it scans the exact current 719-committed-row window, performs at most one bounded repair capture from one interval before the earliest repairable gap, re-reads the range and fails closed if any gap remains.
+
+Kraken's official downloadable historical OHLCVT archive is the approved account-free source outside the REST horizon. The versioned source contract pins the official support page, complete archive and quarterly archive folder, requires raw ZIP and selected CSV SHA-256 digests, limits use to BTC/AUD and ETH/AUD at 60 and 1,440 minutes, preserves no-trade gaps and keeps archive bytes transient. Exact archive capture, member validation, REST-overlap reconciliation and immutable derived-candle persistence remain pending; no historical data is strategy-authoritative before they complete.
 
 ## Validation evidence
 
@@ -73,5 +75,6 @@ The focused test harness verifies:
 ## Primary references
 
 - Kraken Spot REST OHLC documentation: https://docs.kraken.com/api-reference/market-data/get-ohlc-data
+- Kraken downloadable historical OHLCVT documentation: https://support.kraken.com/articles/360047124832-downloadable-historical-ohlcvt-open-high-low-close-volume-trades-data
 - Cloudflare D1 prepared statements: https://developers.cloudflare.com/d1/worker-api/prepared-statements/
 - Cloudflare D1 batch transactions: https://developers.cloudflare.com/d1/worker-api/d1-database/#batch
