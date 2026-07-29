@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  deriveP256VerificationKeySha256,
   prepareSignedStrategyAuthorisation,
   prepareSignedStrategyConfiguration,
   REQUIRED_STRATEGY_RISK_ACKNOWLEDGEMENTS,
@@ -8,6 +9,7 @@ import {
   strategyConfigurationSigningPayload,
   verifySignedStrategyAuthorisation,
   verifySignedStrategyConfiguration,
+  type ReviewedP256VerificationKey,
   type SignedStrategyAuthorisation,
   type SignedStrategyConfiguration,
   type UnsignedStrategyAuthorisation,
@@ -21,6 +23,16 @@ const EXPIRES_AT_MS = EFFECTIVE_FROM_MS + 30 * 86_400_000;
 interface Keys {
   readonly privateKey: CryptoKey;
   readonly publicJwk: JsonWebKey;
+}
+
+interface SignedConfigurationFixture {
+  readonly configuration: SignedStrategyConfiguration;
+  readonly reviewedKey: ReviewedP256VerificationKey;
+}
+
+interface SignedAuthorisationFixture {
+  readonly authorisation: SignedStrategyAuthorisation;
+  readonly reviewedKey: ReviewedP256VerificationKey;
 }
 
 async function keys(): Promise<Keys> {
@@ -89,18 +101,30 @@ function unsignedConfiguration(): UnsignedStrategyConfiguration {
   };
 }
 
-async function signedConfiguration(): Promise<SignedStrategyConfiguration> {
+async function signedConfiguration(): Promise<SignedConfigurationFixture> {
   const signingKeys = await keys();
   const input = unsignedConfiguration();
-  return prepareSignedStrategyConfiguration({
-    ...input,
-    ...({ unexpectedTransportField: "discard-me" }),
-    verificationKeyJwk: signingKeys.publicJwk,
-    signatureHex: await sign(
-      strategyConfigurationSigningPayload(input),
-      signingKeys.privateKey,
+  const reviewedKey = {
+    keyId: input.signerKeyId,
+    verificationKeySha256: await deriveP256VerificationKeySha256(
+      signingKeys.publicJwk,
     ),
-  });
+  };
+  return {
+    configuration: await prepareSignedStrategyConfiguration(
+      {
+        ...input,
+        ...({ unexpectedTransportField: "discard-me" }),
+        verificationKeyJwk: signingKeys.publicJwk,
+        signatureHex: await sign(
+          strategyConfigurationSigningPayload(input),
+          signingKeys.privateKey,
+        ),
+      },
+      reviewedKey,
+    ),
+    reviewedKey,
+  };
 }
 
 function unsignedAuthorisation(
@@ -126,33 +150,54 @@ function unsignedAuthorisation(
 
 async function signedAuthorisation(
   configuration: SignedStrategyConfiguration,
-): Promise<SignedStrategyAuthorisation> {
+  configurationReviewedKey: ReviewedP256VerificationKey,
+): Promise<SignedAuthorisationFixture> {
   const authorisationKeys = await keys();
   const input = unsignedAuthorisation(configuration);
-  return prepareSignedStrategyAuthorisation(
-    {
-      ...input,
-      verificationKeyJwk: authorisationKeys.publicJwk,
-      signatureHex: await sign(
-        strategyAuthorisationSigningPayload(input, configuration),
-        authorisationKeys.privateKey,
-      ),
-    },
-    configuration,
-  );
+  const reviewedKey = {
+    keyId: input.authoriserKeyId,
+    verificationKeySha256: await deriveP256VerificationKeySha256(
+      authorisationKeys.publicJwk,
+    ),
+  };
+  return {
+    authorisation: await prepareSignedStrategyAuthorisation(
+      {
+        ...input,
+        verificationKeyJwk: authorisationKeys.publicJwk,
+        signatureHex: await sign(
+          strategyAuthorisationSigningPayload(input, configuration),
+          authorisationKeys.privateKey,
+        ),
+      },
+      configuration,
+      configurationReviewedKey,
+      reviewedKey,
+    ),
+    reviewedKey,
+  };
 }
 
 test("verifies an exact public-key-only signed strategy configuration", async () => {
-  const signed = await signedConfiguration();
-  await verifySignedStrategyConfiguration(signed);
+  const { configuration: signed, reviewedKey } =
+    await signedConfiguration();
+  await verifySignedStrategyConfiguration(signed, reviewedKey);
   assert.equal(signed.executionAuthority, "none");
   assert.equal("verificationKeyJwk" in signed, false);
   assert.equal("unexpectedTransportField" in signed, false);
   assert.equal(JSON.parse(signed.verificationKeyJwkJson).d, undefined);
+  await assert.rejects(
+    verifySignedStrategyConfiguration(signed, {
+      ...reviewedKey,
+      verificationKeySha256: "0".repeat(64),
+    }),
+    /does not match reviewed trust/u,
+  );
 });
 
 test("rejects configuration mutation and unsafe strategy scope", async () => {
-  const signed = await signedConfiguration();
+  const { configuration: signed, reviewedKey } =
+    await signedConfiguration();
   await assert.rejects(
     verifySignedStrategyConfiguration({
       ...signed,
@@ -160,7 +205,7 @@ test("rejects configuration mutation and unsafe strategy scope", async () => {
         ...signed.configuration,
         maximumGrossExposure: 1,
       },
-    }),
+    }, reviewedKey),
     /signature verification failed/u,
   );
   const input = unsignedConfiguration();
@@ -198,6 +243,9 @@ test("rejects private verification keys and invalid chronology", async () => {
       ...input,
       verificationKeyJwk: privateJwk,
       signatureHex: "0".repeat(128),
+    }, {
+      keyId: input.signerKeyId,
+      verificationKeySha256: "0".repeat(64),
     }),
     /public P-256 JWK/u,
   );
@@ -211,16 +259,27 @@ test("rejects private verification keys and invalid chronology", async () => {
 });
 
 test("verifies exact externally signed authorisation without activating", async () => {
-  const configuration = await signedConfiguration();
-  const authorisation = await signedAuthorisation(configuration);
-  await verifySignedStrategyAuthorisation(authorisation, configuration);
+  const {
+    configuration,
+    reviewedKey: configurationReviewedKey,
+  } = await signedConfiguration();
+  const {
+    authorisation,
+    reviewedKey: authorisationReviewedKey,
+  } = await signedAuthorisation(configuration, configurationReviewedKey);
+  await verifySignedStrategyAuthorisation(
+    authorisation,
+    configuration,
+    configurationReviewedKey,
+    authorisationReviewedKey,
+  );
   assert.equal(authorisation.standaloneExecutionAuthority, "none");
   assert.equal(authorisation.requiresSeparateActivationChecklist, true);
   assert.equal("activationEnabled" in authorisation, false);
 });
 
 test("rejects authorisation identity, capital and risk-evidence drift", async () => {
-  const configuration = await signedConfiguration();
+  const { configuration } = await signedConfiguration();
   const input = unsignedAuthorisation(configuration);
   assert.throws(
     () => strategyAuthorisationSigningPayload({
@@ -255,20 +314,26 @@ test("rejects authorisation identity, capital and risk-evidence drift", async ()
 });
 
 test("rejects authorisation mutation and a mismatched configuration", async () => {
-  const configuration = await signedConfiguration();
-  const authorisation = await signedAuthorisation(configuration);
+  const {
+    configuration,
+    reviewedKey: configurationReviewedKey,
+  } = await signedConfiguration();
+  const {
+    authorisation,
+    reviewedKey: authorisationReviewedKey,
+  } = await signedAuthorisation(configuration, configurationReviewedKey);
   await assert.rejects(
     verifySignedStrategyAuthorisation({
       ...authorisation,
       authorisationScope: "paper",
-    }, configuration),
+    }, configuration, configurationReviewedKey, authorisationReviewedKey),
     /signature verification failed/u,
   );
   await assert.rejects(
     verifySignedStrategyAuthorisation(authorisation, {
       ...configuration,
       signedConfigurationSha256: "e".repeat(64),
-    }),
+    }, configurationReviewedKey, authorisationReviewedKey),
     /identity is invalid|evidence is invalid/u,
   );
 });
