@@ -472,3 +472,10 @@ Represent candidate evaluation structure as content-addressed manifests over ind
 Require one policy and execution configuration across the walk-forward manifest. For parameter sensitivity, compare at least two unique policies over the exact same decision range and execution configuration, require the declared baseline exactly once and canonically sort variants by policy digest.
 
 Record returns, drawdown and turnover for audit, but include no winner, ranking, selection or promotion field. Synthetic fixtures prove chronology, identity and determinism only; authoritative historical data, calibrated costs, benchmarks, ruin/capacity analysis and review gates remain required.
+
+
+## 2026-07-29 — Immutable hourly evaluation manifests and report provenance
+
+Reproduce each walk-forward/holdout or sensitivity manifest immediately before persistence. Store its canonical content once and atomically bind its ordered, unique component identities to research runs that already exist in the immutable run ledger. Reject missing runs, content conflicts, changed membership, incomplete database read-back, updates and deletes. Exact retries retain the original persistence time.
+
+Every research report binds a sorted unique list of strategy-evaluation manifest digests, using an explicit empty list when none was evaluated. An evaluation identity proves reproducible research structure only; it cannot rank, select or promote a strategy, authorise exposure, activate paper/live mode or submit an order.
