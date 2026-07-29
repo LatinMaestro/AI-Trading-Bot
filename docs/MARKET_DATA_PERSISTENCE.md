@@ -59,7 +59,9 @@ Kraken's official downloadable historical OHLCVT archive is the approved account
 
 Migration `0019_historical_candle_backfills.sql` stores sparse historical candles separately from contiguous scheduled REST batches. It adds immutable backfill headers, canonical candle rows, source memberships and final commit markers. Preparation re-verifies the source-contract, archive and CSV identities, bounds and hashes every strict eight-field CSV row, and requires at least one exact committed REST overlap. Every loaded committed REST candle inside the CSV range must be present and match OHLCV exactly.
 
-Persistence is chunked into bounded D1 batches. Partial chunks are audit evidence only and may be retried idempotently; they are not complete history. The database permits a final immutable commit marker only when the declared candle membership exists, the declared overlap exists and all committed REST rows in range are reconciled. Ordinary update, deletion, changed identity reuse and incomplete commit attempts fail closed. The actual official archives have not yet been acquired or hashed, so the four approved member backfills remain pending and no historical data is strategy-authoritative.
+Persistence is chunked into bounded D1 batches. Partial chunks are audit evidence only and may be retried idempotently; they are not complete history. The database permits a final immutable commit marker only when the declared candle membership exists, the declared overlap exists and all committed REST rows in range are reconciled. Ordinary update, deletion, changed identity reuse and incomplete commit attempts fail closed.
+
+The manual contents-read-only hosted capture workflow retains raw archive/member bytes only on its ephemeral runner, enforces an eight-GiB archive bound, a 100,000-entry listing bound and a 64-MiB bound per selected CSV, and publishes only the four-member digest/count/range manifest with seven-day artifact retention. Workflow execution, actual digest review, REST reconciliation and D1 backfill execution remain pending while Actions capacity is unavailable; no historical data is strategy-authoritative.
 
 ## Validation evidence
 
