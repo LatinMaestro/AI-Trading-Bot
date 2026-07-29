@@ -1,3 +1,7 @@
+import type {
+  UniverseSignalTimeMembership,
+} from "../universe/signalTimeMembership.ts";
+
 export type ExecutionStyle = "maker" | "taker";
 export type BacktestOrderSide = "buy" | "sell";
 export type BacktestExecutionStatus = "filled" | "partially-filled" | "missed";
@@ -42,6 +46,7 @@ export interface BacktestStep {
   readonly markets: readonly BacktestMarket[];
   readonly targets: readonly TargetAllocation[];
   readonly externalIntelligenceGate?: BacktestExternalIntelligenceGate;
+  readonly universeMembership?: UniverseSignalTimeMembership;
 }
 
 export interface BacktestConfig {
@@ -114,5 +119,6 @@ export interface BacktestResult {
   readonly finalPositions: readonly BacktestPosition[];
   readonly costs: BacktestCostSummary;
   readonly executionGateFrameSha256s: readonly string[];
+  readonly universeMembershipSha256s: readonly string[];
   readonly suppressedExecutions: readonly BacktestSuppressedExecution[];
 }
