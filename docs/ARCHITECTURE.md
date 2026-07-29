@@ -86,6 +86,7 @@ D1 stores:
 - purge-enforced transient Reddit post metadata with non-extendable deletion deadlines;
 - content-free aggregate Reddit watch state, retention audits and invalidation events;
 - immutable content-addressed strategy-decision artifacts and per-cycle bindings;
+- immutable role-scoped strategy-signer trust anchors, rotation lineage and revocations plus exact trust bindings on signed configurations and external authorisations;
 - order intents, exchange orders and fills;
 - balances and equity snapshots;
 - risk events and kill-switch state;
