@@ -464,3 +464,11 @@ Bind each completed hourly trend/breakout evaluation to the exact universe-verif
 Persist one compact immutable D1 manifest containing the run, plan, configuration and result identities plus exact decision range and aggregate performance evidence. Exact retries preserve the first persistence time; changed identity reuse, updates and deletes fail closed.
 
 Every research report must bind a sorted unique list of strategy-backtest run identities, using an explicit empty list when no run was evaluated. A run identity proves reproducibility only. It does not select or promote the candidate, authorise paper/live activity, approve exposure or submit an order.
+
+## 2026-07-29 — Ordered walk-forward, holdout and sensitivity evidence
+
+Represent candidate evaluation structure as content-addressed manifests over independently reproducible hourly research runs. Walk-forward folds use contiguous indexes, increasing training cutoffs and strictly increasing non-overlapping validation periods. A final holdout must begin after every validation period and cannot reuse any training or validation run.
+
+Require one policy and execution configuration across the walk-forward manifest. For parameter sensitivity, compare at least two unique policies over the exact same decision range and execution configuration, require the declared baseline exactly once and canonically sort variants by policy digest.
+
+Record returns, drawdown and turnover for audit, but include no winner, ranking, selection or promotion field. Synthetic fixtures prove chronology, identity and determinism only; authoritative historical data, calibrated costs, benchmarks, ruin/capacity analysis and review gates remain required.
