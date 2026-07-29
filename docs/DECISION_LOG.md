@@ -479,3 +479,11 @@ Record returns, drawdown and turnover for audit, but include no winner, ranking,
 Reproduce each walk-forward/holdout or sensitivity manifest immediately before persistence. Store its canonical content once and atomically bind its ordered, unique component identities to research runs that already exist in the immutable run ledger. Reject missing runs, content conflicts, changed membership, incomplete database read-back, updates and deletes. Exact retries retain the original persistence time.
 
 Every research report binds a sorted unique list of strategy-evaluation manifest digests, using an explicit empty list when none was evaluated. An evaluation identity proves reproducible research structure only; it cannot rank, select or promote a strategy, authorise exposure, activate paper/live mode or submit an order.
+
+## 2026-07-30 — Immutable signed strategy evidence
+
+Persist a verified signed hourly strategy configuration only after its exact readiness assessment is already committed as evidence-complete-for-review, still requires external review, and database-binds the same complete evaluation. Persist a separately verified external authorisation statement only after that exact configuration exists, within its validity interval and capital ceiling.
+
+Content digests and human-readable configuration/authorisation identities are immutable. Exact retries preserve the first row; identity reuse with changed signed content, evidence drift, premature persistence, updates and deletion fail closed. Store only public verification material and canonical signed envelopes, never private signing material.
+
+Persistence records review evidence only. Configuration execution authority and authorisation standalone execution authority remain `none`; a `canary-live` scope cannot replace the activation checklist, secrets, runtime flags, venue-permission checks, market/liquidity/intelligence/risk gates or explicit owner-controlled activation. No real configuration, authorisation, selection, deployment, credential, fund, wallet or live authority is committed.
