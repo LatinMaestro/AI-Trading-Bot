@@ -31,6 +31,8 @@ const DIGESTS = {
   equal: "5".repeat(64),
   comparisonOne: "6".repeat(64),
   comparisonTwo: "7".repeat(64),
+  backtestRunOne: "8".repeat(64),
+  backtestRunTwo: "9".repeat(64),
 } as const;
 const TIMESTAMPS = [Date.UTC(2026, 0, 1), Date.UTC(2026, 1, 1), Date.UTC(2026, 2, 1)] as const;
 const OBJECTIVE: ObjectiveDefinition = {
@@ -133,6 +135,10 @@ function reportInput() {
         DIGESTS.comparisonTwo,
         DIGESTS.comparisonOne,
       ],
+      strategyBacktestRunSha256s: [
+        DIGESTS.backtestRunTwo,
+        DIGESTS.backtestRunOne,
+      ],
     },
     warnings: ["scenario-frequencies-are-not-forecasts", "synthetic-fixture"],
   };
@@ -192,6 +198,10 @@ test("research report is deterministic and content-addressed", async () => {
     first.provenance.externalIntelligenceComparisonSha256s,
     [DIGESTS.comparisonOne, DIGESTS.comparisonTwo],
   );
+  assert.deepEqual(first.provenance.strategyBacktestRunSha256s, [
+    DIGESTS.backtestRunOne,
+    DIGESTS.backtestRunTwo,
+  ]);
   assert.deepEqual(first.benchmarks.map((benchmark) => benchmark.seriesId), [
     "aud-cash",
     "btc-hold-aud",
@@ -239,6 +249,19 @@ test("report fails closed for incomplete, misaligned or unproven comparisons", a
       },
     }),
     /cannot contain duplicates/u,
+  );
+  await assert.rejects(
+    prepareResearchReport({
+      ...input,
+      provenance: {
+        ...input.provenance,
+        strategyBacktestRunSha256s: [
+          DIGESTS.backtestRunOne,
+          DIGESTS.backtestRunOne,
+        ],
+      },
+    }),
+    /strategyBacktestRunSha256s cannot contain duplicates/u,
   );
 
   const convertedObjective = input.benchmarks.map((benchmark) =>
