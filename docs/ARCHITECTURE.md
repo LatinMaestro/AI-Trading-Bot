@@ -52,15 +52,15 @@ Trading-cycle orchestrator
 7. Scan the exact current 719-committed-row REST window for every pair/interval, perform at most one overlapping repair capture from one interval before the earliest detected gap, then re-read the range and fail closed if any repairable gap remains.
 8. Re-read aggregate committed history at the acquisition-availability time and require at least 220 complete candles at both intervals for every configured pair. Missing, duplicate, stale, conflicting or unrecoverable data fails the cycle closed.
 9. Reconstruct the Australian-available spot universe from definitions, lifecycle events and quality observations knowable at the signal time.
-9. Apply signed tier-specific listing-age, history, spread, turnover, depth, impact, minimum-order and instrument gates.
-10. Load the exact persisted snapshot requested for the decision, re-verify its signed policy and content identities, and reject evidence persisted after or stale at that decision.
-11. Generate a strategy decision only from the verified signal-time eligible membership and a versioned configuration.
-11. Reconcile balances and orders when private access is available.
-12. Evaluate hard risk limits.
-13. Create an order intent with a deterministic idempotency key.
-14. In non-live modes, record the proposed action only.
-15. In live mode, verify API permissions, activation secret and execution limits again immediately before submission.
-16. Submit, reconcile and record every response.
+10. Apply signed tier-specific listing-age, history, spread, turnover, depth, impact, minimum-order and instrument gates.
+11. Load the exact persisted snapshot requested for the decision, re-verify its signed policy and content identities, and reject evidence persisted after or stale at that decision.
+12. Generate a strategy decision only from the verified signal-time eligible membership and a versioned configuration.
+13. Reconcile balances and orders when private access is available.
+14. Evaluate hard risk limits.
+15. Create an order intent with a deterministic idempotency key.
+16. In non-live modes, record the proposed action only.
+17. In live mode, verify API permissions, activation secret and execution limits again immediately before submission.
+18. Submit, reconcile and record every response.
 
 ## Data model
 
