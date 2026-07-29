@@ -49,8 +49,9 @@ Trading-cycle orchestrator
 4. Load only committed external-intelligence assessments available by the decision timestamp. External intelligence may pause new risk or create a research candidate; it cannot submit or approve an order.
 5. Discover the configured Australian Kraken spot markets and incrementally fetch both 60-minute and 1,440-minute OHLC with `assetVersion=1`, bounded retries, a streamed byte limit, strict UTF-8 and exact response digests.
 6. Discard Kraken's always-present current row, apply interval-specific alignment, contiguity, OHLCV, closure and freshness gates, then persist accepted batches and candles immutably before universe or strategy evaluation.
-7. Re-read aggregate committed history at the acquisition-availability time and require at least 220 complete candles at both intervals for every configured pair. Missing, duplicate, stale, conflicting or unrecoverable data fails the cycle closed.
-8. Reconstruct the Australian-available spot universe from definitions, lifecycle events and quality observations knowable at the signal time.
+7. Scan the exact current 719-committed-row REST window for every pair/interval, perform at most one overlapping repair capture from one interval before the earliest detected gap, then re-read the range and fail closed if any repairable gap remains.
+8. Re-read aggregate committed history at the acquisition-availability time and require at least 220 complete candles at both intervals for every configured pair. Missing, duplicate, stale, conflicting or unrecoverable data fails the cycle closed.
+9. Reconstruct the Australian-available spot universe from definitions, lifecycle events and quality observations knowable at the signal time.
 9. Apply signed tier-specific listing-age, history, spread, turnover, depth, impact, minimum-order and instrument gates.
 10. Load the exact persisted snapshot requested for the decision, re-verify its signed policy and content identities, and reject evidence persisted after or stale at that decision.
 11. Generate a strategy decision only from the verified signal-time eligible membership and a versioned configuration.
