@@ -442,3 +442,11 @@ Use a manual GitHub Actions workflow with contents-read-only permission and no s
 Hash the complete ZIP and every selected CSV, apply fatal UTF-8 decoding and the existing bounded sparse-OHLCVT validator, then emit only a content-addressed digest, byte-count, row-count and time-range manifest. Retain that digest-only artifact for seven days. The workflow neither writes D1 nor connects historical evidence to strategy or execution.
 
 Do not claim an actual capture until the exact workflow run completes and its manifest is reviewed. Private-repository Actions capacity currently prevents execution, so real archive/member digests, REST reconciliation and immutable backfills remain pending. No deployment, credential, account, fund, wallet or live authority is added.
+
+## 2026-07-29 — Deterministic hourly trend/breakout research candidate
+
+Add `hourly-trend-breakout-v0.1.0` as a pure research candidate using committed 60-minute evidence. The baseline policy requires a close above the prior 168-hour Donchian high, above a 200-hour EMA and positive 168-hour momentum before entry. It retains at most one long asset at 90% target exposure and otherwise AUD cash. A held position exits when price breaches the prior 72-hour Donchian low, the EMA or the momentum gate.
+
+Exclude the current signal candle from both Donchian channels. Preserve a held position while its exit gates remain intact, even when another pair has a stronger entry score. After an exit, target cash for that signal rather than rotate immediately. Canonical pair order resolves exact ranking ties. Invalid policies, non-contiguous hourly evidence, unknown held positions and non-finite derived metrics fail closed.
+
+These values are versioned research hypotheses and synthetic tests prove only deterministic mechanics, no-look-ahead channel construction and safety invariants. The candidate is not runtime-selected or paper/live active. Historical archive execution, after-cost calibration, walk-forward/final-holdout comparison, parameter sensitivity, mandatory benchmarks, ruin/capacity analysis, persisted reporting and signed promotion remain required. No deployment, credential, account, fund, wallet or live authority is added.
