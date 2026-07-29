@@ -19,6 +19,8 @@ Every channel excludes the current closed signal candle. An entry requires the l
 
 An existing position is retained while it remains above its exit channel, EMA and momentum gates. A breach returns the target to AUD cash for that signal; another asset cannot replace it until a later signal. This intentionally creates a low-turnover regression candidate rather than assuming rapid rotation improves after-cost results.
 
+Every decision carries an immutable copy of the exact policy values used, so parameter variants cannot share a strategy version without retaining their complete configuration evidence.
+
 ## Research boundary
 
 The policy values are versioned hypotheses, not evidence of profitability. Before promotion, this candidate requires:
