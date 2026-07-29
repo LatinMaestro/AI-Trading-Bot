@@ -21,7 +21,7 @@ An existing position is retained while it remains above its exit channel, EMA an
 
 Every decision carries an immutable copy of the exact policy values used, so parameter variants cannot share a strategy version without retaining their complete configuration evidence.
 
-All pair histories must be internally contiguous, bounded to the approved research horizon and end at the same closed hourly signal timestamp. Every signal and decision carries that exact timestamp; mixed-time rankings fail closed.
+All pair histories must be internally contiguous, bounded to the approved research horizon and close at the same hourly decision timestamp. Candle timestamps identify interval opens, so the bound decision time is exactly one hour after the final committed candle timestamp. Every signal and decision carries that closed-hour timestamp; mixed-time rankings fail closed.
 
 ## Research boundary
 
