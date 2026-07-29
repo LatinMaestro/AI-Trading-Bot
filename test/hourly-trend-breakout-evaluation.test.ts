@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 import {
   prepareHourlyTrendBreakoutBacktestPlan,
@@ -14,6 +16,12 @@ import {
   prepareHourlyTrendBreakoutWalkForwardManifest,
   type HourlyTrendBreakoutEvaluationRunInput,
 } from "../src/research/hourlyTrendBreakoutEvaluation.ts";
+import {
+  prepareHourlyTrendBreakoutEvaluationManifestPersistence,
+} from "../src/storage/hourlyTrendBreakoutEvaluationManifest.ts";
+import {
+  prepareHourlyTrendBreakoutResearchRunPersistence,
+} from "../src/storage/hourlyTrendBreakoutResearchRun.ts";
 import {
   HOURLY_TREND_BREAKOUT_BASELINE_POLICY,
   type HourlyTrendBreakoutPolicy,
@@ -239,5 +247,166 @@ test("rejects sensitivity without one baseline or on mismatched periods", async 
       }),
     ]),
     /include one baseline/u,
+  );
+});
+
+test("persists immutable evaluation manifests bound to persisted runs", async () => {
+  const folds = [
+    {
+      foldIndex: 0,
+      training: await evaluationRun(240),
+      validation: await evaluationRun(241),
+    },
+  ];
+  const finalHoldout = await evaluationRun(242);
+  const manifest = await prepareHourlyTrendBreakoutWalkForwardManifest(
+    folds,
+    finalHoldout,
+  );
+  const statements =
+    await prepareHourlyTrendBreakoutEvaluationManifestPersistence({
+      kind: "walk-forward",
+      folds,
+      finalHoldout,
+      manifest,
+      persistedAtMs: 243 * HOUR_MS,
+    });
+  const db = new DatabaseSync(":memory:");
+  db.exec("PRAGMA foreign_keys = ON");
+  for (const migration of [
+    "../migrations/0020_hourly_trend_breakout_research_runs.sql",
+    "../migrations/0021_hourly_trend_breakout_evaluation_manifests.sql",
+  ]) {
+    db.exec(readFileSync(new URL(migration, import.meta.url), "utf8"));
+  }
+  for (const evaluation of [
+    folds[0]!.training,
+    folds[0]!.validation,
+    finalHoldout,
+  ]) {
+    const statement = await prepareHourlyTrendBreakoutResearchRunPersistence({
+      ...evaluation,
+      persistedAtMs: 243 * HOUR_MS,
+    });
+    db.prepare(statement.sql).run(...statement.params);
+  }
+  for (const statement of statements) {
+    db.prepare(statement.sql).run(...statement.params);
+  }
+  for (const statement of statements) {
+    db.prepare(statement.sql).run(...statement.params);
+  }
+  const row = db
+    .prepare(
+      `SELECT manifest_sha256, manifest_kind, component_run_count,
+              fold_count, variant_count, persisted_at_ms
+       FROM hourly_trend_breakout_evaluation_manifests`,
+    )
+    .get() as Record<string, string | number | null>;
+  assert.deepEqual({ ...row }, {
+    manifest_sha256: manifest.manifestSha256,
+    manifest_kind: "walk-forward",
+    component_run_count: 3,
+    fold_count: 1,
+    variant_count: null,
+    persisted_at_ms: 243 * HOUR_MS,
+  });
+  const membershipCount = db
+    .prepare(
+      `SELECT COUNT(*) AS count
+       FROM hourly_trend_breakout_evaluation_manifest_runs`,
+    )
+    .get() as { readonly count: number };
+  assert.equal(membershipCount.count, 3);
+
+  const conflicting = [...statements[0]!.params];
+  conflicting[8] = 5;
+  assert.throws(
+    () => db.prepare(statements[0]!.sql).run(...conflicting),
+    /evaluation manifest conflict/u,
+  );
+  assert.throws(
+    () =>
+      db
+        .prepare(
+          `UPDATE hourly_trend_breakout_evaluation_manifests
+           SET persisted_at_ms = persisted_at_ms + 1`,
+        )
+        .run(),
+    /immutable/u,
+  );
+  assert.throws(
+    () =>
+      db
+        .prepare(
+          "DELETE FROM hourly_trend_breakout_evaluation_manifest_runs",
+        )
+        .run(),
+    /immutable/u,
+  );
+});
+
+test("rejects changed, premature or unpersisted evaluation evidence", async () => {
+  const baseline = await evaluationRun(240);
+  const variant = await evaluationRun(240, {
+    ...HOURLY_TREND_BREAKOUT_BASELINE_POLICY,
+    entryLookbackHours: 192,
+  });
+  const variants = [baseline, variant];
+  const manifest =
+    await prepareHourlyTrendBreakoutSensitivityManifest(variants);
+  await assert.rejects(
+    prepareHourlyTrendBreakoutEvaluationManifestPersistence({
+      kind: "sensitivity",
+      variants,
+      manifest: {
+        ...manifest,
+        decisionCount: manifest.decisionCount + 1,
+      },
+      persistedAtMs: 241 * HOUR_MS,
+    }),
+    /not reproducible/u,
+  );
+  await assert.rejects(
+    prepareHourlyTrendBreakoutEvaluationManifestPersistence({
+      kind: "sensitivity",
+      variants,
+      manifest,
+      persistedAtMs: manifest.evaluationEndAtMs - 1,
+    }),
+    /persistence chronology/u,
+  );
+
+  const statements =
+    await prepareHourlyTrendBreakoutEvaluationManifestPersistence({
+      kind: "sensitivity",
+      variants,
+      manifest,
+      persistedAtMs: 241 * HOUR_MS,
+    });
+  const db = new DatabaseSync(":memory:");
+  db.exec("PRAGMA foreign_keys = ON");
+  db.exec(
+    readFileSync(
+      new URL(
+        "../migrations/0020_hourly_trend_breakout_research_runs.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
+  db.exec(
+    readFileSync(
+      new URL(
+        "../migrations/0021_hourly_trend_breakout_evaluation_manifests.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
+  db.prepare(statements[0]!.sql).run(...statements[0]!.params);
+  assert.throws(
+    () => db.prepare(statements[1]!.sql).run(...statements[1]!.params),
+    /evaluation run is not persisted/u,
   );
 });

@@ -47,4 +47,6 @@ Each completed candidate evaluation is bound into one reproducible research-run 
 
 Walk-forward evidence binds contiguous fold indexes, increasing training cutoffs, disjoint later validation windows and one strictly later final holdout. Every underlying run is re-verified and may appear only once. Parameter sensitivity compares unique same-period policies under one execution configuration, requires the baseline exactly once and sorts variants by policy digest. Neither manifest ranks, selects or promotes a policy.
 
+Persistence re-verifies the full manifest, requires every component run to exist in the immutable research-run ledger, writes the canonical manifest and ordered run memberships atomically, and reads the complete row set back before success. Research reports bind sorted unique evaluation-manifest digests. These identities remain evidence references only.
+
 The module produces targets only. It does not submit or approve orders, activate paper/live mode, connect credentials or weaken any market-data, liquidity, intelligence, risk or execution gate.
