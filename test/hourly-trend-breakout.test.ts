@@ -37,6 +37,13 @@ test("enters only after the closed candle clears all three entry gates", () => {
   );
   assert.deepEqual(decision.policy, HOURLY_TREND_BREAKOUT_BASELINE_POLICY);
   assert.notEqual(decision.policy, HOURLY_TREND_BREAKOUT_BASELINE_POLICY);
+  assert.equal(decision.signalTimestampMs, 239 * HOUR_MS);
+  assert.equal(
+    decision.signals.every(
+      (signal) => signal.signalTimestampMs === decision.signalTimestampMs,
+    ),
+    true,
+  );
   assert.equal(decision.signals.every((signal) => signal.entryEligible), true);
 });
 
@@ -86,7 +93,7 @@ test("exits to AUD cash without same-candle rotation", () => {
   assert.equal(decision.signals[0]?.exitTriggered, true);
 });
 
-test("rejects malformed policy, chronology and current-position evidence", () => {
+test("rejects malformed policy, chronology, alignment and position evidence", () => {
   assert.throws(
     () =>
       decideHourlyTrendBreakout(
@@ -104,6 +111,35 @@ test("rejects malformed policy, chronology and current-position evidence", () =>
   assert.throws(
     () => decideHourlyTrendBreakout({ "BTC/AUD": unordered }, null),
     /invalid or non-contiguous/u,
+  );
+  const staleEth = hourlyCandles(110).slice(0, -1);
+  assert.throws(
+    () =>
+      decideHourlyTrendBreakout(
+        {
+          "BTC/AUD": hourlyCandles(110),
+          "ETH/AUD": staleEth,
+        },
+        null,
+      ),
+    /mismatched signal times/u,
+  );
+  assert.throws(
+    () =>
+      decideHourlyTrendBreakout(
+        {
+          "BTC/AUD": Array.from({ length: 24 * 366 + 2 }, (_, index) => ({
+            timestampMs: index * HOUR_MS,
+            open: 100,
+            high: 101,
+            low: 99,
+            close: 100,
+            volume: 1_000,
+          })),
+        },
+        null,
+      ),
+    /bounded window/u,
   );
   assert.throws(
     () =>
