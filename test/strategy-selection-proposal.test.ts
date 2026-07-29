@@ -359,11 +359,52 @@ test("rejects role drift and self-authorisation", async () => {
     value.configurationKeys.publicJwk,
     "d",
   );
+  const selfAuthorisationInput: UnsignedStrategyAuthorisation = {
+    authorisationId: value.authorisation.authorisationId,
+    authorisationScope: value.authorisation.authorisationScope,
+    signedConfigurationSha256:
+      value.authorisation.signedConfigurationSha256,
+    completeEvaluationSha256:
+      value.authorisation.completeEvaluationSha256,
+    readinessAssessmentSha256:
+      value.authorisation.readinessAssessmentSha256,
+    maximumCapitalAud: value.authorisation.maximumCapitalAud,
+    reviewedAtMs: value.authorisation.reviewedAtMs,
+    effectiveFromMs: value.authorisation.effectiveFromMs,
+    expiresAtMs: value.authorisation.expiresAtMs,
+    riskAcknowledgements: value.authorisation.riskAcknowledgements,
+    authoriserKeyId: value.authorisation.authoriserKeyId,
+  };
+  const selfAuthorisation = await prepareSignedStrategyAuthorisation(
+    {
+      ...selfAuthorisationInput,
+      verificationKeyJwk: value.configurationKeys.publicJwk,
+      signatureHex: await sign(
+        strategyAuthorisationSigningPayload(
+          selfAuthorisationInput,
+          value.configuration,
+        ),
+        value.configurationKeys.privateKey,
+      ),
+    },
+    value.configuration,
+    {
+      keyId: value.input.configurationSignerTrustAnchor.keyId,
+      verificationKeySha256:
+        value.input.configurationSignerTrustAnchor.verificationKeySha256,
+    },
+    {
+      keyId: selfAuthoriserAnchor.keyId,
+      verificationKeySha256:
+        selfAuthoriserAnchor.verificationKeySha256,
+    },
+  );
   await assert.rejects(
     prepareStrategySelectionProposal({
       ...value.input,
+      authorisation: selfAuthorisation,
       authoriserTrustAnchor: selfAuthoriserAnchor,
     }),
-    /self-authorisation|does not match reviewed trust/u,
+    /self-authorisation/u,
   );
 });
