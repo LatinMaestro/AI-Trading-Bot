@@ -456,3 +456,11 @@ These values are versioned research hypotheses and synthetic tests prove only de
 Bind every hourly Donchian/EMA/momentum research decision to one independently verified signal-time universe membership artifact before execution modelling. Validate the complete configured BTC/AUD and ETH/AUD histories even when one pair is ineligible, require the closed-hour decision time to equal membership time, admit entries only from the exact configured/eligible intersection, retain AUD cash when none is eligible and force a held pair to exit after eligibility loss without same-signal rotation.
 
 Content-address every bound decision and complete plan with exact policy, signed-policy, snapshot, membership and prior-target identities. Independently verify decision kinds, signal membership, target derivation, chronology and hashes before invoking the existing fee-, spread-, slippage-, adverse-selection-, impact-, participation- and missed-fill-aware backtest engine. This remains a research candidate and adds no runtime selection, paper/live activation, order authority, credential, deployment, fund or wallet capability.
+
+## 2026-07-29 — Reproducible hourly candidate research runs
+
+Bind each completed hourly trend/breakout evaluation to the exact universe-verified backtest plan, execution configuration and complete result. Content-address each component and the outer run. Verification must reproduce the result through the execution-aware backtest before persistence; a matching outer digest cannot hide changed result content.
+
+Persist one compact immutable D1 manifest containing the run, plan, configuration and result identities plus exact decision range and aggregate performance evidence. Exact retries preserve the first persistence time; changed identity reuse, updates and deletes fail closed.
+
+Every research report must bind a sorted unique list of strategy-backtest run identities, using an explicit empty list when no run was evaluated. A run identity proves reproducibility only. It does not select or promote the candidate, authorise paper/live activity, approve exposure or submit an order.

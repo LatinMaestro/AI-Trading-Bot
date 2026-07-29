@@ -120,6 +120,8 @@ Approved RSS adapters re-verify exact payload length and SHA-256 before a bounde
 
 External-intelligence backtest comparison manifests re-verify the complete replay and both full result digests before persistence. D1 stores the comparison, replay and result identities plus bounded aggregate differences rather than duplicating potentially large execution/equity arrays in one row. Exact retries preserve the first persistence time; changed identity reuse, updates and deletes fail closed. Research reports bind a sorted unique list of exact comparison identities, including an explicit empty list when external intelligence was not evaluated.
 
+Hourly trend/breakout research runs bind the exact universe-verified plan, execution configuration and complete backtest result into one reproducible content identity. Verification re-runs the execution-aware backtest before persistence. D1 stores a compact immutable manifest of identities and derived aggregate metrics; conflicting retries, updates and deletes fail closed. Research reports bind sorted unique run identities, including an explicit empty list when no strategy run was evaluated. Run identity proves reproducibility only and cannot select or promote a strategy.
+
 Reddit post-level state uses a separate transient boundary and never enters the immutable intelligence ledger or durable Queue. D1 preserves only bounded post identity metadata until the original deletion deadline. Deletes require a transaction-local purge authorization; provider removals and deadline expiry atomically delete transient rows, record only aggregate content-free compliance evidence and invalidate downstream watch state. Failed provider refreshes cannot extend retention.
 
 ## AI design

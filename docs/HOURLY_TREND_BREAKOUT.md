@@ -43,4 +43,6 @@ The policy values are versioned hypotheses, not evidence of profitability. Befor
 - capacity tests from the initial allocation through the objective path;
 - a persisted research report and separately authorised signed configuration.
 
+Each completed candidate evaluation is bound into one reproducible research-run envelope containing the exact plan, execution assumptions and complete result identities. Verification re-runs the universe-bound execution-aware backtest and rejects any changed plan, configuration, result or outer digest. D1 retains only the immutable compact run manifest; research reports reference sorted unique run digests.
+
 The module produces targets only. It does not submit or approve orders, activate paper/live mode, connect credentials or weaken any market-data, liquidity, intelligence, risk or execution gate.

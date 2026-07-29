@@ -111,6 +111,7 @@
   - [ ] Integrate validated walk-forward, holdout, benchmark and sensitivity inputs.
 - [ ] Produce repeatable research reports and signed strategy configurations.
   - [x] Add content-addressed research-report v1 with mandatory provenance, benchmarks and explicit external-intelligence comparison identities.
+  - [x] Persist reproducible content-addressed hourly candidate runs and bind their identities into research reports.
   - [ ] Persist reports and bind approved strategy configurations to authorised signatures/approval records.
 
 ## Phase 2 — Aggressive strategy portfolio

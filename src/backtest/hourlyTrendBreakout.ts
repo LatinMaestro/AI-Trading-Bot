@@ -66,6 +66,17 @@ export interface HourlyTrendBreakoutBacktestPlan {
   readonly planSha256: string;
 }
 
+export interface HourlyTrendBreakoutResearchRun {
+  readonly schemaVersion: "hourly-trend-breakout-research-run-v1";
+  readonly strategyVersion: typeof HOURLY_TREND_BREAKOUT_STRATEGY_VERSION;
+  readonly planSha256: string;
+  readonly config: BacktestConfig;
+  readonly configSha256: string;
+  readonly result: BacktestResult;
+  readonly resultSha256: string;
+  readonly runSha256: string;
+}
+
 function exactResearchCandles(
   candlesByPair: Readonly<Record<string, readonly Candle[]>>,
 ): Readonly<Record<string, readonly Candle[]>> {
@@ -193,6 +204,20 @@ function canonicalPlan(
     policy: plan.policy,
     boundDecisions: plan.boundDecisions,
     steps: plan.steps,
+  };
+}
+
+function canonicalResearchRun(
+  run: Omit<HourlyTrendBreakoutResearchRun, "runSha256">,
+): Readonly<Record<string, unknown>> {
+  return {
+    schemaVersion: run.schemaVersion,
+    strategyVersion: run.strategyVersion,
+    planSha256: run.planSha256,
+    config: run.config,
+    configSha256: run.configSha256,
+    result: run.result,
+    resultSha256: run.resultSha256,
   };
 }
 
@@ -500,4 +525,79 @@ export async function runHourlyTrendBreakoutBacktest(
 ): Promise<BacktestResult> {
   await verifyHourlyTrendBreakoutBacktestPlan(plan);
   return runUniverseBoundBacktest(config, plan.steps);
+}
+
+export async function runHourlyTrendBreakoutResearch(
+  config: BacktestConfig,
+  plan: HourlyTrendBreakoutBacktestPlan,
+): Promise<HourlyTrendBreakoutResearchRun> {
+  const result = await runHourlyTrendBreakoutBacktest(config, plan);
+  const configSha256 = await sha256CanonicalIntelligence(config);
+  const resultSha256 = await sha256CanonicalIntelligence(result);
+  const envelope = {
+    schemaVersion: "hourly-trend-breakout-research-run-v1",
+    strategyVersion: HOURLY_TREND_BREAKOUT_STRATEGY_VERSION,
+    planSha256: plan.planSha256,
+    config,
+    configSha256,
+    result,
+    resultSha256,
+  } as const;
+  return {
+    ...envelope,
+    runSha256: await sha256CanonicalIntelligence(
+      canonicalResearchRun(envelope),
+    ),
+  };
+}
+
+export async function verifyHourlyTrendBreakoutResearchRun(
+  plan: HourlyTrendBreakoutBacktestPlan,
+  run: HourlyTrendBreakoutResearchRun,
+): Promise<void> {
+  await verifyHourlyTrendBreakoutBacktestPlan(plan);
+  if (
+    run.schemaVersion !== "hourly-trend-breakout-research-run-v1" ||
+    run.strategyVersion !== HOURLY_TREND_BREAKOUT_STRATEGY_VERSION ||
+    run.planSha256 !== plan.planSha256 ||
+    !SHA256_HEX.test(run.configSha256) ||
+    !SHA256_HEX.test(run.resultSha256) ||
+    !SHA256_HEX.test(run.runSha256)
+  ) {
+    throw new Error("hourly trend/breakout research run envelope is invalid");
+  }
+  const reproducedResult = runUniverseBoundBacktest(run.config, plan.steps);
+  const expectedConfigSha256 = await sha256CanonicalIntelligence(run.config);
+  const expectedResultSha256 =
+    await sha256CanonicalIntelligence(reproducedResult);
+  if (
+    run.configSha256 !== expectedConfigSha256 ||
+    run.resultSha256 !== expectedResultSha256 ||
+    canonicalIntelligenceJson(run.result) !==
+      canonicalIntelligenceJson(reproducedResult)
+  ) {
+    throw new Error(
+      "hourly trend/breakout research run is not reproducible",
+    );
+  }
+  const envelope = {
+    schemaVersion: run.schemaVersion,
+    strategyVersion: run.strategyVersion,
+    planSha256: run.planSha256,
+    config: run.config,
+    configSha256: run.configSha256,
+    result: run.result,
+    resultSha256: run.resultSha256,
+  } as const;
+  if (
+    run.runSha256 !==
+      (await sha256CanonicalIntelligence(canonicalResearchRun(envelope))) ||
+    canonicalIntelligenceJson(run) !==
+      canonicalIntelligenceJson({
+        ...envelope,
+        runSha256: run.runSha256,
+      })
+  ) {
+    throw new Error("hourly trend/breakout research run identity is invalid");
+  }
 }
