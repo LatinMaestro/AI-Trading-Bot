@@ -15,17 +15,11 @@
 - [x] Add scheduled-cycle leases and order-intent idempotency primitives.
 - [ ] Ingest validated daily and hourly OHLC data.
   - [x] Define supported 60-minute and 1,440-minute storage intervals.
-  - [x] Wire scheduled public fetches, interval-specific quality gates and persistence.
+  - [ ] Wire scheduled public fetches, interval-specific quality gates and persistence.
 - [ ] Add idempotent D1 persistence, gap detection and repair.
   - [x] Add immutable hashed batch and candle persistence.
   - [x] Add strict expected-range gap detection and Kraken REST-horizon classification.
   - [ ] Add scheduled gap repair and an approved historical source for data outside Kraken's REST horizon.
-    - [x] Scan the exact current 719-committed-row REST window after scheduled persistence, perform at most one bounded overlapping repair capture per pair/interval, and fail closed if any repairable gap remains.
-    - [x] Approve Kraken's official downloadable historical OHLCVT archive as the reproducible account-free source beyond the REST horizon, with content-addressed capture and no forward-filling.
-    - [ ] Capture and hash exact complete/quarterly archives, validate the BTC/AUD and ETH/AUD CSV members, reconcile REST overlap, and persist derived candles immutably.
-      - [x] Add bounded digest-verified sparse CSV validation, exact committed-REST overlap reconciliation, chunked immutable candle/membership persistence and a database-verified commit marker.
-      - [x] Add a manual contents-read-only hosted workflow that transiently downloads the exact complete archive, rejects unsafe ZIP membership, validates the four approved CSV members and emits a seven-day digest-only capture manifest.
-      - [ ] Run the hosted capture after Actions capacity returns, review the actual archive/member digests, reconcile committed REST overlap and execute the four immutable backfills.
 - [ ] Build a dynamic market-cap-agnostic spot universe from current Australian venue metadata.
   - [x] Define immutable versioned market definitions, lifecycle events and quality observations.
   - [x] Reconstruct established, high-volatility and new-listing tiers at historical signal times.
@@ -52,11 +46,7 @@
           - [x] Wire committed-source lookup, recursive index-page discovery and scheduled orchestration.
     - [x] Bind reviewed lifecycle declarations to exact database-committed source payloads before evidence preparation.
       - [x] Re-validate canonical identities, chronology, source-class event types and geographic scope at the committed-evidence boundary.
-  - [x] Persist signed policies/snapshots and connect eligible membership to strategy and backtest orchestration.
-    - [x] Verify expiring P-256 policy signatures and immutably persist content-addressed snapshots bound to exact committed ingestion evidence.
-    - [x] Re-verify exact persisted snapshot availability and membership at decision time, then bind every backtest step and target to that evidence.
-    - [x] Bind the same verified membership artifact to runtime strategy-decision orchestration.
-    - [x] Persist complete content-addressed runtime decisions with immutable cycle bindings and exact-retry verification.
+  - [ ] Persist signed policies/snapshots and connect eligible membership to strategy and backtest orchestration.
 - [ ] Add near-real-time external intelligence from official sources, news and Reddit.
   - [x] Define deterministic provenance, latency, source-authority, retention and reaction contracts.
   - [x] Prevent Reddit-only/social-only evidence from creating a risk-on candidate.
@@ -111,14 +101,13 @@
   - [ ] Integrate validated walk-forward, holdout, benchmark and sensitivity inputs.
 - [ ] Produce repeatable research reports and signed strategy configurations.
   - [x] Add content-addressed research-report v1 with mandatory provenance, benchmarks and explicit external-intelligence comparison identities.
+  - [x] Persist reproducible content-addressed hourly candidate runs and bind their identities into research reports.
   - [ ] Persist reports and bind approved strategy configurations to authorised signatures/approval records.
 
 ## Phase 2 — Aggressive strategy portfolio
 
 - [ ] Complete venue-wide cross-sectional momentum and relative-strength rotation.
 - [ ] Add multi-timeframe breakout, volatility-expansion and trend-continuation candidates.
-  - [x] Add a pure hourly Donchian/EMA/momentum trend-breakout candidate with one-position/AUD-cash semantics and no runtime promotion.
-  - [x] Bind the candidate to exact signal-time universe membership and content-addressed execution-aware backtest plans without runtime promotion.
 - [ ] Add separate high-volatility and new-listing strategy lanes.
 - [ ] Research short-horizon mean reversion separately after realistic execution modelling.
 - [ ] Research external-intelligence features only after provenance, latency and manipulation controls are validated.
