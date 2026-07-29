@@ -68,4 +68,6 @@ Configuration and external-authorisation public keys are admitted only through s
 
 Point-in-time loading is digest-selected rather than latest-record-selected. At the explicit decision time it re-verifies the signed envelope, active role-scoped trust and any then-known revocation, configuration and finite readiness validity, all 12 ordered readiness gates, the exact complete-evaluation/calibration/stress bindings and the bounded committed report identity. The content-addressed result remains unselected and non-executable.
 
+Persistence always repeats that verification, then stores one immutable compact evidence row. D1 rejects missing or backdated evidence, omitted then-known revocations, effective revocations, changed natural identities, conflicts, updates and deletion. Persistence neither selects the candidate nor consumes external authorisation.
+
 The module produces targets only. It does not submit or approve orders, activate paper/live mode, connect credentials or weaken any market-data, liquidity, intelligence, risk or execution gate.

@@ -46,6 +46,11 @@ export interface SignedStrategyPersistenceStatement {
   readonly params: readonly D1BindValue[];
 }
 
+export interface VerifiedStrategyConfigurationPersistenceInput {
+  readonly verification: VerifiedStrategyConfigurationAtTime;
+  readonly persistedAtMs: number;
+}
+
 interface PersistedConfigurationRow {
   readonly signed_configuration_sha256: string;
   readonly complete_evaluation_sha256: string;
@@ -139,6 +144,21 @@ interface PersistedStressBindingAtTimeRow {
   readonly persisted_at_ms: number;
 }
 
+interface PersistedVerifiedConfigurationAtTimeRow {
+  readonly verification_evidence_sha256: string;
+  readonly signed_configuration_sha256: string;
+  readonly decision_at_ms: number;
+  readonly signer_trust_anchor_sha256: string;
+  readonly signer_trust_revocation_sha256: string | null;
+  readonly readiness_assessment_sha256: string;
+  readonly complete_evaluation_sha256: string;
+  readonly research_report_sha256: string;
+  readonly execution_calibration_sha256: string;
+  readonly execution_stress_manifest_sha256: string;
+  readonly evidence_canonical_json: string;
+  readonly persisted_at_ms: number;
+}
+
 export interface VerifiedStrategyConfigurationAtTime {
   readonly schemaVersion:
     "verified-strategy-configuration-at-time-v1";
@@ -178,6 +198,18 @@ export const INSERT_SIGNED_STRATEGY_AUTHORISATION_SQL =
      authoriser_trust_anchor_sha256, reviewed_at_ms, effective_from_ms,
      expires_at_ms, authorisation_canonical_json, persisted_at_ms)
    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+   ON CONFLICT DO NOTHING`;
+
+export const INSERT_VERIFIED_STRATEGY_CONFIGURATION_AT_TIME_SQL =
+  `INSERT INTO hourly_trend_breakout_verified_configurations
+    (verification_evidence_sha256, schema_version,
+     signed_configuration_sha256, decision_at_ms,
+     signer_trust_anchor_sha256, signer_trust_revocation_sha256,
+     readiness_assessment_sha256, complete_evaluation_sha256,
+     research_report_sha256, execution_calibration_sha256,
+     execution_stress_manifest_sha256, selection_authority,
+     execution_authority, evidence_canonical_json, persisted_at_ms)
+   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
    ON CONFLICT DO NOTHING`;
 
 const SELECT_SIGNED_CONFIGURATION_SQL =
@@ -260,6 +292,17 @@ const SELECT_STRESS_BINDING_AT_TIME_SQL =
    WHERE evaluation_sha256 = ?
      AND persisted_at_ms <= ?`;
 
+const SELECT_VERIFIED_CONFIGURATION_AT_TIME_SQL =
+  `SELECT verification_evidence_sha256, signed_configuration_sha256,
+          decision_at_ms, signer_trust_anchor_sha256,
+          signer_trust_revocation_sha256, readiness_assessment_sha256,
+          complete_evaluation_sha256, research_report_sha256,
+          execution_calibration_sha256,
+          execution_stress_manifest_sha256, evidence_canonical_json,
+          persisted_at_ms
+   FROM hourly_trend_breakout_verified_configurations
+   WHERE verification_evidence_sha256 = ?`;
+
 const SHA256_HEX = /^[0-9a-f]{64}$/u;
 
 function assertPersistenceTimestamp(
@@ -325,6 +368,106 @@ function assertKnownByDecision(
   ) {
     throw new Error(`${name} was unavailable at the decision time`);
   }
+}
+
+function verificationEvidence(
+  verification: VerifiedStrategyConfigurationAtTime,
+) {
+  return {
+    schemaVersion: verification.schemaVersion,
+    signedConfigurationSha256:
+      verification.configuration.signedConfigurationSha256,
+    decisionAtMs: verification.decisionAtMs,
+    signerTrustAnchorSha256:
+      verification.signerTrustAnchorSha256,
+    signerTrustRevocationSha256:
+      verification.signerTrustRevocationSha256,
+    readinessAssessmentSha256:
+      verification.readinessAssessmentSha256,
+    completeEvaluationSha256:
+      verification.completeEvaluationSha256,
+    researchReportSha256: verification.researchReportSha256,
+    executionCalibrationSha256:
+      verification.executionCalibrationSha256,
+    executionStressManifestSha256:
+      verification.executionStressManifestSha256,
+    selectionAuthority: verification.selectionAuthority,
+    executionAuthority: verification.executionAuthority,
+  } as const;
+}
+
+export async function prepareVerifiedStrategyConfigurationPersistence(
+  input: VerifiedStrategyConfigurationPersistenceInput,
+): Promise<SignedStrategyPersistenceStatement> {
+  const evidence = verificationEvidence(input.verification);
+  const reproducedSha256 =
+    await sha256CanonicalIntelligence(evidence);
+  if (
+    reproducedSha256 !==
+      input.verification.verificationEvidenceSha256 ||
+    input.verification.schemaVersion !==
+      "verified-strategy-configuration-at-time-v1" ||
+    input.verification.selectionAuthority !== "none" ||
+    input.verification.executionAuthority !== "none"
+  ) {
+    throw new Error("verified strategy configuration identity is invalid");
+  }
+  assertPersistenceTimestamp(
+    "verified strategy configuration persistence",
+    input.persistedAtMs,
+    input.verification.decisionAtMs,
+  );
+  return {
+    sql: INSERT_VERIFIED_STRATEGY_CONFIGURATION_AT_TIME_SQL,
+    params: [
+      input.verification.verificationEvidenceSha256,
+      input.verification.schemaVersion,
+      input.verification.configuration.signedConfigurationSha256,
+      input.verification.decisionAtMs,
+      input.verification.signerTrustAnchorSha256,
+      input.verification.signerTrustRevocationSha256,
+      input.verification.readinessAssessmentSha256,
+      input.verification.completeEvaluationSha256,
+      input.verification.researchReportSha256,
+      input.verification.executionCalibrationSha256,
+      input.verification.executionStressManifestSha256,
+      input.verification.selectionAuthority,
+      input.verification.executionAuthority,
+      canonicalIntelligenceJson(evidence),
+      input.persistedAtMs,
+    ],
+  };
+}
+
+function verifiedConfigurationRowMatches(
+  row: PersistedVerifiedConfigurationAtTimeRow,
+  input: VerifiedStrategyConfigurationPersistenceInput,
+): boolean {
+  const evidence = verificationEvidence(input.verification);
+  return (
+    row.verification_evidence_sha256 ===
+      input.verification.verificationEvidenceSha256 &&
+    row.signed_configuration_sha256 ===
+      input.verification.configuration.signedConfigurationSha256 &&
+    row.decision_at_ms === input.verification.decisionAtMs &&
+    row.signer_trust_anchor_sha256 ===
+      input.verification.signerTrustAnchorSha256 &&
+    row.signer_trust_revocation_sha256 ===
+      input.verification.signerTrustRevocationSha256 &&
+    row.readiness_assessment_sha256 ===
+      input.verification.readinessAssessmentSha256 &&
+    row.complete_evaluation_sha256 ===
+      input.verification.completeEvaluationSha256 &&
+    row.research_report_sha256 ===
+      input.verification.researchReportSha256 &&
+    row.execution_calibration_sha256 ===
+      input.verification.executionCalibrationSha256 &&
+    row.execution_stress_manifest_sha256 ===
+      input.verification.executionStressManifestSha256 &&
+    row.evidence_canonical_json === canonicalIntelligenceJson(evidence) &&
+    row.persisted_at_ms >= input.verification.decisionAtMs &&
+    row.persisted_at_ms <= input.persistedAtMs
+  );
 }
 
 export async function prepareSignedStrategyConfigurationPersistence(
@@ -807,5 +950,33 @@ export class SignedStrategyConfigurationRepository {
       verificationEvidenceSha256:
         await sha256CanonicalIntelligence(evidence),
     };
+  }
+
+  async persistVerifiedConfigurationAtTime(
+    signedConfigurationSha256: string,
+    decisionAtMs: number,
+    persistedAtMs: number,
+  ): Promise<VerifiedStrategyConfigurationAtTime> {
+    const verification = await this.loadVerifiedConfigurationAtTime(
+      signedConfigurationSha256,
+      decisionAtMs,
+    );
+    const input = { verification, persistedAtMs };
+    const statement =
+      await prepareVerifiedStrategyConfigurationPersistence(input);
+    await this.db
+      .prepare(statement.sql)
+      .bind(...statement.params)
+      .run();
+    const row = await this.db
+      .prepare(SELECT_VERIFIED_CONFIGURATION_AT_TIME_SQL)
+      .bind(verification.verificationEvidenceSha256)
+      .first<PersistedVerifiedConfigurationAtTimeRow>();
+    if (row === null || !verifiedConfigurationRowMatches(row, input)) {
+      throw new Error(
+        "persisted verified strategy configuration is invalid",
+      );
+    }
+    return verification;
   }
 }

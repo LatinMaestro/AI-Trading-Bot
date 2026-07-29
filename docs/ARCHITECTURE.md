@@ -87,7 +87,7 @@ D1 stores:
 - content-free aggregate Reddit watch state, retention audits and invalidation events;
 - immutable content-addressed strategy-decision artifacts and per-cycle bindings;
 - immutable role-scoped strategy-signer trust anchors, rotation lineage and revocations plus exact trust bindings on signed configurations and external authorisations;
-- content-addressed point-in-time signed-configuration verification artifacts binding an exact digest, decision time, active trust state, fresh readiness and compact committed evaluation/report/calibration/stress evidence, with no selection or execution authority;
+- immutable content-addressed point-in-time signed-configuration verification artifacts binding an exact digest, decision time, active trust state, fresh readiness and compact committed evaluation/report/calibration/stress evidence, with database-enforced idempotency and no selection or execution authority;
 - order intents, exchange orders and fills;
 - balances and equity snapshots;
 - risk events and kill-switch state;

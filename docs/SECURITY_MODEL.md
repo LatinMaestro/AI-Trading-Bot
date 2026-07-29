@@ -63,6 +63,8 @@ Signer trust is independently content-addressed and role-separated between confi
 
 Runtime preparation accepts only an exact signed-configuration digest and explicit decision time. It rejects configuration, trust, revocation, readiness, evaluation, report-commit, calibration or stress evidence that was unavailable, expired, malformed or inconsistently bound at that time. Large immutable report chunks are not reloaded per cycle; their bounded commit identity is checked after full chunk verification at persistence. The returned artifact is content-addressed and explicitly has no selection or execution authority.
 
+The verification artifact is persisted only after the repository repeats the complete load and verification. D1 independently requires the same exact configuration, active trust state, then-known non-effective revocation state, fresh readiness, complete evaluation, report commit, calibration and stress identities at the decision timestamp. Exact retries preserve the first row; natural-identity conflicts, updates and deletion fail closed.
+
 ## Supply-chain controls
 
 - Minimise runtime dependencies.
