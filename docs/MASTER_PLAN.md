@@ -1,1 +1,189 @@
-IyBNYXN0ZXIgYnVpbGQgcGxhbgoKIyMgUGhhc2UgMCDigJQgR292ZXJuYW5jZSBhbmQgZmFpbC1jbG9zZWQgZm91bmRhdGlvbgoKLSBbeF0gQ3JlYXRlIHByb2plY3QgY29udHJvbCBkb2N1bWVudHMuCi0gW3hdIERlZmluZSBzZWN1cml0eSwgdmVudWUgYW5kIGxpdmUtYWN0aXZhdGlvbiBib3VuZGFyaWVzLgotIFt4XSBTY2FmZm9sZCBDbG91ZGZsYXJlIFdvcmtlciwgRDEgc2NoZW1hLCBLcmFrZW4gYWRhcHRlciBpbnRlcmZhY2VzLCBzdHJhdGVneSBhbmQgcmlzayBtb2R1bGVzLgotIFt4XSBBZGQgYmFzZWxpbmUgQ0kgYW5kIGZvcmJpZGRlbi1jYXBhYmlsaXR5IGNoZWNrcy4KLSBbeF0gRGVmaW5lIHRoZSBmaXZlLXllYXIgYWdncmVzc2l2ZSwgbWFya2V0LWNhcC1hZ25vc3RpYyByZXNlYXJjaCBtYW5kYXRlLgotIFsgXSBPYnRhaW4gZ3JlZW4gZXhhY3QtaGVhZCBDSSBhbmQgbWVyZ2UgdGhlIGZvdW5kYXRpb24gcHVsbCByZXF1ZXN0LgoKIyMgUGhhc2UgMSDigJQgTWFya2V0IGRhdGEgYW5kIGRldGVybWluaXN0aWMgcmVzZWFyY2gKCi0gW3hdIEltcGxlbWVudCBLcmFrZW4gYXNzZXQtcGFpciBkaXNjb3ZlcnkgYW5kIHBhaXIgbm9ybWFsaXNhdGlvbi4KLSBbeF0gQWRkIHNjaGVkdWxlZC1jeWNsZSBsZWFzZXMgYW5kIG9yZGVyLWludGVudCBpZGVtcG90ZW5jeSBwcmltaXRpdmVzLgotIFsgXSBJbmdlc3QgdmFsaWRhdGVkIGRhaWx5IGFuZCBob3VybHkgT0hMQyBkYXRhLgogIC0gW3hdIERlZmluZSBzdXBwb3J0ZWQgNjAtbWludXRlIGFuZCAxLDQ0MC1taW51dGUgc3RvcmFnZSBpbnRlcnZhbHMuCiAgLSBbIF0gV2lyZSBzY2hlZHVsZWQgcHVibGljIGZldGNoZXMsIGludGVydmFsLXNwZWNpZmljIHF1YWxpdHkgZ2F0ZXMgYW5kIHBlcnNpc3RlbmNlLgotIFsgXSBBZGQgaWRlbXBvdGVudCBEMSBwZXJzaXN0ZW5jZSwgZ2FwIGRldGVjdGlvbiBhbmQgcmVwYWlyLgogIC0gW3hdIEFkZCBpbW11dGFibGUgaGFzaGVkIGJhdGNoIGFuZCBjYW5kbGUgcGVyc2lzdGVuY2UuCiAgLSBbeF0gQWRkIHN0cmljdCBleHBlY3RlZC1yYW5nZSBnYXAgZGV0ZWN0aW9uIGFuZCBLcmFrZW4gUkVTVC1ob3Jpem9uIGNsYXNzaWZpY2F0aW9uLgogIC0gWyBdIEFkZCBzY2hlZHVsZWQgZ2FwIHJlcGFpciBhbmQgYW4gYXBwcm92ZWQgaGlzdG9yaWNhbCBzb3VyY2UgZm9yIGRhdGEgb3V0c2lkZSBLcmFrZW4ncyBSRVNUIGhvcml6b24uCi0gWyBdIEJ1aWxkIGEgZHluYW1pYyBtYXJrZXQtY2FwLWFnbm9zdGljIHNwb3QgdW5pdmVyc2UgZnJvbSBjdXJyZW50IEF1c3RyYWxpYW4gdmVudWUgbWV0YWRhdGEuCiAgLSBbeF0gRGVmaW5lIGltbXV0YWJsZSB2ZXJzaW9uZWQgbWFya2V0IGRlZmluaXRpb25zLCBsaWZlY3ljbGUgZXZlbnRzIGFuZCBxdWFsaXR5IG9ic2VydmF0aW9ucy4KICAtIFt4XSBSZWNvbnN0cnVjdCBlc3RhYmxpc2hlZCwgaGlnaC12b2xhdGlsaXR5IGFuZCBuZXctbGlzdGluZyB0aWVycyBhdCBoaXN0b3JpY2FsIHNpZ25hbCB0aW1lcy4KICAtIFt4XSBQcmVzZXJ2ZSBsaXN0aW5nLCBzdXNwZW5zaW9uLCByZXN1bXB0aW9uLCBkZWxpc3RpbmcsIHJlbGlzdGluZyBhbmQgQXVzdHJhbGlhbi1hdmFpbGFiaWxpdHkgaGlzdG9yeS4KICAtIFt4XSBFbmZvcmNlIGluc3RydW1lbnQsIGZyZXNobmVzcywgc3ByZWFkLCB0dXJub3ZlciwgZGVwdGgsIGltcGFjdCwgbWluaW11bS1vcmRlciwgZGF0YS1xdWFsaXR5IGFuZCBoaXN0b3J5IGdhdGVzLgogIC0gW3hdIFByZXBhcmUgZGV0ZXJtaW5pc3RpYyBzb3VyY2UtcHJvdmVuYW5jZSBpbmdlc3Rpb24gYmF0Y2hlcy4KICAtIFt4XSBSZXF1aXJlIGV4cGxpY2l0IG9mZmljaWFsIGxpZmVjeWNsZSBldmlkZW5jZTsgbmV2ZXIgaW5mZXIgZGVsaXN0aW5nIGZyb20gc25hcHNob3QgYWJzZW5jZS4KICAtIFt4XSBSZXNvbHZlIGZyZXNoIEFVRCB2YWx1YXRpb24gcGF0aHMgYW5kIHByb2R1Y2UgdGllciBjYWxpYnJhdGlvbiBldmlkZW5jZSBzdW1tYXJpZXMuCiAgLSBbeF0gUGVyc2lzdCBwcmVwYXJlZCBtZXRhZGF0YSwgcXVhbGl0eSwgY29udmVyc2lvbiBhbmQgbGlmZWN5Y2xlIGJhdGNoZXMgYXRvbWljYWxseSB3aXRoIHZlcmlmaWVkIGNvbW1pdCBtYXJrZXJzLgogIC0gW3hdIFdpcmUgc2NoZWR1bGVkIHZlbnVlIG1ldGFkYXRhLCBxdWFsaXR5IGFuZCBjb252ZXJzaW9uIGZldGNoZXMgaW50byB0aGUgcGVyc2lzdGVuY2UgYm91bmRhcnkuCiAgICAtIFt4XSBBZGQgY29udGVudC1hZGRyZXNzZWQgS3Jha2VuIEFzc2V0UGFpcnMsIFRpY2tlciBhbmQgRGVwdGggY2xpZW50cyB3aXRoIHN0cmljdCBxdWFsaXR5IHBhcnNlcnMuCiAgICAtIFt4XSBBZGQgYm91bmRlZCByb3RhdGlvbiwgcmV0cnkvdGltZW91dCBjb250cm9scywgZnJlc2ggQVVEIGNvbnZlcnNpb24gYW5kIHByZS1zdHJhdGVneSBhdG9taWMgcGVyc2lzdGVuY2UuCiAgICAtIFt4XSBDb25uZWN0IGNvbW1pdHRlZCBjYW5kbGUtY291bnQgYW5kIHZvbGF0aWxpdHkgZXZpZGVuY2UgdG8gY29sbGVjdGVkIG9ic2VydmF0aW9ucy4KICAtIFsgXSBFc3RhYmxpc2ggY29tcGxldGUgbGlmZWN5Y2xlLXNvdXJjZSBjb3ZlcmFnZSBhbmQgc2lnbmVkIHBvbGljeSBjYWxpYnJhdGlvbiBieSB2ZW51ZSwgcGVyaW9kIGFuZCBlcXVpdHkgc2NhbGUuCiAgICAtIFt4XSBBZGQgYW4gYWxsb3dsaXN0ZWQgb2ZmaWNpYWwtc291cmNlIG1hbmlmZXN0LCBmdXR1cmUtZWZmZWN0aXZlIGV2ZW50IGhhbmRsaW5nIGFuZCBkZXRlcm1pbmlzdGljIGNvdmVyYWdlIGF1ZGl0LgogICAgLSBbIF0gQmFja2ZpbGwgY29tcGxldGUgbGlzdGluZywgdHJhZGluZy1zdGF0dXMsIGRlbGlzdGluZyBhbmQgQXVzdHJhbGlhbi1hdmFpbGFiaWxpdHkgaGlzdG9yeS4KICAgICAgLSBbeF0gUGVyc2lzdCBpbW11dGFibGUgcGFydGlhbC9jb21wbGV0ZSBjb3ZlcmFnZSBtYW5pZmVzdHMgYW5kIGtlZXAgcGFydGlhbCBoaXN0b3J5IG5vbi1hdXRob3JpdGF0aXZlLgogICAgLSBbIF0gQWRkIHNjaGVkdWxlZCByYXctc291cmNlIGNhcHR1cmUgYW5kIGltbXV0YWJsZSBwZXJzaXN0ZW5jZS4KICAgICAgLSBbeF0gQ2FwdHVyZSBhbmQgYXRvbWljYWxseSBwZXJzaXN0IHRoZSBvZmZpY2lhbCBsaXN0aW5nL2RlbGlzdGluZyBpbmRleGVzIGFuZCBzdGF0dXMgZmVlZHMgZGFpbHkuCiAgICAgIC0gWyBdIERpc2NvdmVyIGFuZCBjYXB0dXJlIGV4YWN0IGluZGl2aWR1YWwgbGlzdGluZywgZGVsaXN0aW5nIGFuZCByZWdpb25hbC1hdmFpbGFiaWxpdHkgZG9jdW1lbnRzLgogICAgICAgIC0gW3hdIERpc2NvdmVyIGNhbm9uaWNhbCBsaXN0aW5nLWluZGV4IHBhZ2VzLCBsaXN0aW5nIGFydGljbGVzIGFuZCBzdXBwb3J0IGxpZmVjeWNsZSBkb2N1bWVudHMgZnJvbSBwcmVzZXJ2ZWQgaW5kZXggcGF5bG9hZHMuCiAgICAgICAgLSBbIF0gQ2FwdHVyZSBhbmQgaW1tdXRhYmx5IHBlcnNpc3QgZGlzY292ZXJlZCBpbmRleCBwYWdlcyBhbmQgaW5kaXZpZHVhbCBkb2N1bWVudHMuCiAgICAgICAgICAtIFt4XSBBZGQgYm91bmRlZCBleGFjdC1kb2N1bWVudCBjYXB0dXJlIGFuZCBpbW11dGFibGUgRDEgcGVyc2lzdGVuY2UgbGlua2VkIHRvIGRpc2NvdmVyeSBwcm92ZW5hbmNlLgogICAgICAgICAgLSBbeF0gV2lyZSBjb21taXR0ZWQtc291cmNlIGxvb2t1cCwgcmVjdXJzaXZlIGluZGV4LXBhZ2UgZGlzY292ZXJ5IGFuZCBzY2hlZHVsZWQgb3JjaGVzdHJhdGlvbi4KICAgIC0gW3hdIEJpbmQgcmV2aWV3ZWQgbGlmZWN5Y2xlIGRlY2xhcmF0aW9ucyB0byBleGFjdCBkYXRhYmFzZS1jb21taXR0ZWQgc291cmNlIHBheWxvYWRzIGJlZm9yZSBldmlkZW5jZSBwcmVwYXJhdGlvbi4KICAgICAgLSBbeF0gUmUtdmFsaWRhdGUgY2Fub25pY2FsIGlkZW50aXRpZXMsIGNocm9ub2xvZ3ksIHNvdXJjZS1jbGFzcyBldmVudCB0eXBlcyBhbmQgZ2VvZ3JhcGhpYyBzY29wZSBhdCB0aGUgY29tbWl0dGVkLWV2aWRlbmNlIGJvdW5kYXJ5LgogIC0gWyBdIFBlcnNpc3Qgc2lnbmVkIHBvbGljaWVzL3NuYXBzaG90cyBhbmQgY29ubmVjdCBlbGlnaWJsZSBtZW1iZXJzaGlwIHRvIHN0cmF0ZWd5IGFuZCBiYWNrdGVzdCBvcmNoZXN0cmF0aW9uLgotIFsgXSBBZGQgbmVhci1yZWFsLXRpbWUgZXh0ZXJuYWwgaW50ZWxsaWdlbmNlIGZyb20gb2ZmaWNpYWwgc291cmNlcywgbmV3cyBhbmQgUmVkZGl0LgogIC0gW3hdIERlZmluZSBkZXRlcm1pbmlzdGljIHByb3ZlbmFuY2UsIGxhdGVuY3ksIHNvdXJjZS1hdXRob3JpdHksIHJldGVudGlvbiBhbmQgcmVhY3Rpb24gY29udHJhY3RzLgogIC0gW3hdIFByZXZlbnQgUmVkZGl0LW9ubHkvc29jaWFsLW9ubHkgZXZpZGVuY2UgZnJvbSBjcmVhdGluZyBhIHJpc2stb24gY2FuZGlkYXRlLgogIC0gW3hdIEFsbG93IGF1dGhvcml0YXRpdmUgc2V2ZXJlIG5lZ2F0aXZlIGV2ZW50cyB0byBwYXVzZSBuZXcgcmlzayB3aXRob3V0IHN1Ym1pdHRpbmcgYW4gb3JkZXIuCiAgLSBbeF0gUGVyc2lzdCBpbW11dGFibGUgaW50ZWxsaWdlbmNlIGl0ZW1zLCBjb3JyZWN0aW9ucyBhbmQgYXNzZXNzbWVudHMuCiAgLSBbeF0gQWRkIGEgdmVyc2lvbmVkIHByb3ZpZGVyL3NvdXJjZSByZWdpc3RyeSB3aXRoIGxpY2VuY2UsIGF0dHJpYnV0aW9uLCByZXRlbnRpb24gYW5kIG1vZGVsLXVzZSBydWxlcy4KICAtIFsgXSBBZGQgb2ZmaWNpYWwgZXhjaGFuZ2UsIHJlZ3VsYXRvciwgaXNzdWVyIGFuZCBwdWJsaXNoZXIgUlNTL3dlYmhvb2sgYWRhcHRlcnMuCiAgICAtIFt4XSBBZGQgcmVnaXN0cnktYm91bmQgYm91bmRlZCBmZWVkIHBvbGxpbmcgYW5kIGF1dGhlbnRpY2F0ZWQgd2ViaG9vayBwYXlsb2FkIGFjcXVpc2l0aW9uLgogICAgLSBbeF0gQWRkIGEgc2NoZWR1bGVkIFNFQyBwcmVzcy1yZWxlYXNlIFJTUyBtYW5pZmVzdCBhbmQgZGV0ZXJtaW5pc3RpYyBtZXRhZGF0YS1vbmx5IG5vcm1hbGlzZXIuCiAgICAtIFt4XSBBZGQgYSBzY2hlZHVsZWQgUkJBIG1lZGlhLXJlbGVhc2UgUlNTIG1hbmlmZXN0IGFuZCBkZXRlcm1pbmlzdGljIG1ldGFkYXRhLW9ubHkgbm9ybWFsaXNlci4KICAgIC0gW3hdIEFkZCBhIHNjaGVkdWxlZCBBVVNUUkFDIG1lZGlhLXJlbGVhc2UgUlNTIG1hbmlmZXN0IGFuZCBkZXRlcm1pbmlzdGljIG1ldGFkYXRhLW9ubHkgbm9ybWFsaXNlciB3aXRoIHJldGlyZW1lbnQgbW9uaXRvcmluZy4KICAgIC0gW3hdIEFkZCBhIHNjaGVkdWxlZCBCaXRjb2luIENvcmUgYW5ub3VuY2VtZW50IFJTUyBtYW5pZmVzdCBhbmQgZGV0ZXJtaW5pc3RpYyBkaWdlc3Qtb25seSBub3JtYWxpc2VyLgogICAgLSBbeF0gQWRkIGEgc2NoZWR1bGVkIEV0aGVyZXVtIEdldGggR2l0SHViIFJlbGVhc2VzIEFQSSBtYW5pZmVzdCBhbmQgZGV0ZXJtaW5pc3RpYyBkaWdlc3Qtb25seSBub3JtYWxpc2VyLgogICAgLSBbeF0gQWRkIGEgb25lLW1pbnV0ZSBLcmFrZW4gYWN0aXZlLW1haW50ZW5hbmNlIFN0YXR1cyBBUEkgbWFuaWZlc3QgYW5kIGRldGVybWluaXN0aWMgZGlnZXN0LW9ubHkgbm9ybWFsaXNlci4KICAgIC0gWyBdIEFkZCBmdXJ0aGVyIGFwcHJvdmVkIGV4Y2hhbmdlL2lzc3Vlci9uZXdzIG1hbmlmZXN0cywgc291cmNlLXNwZWNpZmljIHBhcnNpbmcsIHByb3ZpZGVyIHNpZ25hdHVyZSBpbXBsZW1lbnRhdGlvbnMgYW5kIGRlcGxveWVkIGVuZHBvaW50cy4KICAtIFsgXSBBZGQgY29tcGxpYW50IFJlZGRpdCBPQXV0aCBjb2xsZWN0aW9uIHdpdGggYWRhcHRpdmUgcmF0ZSBsaW1pdHMsIGRlbGV0aW9uIGhhbmRsaW5nIGFuZCBtaW5pbWFsIHN0b3JhZ2UuCiAgICAtIFt4XSBBZGQgT0F1dGgtb25seSB3YXRjaGxpc3QgdHJhbnNwb3J0IHdpdGggdHJ1dGhmdWwgcnVudGltZSBpZGVudGl0eSwgYWRhcHRpdmUgaGVhZGVyIGJ1ZGdldHMgYW5kIGEgbWF4aW11bSA0OC1ob3VyIGRlbGV0aW9uIGNvbnRyYWN0LgogICAgLSBbeF0gQWRkIHRyYW5zaWVudCBtaW5pbWFsIHBvc3Qgbm9ybWFsaXNhdGlvbiwgYm91bmRlZCBgL2FwaS9pbmZvYCBkZWxldGlvbiBjaGVja3MsIHJldGVudGlvbiBwdXJnZSBwbGFubmluZyBhbmQgY29udGVudC1mcmVlIGNvbXBsaWFuY2UgYXVkaXRzLgogICAgLSBbeF0gQWRkIHB1cmdlLWVuZm9yY2VkIHRyYW5zaWVudCBwZXJzaXN0ZW5jZSBhbmQgZG93bnN0cmVhbSB3YXRjaC1zdGF0ZSBpbnZhbGlkYXRpb24uCiAgICAtIFsgXSBTdXBwbHkgYXBwcm92ZWQgaG9zdGVkIGNyZWRlbnRpYWxzIGFuZCBkZXBsb3kgdGhlIFJlZGRpdCBjb2xsZWN0b3IuCiAgLSBbIF0gQWRkIGRlZGljYXRlZCBvbmUtbWludXRlIGNvbGxlY3Rpb24gYW5kIHF1ZXVlLWJhY2tlZCBhdC1sZWFzdC1vbmNlIHByb2Nlc3Npbmcgd2l0aCBpZGVtcG90ZW5jeS4KICAgIC0gW3hdIEJpbmQgYW4gaW5hY3RpdmUtYnktZGVmYXVsdCBQcmV2aWV3IG1pbnV0ZSBDcm9uLCBRdWV1ZS9ETFEgcHJvZHVjZXItY29uc3VtZXIgYW5kIEQxIHBlcnNpc3RlbmNlIHJ1bnRpbWUuCiAgICAtIFt4XSBHZW5lcmF0ZSBhIGNvbnRlbnQtYWRkcmVzc2VkIFByZXZpZXcgYWN0aXZhdGlvbiBtYW5pZmVzdCBmcm9tIGV4YWN0IHJldmlld2VkIGxpY2VuY2UgZXZpZGVuY2UgYW5kIGRvY3VtZW50IG93bmVyLWdhdGVkIGFjdGl2YXRpb24gYW5kIHJvbGxiYWNrLgogICAgLSBbIF0gUHJvdmlzaW9uIGFwcHJvdmVkIGhvc3RlZCBQcmV2aWV3IHJlc291cmNlcywgaW5zdGFsbCBhbiBleGFjdCByZXZpZXdlZCBzb3VyY2UgY29udHJhY3QgYW5kIGFjdGl2YXRlIGNvbGxlY3Rpb24uCiAgICAtIFt4XSBBZGQgZGV0ZXJtaW5pc3RpYyBib3VuZGVkIHF1ZXVlIGVudmVsb3BlcywgcGVyLW1lc3NhZ2UgYWNrbm93bGVkZ2VtZW50L3JldHJ5IGFuZCBzb3VyY2UtbGV2ZWwgc3RhbGUgb3V0Y29tZXMuCiAgICAtIFt4XSBQZXJzaXN0IGNvbmRpdGlvbmFsIGNhY2hlIHZhbGlkYXRvcnMgZHVyYWJseSB3aXRoIG1vbm90b25pYyBjb25mbGljdCBjb250cm9scy4KICAgIC0gWyBdIEJpbmQgYXBwcm92ZWQgc291cmNlIG1hbmlmZXN0cywgbWludXRlIENyb24sIFF1ZXVlL0RMUSBhbmQgdGhlIGRlcGxveWVkIGNvbnN1bWVyLgogIC0gW3hdIEFkZCBkZXRlcm1pbmlzdGljIGVudGl0eS90b3BpYyBsaW5raW5nLCBzeW5kaWNhdGlvbiBjbHVzdGVyaW5nIGFuZCBtYW5pcHVsYXRpb24gY29udHJvbHMuCiAgICAtIFt4XSBBZGQgcmV2aWV3ZWQgZW50aXR5L3RvcGljIHJ1bGVzLCBleGFjdC1jb250ZW50IHN5bmRpY2F0aW9uIGNsdXN0ZXJpbmcgYW5kIGNvcnJlY3Rpb24tc2FmZSByZXByZXNlbnRhdGl2ZSBzZWxlY3Rpb24uCiAgICAtIFt4XSBBZGQgcGVybWl0dGVkLWNvbnRlbnQgbmVhci1kdXBsaWNhdGUvcmVwb3N0IGNsdXN0ZXJpbmcgYW5kIGNvb3JkaW5hdGVkLW1hbmlwdWxhdGlvbiBldmlkZW5jZS4KICAtIFt4XSBJbnRlZ3JhdGUgYHBhdXNlLW5ldy1yaXNrYCBpbnRvIHBhcGVyLW1vZGUgcmlzayBjb250cm9scyBhbmQgaW5jaWRlbnQgcmVwb3J0aW5nLgogIC0gW3hdIEJhY2t0ZXN0IG5ld3Mvc29jaWFsIGZlYXR1cmVzIHdpdGggb3JpZ2luYWwgcHVibGljYXRpb24sIHJlY2VpcHQsIGF2YWlsYWJpbGl0eSBhbmQgYXNzZXNzbWVudCB0aW1lc3RhbXBzIGFuZCBubyBsb29rLWFoZWFkLgogICAgLSBbeF0gQWRkIGNvbnRlbnQtYWRkcmVzc2VkIGNvbXBsZXRlLXNuYXBzaG90IHJlcGxheSB3aXRoIHJlYWN0aW9uIGV4cGlyeSwgbGF0ZW5jeSBldmlkZW5jZSBhbmQgZGV0ZXJtaW5pc3RpYyBpbnRlbnQgZ2F0ZXMuCiAgICAtIFt4XSBCaW5kIGV2ZXJ5IGJhY2t0ZXN0IHJlcXVlc3QgdG8gaXRzIGV4YWN0IHJlcGxheSBmcmFtZSBhbmQgc3VwcHJlc3MgcGF1c2VkIGFkZGl0aW9ucyBiZWZvcmUgZmlsbCBtb2RlbGxpbmcuCiAgICAtIFt4XSBQZXJzaXN0IGNvbnRlbnQtYWRkcmVzc2VkIGNvbXBhcmF0aXZlIHJlc2VhcmNoIG91dHB1dHMuCi0gWyBdIEJ1aWxkIGZlZS0sIHNwcmVhZC0sIHNsaXBwYWdlLSwgbWlzc2VkLWZpbGwtIGFuZCBwcmljZS1pbXBhY3QtYXdhcmUgYmFja3Rlc3QgZW5naW5lLgogIC0gW3hdIEFkZCBhIGRldGVybWluaXN0aWMgcHVyZSB0YXJnZXQtd2VpZ2h0IHJlYmFsYW5jaW5nIGVuZ2luZS4KICAtIFt4XSBBdHRyaWJ1dGUgbWFrZXIvdGFrZXIgZmVlcywgc3ByZWFkLCBzbGlwcGFnZSwgYWR2ZXJzZSBzZWxlY3Rpb24gYW5kIHNxdWFyZS1yb290IHByaWNlIGltcGFjdC4KICAtIFt4XSBNb2RlbCBwYXJ0aWNpcGF0aW9uIGNhcHMsIG1pbmltdW0gb3JkZXJzLCBjYXNoIHJlc2VydmVzIGFuZCBwcm9wb3J0aW9uYWwgYnV5IHNjYWxpbmcuCiAgLSBbeF0gUHJlc2VydmUgcGFydGlhbCBhbmQgY29tcGxldGVseSBtaXNzZWQgZXhlY3V0aW9uIG91dGNvbWVzLgogIC0gWyBdIENhbGlicmF0ZSBhc3N1bXB0aW9ucyBieSB2ZW51ZSwgcGFpciwgdW5pdmVyc2UgdGllciwgZXF1aXR5IHNjYWxlIGFuZCBoaXN0b3JpY2FsIHBlcmlvZC4KICAtIFsgXSBBZGQgZXhjaGFuZ2Utc3BlY2lmaWMgcHJlY2lzaW9uLCB0aWNrLXNpemUgYW5kIG11bHRpLWV2ZW50IG9yZGVyLWxpZmVjeWNsZSBzaW11bGF0aW9uLgotIFsgXSBBZGQgYmVuY2htYXJrIGNvbXBhcmlzb25zOiBBVUQgY2FzaCwgQlRDIGhvbGQsIGVxdWFsLXdlaWdodCBob2xkIGFuZCB0aGUgZml2ZS15ZWFyIGNvbnN0YW50LWNvbXBvdW5kaW5nIG9iamVjdGl2ZSBwYXRoLgogIC0gW3hdIEFkZCBkZXRlcm1pbmlzdGljIGJlbmNobWFyayBidWlsZGVycyBhbmQgYWxpZ25lZCByZXR1cm4vZHJhd2Rvd24gc3VtbWFyaWVzLgogIC0gW3hdIEtlZXAgVVNEIG9iamVjdGl2ZSByZWZlcmVuY2VzIHNlcGFyYXRlIGZyb20gQVVEIGNvbXBhcmlzb25zIHVubGVzcyBGWCBwcm92ZW5hbmNlIGlzIHN1cHBsaWVkLgogIC0gWyBdIENhbGlicmF0ZSBjYXNoIHJldHVybnMsIHByaWNlcywgaGlzdG9yaWNhbCBlcXVhbC13ZWlnaHQgbWVtYmVyc2hpcCBhbmQgRlggaW5wdXRzLgotIFsgXSBBZGQgdGFyZ2V0LWF0dGFpbm1lbnQsIHRlcm1pbmFsLXdlYWx0aCBhbmQgcmlzay1vZi1ydWluIGFuYWx5c2lzLgogIC0gW3hdIEFkZCBvYmplY3RpdmUtcGF0aCwgcHJvZ3Jlc3Mtc3RhdHVzIGFuZCByZXF1aXJlZC1mb3J3YXJkLXJhdGUgY2FsY3VsYXRpb25zLgogIC0gW3hdIEFkZCB0ZXJtaW5hbC13ZWFsdGgsIHRhcmdldC1hdHRhaW5tZW50IGFuZCBsb3NzL2RyYXdkb3duIHNjZW5hcmlvIHN1bW1hcmllcy4KICAtIFt4XSBBZGQgcmVwcm9kdWNpYmxlIHNlZWRlZCBtb3ZpbmctYmxvY2sgYm9vdHN0cmFwIHByaW1pdGl2ZXMuCiAgLSBbIF0gSW50ZWdyYXRlIHZhbGlkYXRlZCB3YWxrLWZvcndhcmQsIGhvbGRvdXQsIGJlbmNobWFyayBhbmQgc2Vuc2l0aXZpdHkgaW5wdXRzLgotIFsgXSBQcm9kdWNlIHJlcGVhdGFibGUgcmVzZWFyY2ggcmVwb3J0cyBhbmQgc2lnbmVkIHN0cmF0ZWd5IGNvbmZpZ3VyYXRpb25zLgogIC0gW3hdIEFkZCBjb250ZW50LWFkZHJlc3NlZCByZXNlYXJjaC1yZXBvcnQgdjEgd2l0aCBtYW5kYXRvcnkgcHJvdmVuYW5jZSwgYmVuY2htYXJrcyBhbmQgZXhwbGljaXQgZXh0ZXJuYWwtaW50ZWxsaWdlbmNlIGNvbXBhcmlzb24gaWRlbnRpdGllcy4KICAtIFsgXSBQZXJzaXN0IHJlcG9ydHMgYW5kIGJpbmQgYXBwcm92ZWQgc3RyYXRlZ3kgY29uZmlndXJhdGlvbnMgdG8gYXV0aG9yaXNlZCBzaWduYXR1cmVzL2FwcHJvdmFsIHJlY29yZHMuCgojIyBQaGFzZSAyIOKAlCBBZ2dyZXNzaXZlIHN0cmF0ZWd5IHBvcnRmb2xpbwoKLSBbIF0gQ29tcGxldGUgdmVudWUtd2lkZSBjcm9zcy1zZWN0aW9uYWwgbW9tZW50dW0gYW5kIHJlbGF0aXZlLXN0cmVuZ3RoIHJvdGF0aW9uLgotIFsgXSBBZGQgbXVsdGktdGltZWZyYW1lIGJyZWFrb3V0LCB2b2xhdGlsaXR5LWV4cGFuc2lvbiBhbmQgdHJlbmQtY29udGludWF0aW9uIGNhbmRpZGF0ZXMuCi0gWyBdIEFkZCBzZXBhcmF0ZSBoaWdoLXZvbGF0aWxpdHkgYW5kIG5ldy1saXN0aW5nIHN0cmF0ZWd5IGxhbmVzLgotIFsgXSBSZXNlYXJjaCBzaG9ydC1ob3Jpem9uIG1lYW4gcmV2ZXJzaW9uIHNlcGFyYXRlbHkgYWZ0ZXIgcmVhbGlzdGljIGV4ZWN1dGlvbiBtb2RlbGxpbmcuCi0gWyBdIFJlc2VhcmNoIGV4dGVybmFsLWludGVsbGlnZW5jZSBmZWF0dXJlcyBvbmx5IGFmdGVyIHByb3ZlbmFuY2UsIGxhdGVuY3kgYW5kIG1hbmlwdWxhdGlvbiBjb250cm9scyBhcmUgdmFsaWRhdGVkLgotIFsgXSBUZXN0IGNvbmNlbnRyYXRlZCBvbmUtYXNzZXQgYW5kIHNtYWxsLXBvcnRmb2xpbyBjb25maWd1cmF0aW9ucyB1cCB0byAxMDAlIGdyb3NzIHNwb3QgZXhwb3N1cmUuCi0gWyBdIFRlc3QgaG91cmx5IGRlY2lzaW9ucywgbXVsdGlwbGUgZGFpbHkgcmViYWxhbmNlcyBhbmQgbWFrZXIvdGFrZXIgZXhlY3V0aW9uIHBvbGljaWVzLgotIFsgXSBBZGQgdm9sYXRpbGl0eSB0YXJnZXRpbmcgYW5kIHJlZ2ltZS1kZXBlbmRlbnQgcmlzayBhbGxvY2F0aW9uIHdpdGhvdXQgZm9yY2luZyBjb25zZXJ2YXRpdmUgZXhwb3N1cmUuCi0gWyBdIFJlamVjdCBjYW5kaWRhdGVzIHRoYXQgZmFpbCB3YWxrLWZvcndhcmQsIGZpbmFsIGhvbGRvdXQsIHN1cnZpdm9yc2hpcCwgY2FwYWNpdHkgb3IgcGFyYW1ldGVyLXN0YWJpbGl0eSBnYXRlcy4KLSBbIF0gSW1wbGVtZW50IHJlZ2ltZSBjbGFzc2lmaWNhdGlvbiB3aXRob3V0IGV4dGVybmFsIHBhaWQgQUkgQVBJcy4KLSBbIF0gQWRkIGEgc3RyYXRlZ3kgZW5zZW1ibGUgb25seSB3aGVuIGl0IGltcHJvdmVzIG91dC1vZi1zYW1wbGUgZml2ZS15ZWFyIG9iamVjdGl2ZSBtZXRyaWNzIGFmdGVyIGNvc3RzLgoKIyMgUGhhc2UgMyDigJQgUGFwZXIgZXhlY3V0aW9uIGFuZCBhY2NvdW50aW5nCgotIFsgXSBJbXBsZW1lbnQgcGFwZXIgb3JkZXIgYm9vaywgcGFydGlhbCBmaWxscyBhbmQgY2FuY2VsbGF0aW9ucy4KLSBbIF0gTW9kZWwgbWFrZXIvdGFrZXIgZmVlcywgc3ByZWFkLCBzbGlwcGFnZSwgbWlzc2VkIGZpbGxzLCBwcmljZSBpbXBhY3QgYW5kIG1pbmltdW0gb3JkZXIgc2l6ZXMuCi0gWyBdIFJlY29uY2lsZSBzaW11bGF0ZWQgcG9zaXRpb25zIGFuZCBjYXNoIGV2ZXJ5IGN5Y2xlLgotIFsgXSBQcm9kdWNlIEF1c3RyYWxpYW4tZG9sbGFyIHRheC1sb3QgYW5kIGRpc3Bvc2FsIHJlY29yZHMuCiAgLSBbeF0gQWRkIGRldGVybWluaXN0aWMgdHJhbnNhY3Rpb24tcmVjb3JkIGFuZCBleHBsaWNpdCBsb3QtYWxsb2NhdGlvbiBjb250cmFjdHMuCiAgLSBbeF0gQWRkIGNvbnRlbnQtYWRkcmVzc2VkIENTVi9KU09OIGV4cG9ydHMgYW5kIEF1c3RyYWxpYW4gZmluYW5jaWFsLXllYXIgc3VtbWFyaWVzLgogIC0gWyBdIFBlcnNpc3QgaW1tdXRhYmxlIHRheCByZWNvcmRzIGZyb20gZmlsbHMgYW5kIHJlY29uY2lsZSB0aGVtIHdpdGggZXhjaGFuZ2UgZXhwb3J0cy4KICAtIFsgXSBDb21wbGV0ZSBwcm9mZXNzaW9uYWwgcmV2aWV3IG9mIHRyZWF0bWVudCwgbG90IHNlbGVjdGlvbiwgZmVlcywgZGlzY291bnRzIGFuZCBsb3NzZXMuCi0gWyBdIEFkZCBwZXJmb3JtYW5jZSwgb2JqZWN0aXZlLXBhdGgsIGRyYXdkb3duLCBleHBvc3VyZSwgdHVybm92ZXIgYW5kIHJ1aW4tcmlzayByZXBvcnRpbmcuCi0gWyBdIERlbW9uc3RyYXRlIHRoYXQgYWdncmVzc2l2ZSBzdHJhdGVnaWVzIGNhbm5vdCBjcmVhdGUgYSBuZWdhdGl2ZSBiYWxhbmNlIG9yIHVzZSBtb3JlIHRoYW4gYXBwcm92ZWQgY2FwaXRhbC4KCiMjIFBoYXNlIDQg4oCUIFByaXZhdGUgb3BlcmF0aW9ucyBkYXNoYm9hcmQKCi0gWyBdIEFkZCBhdXRoZW50aWNhdGVkIHByaXZhdGUgZGFzaGJvYXJkLgotIFsgXSBTaG93IG1vZGUsIGhlYWx0aCwgc3RyYXRlZ3kgdmVyc2lvbiwgcG9zaXRpb25zLCBwZW5kaW5nIG9yZGVycyBhbmQgcmlzayBzdGF0ZS4KLSBbIF0gU2hvdyBhY3R1YWwgZXF1aXR5IGFnYWluc3QgdGhlIGZpdmUteWVhciBvYmplY3RpdmUgcGF0aCB3aXRob3V0IHByZXNlbnRpbmcgaXQgYXMgYSBmb3JlY2FzdC4KLSBbIF0gU2hvdyBwcm9iYWJpbGl0aWVzIGFuZCBoaXN0b3JpY2FsIGZyZXF1ZW5jaWVzIG9mIHN1YnN0YW50aWFsIG9yIGNvbXBsZXRlIGNhcGl0YWwgbG9zcy4KLSBbIF0gU2hvdyBzb3VyY2UgZnJlc2huZXNzLCBpbmdlc3Rpb24gbGF0ZW5jeSwgaW50ZWxsaWdlbmNlIGNvdmVyYWdlIGFuZCByZWplY3RlZC9zdGFsZSBldmlkZW5jZS4KLSBbIF0gU2hvdyBhbGwgYWN0aW9ucyByZXF1aXJlZCBiZWZvcmUgbGl2ZSBhY3RpdmF0aW9uLgotIFsgXSBBZGQgdXNlci1vcGVyYXRlZCBlbWVyZ2VuY3kgc3RvcCBhbmQgY3JlZGVudGlhbC1yZXZvY2F0aW9uIGd1aWRhbmNlLgotIFsgXSBBZGQgZXhwb3J0IG9mIGNvbXBsZXRlIGF1ZGl0IGFuZCB0YXggcmVjb3Jkcy4KCiMjIFBoYXNlIDUg4oCUIFNjb3BlZCBleGNoYW5nZSBpbnRlZ3JhdGlvbgoKLSBbIF0gSW1wbGVtZW50IEtyYWtlbiBhdXRoZW50aWNhdGlvbiBhbmQgcGVybWlzc2lvbiBpbnRyb3NwZWN0aW9uLgotIFsgXSBQcm92ZSB0aGF0IHdpdGhkcmF3YWwsIGFkZHJlc3MtbWFuYWdlbWVudCwgZGVwb3NpdCBhbmQgZWFybiBwZXJtaXNzaW9ucyBhcmUgYWJzZW50LgotIFsgXSBJbXBsZW1lbnQgYmFsYW5jZXMsIG9wZW4vY2xvc2VkIG9yZGVycyBhbmQgbGVkZ2VyIHJldHJpZXZhbC4KLSBbIF0gSW1wbGVtZW50IHZhbGlkYXRlLW9ubHkgc3BvdCBvcmRlcnMuCi0gWyBdIEltcGxlbWVudCBwb3N0LW9ubHkgYW5kIGFwcHJvdmVkIHRha2VyLWNhcGFibGUgc3BvdCBvcmRlciBjcmVhdGlvbiBhbmQgY2FuY2VsbGF0aW9uLgotIFsgXSBJbXBsZW1lbnQgaWRlbXBvdGVuY3ksIHJlY29uY2lsaWF0aW9uIGFuZCBhbWJpZ3VvdXMtcmVzcG9uc2UgcmVjb3ZlcnkuCi0gWyBdIENvbXBsZXRlIGFuIGluZGVwZW5kZW50IHNlY3VyaXR5IHJldmlldy4KCiMjIFBoYXNlIDYg4oCUIFNoYWRvdyBhbmQgY2FuYXJ5IGdhdGVzCgotIFsgXSBSdW4gYXQgbGVhc3QgOTAgZGF5cyBvZiBwYXBlciBldmlkZW5jZSBvciBhIHNob3J0ZXIgcGVyaW9kIG9ubHkgd2l0aCBlcXVpdmFsZW50IHJlcHJlc2VudGF0aXZlIGV2aWRlbmNlIGFwcHJvdmVkIGluIHRoZSByZXZpZXcgZ2F0ZXMuCi0gWyBdIFJ1biBzaGFkb3cgbW9kZSBhZ2FpbnN0IHRoZSBhY3R1YWwgc2NvcGVkIGFjY291bnQuCi0gWyBdIENvbXBsZXRlIGZhaWx1cmUgaW5qZWN0aW9uIGZvciBBUEkgb3V0YWdlcywgc3RhbGUgZGF0YSwgZHVwbGljYXRlIHNjaGVkdWxlcywgcGFydGlhbCBmaWxscyBhbmQgRDEgZXJyb3JzLgotIFsgXSBDb21wbGV0ZSB0YXgvYWNjb3VudGluZyByZXZpZXcuCi0gWyBdIEFwcHJvdmUgb25lIHNpZ25lZCBhZ2dyZXNzaXZlIHN0cmF0ZWd5IGNvbmZpZ3VyYXRpb24gYW5kIGl0cyBleGFjdCByaXNrIGVudmVsb3BlLgotIFsgXSBSZXF1ZXN0IGV4cGxpY2l0IGNhbmFyeSBhY3RpdmF0aW9uIGFwcHJvdmFsLgotIFsgXSBBY3RpdmF0ZSBvbmx5IHRoZSBhcHByb3ZlZCBjYW5hcnkgYW1vdW50LgoKIyMgUGhhc2UgNyDigJQgR3JhZHVhdGVkIGF1dG9ub21vdXMgb3BlcmF0aW9uCgotIFsgXSBSZXF1aXJlIG1pbmltdW0gb2JzZXJ2YXRpb24gcGVyaW9kcyBhbmQgZXZpZGVuY2UgYmVmb3JlIGNhcGl0YWwgaW5jcmVhc2VzLgotIFsgXSBQcmVzZXJ2ZSB0aGUgc2lnbmVkIHN0cmF0ZWd5J3MgaGFyZCBkcmF3ZG93biwgbG9zcywgcGVybWlzc2lvbiBhbmQgcmVjb25jaWxpYXRpb24gbGltaXRzLgotIFsgXSBBZGQgZHJpZnQgZGV0ZWN0aW9uIGFuZCBhdXRvbWF0aWMgcmV0dXJuIHRvIHBhcGVyL3NoYWRvdyBtb2RlLgotIFt4XSBEZWZpbmUgc2V2ZXJpdHktYmFzZWQgaW5jaWRlbnQsIGNyZWRlbnRpYWwtcm90YXRpb24sIGtpbGwtc3dpdGNoIGFuZCByZWNvdmVyeSBydW5ib29rcy4KLSBbIF0gVGVzdCBydW5ib29rcywgYWxlcnQgZGVsaXZlcnksIGV4Y2hhbmdlLXNpZGUgcmV2b2NhdGlvbiBhbmQgcXVhcnRlcmx5IHJvdGF0aW9uLgotIFsgXSBNYWludGFpbiBwcm92aWRlciwgbWFya2V0LXVuaXZlcnNlLCBpbnRlbGxpZ2VuY2Utc291cmNlLCBjYXBhY2l0eSBhbmQgZmVlIHJldmlld3MuCi0gWyBdIFByZXZlbnQgYXV0b21hdGljIGNhcGl0YWwgdG9wLXVwcyBldmVuIHdoZW4gdGhlIHN5c3RlbSBpcyBiZWhpbmQgdGhlIGZpdmUteWVhciBwYXRoLgoKIyMgUGhhc2UgOCDigJQgQWRhcHRpdmUgbW9kZWxzCgotIFsgXSBBZGQgYWRhcHRpdmUgc3RyYXRlZ3kgc2VsZWN0aW9uIG9ubHkgYWZ0ZXIgZGV0ZXJtaW5pc3RpYyBiYXNlbGluZXMgYXJlIHN0YWJsZS4KLSBbIF0gVHJhaW4gd2l0aG91dCBleHRlcm5hbCBwYWlkIG1vZGVsIEFQSXMgd2hlcmUgcHJhY3RpY2FibGUuCi0gWyBdIFZlcnNpb24gZGF0YSwgZmVhdHVyZXMsIGNvZGUsIG1vZGVsIGFuZCBkZWNpc2lvbiBwb2xpY3kuCi0gWyBdIFJlcXVpcmUgY2hhbXBpb24vY2hhbGxlbmdlciB0ZXN0aW5nIGFuZCBhdXRvbWF0aWMgcm9sbGJhY2suCi0gWyBdIE5ldmVyIHBlcm1pdCBhIG1vZGVsIHRvIGJ5cGFzcyB0aGUgcmlzayBlbmdpbmUgb3IgZXhlY3V0aW9uIGxpbWl0cy4KLSBbIF0gTmV2ZXIgdHJhaW4gb24gUmVkZGl0IG9yIHB1Ymxpc2hlciBjb250ZW50IHdpdGhvdXQgZXhwbGljaXQgcmlnaHRzIGFuZCBhcHByb3ZlZCBwcm92ZW5hbmNlLgotIFsgXSBPcHRpbWlzZSBhZGFwdGl2ZSBzZWxlY3Rpb24gZm9yIGFmdGVyLWNvc3Qgb2JqZWN0aXZlIGF0dGFpbm1lbnQgYW5kIHJ1aW4gcmlzaywgbm90IGhlYWRsaW5lIHJldHVybiBhbG9uZS4KCiMjIFBoYXNlIDkg4oCUIE9iamVjdGl2ZSB0cmFja2luZwoKLSBbIF0gUmVwb3J0IHByb2dyZXNzIGFnYWluc3QgVVMkMjAwIGFuZCBVUyQxLDAwMCwwMDAgb3ZlciB0aGUgZml2ZS15ZWFyIGhvcml6b24gd2l0aG91dCBmb3JlY2FzdHMgcHJlc2VudGVkIGFzIHByb21pc2VzLgotIFsgXSBTaG93IHRoZSB5ZWFyLWJ5LXllYXIgcmVmZXJlbmNlIHBhdGgsIHJlcXVpcmVkIHJlbWFpbmluZyBtdWx0aXBsZSBhbmQgcmVxdWlyZWQgZm9yd2FyZCBjb21wb3VuZCByYXRlLgotIFsgXSBTaG93IGRyYXdkb3duLCBhZnRlci1mZWUgcmV0dXJuLCB0ZXJtaW5hbC13ZWFsdGggZGlzdHJpYnV0aW9uLCByaXNrIG9mIHJ1aW4sIGNhcGFjaXR5IGFuZCB0YXgtYWRqdXN0ZWQgZXN0aW1hdGVzLgotIFsgXSBBdHRyaWJ1dGUgZGVwb3NpdHMgYW5kIHdpdGhkcmF3YWxzIHNlcGFyYXRlbHkgc28gdGhleSBjYW5ub3QgYmUgbWlzdGFrZW4gZm9yIHRyYWRpbmcgcGVyZm9ybWFuY2UuCi0gWyBdIFByZXNlcnZlIHVzZXItY29udHJvbGxlZCB3aXRoZHJhd2FsIGF0IHRoZSBleGNoYW5nZSBpbnRlcmZhY2U7IHRoZSBib3QgbmV2ZXIgcmVjZWl2ZXMgd2l0aGRyYXdhbCBhdXRob3JpdHkuCg==
+# Master build plan
+
+## Phase 0 — Governance and fail-closed foundation
+
+- [x] Create project control documents.
+- [x] Define security, venue and live-activation boundaries.
+- [x] Scaffold Cloudflare Worker, D1 schema, Kraken adapter interfaces, strategy and risk modules.
+- [x] Add baseline CI and forbidden-capability checks.
+- [x] Define the five-year aggressive, market-cap-agnostic research mandate.
+- [ ] Obtain green exact-head CI and merge the foundation pull request.
+
+## Phase 1 — Market data and deterministic research
+
+- [x] Implement Kraken asset-pair discovery and pair normalisation.
+- [x] Add scheduled-cycle leases and order-intent idempotency primitives.
+- [ ] Ingest validated daily and hourly OHLC data.
+  - [x] Define supported 60-minute and 1,440-minute storage intervals.
+  - [ ] Wire scheduled public fetches, interval-specific quality gates and persistence.
+- [ ] Add idempotent D1 persistence, gap detection and repair.
+  - [x] Add immutable hashed batch and candle persistence.
+  - [x] Add strict expected-range gap detection and Kraken REST-horizon classification.
+  - [ ] Add scheduled gap repair and an approved historical source for data outside Kraken's REST horizon.
+- [ ] Build a dynamic market-cap-agnostic spot universe from current Australian venue metadata.
+  - [x] Define immutable versioned market definitions, lifecycle events and quality observations.
+  - [x] Reconstruct established, high-volatility and new-listing tiers at historical signal times.
+  - [x] Preserve listing, suspension, resumption, delisting, relisting and Australian-availability history.
+  - [x] Enforce instrument, freshness, spread, turnover, depth, impact, minimum-order, data-quality and history gates.
+  - [x] Prepare deterministic source-provenance ingestion batches.
+  - [x] Require explicit official lifecycle evidence; never infer delisting from snapshot absence.
+  - [x] Resolve fresh AUD valuation paths and produce tier calibration evidence summaries.
+  - [x] Persist prepared metadata, quality, conversion and lifecycle batches atomically with verified commit markers.
+  - [x] Wire scheduled venue metadata, quality and conversion fetches into the persistence boundary.
+    - [x] Add content-addressed Kraken AssetPairs, Ticker and Depth clients with strict quality parsers.
+    - [x] Add bounded rotation, retry/timeout controls, fresh AUD conversion and pre-strategy atomic persistence.
+    - [x] Connect committed candle-count and volatility evidence to collected observations.
+  - [ ] Establish complete lifecycle-source coverage and signed policy calibration by venue, period and equity scale.
+    - [x] Add an allowlisted official-source manifest, future-effective event handling and deterministic coverage audit.
+    - [ ] Backfill complete listing, trading-status, delisting and Australian-availability history.
+      - [x] Persist immutable partial/complete coverage manifests and keep partial history non-authoritative.
+    - [ ] Add scheduled raw-source capture and immutable persistence.
+      - [x] Capture and atomically persist the official listing/delisting indexes and status feeds daily.
+      - [ ] Discover and capture exact individual listing, delisting and regional-availability documents.
+        - [x] Discover canonical listing-index pages, listing articles and support lifecycle documents from preserved index payloads.
+        - [ ] Capture and immutably persist discovered index pages and individual documents.
+          - [x] Add bounded exact-document capture and immutable D1 persistence linked to discovery provenance.
+          - [x] Wire committed-source lookup, recursive index-page discovery and scheduled orchestration.
+    - [x] Bind reviewed lifecycle declarations to exact database-committed source payloads before evidence preparation.
+      - [x] Re-validate canonical identities, chronology, source-class event types and geographic scope at the committed-evidence boundary.
+  - [ ] Persist signed policies/snapshots and connect eligible membership to strategy and backtest orchestration.
+- [ ] Add near-real-time external intelligence from official sources, news and Reddit.
+  - [x] Define deterministic provenance, latency, source-authority, retention and reaction contracts.
+  - [x] Prevent Reddit-only/social-only evidence from creating a risk-on candidate.
+  - [x] Allow authoritative severe negative events to pause new risk without submitting an order.
+  - [x] Persist immutable intelligence items, corrections and assessments.
+  - [x] Add a versioned provider/source registry with licence, attribution, retention and model-use rules.
+  - [ ] Add official exchange, regulator, issuer and publisher RSS/webhook adapters.
+    - [x] Add registry-bound bounded feed polling and authenticated webhook payload acquisition.
+    - [x] Add a scheduled SEC press-release RSS manifest and deterministic metadata-only normaliser.
+    - [x] Add a scheduled RBA media-release RSS manifest and deterministic metadata-only normaliser.
+    - [x] Add a scheduled AUSTRAC media-release RSS manifest and deterministic metadata-only normaliser with retirement monitoring.
+    - [x] Add a scheduled Bitcoin Core announcement RSS manifest and deterministic digest-only normaliser.
+    - [x] Add a scheduled Ethereum Geth GitHub Releases API manifest and deterministic digest-only normaliser.
+    - [x] Add a one-minute Kraken active-maintenance Status API manifest and deterministic digest-only normaliser.
+    - [ ] Add further approved exchange/issuer/news manifests, source-specific parsing, provider signature implementations and deployed endpoints.
+  - [ ] Add compliant Reddit OAuth collection with adaptive rate limits, deletion handling and minimal storage.
+    - [x] Add OAuth-only watchlist transport with truthful runtime identity, adaptive header budgets and a maximum 48-hour deletion contract.
+    - [x] Add transient minimal post normalisation, bounded `/api/info` deletion checks, retention purge planning and content-free compliance audits.
+    - [x] Add purge-enforced transient persistence and downstream watch-state invalidation.
+    - [ ] Supply approved hosted credentials and deploy the Reddit collector.
+  - [ ] Add dedicated one-minute collection and queue-backed at-least-once processing with idempotency.
+    - [x] Bind an inactive-by-default Preview minute Cron, Queue/DLQ producer-consumer and D1 persistence runtime.
+    - [x] Generate a content-addressed Preview activation manifest from exact reviewed licence evidence and document owner-gated activation and rollback.
+    - [ ] Provision approved hosted Preview resources, install an exact reviewed source contract and activate collection.
+    - [x] Add deterministic bounded queue envelopes, per-message acknowledgement/retry and source-level stale outcomes.
+    - [x] Persist conditional cache validators durably with monotonic conflict controls.
+    - [ ] Bind approved source manifests, minute Cron, Queue/DLQ and the deployed consumer.
+  - [x] Add deterministic entity/topic linking, syndication clustering and manipulation controls.
+    - [x] Add reviewed entity/topic rules, exact-content syndication clustering and correction-safe representative selection.
+    - [x] Add permitted-content near-duplicate/repost clustering and coordinated-manipulation evidence.
+  - [x] Integrate `pause-new-risk` into paper-mode risk controls and incident reporting.
+  - [x] Backtest news/social features with original publication, receipt, availability and assessment timestamps and no look-ahead.
+    - [x] Add content-addressed complete-snapshot replay with reaction expiry, latency evidence and deterministic intent gates.
+    - [x] Bind every backtest request to its exact replay frame and suppress paused additions before fill modelling.
+    - [x] Persist content-addressed comparative research outputs.
+- [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
+  - [x] Add a deterministic pure target-weight rebalancing engine.
+  - [x] Attribute maker/taker fees, spread, slippage, adverse selection and square-root price impact.
+  - [x] Model participation caps, minimum orders, cash reserves and proportional buy scaling.
+  - [x] Preserve partial and completely missed execution outcomes.
+  - [ ] Calibrate assumptions by venue, pair, universe tier, equity scale and historical period.
+  - [ ] Add exchange-specific precision, tick-size and multi-event order-lifecycle simulation.
+- [ ] Add benchmark comparisons: AUD cash, BTC hold, equal-weight hold and the five-year constant-compounding objective path.
+  - [x] Add deterministic benchmark builders and aligned return/drawdown summaries.
+  - [x] Keep USD objective references separate from AUD comparisons unless FX provenance is supplied.
+  - [ ] Calibrate cash returns, prices, historical equal-weight membership and FX inputs.
+- [ ] Add target-attainment, terminal-wealth and risk-of-ruin analysis.
+  - [x] Add objective-path, progress-status and required-forward-rate calculations.
+  - [x] Add terminal-wealth, target-attainment and loss/drawdown scenario summaries.
+  - [x] Add reproducible seeded moving-block bootstrap primitives.
+  - [ ] Integrate validated walk-forward, holdout, benchmark and sensitivity inputs.
+- [ ] Produce repeatable research reports and signed strategy configurations.
+  - [x] Add content-addressed research-report v1 with mandatory provenance, benchmarks and explicit external-intelligence comparison identities.
+  - [ ] Persist reports and bind approved strategy configurations to authorised signatures/approval records.
+
+## Phase 2 — Aggressive strategy portfolio
+
+- [ ] Complete venue-wide cross-sectional momentum and relative-strength rotation.
+- [ ] Add multi-timeframe breakout, volatility-expansion and trend-continuation candidates.
+- [ ] Add separate high-volatility and new-listing strategy lanes.
+- [ ] Research short-horizon mean reversion separately after realistic execution modelling.
+- [ ] Research external-intelligence features only after provenance, latency and manipulation controls are validated.
+- [ ] Test concentrated one-asset and small-portfolio configurations up to 100% gross spot exposure.
+- [ ] Test hourly decisions, multiple daily rebalances and maker/taker execution policies.
+- [ ] Add volatility targeting and regime-dependent risk allocation without forcing conservative exposure.
+- [ ] Reject candidates that fail walk-forward, final holdout, survivorship, capacity or parameter-stability gates.
+- [ ] Implement regime classification without external paid AI APIs.
+- [ ] Add a strategy ensemble only when it improves out-of-sample five-year objective metrics after costs.
+
+## Phase 3 — Paper execution and accounting
+
+- [ ] Implement paper order book, partial fills and cancellations.
+- [ ] Model maker/taker fees, spread, slippage, missed fills, price impact and minimum order sizes.
+- [ ] Reconcile simulated positions and cash every cycle.
+- [ ] Produce Australian-dollar tax-lot and disposal records.
+  - [x] Add deterministic transaction-record and explicit lot-allocation contracts.
+  - [x] Add content-addressed CSV/JSON exports and Australian financial-year summaries.
+  - [ ] Persist immutable tax records from fills and reconcile them with exchange exports.
+  - [ ] Complete professional review of treatment, lot selection, fees, discounts and losses.
+- [ ] Add performance, objective-path, drawdown, exposure, turnover and ruin-risk reporting.
+- [ ] Demonstrate that aggressive strategies cannot create a negative balance or use more than approved capital.
+
+## Phase 4 — Private operations dashboard
+
+- [ ] Add authenticated private dashboard.
+- [ ] Show mode, health, strategy version, positions, pending orders and risk state.
+- [ ] Show actual equity against the five-year objective path without presenting it as a forecast.
+- [ ] Show probabilities and historical frequencies of substantial or complete capital loss.
+- [ ] Show source freshness, ingestion latency, intelligence coverage and rejected/stale evidence.
+- [ ] Show all actions required before live activation.
+- [ ] Add user-operated emergency stop and credential-revocation guidance.
+- [ ] Add export of complete audit and tax records.
+
+## Phase 5 — Scoped exchange integration
+
+- [ ] Implement Kraken authentication and permission introspection.
+- [ ] Prove that withdrawal, address-management, deposit and earn permissions are absent.
+- [ ] Implement balances, open/closed orders and ledger retrieval.
+- [ ] Implement validate-only spot orders.
+- [ ] Implement post-only and approved taker-capable spot order creation and cancellation.
+- [ ] Implement idempotency, reconciliation and ambiguous-response recovery.
+- [ ] Complete an independent security review.
+
+## Phase 6 — Shadow and canary gates
+
+- [ ] Run at least 90 days of paper evidence or a shorter period only with equivalent representative evidence approved in the review gates.
+- [ ] Run shadow mode against the actual scoped account.
+- [ ] Complete failure injection for API outages, stale data, duplicate schedules, partial fills and D1 errors.
+- [ ] Complete tax/accounting review.
+- [ ] Approve one signed aggressive strategy configuration and its exact risk envelope.
+- [ ] Request explicit canary activation approval.
+- [ ] Activate only the approved canary amount.
+
+## Phase 7 — Graduated autonomous operation
+
+- [ ] Require minimum observation periods and evidence before capital increases.
+- [ ] Preserve the signed strategy's hard drawdown, loss, permission and reconciliation limits.
+- [ ] Add drift detection and automatic return to paper/shadow mode.
+- [x] Define severity-based incident, credential-rotation, kill-switch and recovery runbooks.
+- [ ] Test runbooks, alert delivery, exchange-side revocation and quarterly rotation.
+- [ ] Maintain provider, market-universe, intelligence-source, capacity and fee reviews.
+- [ ] Prevent automatic capital top-ups even when the system is behind the five-year path.
+
+## Phase 8 — Adaptive models
+
+- [ ] Add adaptive strategy selection only after deterministic baselines are stable.
+- [ ] Train without external paid model APIs where practicable.
+- [ ] Version data, features, code, model and decision policy.
+- [ ] Require champion/challenger testing and automatic rollback.
+- [ ] Never permit a model to bypass the risk engine or execution limits.
+- [ ] Never train on Reddit or publisher content without explicit rights and approved provenance.
+- [ ] Optimise adaptive selection for after-cost objective attainment and ruin risk, not headline return alone.
+
+## Phase 9 — Objective tracking
+
+- [ ] Report progress against US$200 and US$1,000,000 over the five-year horizon without forecasts presented as promises.
+- [ ] Show the year-by-year reference path, required remaining multiple and required forward compound rate.
+- [ ] Show drawdown, after-fee return, terminal-wealth distribution, risk of ruin, capacity and tax-adjusted estimates.
+- [ ] Attribute deposits and withdrawals separately so they cannot be mistaken for trading performance.
+- [ ] Preserve user-controlled withdrawal at the exchange interface; the bot never receives withdrawal authority.
