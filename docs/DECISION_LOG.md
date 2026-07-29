@@ -379,80 +379,10 @@ Re-verify exact payload length and SHA-256 through the bounded strict RSS parser
 
 Emit only neutral `regulatory-action` evidence under non-tradable `CFTC.REGULATOR`. Do not infer crypto relevance, severity, direction or asset scope from titles. The source cannot pause risk, create a positive candidate, approve an order or submit an order. No deployment, account, credential, fund, wallet or live authority is added.
 
-## 2026-07-29 — Signed universe policy and immutable snapshot identity
+## 2026-07-29 — Reproducible hourly candidate research runs
 
-Accept a universe policy only after verifying a finite-validity P-256 signature over the exact venue/Australian scope, candidate order size, tier thresholds, calibration SHA-256 set, approval chronology and signer-key identity. Content-address the canonical public verification key, signed payload and complete signature envelope. Reject private JWK material, malformed or overlong validity, changed identity and failed signature verification.
+Bind each completed hourly trend/breakout evaluation to the exact universe-verified backtest plan, execution configuration and complete result. Content-address each component and the outer run. Verification must reproduce the result through the execution-aware backtest before persistence; a matching outer digest cannot hide changed result content.
 
-Bind each generated universe snapshot to the exact signed policy, one database-committed universe-ingestion batch and the batch's complete sorted source-digest membership. Re-verify scope, ordered candidate identity, lifecycle chronology, eligibility reasons and derived eligible-pair membership before content-addressing. Persist the policy and snapshot atomically; exact retries are idempotent while changed identity reuse, update, deletion, incomplete ingestion evidence and source-membership drift fail closed.
+Persist one compact immutable D1 manifest containing the run, plan, configuration and result identities plus exact decision range and aggregate performance evidence. Exact retries preserve the first persistence time; changed identity reuse, updates and deletes fail closed.
 
-This is a storage and provenance boundary only. It supplies no real owner signature or signing key and does not connect membership to strategy or execution. Signal-time strategy and backtest binding remains separate work; every market-data, strategy, signed-policy and risk gate remains mandatory.
-
-
-## 2026-07-29 — Persisted universe membership at backtest signal time
-
-Load a universe snapshot only by its exact persisted digest. Reconstruct and cryptographically re-verify the stored P-256 policy, snapshot manifest, ingestion batch and source membership before preparing a content-addressed signal-time membership artifact. The snapshot must have been persisted no later than the decision, remain within the signed policy validity interval and remain no older than the signed observation-freshness limit. Missing, malformed, future-unavailable, stale or identity-conflicting evidence fails closed.
-
-Require a universe-aware backtest to bind exactly one verified membership artifact to every signal time. Positive target weights must belong to that artifact's sorted eligible set; omitted or zero targets may still reduce or exit a position that subsequently became ineligible. Record the ordered membership identities in the result. Runtime strategy-decision binding remains separate and mandatory before this evidence can affect paper or live decisions. No deployment, signing material, credential, account, fund, wallet or order authority is added.
-
-
-## 2026-07-29 — Verified universe membership in runtime strategy decisions
-
-Require one exact configured persisted universe-snapshot digest before runtime market-data fetch or strategy evaluation. Load and re-verify its P-256 signed policy, snapshot manifest, persistence availability and freshness at the scheduled decision time. Empty, malformed, missing, future-unavailable or stale selectors fail the cycle.
-
-Intersect configured pairs with the verified eligible membership, sort that intersection deterministically and permit only those markets to reach the momentum strategy. Content-address the complete proposed decision with the exact signed-policy, snapshot and signal-time membership identities. A buy outside membership, malformed AUD-cash hold, unsorted signal set or changed binding fails closed; exits remain structurally permitted after eligibility loss.
-
-Keep the selector empty in committed Preview and Production configuration so no hosted strategy decision is generated without a separately reviewed signed snapshot. The binding is audit evidence only: it cannot approve an order, bypass market-data, liquidity, strategy, intelligence or risk gates, or enable deployment, signing material, credentials, funds, wallet access or live execution.
-
-## 2026-07-29 — Immutable runtime strategy-decision persistence
-
-Persist every verified universe-bound runtime decision before external-intelligence or order processing. Store the complete canonical artifact once under its content digest, then bind each canonical runtime cycle UUID to that artifact in a separate immutable table. This allows an identical decision artifact to support distinct retry cycles without duplicating its payload while preventing one cycle from being rebound to different decision evidence.
-
-Re-verify the complete decision identity and reproduce its binding from the exact signal-time membership before preparing D1 writes. Persist artifact and cycle membership atomically, read both records back and compare every identity and decision field. Exact retries preserve the first cycle persistence time; digest collisions, changed artifact content, cycle rebinding, updates and deletes fail closed through application and database constraints.
-
-This is an audit boundary for the proposed deterministic decision. External-intelligence gating remains downstream and may only suppress new paper risk; market-data, liquidity, impact, signed-policy and risk gates remain mandatory. No deployment, credential, signing key, account, fund, wallet or live-order authority is added.
-
-## 2026-07-29 — Scheduled immutable hourly and daily Kraken candles
-
-Collect the configured Australian Kraken spot pairs at both 60-minute and 1,440-minute intervals before universe and strategy evaluation. Use the public OHLC endpoint with display-name response identity, the latest immutable open time as an overlapping incremental cursor, bounded timeout/spacing/size controls and at most one transient retry.
-
-Discard Kraken's always-present current row. Require strict eight-field rows, exact canonical response identity, interval alignment, contiguity, internally consistent positive OHLC, non-negative volume, closed intervals and interval-specific freshness. Persist immutable canonical candles and batch provenance that binds the exact request, acquisition chronology, response byte length, response SHA-256 and source cursor.
-
-After persistence, re-read the database at acquisition availability and require at least 220 complete hourly and 220 complete daily candles for every configured pair. Missing, stale, gapped, conflicting or insufficient evidence fails the cycle before universe or strategy work. Keep the committed initial scope at BTC/AUD and ETH/AUD. This public-data path adds no credential, private endpoint, account, wallet, fund or order authority.
-
-## 2026-07-29 — Bounded scheduled gap repair and official historical OHLCVT source
-
-After each primary scheduled candle capture, scan the exact current 719-committed-row Kraken REST window for that pair and interval. If a repairable gap exists, permit exactly one additional overlapping capture beginning one interval before the earliest gap, then re-read the exact range and fail closed if any gap remains. Record detected repairable gaps, missing-candle count and repair-capture count in the cycle audit. Do not loop indefinitely or treat an incomplete repair as acceptable evidence.
-
-Approve Kraken's official downloadable historical OHLCVT archive and quarterly updates as the reproducible account-free research source beyond the REST horizon. Pin the exact official support page, complete archive and quarterly folder in a versioned contract; require SHA-256 digests for each raw ZIP and selected CSV; restrict scope to BTC/AUD and ETH/AUD at 60 and 1,440 minutes; keep raw archives transient; and preserve missing no-trade intervals without forward-filling.
-
-Exact archive capture, member validation, REST-overlap reconciliation and immutable derived-candle persistence remain pending. Until those steps complete, older history is non-authoritative and cannot influence strategy. This public-data boundary adds no deployment, credential, account, fund, wallet or live-order authority.
-
-## 2026-07-29 — Immutable sparse historical Kraken candle backfills
-
-Accept historical OHLCVT only from an exact reviewed source-contract version and a separately verified raw-archive and selected-member SHA-256/byte-length identity. Parse only the four approved BTC/AUD and ETH/AUD 60-minute and 1,440-minute CSV identities under strict size, row-count, UTF-8, field, chronology and OHLCVT constraints. Preserve absent rows as no-trade gaps; never fabricate or forward-fill them.
-
-Require at least one exact committed Kraken REST overlap and reconcile every committed REST candle already stored within the selected historical range. Content-address the capture, candle set and overlap evidence. Persist sparse history in separate immutable tables through bounded chunks, but keep partial chunks non-authoritative. Permit a final commit marker only after database verification proves complete declared membership and REST coverage; conflicts, updates, deletion and identity reuse fail closed.
-
-The official archive acquisition and hashing, member extraction and four reviewed backfill executions remain pending. No historical row enters runtime strategy or order authority through this boundary, and no deployment, credential, account, fund, wallet or live capability is added.
-
-## 2026-07-29 — Transient hosted Kraken archive capture
-
-Use a manual GitHub Actions workflow with contents-read-only permission and no secrets to acquire the exact reviewed Kraken complete-history Drive file. Keep the ZIP and extracted CSV bytes on the ephemeral runner only. Bound the archive at eight GiB and its listing at 100,000 entries, reject absolute, traversal, Windows-drive, backslash, duplicate and missing member paths, and extract only one exact copy of each approved BTC/AUD and ETH/AUD 60-minute and 1,440-minute CSV.
-
-Hash the complete ZIP and every selected CSV, apply fatal UTF-8 decoding and the existing bounded sparse-OHLCVT validator, then emit only a content-addressed digest, byte-count, row-count and time-range manifest. Retain that digest-only artifact for seven days. The workflow neither writes D1 nor connects historical evidence to strategy or execution.
-
-Do not claim an actual capture until the exact workflow run completes and its manifest is reviewed. Private-repository Actions capacity currently prevents execution, so real archive/member digests, REST reconciliation and immutable backfills remain pending. No deployment, credential, account, fund, wallet or live authority is added.
-
-## 2026-07-29 — Deterministic hourly trend/breakout research candidate
-
-Add `hourly-trend-breakout-v0.1.0` as a pure research candidate using committed 60-minute evidence. The baseline policy requires a close above the prior 168-hour Donchian high, above a 200-hour EMA and positive 168-hour momentum before entry. It retains at most one long asset at 90% target exposure and otherwise AUD cash. A held position exits when price breaches the prior 72-hour Donchian low, the EMA or the momentum gate.
-
-Exclude the current signal candle from both Donchian channels. Preserve a held position while its exit gates remain intact, even when another pair has a stronger entry score. After an exit, target cash for that signal rather than rotate immediately. Canonical pair order resolves exact ranking ties. Invalid policies, non-contiguous hourly evidence, unknown held positions and non-finite derived metrics fail closed.
-
-These values are versioned research hypotheses and synthetic tests prove only deterministic mechanics, no-look-ahead channel construction and safety invariants. The candidate is not runtime-selected or paper/live active. Historical archive execution, after-cost calibration, walk-forward/final-holdout comparison, parameter sensitivity, mandatory benchmarks, ruin/capacity analysis, persisted reporting and signed promotion remain required. No deployment, credential, account, fund, wallet or live authority is added.
-
-## 2026-07-29 — Universe-bound hourly candidate backtesting
-
-Bind every hourly Donchian/EMA/momentum research decision to one independently verified signal-time universe membership artifact before execution modelling. Validate the complete configured BTC/AUD and ETH/AUD histories even when one pair is ineligible, require the closed-hour decision time to equal membership time, admit entries only from the exact configured/eligible intersection, retain AUD cash when none is eligible and force a held pair to exit after eligibility loss without same-signal rotation.
-
-Content-address every bound decision and complete plan with exact policy, signed-policy, snapshot, membership and prior-target identities. Independently verify decision kinds, signal membership, target derivation, chronology and hashes before invoking the existing fee-, spread-, slippage-, adverse-selection-, impact-, participation- and missed-fill-aware backtest engine. This remains a research candidate and adds no runtime selection, paper/live activation, order authority, credential, deployment, fund or wallet capability.
+Every research report must bind a sorted unique list of strategy-backtest run identities, using an explicit empty list when no run was evaluated. A run identity proves reproducibility only. It does not select or promote the candidate, authorise paper/live activity, approve exposure or submit an order.
