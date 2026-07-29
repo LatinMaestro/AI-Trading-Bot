@@ -60,4 +60,6 @@ A deterministic readiness assessment enumerates the fixed Gate B–E evidence re
 
 Readiness evidence inputs and derived assessments are persisted as immutable canonical JSON with ordered gate memberships and database read-back verification. Evidence-present complete-evaluation, live-like calibration and capacity-stress gates bind to exact already-committed identities with chronology and cross-artifact consistency enforced in D1; incomplete gate sets, conflicts, mutation and deletion fail closed.
 
+A public-key-only P-256 contract requires an independently reviewed key ID and public-key digest trust anchor before it can verify an exact, expiring strategy configuration bound to the strategy policy, signed universe policy, risk policy, complete evaluation and readiness assessment. A separate externally signed authorisation statement binds its scope, reviewed capital and mandatory loss/objective/permission acknowledgements to that exact configuration. Both artifacts explicitly carry no standalone execution authority, retain no private signing material and cannot replace the separate activation checklist, runtime gates or owner-controlled live activation.
+
 The module produces targets only. It does not submit or approve orders, activate paper/live mode, connect credentials or weaken any market-data, liquidity, intelligence, risk or execution gate.
