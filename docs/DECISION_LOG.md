@@ -487,3 +487,11 @@ Persist a verified signed hourly strategy configuration only after its exact rea
 Content digests and human-readable configuration/authorisation identities are immutable. Exact retries preserve the first row; identity reuse with changed signed content, evidence drift, premature persistence, updates and deletion fail closed. Store only public verification material and canonical signed envelopes, never private signing material.
 
 Persistence records review evidence only. Configuration execution authority and authorisation standalone execution authority remain `none`; a `canary-live` scope cannot replace the activation checklist, secrets, runtime flags, venue-permission checks, market/liquidity/intelligence/risk gates or explicit owner-controlled activation. No real configuration, authorisation, selection, deployment, credential, fund, wallet or live authority is committed.
+
+## 2026-07-30 — Immutable strategy-signer trust lifecycle
+
+Represent strategy-configuration signers and external strategy authorisers as separate, finite-validity, content-addressed public-key trust anchors. Every anchor binds one canonical key ID, public-key digest, role, review-evidence digest, review/validity chronology and optional same-role predecessor. Key IDs and public-key digests cannot be aliased or rebound.
+
+Record compromise, rotation, withdrawn review and retirement as immutable revocation evidence with explicit review and effective times. Verification may use an anchor only when both the signed artifact and current check are inside its validity interval and no known effective revocation applies. Database triggers independently enforce the same rule so omitting revocation input cannot persist a signed configuration or authorisation.
+
+Trust records and revocations carry `none` execution authority and retain no private key. No real anchor, revocation, strategy selection, approval, activation record, deployment, credential, fund, wallet or live authority is committed.

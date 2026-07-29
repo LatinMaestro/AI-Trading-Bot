@@ -64,4 +64,6 @@ A public-key-only P-256 contract requires an independently reviewed key ID and p
 
 Verified signed configurations and external authorisation statements are persisted only after the exact research-complete readiness assessment and complete evaluation are committed. Content digest and human-readable version/ID reuse are protected independently; exact retries are idempotent, while chronology drift, evidence drift, conflicts, updates and deletion fail closed. Persisted scope remains non-executable and cannot activate the candidate.
 
+Configuration and external-authorisation public keys are admitted only through separate finite-validity trust roles with content-addressed review evidence. Immutable rotation lineage and effective revocations are checked in both application code and D1 before persistence; expiry, role drift, key aliasing, identity rebinding or an omitted known revocation fails closed. Trust evidence itself grants no execution authority.
+
 The module produces targets only. It does not submit or approve orders, activate paper/live mode, connect credentials or weaken any market-data, liquidity, intelligence, risk or execution gate.

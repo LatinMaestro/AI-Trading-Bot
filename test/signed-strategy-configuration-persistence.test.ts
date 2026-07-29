@@ -20,6 +20,12 @@ import {
   type StrategyAuthorisationScope,
 } from "../src/security/signedStrategyConfiguration.ts";
 import {
+  prepareReviewedStrategySignerTrustAnchor,
+  prepareStrategySignerTrustRevocation,
+  type ReviewedStrategySignerTrustAnchor,
+  type StrategySignerRole,
+} from "../src/security/strategySignerTrust.ts";
+import {
   prepareHourlyTrendBreakoutReadinessPersistence,
 } from "../src/storage/hourlyTrendBreakoutReadiness.ts";
 import {
@@ -27,6 +33,10 @@ import {
   prepareSignedStrategyConfigurationPersistence,
   type SignedStrategyPersistenceStatement,
 } from "../src/storage/signedStrategyConfiguration.ts";
+import {
+  prepareStrategySignerTrustAnchorPersistence,
+  prepareStrategySignerTrustRevocationPersistence,
+} from "../src/storage/strategySignerTrust.ts";
 
 const ASSESSED_AT_MS = 10_000;
 const READINESS_PERSISTED_AT_MS = 10_001;
@@ -51,11 +61,13 @@ interface KeyFixture {
 interface ConfigurationFixture {
   readonly configuration: SignedStrategyConfiguration;
   readonly reviewedKey: ReviewedP256VerificationKey;
+  readonly trustAnchor: ReviewedStrategySignerTrustAnchor;
 }
 
 interface AuthorisationFixture {
   readonly authorisation: SignedStrategyAuthorisation;
   readonly reviewedKey: ReviewedP256VerificationKey;
+  readonly trustAnchor: ReviewedStrategySignerTrustAnchor;
 }
 
 function digestForGate(
@@ -90,6 +102,34 @@ function execute(
   statement: SignedStrategyPersistenceStatement,
 ): void {
   db.prepare(statement.sql).run(...statement.params);
+}
+
+async function trustAnchor(
+  reviewedKey: ReviewedP256VerificationKey,
+  role: StrategySignerRole,
+): Promise<ReviewedStrategySignerTrustAnchor> {
+  return prepareReviewedStrategySignerTrustAnchor({
+    trustAnchorId: `${reviewedKey.keyId}-trust-v1`,
+    role,
+    keyId: reviewedKey.keyId,
+    verificationKeySha256: reviewedKey.verificationKeySha256,
+    reviewEvidenceSha256:
+      (role === "strategy-configuration-signer" ? "4" : "5").repeat(64),
+    reviewedAtMs: 9_500,
+    validFromMs: 9_600,
+    validUntilMs: 100_000,
+    predecessorTrustAnchorSha256: null,
+  });
+}
+
+async function persistTrustAnchor(
+  db: DatabaseSync,
+  anchor: ReviewedStrategySignerTrustAnchor,
+): Promise<void> {
+  execute(
+    db,
+    await prepareStrategySignerTrustAnchorPersistence(anchor, 9_700),
+  );
 }
 
 async function database(
@@ -169,6 +209,15 @@ async function database(
       "utf8",
     ),
   );
+  db.exec(
+    readFileSync(
+      new URL(
+        "../migrations/0026_strategy_signer_trust.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
   return {
     db,
     readinessAssessmentSha256: assessment.assessmentSha256,
@@ -212,8 +261,8 @@ async function sign(payload: string, privateKey: CryptoKey): Promise<string> {
 async function configurationFixture(
   readinessAssessmentSha256: string,
   completeEvaluationSha256 = EVALUATION_SHA256,
+  keyId = "strategy-review-key-v1",
 ): Promise<ConfigurationFixture> {
-  const keyId = "strategy-review-key-v1";
   const key = await signingKey(keyId);
   const unsigned = {
     configurationVersion: "hourly-trend-breakout-config-v1",
@@ -263,6 +312,10 @@ async function configurationFixture(
       key.reviewedKey,
     ),
     reviewedKey: key.reviewedKey,
+    trustAnchor: await trustAnchor(
+      key.reviewedKey,
+      "strategy-configuration-signer",
+    ),
   };
 }
 
@@ -271,8 +324,8 @@ async function authorisationFixture(
   configurationReviewedKey: ReviewedP256VerificationKey,
   authorisationId = "owner-review-record-v1",
   authorisationScope: StrategyAuthorisationScope = "canary-live",
+  keyId = "external-owner-authoriser-v1",
 ): Promise<AuthorisationFixture> {
-  const keyId = "external-owner-authoriser-v1";
   const key = await signingKey(keyId);
   const unsigned = {
     authorisationId,
@@ -305,6 +358,10 @@ async function authorisationFixture(
       key.reviewedKey,
     ),
     reviewedKey: key.reviewedKey,
+    trustAnchor: await trustAnchor(
+      key.reviewedKey,
+      "external-strategy-authoriser",
+    ),
   };
 }
 
@@ -316,18 +373,23 @@ test("persists exact signed configuration and authorisation immutably", async ()
     configuration.configuration,
     configuration.reviewedKey,
   );
+  await persistTrustAnchor(db, configuration.trustAnchor);
+  await persistTrustAnchor(db, authorisation.trustAnchor);
   const configurationStatement =
     await prepareSignedStrategyConfigurationPersistence({
       configuration: configuration.configuration,
-      reviewedKey: configuration.reviewedKey,
+      signerTrustAnchor: configuration.trustAnchor,
+      signerTrustRevocation: null,
       persistedAtMs: 10_006,
     });
   const authorisationStatement =
     await prepareSignedStrategyAuthorisationPersistence({
       authorisation: authorisation.authorisation,
       configuration: configuration.configuration,
-      configurationReviewedKey: configuration.reviewedKey,
-      authorisationReviewedKey: authorisation.reviewedKey,
+      configurationSignerTrustAnchor: configuration.trustAnchor,
+      configurationSignerTrustRevocation: null,
+      authoriserTrustAnchor: authorisation.trustAnchor,
+      authoriserTrustRevocation: null,
       persistedAtMs: 10_007,
     });
   execute(db, configurationStatement);
@@ -370,9 +432,11 @@ test("rejects configuration without research-complete readiness evidence", async
   const { db, readinessAssessmentSha256 } = await database(false);
   const configuration =
     await configurationFixture(readinessAssessmentSha256);
+  await persistTrustAnchor(db, configuration.trustAnchor);
   const statement = await prepareSignedStrategyConfigurationPersistence({
     configuration: configuration.configuration,
-    reviewedKey: configuration.reviewedKey,
+    signerTrustAnchor: configuration.trustAnchor,
+    signerTrustRevocation: null,
     persistedAtMs: 10_006,
   });
   assert.throws(
@@ -391,9 +455,11 @@ test("rejects a configuration bound to a different evaluation", async () => {
     readinessAssessmentSha256,
     differentEvaluationSha256,
   );
+  await persistTrustAnchor(db, configuration.trustAnchor);
   const statement = await prepareSignedStrategyConfigurationPersistence({
     configuration: configuration.configuration,
-    reviewedKey: configuration.reviewedKey,
+    signerTrustAnchor: configuration.trustAnchor,
+    signerTrustRevocation: null,
     persistedAtMs: 10_006,
   });
   assert.throws(
@@ -410,11 +476,15 @@ test("rejects authorisation before the exact configuration is stored", async () 
     configuration.configuration,
     configuration.reviewedKey,
   );
+  await persistTrustAnchor(db, configuration.trustAnchor);
+  await persistTrustAnchor(db, authorisation.trustAnchor);
   const statement = await prepareSignedStrategyAuthorisationPersistence({
     authorisation: authorisation.authorisation,
     configuration: configuration.configuration,
-    configurationReviewedKey: configuration.reviewedKey,
-    authorisationReviewedKey: authorisation.reviewedKey,
+    configurationSignerTrustAnchor: configuration.trustAnchor,
+    configurationSignerTrustRevocation: null,
+    authoriserTrustAnchor: authorisation.trustAnchor,
+    authoriserTrustRevocation: null,
     persistedAtMs: 10_007,
   });
   assert.throws(
@@ -430,13 +500,14 @@ test("rejects unreviewed signer trust and changed signed identity", async () => 
   await assert.rejects(
     prepareSignedStrategyConfigurationPersistence({
       configuration: configuration.configuration,
-      reviewedKey: {
-        ...configuration.reviewedKey,
+      signerTrustAnchor: {
+        ...configuration.trustAnchor,
         verificationKeySha256: "0".repeat(64),
       },
+      signerTrustRevocation: null,
       persistedAtMs: 10_006,
     }),
-    /does not match reviewed trust/u,
+    /trust anchor identity is invalid/u,
   );
   await assert.rejects(
     prepareSignedStrategyConfigurationPersistence({
@@ -444,10 +515,57 @@ test("rejects unreviewed signer trust and changed signed identity", async () => 
         ...configuration.configuration,
         executionAuthority: "paper" as never,
       },
-      reviewedKey: configuration.reviewedKey,
+      signerTrustAnchor: configuration.trustAnchor,
+      signerTrustRevocation: null,
       persistedAtMs: 10_006,
     }),
     /identity is invalid/u,
+  );
+});
+
+test("rejects known effective signer revocation in application and D1", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const configuration =
+    await configurationFixture(readinessAssessmentSha256);
+  await persistTrustAnchor(db, configuration.trustAnchor);
+  const revocation = await prepareStrategySignerTrustRevocation(
+    {
+      revocationId: "strategy-signer-revocation-v1",
+      trustAnchorSha256: configuration.trustAnchor.trustAnchorSha256,
+      reason: "suspected-compromise",
+      effectiveAtMs: 10_005,
+      reviewedAtMs: 10_005,
+      reviewEvidenceSha256: "6".repeat(64),
+    },
+    configuration.trustAnchor,
+  );
+  execute(
+    db,
+    await prepareStrategySignerTrustRevocationPersistence(
+      revocation,
+      configuration.trustAnchor,
+      10_005,
+    ),
+  );
+  await assert.rejects(
+    prepareSignedStrategyConfigurationPersistence({
+      configuration: configuration.configuration,
+      signerTrustAnchor: configuration.trustAnchor,
+      signerTrustRevocation: revocation,
+      persistedAtMs: 10_006,
+    }),
+    /trust is revoked/u,
+  );
+  const omittedRevocationStatement =
+    await prepareSignedStrategyConfigurationPersistence({
+      configuration: configuration.configuration,
+      signerTrustAnchor: configuration.trustAnchor,
+      signerTrustRevocation: null,
+      persistedAtMs: 10_006,
+    });
+  assert.throws(
+    () => execute(db, omittedRevocationStatement),
+    /configuration signer trust is invalid/u,
   );
 });
 
@@ -455,16 +573,20 @@ test("rejects configuration conflicts and authorisation ID reuse", async () => {
   const { db, readinessAssessmentSha256 } = await database();
   const configuration =
     await configurationFixture(readinessAssessmentSha256);
+  await persistTrustAnchor(db, configuration.trustAnchor);
   const configurationStatement =
     await prepareSignedStrategyConfigurationPersistence({
       configuration: configuration.configuration,
-      reviewedKey: configuration.reviewedKey,
+      signerTrustAnchor: configuration.trustAnchor,
+      signerTrustRevocation: null,
       persistedAtMs: 10_006,
     });
   execute(db, configurationStatement);
   const changedConfigurationParams = [...configurationStatement.params];
-  changedConfigurationParams[12] =
-    `${changedConfigurationParams[12] as string} `;
+  const canonicalConfigurationIndex =
+    changedConfigurationParams.length - 2;
+  changedConfigurationParams[canonicalConfigurationIndex] =
+    `${changedConfigurationParams[canonicalConfigurationIndex] as string} `;
   assert.throws(
     () => db.prepare(configurationStatement.sql).run(
       ...changedConfigurationParams,
@@ -472,11 +594,17 @@ test("rejects configuration conflicts and authorisation ID reuse", async () => {
     /configuration conflict/u,
   );
   const reusedConfigurationVersion =
-    await configurationFixture(readinessAssessmentSha256);
+    await configurationFixture(
+      readinessAssessmentSha256,
+      EVALUATION_SHA256,
+      "strategy-review-key-v2",
+    );
+  await persistTrustAnchor(db, reusedConfigurationVersion.trustAnchor);
   const reusedConfigurationVersionStatement =
     await prepareSignedStrategyConfigurationPersistence({
       configuration: reusedConfigurationVersion.configuration,
-      reviewedKey: reusedConfigurationVersion.reviewedKey,
+      signerTrustAnchor: reusedConfigurationVersion.trustAnchor,
+      signerTrustRevocation: null,
       persistedAtMs: 10_006,
     });
   assert.throws(
@@ -493,21 +621,28 @@ test("rejects configuration conflicts and authorisation ID reuse", async () => {
     configuration.reviewedKey,
     first.authorisation.authorisationId,
     "paper",
+    "external-owner-authoriser-v2",
   );
+  await persistTrustAnchor(db, first.trustAnchor);
+  await persistTrustAnchor(db, second.trustAnchor);
   const firstStatement =
     await prepareSignedStrategyAuthorisationPersistence({
       authorisation: first.authorisation,
       configuration: configuration.configuration,
-      configurationReviewedKey: configuration.reviewedKey,
-      authorisationReviewedKey: first.reviewedKey,
+      configurationSignerTrustAnchor: configuration.trustAnchor,
+      configurationSignerTrustRevocation: null,
+      authoriserTrustAnchor: first.trustAnchor,
+      authoriserTrustRevocation: null,
       persistedAtMs: 10_007,
     });
   const secondStatement =
     await prepareSignedStrategyAuthorisationPersistence({
       authorisation: second.authorisation,
       configuration: configuration.configuration,
-      configurationReviewedKey: configuration.reviewedKey,
-      authorisationReviewedKey: second.reviewedKey,
+      configurationSignerTrustAnchor: configuration.trustAnchor,
+      configurationSignerTrustRevocation: null,
+      authoriserTrustAnchor: second.trustAnchor,
+      authoriserTrustRevocation: null,
       persistedAtMs: 10_007,
     });
   execute(db, firstStatement);

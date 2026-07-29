@@ -59,6 +59,8 @@ Signed strategy configurations and external authorisation statements use public-
 
 Verified envelopes are persisted once by content digest and exact human-readable identity. Database triggers require a committed research-complete readiness assessment bound to the same complete evaluation, reject version or authorisation-ID reuse, and prohibit updates or deletion. Even a persisted `canary-live` scope retains `none` standalone execution authority and still requires the separate activation checklist.
 
+Signer trust is independently content-addressed and role-separated between configuration signing and external authorisation. Each public-key digest has finite validity, exact review-evidence provenance and optional same-role rotation lineage. Revocations are immutable, become effective at an explicit time and block new verification/persistence once known and effective. A key ID or public key cannot be aliased, reused across roles or silently rebound.
+
 ## Supply-chain controls
 
 - Minimise runtime dependencies.
