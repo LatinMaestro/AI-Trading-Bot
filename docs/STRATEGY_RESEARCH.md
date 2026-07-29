@@ -50,7 +50,7 @@ The first separately versioned breakout candidate is defined in `docs/HOURLY_TRE
 
 The initial policy uses 168-hour entry, 72-hour exit, 200-hour EMA and 168-hour momentum windows with 90% target exposure. These are research hypotheses, not selected parameters. A held position is preserved until an exit gate breaches, and an exit returns to cash for at least the current signal rather than rotating immediately. This provides a deterministic low-turnover trend/breakout control for later after-cost walk-forward comparison.
 
-This candidate is not connected to runtime decisions, paper trading or live execution. Promotion requires research-grade historical data, exact signal-time universe membership, realistic execution calibration, walk-forward and final-holdout evidence, parameter sensitivity, mandatory benchmarks, ruin analysis and a signed configuration.
+The candidate now has research-only orchestration that validates both configured histories, binds each decision to exact verified signal-time universe membership, preserves explicit AUD-cash and eligibility-loss exit decisions, and passes only re-verified content-addressed plans into the existing execution-aware backtest engine. It is not connected to runtime decisions, paper trading or live execution. Promotion still requires authoritative historical data, calibrated execution assumptions, walk-forward and final-holdout evidence, parameter sensitivity, mandatory benchmarks, ruin analysis and a signed configuration.
 
 ## Candidate strategy families
 
