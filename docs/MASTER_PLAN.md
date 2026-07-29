@@ -119,6 +119,7 @@
   - [x] Content-address the complete hourly final-holdout research evaluation with explicit aspirational-objective, complete-loss and non-promotion warnings.
   - [x] Persist immutable complete-evaluation reports with database-verified bounded chunk commits.
   - [ ] Bind approved strategy configurations to authorised signatures/approval records.
+  - [x] Add a deterministic Gate B–E readiness assessment that reports authoritative research gaps and external promotion dependencies without selection or approval authority.
 
 ## Phase 2 — Aggressive strategy portfolio
 
