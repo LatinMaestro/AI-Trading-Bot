@@ -136,6 +136,7 @@ export interface HourlyTrendBreakoutReadinessAssessment {
   readonly candidateStatus: "unselected-research-only";
   readonly decisionAuthority: "none";
   readonly assessedAtMs: number;
+  readonly evidenceInputSha256: string;
   readonly researchStatus: "blocked" | "evidence-complete-for-review";
   readonly promotionStatus: "blocked" | "external-review-required";
   readonly gates: readonly HourlyTrendBreakoutReadinessGateAssessment[];
@@ -241,6 +242,15 @@ export async function prepareHourlyTrendBreakoutReadinessAssessment(
   const evidenceByGate = new Map(
     input.evidence.map((evidence) => [evidence.gateId, evidence]),
   );
+  const canonicalEvidence = REQUIRED_HOURLY_TREND_BREAKOUT_READINESS_GATES
+    .flatMap((gate) => {
+      const evidence = evidenceByGate.get(gate.id);
+      return evidence === undefined ? [] : [evidence];
+    });
+  const evidenceInputSha256 = await sha256CanonicalIntelligence({
+    assessedAtMs: input.assessedAtMs,
+    evidence: canonicalEvidence,
+  });
   const gates = REQUIRED_HOURLY_TREND_BREAKOUT_READINESS_GATES.map(
     (definition) =>
       assessGate(
@@ -257,6 +267,7 @@ export async function prepareHourlyTrendBreakoutReadinessAssessment(
     candidateStatus: "unselected-research-only",
     decisionAuthority: "none",
     assessedAtMs: input.assessedAtMs,
+    evidenceInputSha256,
     researchStatus: researchGates.every(
       (gate) => gate.status === "evidence-present",
     )
