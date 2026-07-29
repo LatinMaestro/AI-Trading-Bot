@@ -31,6 +31,7 @@ import {
 import {
   prepareSignedStrategyAuthorisationPersistence,
   prepareSignedStrategyConfigurationPersistence,
+  SignedStrategyConfigurationRepository,
   type SignedStrategyPersistenceStatement,
 } from "../src/storage/signedStrategyConfiguration.ts";
 import {
@@ -51,6 +52,7 @@ const AUTHORISATION_EXPIRES_AT_MS =
 const EVALUATION_SHA256 = "a".repeat(64);
 const CALIBRATION_SHA256 = "b".repeat(64);
 const STRESS_SHA256 = "c".repeat(64);
+const REPORT_SHA256 = "d".repeat(64);
 
 interface KeyFixture {
   readonly privateKey: CryptoKey;
@@ -104,6 +106,31 @@ function execute(
   db.prepare(statement.sql).run(...statement.params);
 }
 
+function d1Database(db: DatabaseSync): D1Database {
+  return {
+    prepare(sql: string) {
+      let params: readonly (string | number | null)[] = [];
+      const prepared = {
+        bind(...values: readonly (string | number | null)[]) {
+          params = values;
+          return prepared;
+        },
+        async first<T>() {
+          return (db.prepare(sql).get(...params) ?? null) as T | null;
+        },
+        async all<T>() {
+          return {
+            success: true,
+            results: db.prepare(sql).all(...params) as T[],
+            meta: {},
+          };
+        },
+      };
+      return prepared;
+    },
+  } as unknown as D1Database;
+}
+
 async function trustAnchor(
   reviewedKey: ReviewedP256VerificationKey,
   role: StrategySignerRole,
@@ -143,6 +170,15 @@ async function database(
   db.exec(`
     CREATE TABLE hourly_trend_breakout_complete_evaluations (
       evaluation_sha256 TEXT PRIMARY KEY,
+      schema_version TEXT NOT NULL,
+      strategy_version TEXT NOT NULL,
+      report_sha256 TEXT NOT NULL,
+      persisted_at_ms INTEGER NOT NULL
+    );
+    CREATE TABLE research_report_commits (
+      report_sha256 TEXT PRIMARY KEY,
+      chunk_count INTEGER NOT NULL,
+      canonical_byte_length INTEGER NOT NULL,
       persisted_at_ms INTEGER NOT NULL
     );
     CREATE TABLE hourly_trend_breakout_execution_calibrations (
@@ -156,6 +192,7 @@ async function database(
     );
     CREATE TABLE hourly_trend_breakout_complete_evaluation_stress_bindings (
       evaluation_sha256 TEXT PRIMARY KEY,
+      report_sha256 TEXT NOT NULL,
       stress_manifest_sha256 TEXT NOT NULL,
       persisted_at_ms INTEGER NOT NULL
     );
@@ -170,8 +207,17 @@ async function database(
     ),
   );
   db.prepare(
-    "INSERT INTO hourly_trend_breakout_complete_evaluations VALUES (?, ?)",
-  ).run(EVALUATION_SHA256, 9_000);
+    "INSERT INTO hourly_trend_breakout_complete_evaluations VALUES (?, ?, ?, ?, ?)",
+  ).run(
+    EVALUATION_SHA256,
+    "hourly-trend-breakout-complete-evaluation-v1",
+    "hourly-trend-breakout-v0.1.0",
+    REPORT_SHA256,
+    9_000,
+  );
+  db.prepare(
+    "INSERT INTO research_report_commits VALUES (?, ?, ?, ?)",
+  ).run(REPORT_SHA256, 1, 1_024, 9_000);
   db.prepare(
     "INSERT INTO hourly_trend_breakout_execution_calibrations VALUES (?, ?)",
   ).run(CALIBRATION_SHA256, 9_000);
@@ -179,8 +225,8 @@ async function database(
     "INSERT INTO hourly_trend_breakout_execution_stress_manifests VALUES (?, ?, ?)",
   ).run(STRESS_SHA256, CALIBRATION_SHA256, 9_000);
   db.prepare(
-    "INSERT INTO hourly_trend_breakout_complete_evaluation_stress_bindings VALUES (?, ?, ?)",
-  ).run(EVALUATION_SHA256, STRESS_SHA256, 9_000);
+    "INSERT INTO hourly_trend_breakout_complete_evaluation_stress_bindings VALUES (?, ?, ?, ?)",
+  ).run(EVALUATION_SHA256, REPORT_SHA256, STRESS_SHA256, 9_000);
   const readinessInput = {
     assessedAtMs: ASSESSED_AT_MS,
     evidence: completeReadiness
@@ -447,10 +493,16 @@ test("rejects configuration without research-complete readiness evidence", async
 
 test("rejects a configuration bound to a different evaluation", async () => {
   const { db, readinessAssessmentSha256 } = await database();
-  const differentEvaluationSha256 = "d".repeat(64);
+  const differentEvaluationSha256 = "e".repeat(64);
   db.prepare(
-    "INSERT INTO hourly_trend_breakout_complete_evaluations VALUES (?, ?)",
-  ).run(differentEvaluationSha256, 9_000);
+    "INSERT INTO hourly_trend_breakout_complete_evaluations VALUES (?, ?, ?, ?, ?)",
+  ).run(
+    differentEvaluationSha256,
+    "hourly-trend-breakout-complete-evaluation-v1",
+    "hourly-trend-breakout-v0.1.0",
+    REPORT_SHA256,
+    9_000,
+  );
   const configuration = await configurationFixture(
     readinessAssessmentSha256,
     differentEvaluationSha256,
@@ -566,6 +618,116 @@ test("rejects known effective signer revocation in application and D1", async ()
   assert.throws(
     () => execute(db, omittedRevocationStatement),
     /configuration signer trust is invalid/u,
+  );
+});
+
+test("loads an exact configuration only from evidence known at decision time", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture = await configurationFixture(readinessAssessmentSha256);
+  await persistTrustAnchor(db, fixture.trustAnchor);
+  execute(
+    db,
+    await prepareSignedStrategyConfigurationPersistence({
+      configuration: fixture.configuration,
+      signerTrustAnchor: fixture.trustAnchor,
+      signerTrustRevocation: null,
+      persistedAtMs: 10_006,
+    }),
+  );
+  const repository =
+    new SignedStrategyConfigurationRepository(d1Database(db));
+  const loaded = await repository.loadVerifiedConfigurationAtTime(
+    fixture.configuration.signedConfigurationSha256,
+    10_010,
+  );
+  assert.equal(
+    loaded.configuration.signedConfigurationSha256,
+    fixture.configuration.signedConfigurationSha256,
+  );
+  assert.equal(loaded.signerTrustAnchorSha256, fixture.trustAnchor.trustAnchorSha256);
+  assert.equal(loaded.signerTrustRevocationSha256, null);
+  assert.equal(loaded.readinessAssessmentSha256, readinessAssessmentSha256);
+  assert.equal(loaded.completeEvaluationSha256, EVALUATION_SHA256);
+  assert.equal(loaded.researchReportSha256, REPORT_SHA256);
+  assert.equal(loaded.executionCalibrationSha256, CALIBRATION_SHA256);
+  assert.equal(loaded.executionStressManifestSha256, STRESS_SHA256);
+  assert.equal(loaded.selectionAuthority, "none");
+  assert.equal(loaded.executionAuthority, "none");
+  assert.match(loaded.verificationEvidenceSha256, /^[0-9a-f]{64}$/u);
+
+  await assert.rejects(
+    repository.loadVerifiedConfigurationAtTime(
+      fixture.configuration.signedConfigurationSha256,
+      10_005,
+    ),
+    /unavailable at the decision time/u,
+  );
+  await assert.rejects(
+    repository.loadVerifiedConfigurationAtTime(
+      fixture.configuration.signedConfigurationSha256,
+      20_001,
+    ),
+    /readiness binding is invalid/u,
+  );
+});
+
+test("point-in-time loading observes only known revocations and exact evidence", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture = await configurationFixture(readinessAssessmentSha256);
+  await persistTrustAnchor(db, fixture.trustAnchor);
+  execute(
+    db,
+    await prepareSignedStrategyConfigurationPersistence({
+      configuration: fixture.configuration,
+      signerTrustAnchor: fixture.trustAnchor,
+      signerTrustRevocation: null,
+      persistedAtMs: 10_006,
+    }),
+  );
+  const revocation = await prepareStrategySignerTrustRevocation(
+    {
+      revocationId: "point-in-time-strategy-revocation-v1",
+      trustAnchorSha256: fixture.trustAnchor.trustAnchorSha256,
+      reason: "review-withdrawn",
+      effectiveAtMs: 10_011,
+      reviewedAtMs: 10_011,
+      reviewEvidenceSha256: "7".repeat(64),
+    },
+    fixture.trustAnchor,
+  );
+  execute(
+    db,
+    await prepareStrategySignerTrustRevocationPersistence(
+      revocation,
+      fixture.trustAnchor,
+      10_012,
+    ),
+  );
+  const repository =
+    new SignedStrategyConfigurationRepository(d1Database(db));
+  const beforeRevocation = await repository.loadVerifiedConfigurationAtTime(
+    fixture.configuration.signedConfigurationSha256,
+    10_010,
+  );
+  assert.equal(beforeRevocation.signerTrustRevocationSha256, null);
+  await assert.rejects(
+    repository.loadVerifiedConfigurationAtTime(
+      fixture.configuration.signedConfigurationSha256,
+      10_012,
+    ),
+    /trust is revoked/u,
+  );
+
+  db.prepare(
+    `UPDATE hourly_trend_breakout_complete_evaluations
+     SET report_sha256 = ?`,
+  ).run("f".repeat(64));
+  await assert.rejects(
+    repository.loadVerifiedConfigurationAtTime(
+      fixture.configuration.signedConfigurationSha256,
+      10_010,
+    ),
+    /evaluation binding is invalid/u,
   );
 });
 

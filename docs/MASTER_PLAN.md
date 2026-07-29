@@ -122,6 +122,7 @@
     - [x] Add independently trust-anchored, public-key-only P-256 verification contracts for exact signed configurations and external authorisation statements without committing a selection, approval record, private key or activation authority.
     - [x] Persist verified signed configurations and external authorisation statements immutably with exact committed readiness/evaluation binding, version-identity protection and no activation authority.
     - [x] Add immutable role-scoped signer trust anchors, finite validity, rotation lineage and revocation evidence; require active exact trust before signed-record persistence.
+    - [x] Load only an exact signed-configuration digest at an explicit decision time; re-verify active trust, known revocation, configuration/readiness expiry and compact immutable evaluation/report bindings without selection or execution authority.
   - [x] Add a deterministic Gate B–E readiness assessment that reports authoritative research gaps and external promotion dependencies without selection or approval authority.
   - [x] Persist canonical readiness inputs, assessments and ordered gates immutably; database-bind evidence-present evaluation, calibration and stress identities without promotion authority.
 
