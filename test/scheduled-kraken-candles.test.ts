@@ -35,6 +35,10 @@ class MemoryStore implements MarketCandleBatchSink {
     [60, SCHEDULED_AT_MS - 7_200_000],
     [1440, null],
   ]);
+  gapInterval: 60 | 1440 | null = null;
+  gapOpenTimeMs: number | null = null;
+  repairApplied = false;
+  ignoreRepair = false;
 
   loadLatestOpenTimeMs(
     _canonicalPair: string,
@@ -43,10 +47,45 @@ class MemoryStore implements MarketCandleBatchSink {
     return Promise.resolve(this.latest.get(intervalMinutes) ?? null);
   }
 
+  loadOpenTimesMs(
+    _canonicalPair: string,
+    intervalMinutes: 60 | 1440,
+    startOpenTimeMs: number,
+    endOpenTimeMs: number,
+  ): Promise<readonly number[]> {
+    const stepMs = intervalMinutes * 60_000;
+    const result: number[] = [];
+    for (
+      let openTimeMs = startOpenTimeMs;
+      openTimeMs <= endOpenTimeMs;
+      openTimeMs += stepMs
+    ) {
+      if (
+        this.gapInterval === intervalMinutes &&
+        this.gapOpenTimeMs === openTimeMs &&
+        !this.repairApplied
+      ) {
+        continue;
+      }
+      result.push(openTimeMs);
+    }
+    return Promise.resolve(result);
+  }
+
   async persistBatch(
     input: MarketDataBatchInput,
   ): Promise<PreparedMarketDataBatch> {
     this.inputs.push(input);
+    if (
+      this.gapOpenTimeMs !== null &&
+      !this.ignoreRepair &&
+      input.intervalMinutes === this.gapInterval &&
+      input.candles.some(
+        (candle) => candle.timestampMs === this.gapOpenTimeMs,
+      )
+    ) {
+      this.repairApplied = true;
+    }
     return prepareMarketDataBatch(input);
   }
 }
@@ -70,17 +109,59 @@ function rows(intervalMinutes: 60 | 1440, gap = false): unknown[][] {
   });
 }
 
+function rowsFromRequest(requestUrl: URL, gap = false): unknown[][] {
+  const intervalMinutes = Number(requestUrl.searchParams.get("interval")) as
+    | 60
+    | 1440;
+  const stepSeconds = intervalMinutes * 60;
+  const currentOpenSeconds =
+    Math.floor(SCHEDULED_AT_MS / (stepSeconds * 1000)) * stepSeconds;
+  if (gap) return rows(intervalMinutes, true);
+  const since = requestUrl.searchParams.get("since");
+  if (since === null) return rows(intervalMinutes, gap);
+  const firstOpenSeconds = Math.max(
+    currentOpenSeconds - 719 * stepSeconds,
+    Number(since),
+  );
+  const result: unknown[][] = [];
+  for (
+    let timestampSeconds = firstOpenSeconds;
+    timestampSeconds <= currentOpenSeconds;
+    timestampSeconds += stepSeconds
+  ) {
+    if (
+      gap &&
+      timestampSeconds === firstOpenSeconds + 2 * stepSeconds
+    ) {
+      continue;
+    }
+    const value =
+      100 + (timestampSeconds - currentOpenSeconds) / stepSeconds;
+    result.push([
+      timestampSeconds,
+      String(value),
+      String(value + 2),
+      String(value - 2),
+      String(value + 1),
+      String(value + 0.5),
+      "12.5",
+      10,
+    ]);
+  }
+  return result;
+}
+
 function payload(
   requestUrl: URL,
   options: { readonly gap?: boolean; readonly resultKey?: string } = {},
 ): string {
-  const interval = Number(requestUrl.searchParams.get("interval")) as
-    | 60
-    | 1440;
   return JSON.stringify({
     error: [],
     result: {
-      [options.resultKey ?? "BTC/AUD"]: rows(interval, options.gap),
+      [options.resultKey ?? "BTC/AUD"]: rowsFromRequest(
+        requestUrl,
+        options.gap,
+      ),
       last: Math.floor(SCHEDULED_AT_MS / 1000),
     },
   });
@@ -135,6 +216,8 @@ test("fetches both approved intervals incrementally and persists exact response 
 
   assert.equal(result.requestCount, 2);
   assert.equal(result.captures.length, 2);
+  assert.equal(result.repairCaptureCount, 0);
+  assert.equal(result.detectedMissingCandleCount, 0);
   assert.equal(store.inputs.length, 2);
   assert.deepEqual(
     urls.map((url) => url.searchParams.get("interval")),
@@ -187,6 +270,71 @@ test("retries one transient response and records every HTTP attempt", async () =
     requestSpacingMs: 0,
   });
   assert.equal(result.requestCount, 3);
+});
+
+test("repairs a bounded internal REST-horizon gap before history validation", async () => {
+  const store = new MemoryStore();
+  store.gapInterval = 60;
+  store.gapOpenTimeMs = SCHEDULED_AT_MS - 10 * 60 * 60_000;
+  const urls: URL[] = [];
+  const result = await runScheduledKrakenCandleCycle({
+    scheduledAtMs: SCHEDULED_AT_MS,
+    pairs: [pair],
+    store,
+    historyProvider: () => Promise.resolve(history()),
+    fetchImpl: (input) => {
+      const url = new URL(String(input));
+      urls.push(url);
+      const body = payload(url);
+      return Promise.resolve(
+        new Response(body, {
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+    },
+    nowMs: monotonicClock(),
+    sleep: () => Promise.resolve(),
+    requestSpacingMs: 0,
+  });
+
+  assert.equal(result.requestCount, 3);
+  assert.equal(result.captures.length, 3);
+  assert.equal(result.detectedRepairableGapCount, 1);
+  assert.equal(result.detectedMissingCandleCount, 1);
+  assert.equal(result.repairCaptureCount, 1);
+  assert.equal(store.repairApplied, true);
+  assert.equal(
+    urls[2]?.searchParams.get("since"),
+    String((store.gapOpenTimeMs - 60 * 60_000) / 1000),
+  );
+});
+
+test("fails closed when one bounded repair capture leaves a gap", async () => {
+  const store = new MemoryStore();
+  store.gapInterval = 60;
+  store.gapOpenTimeMs = SCHEDULED_AT_MS - 10 * 60 * 60_000;
+  store.ignoreRepair = true;
+  await assert.rejects(
+    runScheduledKrakenCandleCycle({
+      scheduledAtMs: SCHEDULED_AT_MS,
+      pairs: [pair],
+      store,
+      historyProvider: () => Promise.resolve(history()),
+      fetchImpl: (input) => {
+        const body = payload(new URL(String(input)));
+        return Promise.resolve(
+          new Response(body, {
+            headers: { "Content-Type": "application/json" },
+          }),
+        );
+      },
+      nowMs: monotonicClock(),
+      sleep: () => Promise.resolve(),
+      requestSpacingMs: 0,
+    }),
+    /REST gap repair is incomplete/u,
+  );
+  assert.equal(store.inputs.length, 3);
 });
 
 test("rejects gaps and changed canonical response identity before persistence", async () => {
@@ -349,6 +497,12 @@ class SQLiteD1 {
       },
       run: () => prepared.run(...params),
       first: <T>() => (prepared.get(...params) as T | undefined) ?? null,
+      all: <T>() =>
+        Promise.resolve({
+          success: true,
+          meta: {},
+          results: prepared.all(...params) as T[],
+        }),
     };
     return statement;
   }
@@ -403,5 +557,14 @@ test("loads the exact persisted incremental cursor from immutable D1 candles", a
     latestOpenTimeMs,
   );
   assert.equal(await repository.loadLatestOpenTimeMs("BTC/AUD", 1440), null);
+  assert.deepEqual(
+    await repository.loadOpenTimesMs(
+      "BTC/AUD",
+      60,
+      latestOpenTimeMs - 3_600_000,
+      latestOpenTimeMs,
+    ),
+    [latestOpenTimeMs],
+  );
   sqlite.close();
 });
