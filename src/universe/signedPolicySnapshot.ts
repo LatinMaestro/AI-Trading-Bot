@@ -133,7 +133,10 @@ function assertPolicy(policy: UniversePolicy): void {
   if (policy.countryCode !== "AU") {
     throw new Error("signed universe policy must use AU country scope");
   }
-  if (!Number.isFinite(policy.candidateOrderAud) || policy.candidateOrderAud <= 0) {
+  if (
+    !Number.isFinite(policy.candidateOrderAud) ||
+    policy.candidateOrderAud <= 0
+  ) {
     throw new Error("policy.candidateOrderAud must be finite and positive");
   }
   for (const [name, value] of [
@@ -402,10 +405,15 @@ function assertSnapshot(snapshot: UniverseSnapshot, policy: UniversePolicy): voi
         candidate.lifecycle.listedAtMs > snapshot.asOfMs ||
         candidate.listingAgeMs === undefined
       ) {
-        throw new Error("universe candidate listing evidence is future or incomplete");
+        throw new Error(
+          "universe candidate listing evidence is future or incomplete",
+        );
       }
       assertSafeTime("candidate.listingAgeMs", candidate.listingAgeMs);
-      if (candidate.listingAgeMs !== snapshot.asOfMs - candidate.lifecycle.listedAtMs) {
+      if (
+        candidate.listingAgeMs !==
+        snapshot.asOfMs - candidate.lifecycle.listedAtMs
+      ) {
         throw new Error("universe candidate listing age is inconsistent");
       }
     } else if (candidate.listingAgeMs !== undefined) {
