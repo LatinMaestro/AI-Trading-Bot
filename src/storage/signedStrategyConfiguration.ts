@@ -4,24 +4,34 @@ import {
 import {
   verifySignedStrategyAuthorisation,
   verifySignedStrategyConfiguration,
-  type ReviewedP256VerificationKey,
   type SignedStrategyAuthorisation,
   type SignedStrategyConfiguration,
 } from "../security/signedStrategyConfiguration.ts";
+import {
+  resolveReviewedStrategySignerKey,
+  type ReviewedStrategySignerTrustAnchor,
+  type StrategySignerTrustRevocation,
+} from "../security/strategySignerTrust.ts";
 
-type D1BindValue = string | number;
+type D1BindValue = string | number | null;
 
 export interface SignedStrategyConfigurationPersistenceInput {
   readonly configuration: SignedStrategyConfiguration;
-  readonly reviewedKey: ReviewedP256VerificationKey;
+  readonly signerTrustAnchor: ReviewedStrategySignerTrustAnchor;
+  readonly signerTrustRevocation: StrategySignerTrustRevocation | null;
   readonly persistedAtMs: number;
 }
 
 export interface SignedStrategyAuthorisationPersistenceInput {
   readonly authorisation: SignedStrategyAuthorisation;
   readonly configuration: SignedStrategyConfiguration;
-  readonly configurationReviewedKey: ReviewedP256VerificationKey;
-  readonly authorisationReviewedKey: ReviewedP256VerificationKey;
+  readonly configurationSignerTrustAnchor:
+    ReviewedStrategySignerTrustAnchor;
+  readonly configurationSignerTrustRevocation:
+    StrategySignerTrustRevocation | null;
+  readonly authoriserTrustAnchor: ReviewedStrategySignerTrustAnchor;
+  readonly authoriserTrustRevocation:
+    StrategySignerTrustRevocation | null;
   readonly persistedAtMs: number;
 }
 
@@ -35,6 +45,7 @@ interface PersistedConfigurationRow {
   readonly complete_evaluation_sha256: string;
   readonly readiness_assessment_sha256: string;
   readonly verification_key_sha256: string;
+  readonly signer_trust_anchor_sha256: string;
   readonly configuration_canonical_json: string;
   readonly persisted_at_ms: number;
 }
@@ -45,6 +56,7 @@ interface PersistedAuthorisationRow {
   readonly complete_evaluation_sha256: string;
   readonly readiness_assessment_sha256: string;
   readonly verification_key_sha256: string;
+  readonly authoriser_trust_anchor_sha256: string;
   readonly authorisation_canonical_json: string;
   readonly persisted_at_ms: number;
 }
@@ -54,9 +66,10 @@ export const INSERT_SIGNED_STRATEGY_CONFIGURATION_SQL =
     (signed_configuration_sha256, schema_version, configuration_version,
      strategy_version, execution_authority, complete_evaluation_sha256,
      readiness_assessment_sha256, signer_key_id,
-     verification_key_sha256, issued_at_ms, effective_from_ms,
-     expires_at_ms, configuration_canonical_json, persisted_at_ms)
-   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     verification_key_sha256, signer_trust_anchor_sha256, issued_at_ms,
+     effective_from_ms, expires_at_ms, configuration_canonical_json,
+     persisted_at_ms)
+   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
    ON CONFLICT DO NOTHING`;
 
 export const INSERT_SIGNED_STRATEGY_AUTHORISATION_SQL =
@@ -66,24 +79,25 @@ export const INSERT_SIGNED_STRATEGY_AUTHORISATION_SQL =
      requires_separate_activation_checklist,
      signed_configuration_sha256, complete_evaluation_sha256,
      readiness_assessment_sha256, maximum_capital_aud,
-     authoriser_key_id, verification_key_sha256, reviewed_at_ms,
-     effective_from_ms, expires_at_ms, authorisation_canonical_json,
-     persisted_at_ms)
-   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     authoriser_key_id, verification_key_sha256,
+     authoriser_trust_anchor_sha256, reviewed_at_ms, effective_from_ms,
+     expires_at_ms, authorisation_canonical_json, persisted_at_ms)
+   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
    ON CONFLICT DO NOTHING`;
 
 const SELECT_SIGNED_CONFIGURATION_SQL =
   `SELECT signed_configuration_sha256, complete_evaluation_sha256,
           readiness_assessment_sha256, verification_key_sha256,
-          configuration_canonical_json, persisted_at_ms
+          signer_trust_anchor_sha256, configuration_canonical_json,
+          persisted_at_ms
    FROM hourly_trend_breakout_signed_configurations
    WHERE signed_configuration_sha256 = ?`;
 
 const SELECT_SIGNED_AUTHORISATION_SQL =
   `SELECT signed_authorisation_sha256, signed_configuration_sha256,
           complete_evaluation_sha256, readiness_assessment_sha256,
-          verification_key_sha256, authorisation_canonical_json,
-          persisted_at_ms
+          verification_key_sha256, authoriser_trust_anchor_sha256,
+          authorisation_canonical_json, persisted_at_ms
    FROM hourly_trend_breakout_strategy_authorisations
    WHERE signed_authorisation_sha256 = ?`;
 
@@ -100,9 +114,16 @@ function assertPersistenceTimestamp(
 export async function prepareSignedStrategyConfigurationPersistence(
   input: SignedStrategyConfigurationPersistenceInput,
 ): Promise<SignedStrategyPersistenceStatement> {
+  const reviewedKey = await resolveReviewedStrategySignerKey({
+    anchor: input.signerTrustAnchor,
+    revocation: input.signerTrustRevocation,
+    expectedRole: "strategy-configuration-signer",
+    artifactTimeMs: input.configuration.issuedAtMs,
+    checkedAtMs: input.persistedAtMs,
+  });
   await verifySignedStrategyConfiguration(
     input.configuration,
-    input.reviewedKey,
+    reviewedKey,
   );
   assertPersistenceTimestamp(
     "signed strategy configuration persistence",
@@ -121,6 +142,7 @@ export async function prepareSignedStrategyConfigurationPersistence(
       input.configuration.configuration.readinessAssessmentSha256,
       input.configuration.signerKeyId,
       input.configuration.verificationKeySha256,
+      input.signerTrustAnchor.trustAnchorSha256,
       input.configuration.issuedAtMs,
       input.configuration.effectiveFromMs,
       input.configuration.expiresAtMs,
@@ -133,11 +155,27 @@ export async function prepareSignedStrategyConfigurationPersistence(
 export async function prepareSignedStrategyAuthorisationPersistence(
   input: SignedStrategyAuthorisationPersistenceInput,
 ): Promise<SignedStrategyPersistenceStatement> {
+  const configurationReviewedKey =
+    await resolveReviewedStrategySignerKey({
+      anchor: input.configurationSignerTrustAnchor,
+      revocation: input.configurationSignerTrustRevocation,
+      expectedRole: "strategy-configuration-signer",
+      artifactTimeMs: input.configuration.issuedAtMs,
+      checkedAtMs: input.persistedAtMs,
+    });
+  const authorisationReviewedKey =
+    await resolveReviewedStrategySignerKey({
+      anchor: input.authoriserTrustAnchor,
+      revocation: input.authoriserTrustRevocation,
+      expectedRole: "external-strategy-authoriser",
+      artifactTimeMs: input.authorisation.reviewedAtMs,
+      checkedAtMs: input.persistedAtMs,
+    });
   await verifySignedStrategyAuthorisation(
     input.authorisation,
     input.configuration,
-    input.configurationReviewedKey,
-    input.authorisationReviewedKey,
+    configurationReviewedKey,
+    authorisationReviewedKey,
   );
   assertPersistenceTimestamp(
     "signed strategy authorisation persistence",
@@ -159,6 +197,7 @@ export async function prepareSignedStrategyAuthorisationPersistence(
       input.authorisation.maximumCapitalAud,
       input.authorisation.authoriserKeyId,
       input.authorisation.verificationKeySha256,
+      input.authoriserTrustAnchor.trustAnchorSha256,
       input.authorisation.reviewedAtMs,
       input.authorisation.effectiveFromMs,
       input.authorisation.expiresAtMs,
@@ -181,6 +220,8 @@ function configurationRowMatches(
       input.configuration.configuration.readinessAssessmentSha256 &&
     row.verification_key_sha256 ===
       input.configuration.verificationKeySha256 &&
+    row.signer_trust_anchor_sha256 ===
+      input.signerTrustAnchor.trustAnchorSha256 &&
     row.configuration_canonical_json ===
       canonicalIntelligenceJson(input.configuration) &&
     row.persisted_at_ms >= input.configuration.issuedAtMs &&
@@ -203,6 +244,8 @@ function authorisationRowMatches(
       input.configuration.configuration.readinessAssessmentSha256 &&
     row.verification_key_sha256 ===
       input.authorisation.verificationKeySha256 &&
+    row.authoriser_trust_anchor_sha256 ===
+      input.authoriserTrustAnchor.trustAnchorSha256 &&
     row.authorisation_canonical_json ===
       canonicalIntelligenceJson(input.authorisation) &&
     row.persisted_at_ms >= input.authorisation.reviewedAtMs &&
