@@ -27,13 +27,26 @@ CREATE TABLE universe_bound_strategy_decision_artifacts (
       AND strategy_version = trim(strategy_version)
     ),
   action TEXT NOT NULL CHECK (action IN ('hold', 'buy', 'sell')),
-  target_pair TEXT,
+  target_pair TEXT CHECK (
+    target_pair IS NULL
+    OR (
+      length(target_pair) BETWEEN 5 AND 100
+      AND target_pair = trim(target_pair)
+      AND target_pair GLOB '[A-Z0-9]*/AUD'
+      AND target_pair NOT GLOB '*[^A-Z0-9/]*'
+      AND length(target_pair) - length(replace(target_pair, '/', '')) = 1
+    )
+  ),
   target_exposure_pct REAL NOT NULL
     CHECK (
       target_exposure_pct >= 0
       AND target_exposure_pct <= 100
     ),
-  artifact_json TEXT NOT NULL CHECK (length(artifact_json) BETWEEN 2 AND 1048576),
+  artifact_json TEXT NOT NULL CHECK (
+    length(artifact_json) BETWEEN 2 AND 1048576
+    AND json_valid(artifact_json)
+    AND json_type(artifact_json) = 'object'
+  ),
   CHECK (
     (action = 'hold' AND target_pair IS NULL AND target_exposure_pct = 0)
     OR
@@ -100,6 +113,18 @@ WHEN EXISTS (
 )
 BEGIN
   SELECT RAISE(ABORT, 'universe-bound strategy decision cycle conflict');
+END;
+
+CREATE TRIGGER universe_bound_strategy_decision_cycle_chronology
+BEFORE INSERT ON universe_bound_strategy_decision_cycles
+WHEN NOT EXISTS (
+  SELECT 1
+  FROM universe_bound_strategy_decision_artifacts artifact
+  WHERE artifact.binding_sha256 = NEW.binding_sha256
+    AND artifact.decision_at_ms <= NEW.persisted_at_ms
+)
+BEGIN
+  SELECT RAISE(ABORT, 'universe-bound strategy decision cycle chronology is invalid');
 END;
 
 CREATE TRIGGER universe_bound_strategy_decision_artifacts_no_update
