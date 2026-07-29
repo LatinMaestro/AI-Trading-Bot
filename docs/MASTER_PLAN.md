@@ -109,6 +109,7 @@
   - [x] Add terminal-wealth, target-attainment and loss/drawdown scenario summaries.
   - [x] Add reproducible seeded moving-block bootstrap primitives.
   - [ ] Integrate validated walk-forward, holdout, benchmark and sensitivity inputs.
+    - [x] Add content-addressed ordered walk-forward/final-holdout and same-period parameter-sensitivity manifests.
 - [ ] Produce repeatable research reports and signed strategy configurations.
   - [x] Add content-addressed research-report v1 with mandatory provenance, benchmarks and explicit external-intelligence comparison identities.
   - [x] Persist reproducible content-addressed hourly candidate runs and bind their identities into research reports.
