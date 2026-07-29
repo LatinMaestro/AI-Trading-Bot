@@ -58,4 +58,6 @@ Calibration and all 40 stress outcomes are persisted as canonical immutable JSON
 
 A deterministic readiness assessment enumerates the fixed Gate B–E evidence required for research review and later promotion. It derives missing, partial, non-authoritative, stale, evidence-present and external-review-required outcomes from bounded content-addressed references. Synthetic fixtures cannot satisfy authoritative gates; selection, ranking, approval and runtime authority are structurally absent.
 
+Readiness evidence inputs and derived assessments are persisted as immutable canonical JSON with ordered gate memberships and database read-back verification. Evidence-present complete-evaluation, live-like calibration and capacity-stress gates bind to exact already-committed identities with chronology and cross-artifact consistency enforced in D1; incomplete gate sets, conflicts, mutation and deletion fail closed.
+
 The module produces targets only. It does not submit or approve orders, activate paper/live mode, connect credentials or weaken any market-data, liquidity, intelligence, risk or execution gate.

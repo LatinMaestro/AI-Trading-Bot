@@ -120,6 +120,7 @@
   - [x] Persist immutable complete-evaluation reports with database-verified bounded chunk commits.
   - [ ] Bind approved strategy configurations to authorised signatures/approval records.
   - [x] Add a deterministic Gate B–E readiness assessment that reports authoritative research gaps and external promotion dependencies without selection or approval authority.
+  - [x] Persist canonical readiness inputs, assessments and ordered gates immutably; database-bind evidence-present evaluation, calibration and stress identities without promotion authority.
 
 ## Phase 2 — Aggressive strategy portfolio
 
