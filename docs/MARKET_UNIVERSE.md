@@ -85,6 +85,14 @@ A strategy must import the universe API through `src/universe/index.ts` and requ
 
 Changing any of those values creates a different research configuration.
 
+## Signed policy and snapshot identity
+
+A universe policy is accepted only as a finite-validity P-256 signature over the exact Australian venue scope, tier thresholds, candidate order size, calibration digests and approval chronology. The public verification key and signed payload are content-addressed; private signing material is never stored.
+
+Each generated snapshot binds the exact signed policy, one database-committed universe-ingestion batch and its complete sorted source-digest membership. Candidate identity, eligibility reasons, lifecycle chronology and eligible-pair membership are re-verified before the snapshot is content-addressed and atomically persisted. Exact retries are idempotent; changed identity reuse, updates and deletions fail closed.
+
+Persistence does not make a snapshot strategy-authoritative. The strategy and backtest orchestrators must still load and verify the exact snapshot at the signal time before using its eligible membership.
+
 ## Validation evidence
 
 Fourteen focused Node 22 tests prove:
@@ -112,7 +120,6 @@ This contract does not yet:
 - backfill complete listing, trading-status, delisting and Australian-availability history;
 - derive cross-pair Australian-dollar valuation paths;
 - calibrate tier limits by venue, period, pair and portfolio scale;
-- persist signed universe policies or generated snapshots;
-- connect universe snapshots to the strategy and backtest orchestrators.
+- connect exact persisted universe snapshots to the strategy and backtest orchestrators.
 
 No strategy result may claim survivorship-safe venue-wide evidence until those inputs are versioned, reconciled and reproducible.
