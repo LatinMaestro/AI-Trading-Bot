@@ -504,3 +504,11 @@ Load a strategy configuration only by exact signed digest and an explicit decisi
 Reproduce the persisted readiness input and all 12 ordered gates, require finite evidence to remain valid, and bind the exact complete evaluation, committed research report, execution calibration and stress manifest. Use the immutable report commit as bounded per-cycle evidence because full report chunks were already verified at persistence and can approach tens of MiB.
 
 Content-address the verification result with `none` selection and execution authority. The loader does not discover a latest record, rank or select a strategy, consume external authorisation, activate paper/live mode or submit an order. No real signed configuration, trust record, deployment, credential, fund, wallet or live authority is committed.
+
+## 2026-07-30 — Immutable point-in-time verification evidence
+
+Persist a point-in-time strategy-configuration verification only after repeating the full digest-selected load, signature check, active role-scoped trust resolution, then-known revocation handling, readiness reproduction and compact evaluation/report/calibration/stress binding checks.
+
+D1 independently enforces that every referenced record existed by the decision timestamp, the configuration and trust remained active, finite readiness evidence remained valid, any known revocation was not yet effective and every compact research identity agreed. Exact retries preserve the first persistence time. Reused digest or configuration/decision identities with changed content, updates and deletion fail closed.
+
+The persisted artifact has `none` selection and execution authority, does not consume an external authorisation and cannot activate paper or live trading. No real signed configuration, verification record, deployment, credential, fund, wallet or live authority is committed.
