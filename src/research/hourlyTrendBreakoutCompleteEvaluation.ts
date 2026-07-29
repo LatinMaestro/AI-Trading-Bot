@@ -15,12 +15,18 @@ import {
   type HourlyTrendBreakoutWalkForwardManifest,
 } from "./hourlyTrendBreakoutEvaluation.ts";
 import {
+  verifyHourlyTrendBreakoutExecutionStressManifest,
+  type HourlyTrendBreakoutExecutionCalibration,
+  type HourlyTrendBreakoutExecutionStressManifest,
+} from "./hourlyTrendBreakoutExecutionStress.ts";
+import {
   prepareResearchReport,
   type ResearchReport,
   type ResearchReportInput,
 } from "./researchReport.ts";
 
 export const REQUIRED_HOURLY_TREND_BREAKOUT_EVALUATION_WARNINGS = [
+  "capacity-and-execution-stress-do-not-prove-live-fillability",
   "complete-loss-of-approved-allocation-is-possible",
   "five-year-objective-is-aspirational-not-a-forecast",
   "strategy-candidate-is-not-selected-or-promoted",
@@ -30,6 +36,9 @@ export interface HourlyTrendBreakoutCompleteEvaluationInput {
   readonly walkForwardManifest: HourlyTrendBreakoutWalkForwardManifest;
   readonly sensitivityManifest: HourlyTrendBreakoutSensitivityManifest;
   readonly finalHoldout: HourlyTrendBreakoutEvaluationRunInput;
+  readonly executionCalibration: HourlyTrendBreakoutExecutionCalibration;
+  readonly executionStressManifest:
+    HourlyTrendBreakoutExecutionStressManifest;
   readonly report: ResearchReportInput;
 }
 
@@ -41,6 +50,7 @@ export interface HourlyTrendBreakoutCompleteEvaluation {
   readonly finalHoldoutPlanSha256: string;
   readonly finalHoldoutRunSha256: string;
   readonly finalHoldoutResultSha256: string;
+  readonly executionStressManifestSha256: string;
   readonly report: ResearchReport;
   readonly evaluationSha256: string;
 }
@@ -160,6 +170,12 @@ export async function prepareHourlyTrendBreakoutCompleteEvaluation(
     finalHoldout.plan,
     finalHoldout.run,
   );
+  await verifyHourlyTrendBreakoutExecutionStressManifest(
+    finalHoldout.plan,
+    finalHoldout.run,
+    input.executionCalibration,
+    input.executionStressManifest,
+  );
 
   const policySha256 = await sha256CanonicalIntelligence(
     finalHoldout.plan.policy,
@@ -201,6 +217,15 @@ export async function prepareHourlyTrendBreakoutCompleteEvaluation(
   if (input.report.evaluationSplit !== "final-holdout") {
     throw new Error("complete evaluation requires the final-holdout split");
   }
+  const reportGeneratedAtMs = Date.parse(input.report.generatedAt);
+  if (
+    !Number.isFinite(reportGeneratedAtMs) ||
+    reportGeneratedAtMs < input.executionStressManifest.evaluatedAtMs
+  ) {
+    throw new Error(
+      "complete evaluation report predates execution stress evidence",
+    );
+  }
   assertStrategySeriesBindsRun(input.report, finalHoldout.run);
   if (
     input.report.provenance.strategyConfigSha256 !== policySha256 ||
@@ -215,6 +240,7 @@ export async function prepareHourlyTrendBreakoutCompleteEvaluation(
     [
       walkForwardManifest.manifestSha256,
       sensitivityManifest.manifestSha256,
+      input.executionStressManifest.manifestSha256,
     ],
   );
   assertExactDigests(
@@ -240,6 +266,8 @@ export async function prepareHourlyTrendBreakoutCompleteEvaluation(
     finalHoldoutPlanSha256: finalHoldout.plan.planSha256,
     finalHoldoutRunSha256: finalHoldout.run.runSha256,
     finalHoldoutResultSha256: finalHoldout.run.resultSha256,
+    executionStressManifestSha256:
+      input.executionStressManifest.manifestSha256,
     report,
   } as const;
   return {
