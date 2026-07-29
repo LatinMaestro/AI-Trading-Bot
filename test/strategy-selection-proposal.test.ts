@@ -321,6 +321,26 @@ test("rejects expired or revoked signer trust at proposal time", async () => {
     }),
     /trust is revoked/u,
   );
+  const futureReviewedRevocation =
+    await prepareStrategySignerTrustRevocation(
+      {
+        revocationId: "future-reviewed-authoriser-revocation-v1",
+        trustAnchorSha256:
+          value.input.authoriserTrustAnchor.trustAnchorSha256,
+        reason: "planned-rotation",
+        effectiveAtMs: 14_500,
+        reviewedAtMs: 14_000,
+        reviewEvidenceSha256: "d".repeat(64),
+      },
+      value.input.authoriserTrustAnchor,
+    );
+  await assert.rejects(
+    prepareStrategySelectionProposal({
+      ...value.input,
+      authoriserTrustRevocation: futureReviewedRevocation,
+    }),
+    /authorisation evidence is invalid/u,
+  );
 });
 
 test("rejects role drift and self-authorisation", async () => {
