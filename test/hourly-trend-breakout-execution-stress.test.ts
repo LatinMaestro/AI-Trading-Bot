@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 import {
   prepareHourlyTrendBreakoutBacktestPlan,
@@ -15,6 +17,12 @@ import {
   REQUIRED_CAPACITY_LEVELS_AUD,
   REQUIRED_EXECUTION_STRESS_SCENARIOS,
 } from "../src/research/hourlyTrendBreakoutExecutionStress.ts";
+import {
+  prepareHourlyTrendBreakoutExecutionStressPersistence,
+} from "../src/storage/hourlyTrendBreakoutExecutionStress.ts";
+import {
+  prepareHourlyTrendBreakoutResearchRunPersistence,
+} from "../src/storage/hourlyTrendBreakoutResearchRun.ts";
 import type {
   UniverseSignalTimeMembership,
 } from "../src/universe/signalTimeMembership.ts";
@@ -184,5 +192,88 @@ test("rejects calibration chronology that predates execution evidence", async ()
       sourceSha256s: ["c".repeat(64)],
     }),
     /calibration is invalid/u,
+  );
+});
+
+test("persists exact immutable calibration and stress evidence", async () => {
+  const { plan, run, calibration } = await fixture();
+  const manifest = await prepareHourlyTrendBreakoutExecutionStressManifest(
+    plan,
+    run,
+    calibration,
+    244 * HOUR_MS,
+  );
+  const statements =
+    await prepareHourlyTrendBreakoutExecutionStressPersistence({
+      plan,
+      run,
+      calibration,
+      manifest,
+      persistedAtMs: 245 * HOUR_MS,
+    });
+  const retry =
+    await prepareHourlyTrendBreakoutExecutionStressPersistence({
+      plan,
+      run,
+      calibration,
+      manifest,
+      persistedAtMs: 246 * HOUR_MS,
+    });
+  const db = new DatabaseSync(":memory:");
+  db.exec("PRAGMA foreign_keys = ON");
+  db.exec(
+    readFileSync(
+      new URL(
+        "../migrations/0020_hourly_trend_breakout_research_runs.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
+  db.exec(
+    readFileSync(
+      new URL(
+        "../migrations/0023_hourly_trend_breakout_execution_stress.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
+  const runStatement =
+    await prepareHourlyTrendBreakoutResearchRunPersistence({
+      plan,
+      run,
+      persistedAtMs: 245 * HOUR_MS,
+    });
+  db.prepare(runStatement.sql).run(...runStatement.params);
+  for (const statement of [...statements, ...retry]) {
+    db.prepare(statement.sql).run(...statement.params);
+  }
+  assert.equal(
+    (
+      db
+        .prepare(
+          "SELECT COUNT(*) AS count FROM hourly_trend_breakout_execution_stress_manifests",
+        )
+        .get() as { readonly count: number }
+    ).count,
+    1,
+  );
+  const changedManifest = [...statements[1]!.params];
+  const canonical = changedManifest[10];
+  if (typeof canonical !== "string") throw new Error("Missing manifest JSON");
+  changedManifest[10] = `${canonical.slice(0, -1)},"unexpected":1}`;
+  assert.throws(
+    () => db.prepare(statements[1]!.sql).run(...changedManifest),
+    /manifest conflict/u,
+  );
+  assert.throws(
+    () =>
+      db
+        .prepare(
+          "DELETE FROM hourly_trend_breakout_execution_calibrations",
+        )
+        .run(),
+    /immutable/u,
   );
 });
