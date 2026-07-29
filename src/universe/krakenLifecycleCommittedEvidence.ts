@@ -1,1 +1,469 @@
-aW1wb3J0IHsgc2hhMjU2SGV4IH0gZnJvbSAiLi4vdXRpbHMvY3J5cHRvLnRzIjsKCmNvbnN0IFNIQTI1Nl9QQVRURVJOID0gL15bMC05YS1mXXs2NH0kLzsKY29uc3QgQ0FOT05JQ0FMX1BBSVJfUEFUVEVSTiA9IC9eW0EtWjAtOV1bQS1aMC05Ll17MCw0N31cL0FVRCQvOwpjb25zdCBET0NVTUVOVF9JRF9QQVRURVJOID0KICAvXlthLXowLTldKD86W2EtejAtOS4tXXswLDEyNn1bYS16MC05XSk/JC87CmNvbnN0IE1BWElNVU1fRE9DVU1FTlRTID0gMjAwOwpjb25zdCBNQVhJTVVNX0RFQ0xBUkFUSU9OU19QRVJfRE9DVU1FTlQgPSA1MDA7CmNvbnN0IE1BWElNVU1fREVDTEFSQVRJT05TID0gMTAwXzAwMDsKY29uc3QgU09VUkNFX0NMQVNTRVMgPSBuZXcgU2V0PEtyYWtlbkxpZmVjeWNsZVNvdXJjZUNsYXNzPihbCiAgImFzc2V0LWxpc3RpbmciLAogICJkZWxpc3Rpbmctbm90aWNlIiwKICAic3RhdHVzLWluY2lkZW50IiwKICAicmVnaW9uYWwtYXZhaWxhYmlsaXR5IiwKXSk7CmNvbnN0IEVWRU5UX1RZUEVTID0gbmV3IFNldDxLcmFrZW5MaWZlY3ljbGVFdmVudFR5cGU+KFsKICAibGlzdGVkIiwKICAidHJhZGluZy1vbmxpbmUiLAogICJ0cmFkaW5nLXN1c3BlbmRlZCIsCiAgInRyYWRpbmctcmVzdW1lZCIsCiAgImRlbGlzdGVkIiwKICAiYXUtZW5hYmxlZCIsCiAgImF1LWRpc2FibGVkIiwKXSk7CmNvbnN0IFNPVVJDRV9FVkVOVF9UWVBFUzogUmVhZG9ubHk8CiAgUmVjb3JkPEtyYWtlbkxpZmVjeWNsZVNvdXJjZUNsYXNzLCBSZWFkb25seVNldDxLcmFrZW5MaWZlY3ljbGVFdmVudFR5cGU+Pgo+ID0gewogICJhc3NldC1saXN0aW5nIjogbmV3IFNldChbImxpc3RlZCIsICJ0cmFkaW5nLW9ubGluZSJdKSwKICAiZGVsaXN0aW5nLW5vdGljZSI6IG5ldyBTZXQoWyJ0cmFkaW5nLXN1c3BlbmRlZCIsICJkZWxpc3RlZCJdKSwKICAic3RhdHVzLWluY2lkZW50IjogbmV3IFNldChbInRyYWRpbmctc3VzcGVuZGVkIiwgInRyYWRpbmctcmVzdW1lZCJdKSwKICAicmVnaW9uYWwtYXZhaWxhYmlsaXR5IjogbmV3IFNldChbImF1LWVuYWJsZWQiLCAiYXUtZGlzYWJsZWQiXSksCn07CgpleHBvcnQgdHlwZSBLcmFrZW5MaWZlY3ljbGVTb3VyY2VDbGFzcyA9CiAgfCAiYXNzZXQtbGlzdGluZyIKICB8ICJkZWxpc3Rpbmctbm90aWNlIgogIHwgInN0YXR1cy1pbmNpZGVudCIKICB8ICJyZWdpb25hbC1hdmFpbGFiaWxpdHkiOwoKZXhwb3J0IHR5cGUgS3Jha2VuTGlmZWN5Y2xlRXZlbnRUeXBlID0KICB8ICJsaXN0ZWQiCiAgfCAidHJhZGluZy1vbmxpbmUiCiAgfCAidHJhZGluZy1zdXNwZW5kZWQiCiAgfCAidHJhZGluZy1yZXN1bWVkIgogIHwgImRlbGlzdGVkIgogIHwgImF1LWVuYWJsZWQiCiAgfCAiYXUtZGlzYWJsZWQiOwoKZXhwb3J0IGludGVyZmFjZSBSZXZpZXdlZEtyYWtlbkxpZmVjeWNsZURlY2xhcmF0aW9uIHsKICByZWFkb25seSBjYW5vbmljYWxQYWlyOiBzdHJpbmc7CiAgcmVhZG9ubHkgZXZlbnRUeXBlOiBLcmFrZW5MaWZlY3ljbGVFdmVudFR5cGU7CiAgcmVhZG9ubHkgZWZmZWN0aXZlQXRNczogbnVtYmVyOwogIHJlYWRvbmx5IHNjb3BlOiAiZ2xvYmFsIiB8ICJBVSI7Cn0KCmV4cG9ydCBpbnRlcmZhY2UgUmV2aWV3ZWRLcmFrZW5MaWZlY3ljbGVEb2N1bWVudCB7CiAgcmVhZG9ubHkgY2FwdHVyZUlkOiBzdHJpbmc7CiAgcmVhZG9ubHkgZG9jdW1lbnRJZDogc3RyaW5nOwogIHJlYWRvbmx5IHNvdXJjZUNsYXNzOiBLcmFrZW5MaWZlY3ljbGVTb3VyY2VDbGFzczsKICByZWFkb25seSBzb3VyY2VSZWY6IHN0cmluZzsKICByZWFkb25seSBwdWJsaXNoZWRBdE1zOiBudW1iZXI7CiAgcmVhZG9ubHkgZmV0Y2hlZEF0TXM6IG51bWJlcjsKICByZWFkb25seSBwYXlsb2FkU2hhMjU2OiBzdHJpbmc7CiAgcmVhZG9ubHkgZGVjbGFyYXRpb25zOiByZWFkb25seSBSZXZpZXdlZEtyYWtlbkxpZmVjeWNsZURlY2xhcmF0aW9uW107Cn0KCmV4cG9ydCBpbnRlcmZhY2UgQm91bmRLcmFrZW5MaWZlY3ljbGVEb2N1bWVudCB7CiAgcmVhZG9ubHkgZG9jdW1lbnRJZDogc3RyaW5nOwogIHJlYWRvbmx5IHNvdXJjZUNsYXNzOiBLcmFrZW5MaWZlY3ljbGVTb3VyY2VDbGFzczsKICByZWFkb25seSBzb3VyY2VSZWY6IHN0cmluZzsKICByZWFkb25seSBwdWJsaXNoZWRBdE1zOiBudW1iZXI7CiAgcmVhZG9ubHkgZmV0Y2hlZEF0TXM6IG51bWJlcjsKICByZWFkb25seSBwYXlsb2FkU2hhMjU2OiBzdHJpbmc7CiAgcmVhZG9ubHkgZGVjbGFyYXRpb25zOiByZWFkb25seSBSZXZpZXdlZEtyYWtlbkxpZmVjeWNsZURlY2xhcmF0aW9uW107Cn0KCmV4cG9ydCB0eXBlIEtyYWtlbkxpZmVjeWNsZUNhcHR1cmVTdG9yYWdlS2luZCA9CiAgfCAiZml4ZWQtc291cmNlIgogIHwgImRpc2NvdmVyZWQtZG9jdW1lbnQiOwoKZXhwb3J0IHR5cGUgS3Jha2VuTGlmZWN5Y2xlQ29tbWl0dGVkU291cmNlS2luZCA9CiAgfCAiYXNzZXQtbGlzdGluZ3MtaW5kZXgiCiAgfCAiZGVsaXN0aW5ncy1pbmRleCIKICB8ICJzdGF0dXMtaW5jaWRlbnRzIgogIHwgInN0YXR1cy1tYWludGVuYW5jZSIKICB8ICJhc3NldC1saXN0aW5nLWRvY3VtZW50IgogIHwgImFzc2V0LWxpc3RpbmdzLWluZGV4LXBhZ2UiCiAgfCAic3VwcG9ydC1saWZlY3ljbGUtZG9jdW1lbnQiOwoKZXhwb3J0IGludGVyZmFjZSBDb21taXR0ZWRLcmFrZW5MaWZlY3ljbGVDYXB0dXJlIHsKICByZWFkb25seSBjYXB0dXJlSWQ6IHN0cmluZzsKICByZWFkb25seSBzdG9yYWdlS2luZDogS3Jha2VuTGlmZWN5Y2xlQ2FwdHVyZVN0b3JhZ2VLaW5kOwogIHJlYWRvbmx5IHNvdXJjZUtpbmQ6IEtyYWtlbkxpZmVjeWNsZUNvbW1pdHRlZFNvdXJjZUtpbmQ7CiAgcmVhZG9ubHkgc291cmNlUmVmOiBzdHJpbmc7CiAgcmVhZG9ubHkgZmV0Y2hlZEF0TXM6IG51bWJlcjsKICByZWFkb25seSBwYXlsb2FkU2hhMjU2OiBzdHJpbmc7CiAgcmVhZG9ubHkgY29tbWl0dGVkQXRNczogbnVtYmVyOwp9CgpleHBvcnQgaW50ZXJmYWNlIEtyYWtlbkxpZmVjeWNsZUNvbW1pdHRlZENhcHR1cmVSZXBvc2l0b3J5IHsKICBsb2FkQ29tbWl0dGVkQ2FwdHVyZXMoCiAgICBjYXB0dXJlSWRzOiByZWFkb25seSBzdHJpbmdbXSwKICApOiBQcm9taXNlPHJlYWRvbmx5IENvbW1pdHRlZEtyYWtlbkxpZmVjeWNsZUNhcHR1cmVbXT47Cn0KCmV4cG9ydCBpbnRlcmZhY2UgS3Jha2VuTGlmZWN5Y2xlRGVjbGFyYXRpb25CaW5kaW5nIHsKICByZWFkb25seSBjYXB0dXJlSWQ6IHN0cmluZzsKICByZWFkb25seSBkb2N1bWVudElkOiBzdHJpbmc7CiAgcmVhZG9ubHkgc3RvcmFnZUtpbmQ6IEtyYWtlbkxpZmVjeWNsZUNhcHR1cmVTdG9yYWdlS2luZDsKICByZWFkb25seSBzb3VyY2VLaW5kOiBLcmFrZW5MaWZlY3ljbGVDb21taXR0ZWRTb3VyY2VLaW5kOwogIHJlYWRvbmx5IHNvdXJjZVJlZjogc3RyaW5nOwogIHJlYWRvbmx5IGZldGNoZWRBdE1zOiBudW1iZXI7CiAgcmVhZG9ubHkgcGF5bG9hZFNoYTI1Njogc3RyaW5nOwogIHJlYWRvbmx5IGNvbW1pdHRlZEF0TXM6IG51bWJlcjsKfQoKZXhwb3J0IGludGVyZmFjZSBCb3VuZEtyYWtlbkxpZmVjeWNsZUV2aWRlbmNlIHsKICByZWFkb25seSBkb2N1bWVudHM6IHJlYWRvbmx5IEJvdW5kS3Jha2VuTGlmZWN5Y2xlRG9jdW1lbnRbXTsKICByZWFkb25seSBiaW5kaW5nczogcmVhZG9ubHkgS3Jha2VuTGlmZWN5Y2xlRGVjbGFyYXRpb25CaW5kaW5nW107CiAgcmVhZG9ubHkgYmluZGluZ1NoYTI1Njogc3RyaW5nOwp9CgpleHBvcnQgaW50ZXJmYWNlIFByZXBhcmVkQ29tbWl0dGVkS3Jha2VuTGlmZWN5Y2xlRXZpZGVuY2U8VD4gewogIHJlYWRvbmx5IHByZXBhcmVkRXZpZGVuY2U6IFQ7CiAgcmVhZG9ubHkgYmluZGluZ3M6IHJlYWRvbmx5IEtyYWtlbkxpZmVjeWNsZURlY2xhcmF0aW9uQmluZGluZ1tdOwogIHJlYWRvbmx5IGJpbmRpbmdTaGEyNTY6IHN0cmluZzsKfQoKaW50ZXJmYWNlIEQxQ2FwdHVyZVJvdyB7CiAgcmVhZG9ubHkgY2FwdHVyZV9pZDogc3RyaW5nOwogIHJlYWRvbmx5IHN0b3JhZ2Vfa2luZDogS3Jha2VuTGlmZWN5Y2xlQ2FwdHVyZVN0b3JhZ2VLaW5kOwogIHJlYWRvbmx5IHNvdXJjZV9raW5kOiBLcmFrZW5MaWZlY3ljbGVDb21taXR0ZWRTb3VyY2VLaW5kOwogIHJlYWRvbmx5IHNvdXJjZV9yZWY6IHN0cmluZzsKICByZWFkb25seSBmZXRjaGVkX2F0X21zOiBudW1iZXI7CiAgcmVhZG9ubHkgcGF5bG9hZF9zaGEyNTY6IHN0cmluZzsKICByZWFkb25seSBjb21taXR0ZWRfYXRfbXM6IG51bWJlcjsKfQoKZXhwb3J0IGNvbnN0IExPQURfQ09NTUlUVEVEX0tSQUtFTl9MSUZFQ1lDTEVfQ0FQVFVSRVNfU1FMID0gYApXSVRIIHJlcXVlc3RlZChjYXB0dXJlX2lkKSBBUyAoCiAgU0VMRUNUIHZhbHVlCiAgRlJPTSBqc29uX2VhY2goPzEpCikKU0VMRUNUCiAgY2FwdHVyZS5jYXB0dXJlX2lkLAogICdmaXhlZC1zb3VyY2UnIEFTIHN0b3JhZ2Vfa2luZCwKICBjYXB0dXJlLnNvdXJjZV9raW5kLAogIGNhcHR1cmUuc291cmNlX3JlZiwKICBjYXB0dXJlLmZldGNoZWRfYXRfbXMsCiAgY2FwdHVyZS5wYXlsb2FkX3NoYTI1NiwKICBjb21taXR0ZWQuY29tbWl0dGVkX2F0X21zCkZST00ga3Jha2VuX2xpZmVjeWNsZV9zb3VyY2VfY2FwdHVyZXMgY2FwdHVyZQpKT0lOIGtyYWtlbl9saWZlY3ljbGVfc291cmNlX2NhcHR1cmVfY29tbWl0cyBjb21taXR0ZWQKICBPTiBjb21taXR0ZWQuY2FwdHVyZV9pZCA9IGNhcHR1cmUuY2FwdHVyZV9pZApKT0lOIHJlcXVlc3RlZAogIE9OIHJlcXVlc3RlZC5jYXB0dXJlX2lkID0gY2FwdHVyZS5jYXB0dXJlX2lkClVOSU9OIEFMTApTRUxFQ1QKICBjYXB0dXJlLmNhcHR1cmVfaWQsCiAgJ2Rpc2NvdmVyZWQtZG9jdW1lbnQnIEFTIHN0b3JhZ2Vfa2luZCwKICBjYXB0dXJlLnNvdXJjZV9raW5kLAogIGNhcHR1cmUuc291cmNlX3JlZiwKICBjYXB0dXJlLmZldGNoZWRfYXRfbXMsCiAgY2FwdHVyZS5wYXlsb2FkX3NoYTI1NiwKICBjb21taXR0ZWQuY29tbWl0dGVkX2F0X21zCkZST00ga3Jha2VuX2xpZmVjeWNsZV9kb2N1bWVudF9jYXB0dXJlcyBjYXB0dXJlCkpPSU4ga3Jha2VuX2xpZmVjeWNsZV9kb2N1bWVudF9jYXB0dXJlX2NvbW1pdHMgY29tbWl0dGVkCiAgT04gY29tbWl0dGVkLmNhcHR1cmVfaWQgPSBjYXB0dXJlLmNhcHR1cmVfaWQKSk9JTiByZXF1ZXN0ZWQKICBPTiByZXF1ZXN0ZWQuY2FwdHVyZV9pZCA9IGNhcHR1cmUuY2FwdHVyZV9pZApPUkRFUiBCWSAxLCAyCmA7CgpleHBvcnQgY2xhc3MgRDFLcmFrZW5MaWZlY3ljbGVDb21taXR0ZWRDYXB0dXJlUmVwb3NpdG9yeQogIGltcGxlbWVudHMgS3Jha2VuTGlmZWN5Y2xlQ29tbWl0dGVkQ2FwdHVyZVJlcG9zaXRvcnkKewogIHByaXZhdGUgcmVhZG9ubHkgZGF0YWJhc2U6IEQxRGF0YWJhc2U7CgogIGNvbnN0cnVjdG9yKGRhdGFiYXNlOiBEMURhdGFiYXNlKSB7CiAgICB0aGlzLmRhdGFiYXNlID0gZGF0YWJhc2U7CiAgfQoKICBhc3luYyBsb2FkQ29tbWl0dGVkQ2FwdHVyZXMoCiAgICBjYXB0dXJlSWRzOiByZWFkb25seSBzdHJpbmdbXSwKICApOiBQcm9taXNlPHJlYWRvbmx5IENvbW1pdHRlZEtyYWtlbkxpZmVjeWNsZUNhcHR1cmVbXT4gewogICAgaWYgKGNhcHR1cmVJZHMubGVuZ3RoID09PSAwIHx8IGNhcHR1cmVJZHMubGVuZ3RoID4gTUFYSU1VTV9ET0NVTUVOVFMpIHsKICAgICAgdGhyb3cgbmV3IEVycm9yKCJDb21taXR0ZWQgbGlmZWN5Y2xlIGxvb2t1cCByZXF1aXJlcyAxIHRvIDIwMCBjYXB0dXJlcyIpOwogICAgfQogICAgY29uc3QgcmVzdWx0ID0gYXdhaXQgdGhpcy5kYXRhYmFzZQogICAgICAucHJlcGFyZShMT0FEX0NPTU1JVFRFRF9LUkFLRU5fTElGRUNZQ0xFX0NBUFRVUkVTX1NRTCkKICAgICAgLmJpbmQoSlNPTi5zdHJpbmdpZnkoY2FwdHVyZUlkcykpCiAgICAgIC5hbGw8RDFDYXB0dXJlUm93PigpOwogICAgcmV0dXJuIHJlc3VsdC5yZXN1bHRzLm1hcCgocm93KSA9PiAoewogICAgICBjYXB0dXJlSWQ6IHJvdy5jYXB0dXJlX2lkLAogICAgICBzdG9yYWdlS2luZDogcm93LnN0b3JhZ2Vfa2luZCwKICAgICAgc291cmNlS2luZDogcm93LnNvdXJjZV9raW5kLAogICAgICBzb3VyY2VSZWY6IHJvdy5zb3VyY2VfcmVmLAogICAgICBmZXRjaGVkQXRNczogcm93LmZldGNoZWRfYXRfbXMsCiAgICAgIHBheWxvYWRTaGEyNTY6IHJvdy5wYXlsb2FkX3NoYTI1NiwKICAgICAgY29tbWl0dGVkQXRNczogcm93LmNvbW1pdHRlZF9hdF9tcywKICAgIH0pKTsKICB9Cn0KCmZ1bmN0aW9uIGFzc2VydERpZ2VzdChuYW1lOiBzdHJpbmcsIHZhbHVlOiBzdHJpbmcpOiB2b2lkIHsKICBpZiAoIVNIQTI1Nl9QQVRURVJOLnRlc3QodmFsdWUpKSB7CiAgICB0aHJvdyBuZXcgRXJyb3IoYCR7bmFtZX0gbXVzdCBiZSBsb3dlcmNhc2UgU0hBLTI1NmApOwogIH0KfQoKZnVuY3Rpb24gYXNzZXJ0VGltZShuYW1lOiBzdHJpbmcsIHZhbHVlOiBudW1iZXIpOiB2b2lkIHsKICBpZiAoIU51bWJlci5pc1NhZmVJbnRlZ2VyKHZhbHVlKSB8fCB2YWx1ZSA8IDApIHsKICAgIHRocm93IG5ldyBFcnJvcihgJHtuYW1lfSBtdXN0IGJlIGEgbm9uLW5lZ2F0aXZlIHNhZmUgaW50ZWdlcmApOwogIH0KfQoKZnVuY3Rpb24gYXNzZXJ0UmV2aWV3ZWREZWNsYXJhdGlvbigKICBkb2N1bWVudDogUmV2aWV3ZWRLcmFrZW5MaWZlY3ljbGVEb2N1bWVudCwKICBkZWNsYXJhdGlvbjogUmV2aWV3ZWRLcmFrZW5MaWZlY3ljbGVEZWNsYXJhdGlvbiwKKTogdm9pZCB7CiAgaWYgKCFDQU5PTklDQUxfUEFJUl9QQVRURVJOLnRlc3QoZGVjbGFyYXRpb24uY2Fub25pY2FsUGFpcikpIHsKICAgIHRocm93IG5ldyBFcnJvcigKICAgICAgYFJldmlld2VkIGxpZmVjeWNsZSBkZWNsYXJhdGlvbiBwYWlyICR7ZGVjbGFyYXRpb24uY2Fub25pY2FsUGFpcn0gaXMgbm90IGNhbm9uaWNhbCBBVURgLAogICAgKTsKICB9CiAgaWYgKCFFVkVOVF9UWVBFUy5oYXMoZGVjbGFyYXRpb24uZXZlbnRUeXBlKSkgewogICAgdGhyb3cgbmV3IEVycm9yKAogICAgICBgVW5rbm93biBsaWZlY3ljbGUgZXZlbnQgdHlwZSAke2RlY2xhcmF0aW9uLmV2ZW50VHlwZSBhcyBzdHJpbmd9YCwKICAgICk7CiAgfQogIGFzc2VydFRpbWUoInJldmlld2VkIGxpZmVjeWNsZSBlZmZlY3RpdmVBdE1zIiwgZGVjbGFyYXRpb24uZWZmZWN0aXZlQXRNcyk7CiAgY29uc3QgcmVxdWlyZWRTY29wZSA9CiAgICBkb2N1bWVudC5zb3VyY2VDbGFzcyA9PT0gInJlZ2lvbmFsLWF2YWlsYWJpbGl0eSIgPyAiQVUiIDogImdsb2JhbCI7CiAgaWYgKGRlY2xhcmF0aW9uLnNjb3BlICE9PSByZXF1aXJlZFNjb3BlKSB7CiAgICB0aHJvdyBuZXcgRXJyb3IoCiAgICAgIGBMaWZlY3ljbGUgc291cmNlIGNsYXNzICR7ZG9jdW1lbnQuc291cmNlQ2xhc3N9IHJlcXVpcmVzICR7cmVxdWlyZWRTY29wZX0gc2NvcGVgLAogICAgKTsKICB9CiAgaWYgKCFTT1VSQ0VfRVZFTlRfVFlQRVNbZG9jdW1lbnQuc291cmNlQ2xhc3NdLmhhcyhkZWNsYXJhdGlvbi5ldmVudFR5cGUpKSB7CiAgICB0aHJvdyBuZXcgRXJyb3IoCiAgICAgIGBMaWZlY3ljbGUgZXZlbnQgJHtkZWNsYXJhdGlvbi5ldmVudFR5cGV9IGlzIGluY29tcGF0aWJsZSB3aXRoIHNvdXJjZSBjbGFzcyAke2RvY3VtZW50LnNvdXJjZUNsYXNzfWAsCiAgICApOwogIH0KfQoKZnVuY3Rpb24gaXNDb21wYXRpYmxlQ2FwdHVyZSgKICBzb3VyY2VDbGFzczogS3Jha2VuTGlmZWN5Y2xlU291cmNlQ2xhc3MsCiAgY2FwdHVyZTogQ29tbWl0dGVkS3Jha2VuTGlmZWN5Y2xlQ2FwdHVyZSwKKTogYm9vbGVhbiB7CiAgaWYgKHNvdXJjZUNsYXNzID09PSAiYXNzZXQtbGlzdGluZyIpIHsKICAgIHJldHVybiAoCiAgICAgIGNhcHR1cmUuc3RvcmFnZUtpbmQgPT09ICJkaXNjb3ZlcmVkLWRvY3VtZW50IiAmJgogICAgICBjYXB0dXJlLnNvdXJjZUtpbmQgPT09ICJhc3NldC1saXN0aW5nLWRvY3VtZW50IgogICAgKTsKICB9CiAgaWYgKAogICAgc291cmNlQ2xhc3MgPT09ICJkZWxpc3Rpbmctbm90aWNlIiB8fAogICAgc291cmNlQ2xhc3MgPT09ICJyZWdpb25hbC1hdmFpbGFiaWxpdHkiCiAgKSB7CiAgICByZXR1cm4gKAogICAgICBjYXB0dXJlLnN0b3JhZ2VLaW5kID09PSAiZGlzY292ZXJlZC1kb2N1bWVudCIgJiYKICAgICAgY2FwdHVyZS5zb3VyY2VLaW5kID09PSAic3VwcG9ydC1saWZlY3ljbGUtZG9jdW1lbnQiCiAgICApOwogIH0KICByZXR1cm4gKAogICAgY2FwdHVyZS5zdG9yYWdlS2luZCA9PT0gImZpeGVkLXNvdXJjZSIgJiYKICAgIGNhcHR1cmUuc291cmNlS2luZCA9PT0gInN0YXR1cy1pbmNpZGVudHMiCiAgKTsKfQoKZnVuY3Rpb24gY2Fub25pY2FsQmluZGluZ0pzb24oCiAgcmVjb3JkZWRBdE1zOiBudW1iZXIsCiAgZG9jdW1lbnRzOiByZWFkb25seSBCb3VuZEtyYWtlbkxpZmVjeWNsZURvY3VtZW50W10sCiAgYmluZGluZ3M6IHJlYWRvbmx5IEtyYWtlbkxpZmVjeWNsZURlY2xhcmF0aW9uQmluZGluZ1tdLAopOiBzdHJpbmcgewogIHJldHVybiBKU09OLnN0cmluZ2lmeSh7CiAgICBzY2hlbWFWZXJzaW9uOiAia3Jha2VuLWxpZmVjeWNsZS1jb21taXR0ZWQtZXZpZGVuY2UtdjEiLAogICAgcmVjb3JkZWRBdE1zLAogICAgZG9jdW1lbnRzLAogICAgYmluZGluZ3MsCiAgfSk7Cn0KCmV4cG9ydCBhc3luYyBmdW5jdGlvbiBiaW5kUmV2aWV3ZWRLcmFrZW5MaWZlY3ljbGVEb2N1bWVudHMoCiAgcmV2aWV3ZWREb2N1bWVudHM6IHJlYWRvbmx5IFJldmlld2VkS3Jha2VuTGlmZWN5Y2xlRG9jdW1lbnRbXSwKICByZWNvcmRlZEF0TXM6IG51bWJlciwKICByZXBvc2l0b3J5OiBLcmFrZW5MaWZlY3ljbGVDb21taXR0ZWRDYXB0dXJlUmVwb3NpdG9yeSwKKTogUHJvbWlzZTxCb3VuZEtyYWtlbkxpZmVjeWNsZUV2aWRlbmNlPiB7CiAgYXNzZXJ0VGltZSgicmVjb3JkZWRBdE1zIiwgcmVjb3JkZWRBdE1zKTsKICBpZiAoCiAgICByZXZpZXdlZERvY3VtZW50cy5sZW5ndGggPT09IDAgfHwKICAgIHJldmlld2VkRG9jdW1lbnRzLmxlbmd0aCA+IE1BWElNVU1fRE9DVU1FTlRTCiAgKSB7CiAgICB0aHJvdyBuZXcgRXJyb3IoIkxpZmVjeWNsZSBiaW5kaW5nIHJlcXVpcmVzIDEgdG8gMjAwIHJldmlld2VkIGRvY3VtZW50cyIpOwogIH0KICBjb25zdCBkb2N1bWVudHMgPSBbLi4ucmV2aWV3ZWREb2N1bWVudHNdLnNvcnQoCiAgICAobGVmdCwgcmlnaHQpID0+CiAgICAgIGxlZnQuZG9jdW1lbnRJZC5sb2NhbGVDb21wYXJlKHJpZ2h0LmRvY3VtZW50SWQpIHx8CiAgICAgIGxlZnQuY2FwdHVyZUlkLmxvY2FsZUNvbXBhcmUocmlnaHQuY2FwdHVyZUlkKSwKICApOwogIGNvbnN0IGNhcHR1cmVJZHMgPSBuZXcgU2V0PHN0cmluZz4oKTsKICBjb25zdCBkb2N1bWVudElkcyA9IG5ldyBTZXQ8c3RyaW5nPigpOwogIGNvbnN0IGRlY2xhcmF0aW9uSWRzID0gbmV3IFNldDxzdHJpbmc+KCk7CiAgbGV0IGRlY2xhcmF0aW9uQ291bnQgPSAwOwogIGZvciAoY29uc3QgZG9jdW1lbnQgb2YgZG9jdW1lbnRzKSB7CiAgICBhc3NlcnREaWdlc3QoInJldmlld2VkIGNhcHR1cmVJZCIsIGRvY3VtZW50LmNhcHR1cmVJZCk7CiAgICBhc3NlcnREaWdlc3QoInJldmlld2VkIHBheWxvYWRTaGEyNTYiLCBkb2N1bWVudC5wYXlsb2FkU2hhMjU2KTsKICAgIGlmICghRE9DVU1FTlRfSURfUEFUVEVSTi50ZXN0KGRvY3VtZW50LmRvY3VtZW50SWQpKSB7CiAgICAgIHRocm93IG5ldyBFcnJvcigKICAgICAgICBgUmV2aWV3ZWQgbGlmZWN5Y2xlIGRvY3VtZW50SWQgJHtkb2N1bWVudC5kb2N1bWVudElkfSBpcyBub3QgY2Fub25pY2FsYCwKICAgICAgKTsKICAgIH0KICAgIGFzc2VydFRpbWUoInJldmlld2VkIHB1Ymxpc2hlZEF0TXMiLCBkb2N1bWVudC5wdWJsaXNoZWRBdE1zKTsKICAgIGFzc2VydFRpbWUoInJldmlld2VkIGZldGNoZWRBdE1zIiwgZG9jdW1lbnQuZmV0Y2hlZEF0TXMpOwogICAgaWYgKCFTT1VSQ0VfQ0xBU1NFUy5oYXMoZG9jdW1lbnQuc291cmNlQ2xhc3MpKSB7CiAgICAgIHRocm93IG5ldyBFcnJvcihgVW5rbm93biBsaWZlY3ljbGUgc291cmNlIGNsYXNzICR7ZG9jdW1lbnQuc291cmNlQ2xhc3N9YCk7CiAgICB9CiAgICBpZiAoCiAgICAgIGRvY3VtZW50LnB1Ymxpc2hlZEF0TXMgPiBkb2N1bWVudC5mZXRjaGVkQXRNcyB8fAogICAgICBkb2N1bWVudC5mZXRjaGVkQXRNcyA+IHJlY29yZGVkQXRNcwogICAgKSB7CiAgICAgIHRocm93IG5ldyBFcnJvcigKICAgICAgICBgUmV2aWV3ZWQgbGlmZWN5Y2xlIGRvY3VtZW50ICR7ZG9jdW1lbnQuZG9jdW1lbnRJZH0gaGFzIGludmFsaWQgcHVibGljYXRpb24vZmV0Y2ggY2hyb25vbG9neWAsCiAgICAgICk7CiAgICB9CiAgICBpZiAoCiAgICAgIGRvY3VtZW50LmRlY2xhcmF0aW9ucy5sZW5ndGggPT09IDAgfHwKICAgICAgZG9jdW1lbnQuZGVjbGFyYXRpb25zLmxlbmd0aCA+IE1BWElNVU1fREVDTEFSQVRJT05TX1BFUl9ET0NVTUVOVAogICAgKSB7CiAgICAgIHRocm93IG5ldyBFcnJvcigKICAgICAgICBgUmV2aWV3ZWQgbGlmZWN5Y2xlIGRvY3VtZW50ICR7ZG9jdW1lbnQuZG9jdW1lbnRJZH0gcmVxdWlyZXMgMSB0byA1MDAgZGVjbGFyYXRpb25zYCwKICAgICAgKTsKICAgIH0KICAgIGRlY2xhcmF0aW9uQ291bnQgKz0gZG9jdW1lbnQuZGVjbGFyYXRpb25zLmxlbmd0aDsKICAgIGlmIChkZWNsYXJhdGlvbkNvdW50ID4gTUFYSU1VTV9ERUNMQVJBVElPTlMpIHsKICAgICAgdGhyb3cgbmV3IEVycm9yKAogICAgICAgICJMaWZlY3ljbGUgYmluZGluZyBleGNlZWRzIDEwMDAwMCByZXZpZXdlZCBkZWNsYXJhdGlvbnMiLAogICAgICApOwogICAgfQogICAgZm9yIChjb25zdCBkZWNsYXJhdGlvbiBvZiBkb2N1bWVudC5kZWNsYXJhdGlvbnMpIHsKICAgICAgYXNzZXJ0UmV2aWV3ZWREZWNsYXJhdGlvbihkb2N1bWVudCwgZGVjbGFyYXRpb24pOwogICAgICBjb25zdCBkZWNsYXJhdGlvbklkID0gSlNPTi5zdHJpbmdpZnkoWwogICAgICAgIGRlY2xhcmF0aW9uLmNhbm9uaWNhbFBhaXIsCiAgICAgICAgZGVjbGFyYXRpb24uZXZlbnRUeXBlLAogICAgICAgIGRlY2xhcmF0aW9uLmVmZmVjdGl2ZUF0TXMsCiAgICAgICAgZG9jdW1lbnQucHVibGlzaGVkQXRNcywKICAgICAgICBkZWNsYXJhdGlvbi5zY29wZSwKICAgICAgXSk7CiAgICAgIGlmIChkZWNsYXJhdGlvbklkcy5oYXMoZGVjbGFyYXRpb25JZCkpIHsKICAgICAgICB0aHJvdyBuZXcgRXJyb3IoCiAgICAgICAgICBgRHVwbGljYXRlIHJldmlld2VkIGxpZmVjeWNsZSBkZWNsYXJhdGlvbiAke2RlY2xhcmF0aW9uSWR9YCwKICAgICAgICApOwogICAgICB9CiAgICAgIGRlY2xhcmF0aW9uSWRzLmFkZChkZWNsYXJhdGlvbklkKTsKICAgIH0KICAgIGlmIChjYXB0dXJlSWRzLmhhcyhkb2N1bWVudC5jYXB0dXJlSWQpKSB7CiAgICAgIHRocm93IG5ldyBFcnJvcihgRHVwbGljYXRlIHJldmlld2VkIGNhcHR1cmUgJHtkb2N1bWVudC5jYXB0dXJlSWR9YCk7CiAgICB9CiAgICBpZiAoZG9jdW1lbnRJZHMuaGFzKGRvY3VtZW50LmRvY3VtZW50SWQpKSB7CiAgICAgIHRocm93IG5ldyBFcnJvcihgRHVwbGljYXRlIHJldmlld2VkIGRvY3VtZW50ICR7ZG9jdW1lbnQuZG9jdW1lbnRJZH1gKTsKICAgIH0KICAgIGNhcHR1cmVJZHMuYWRkKGRvY3VtZW50LmNhcHR1cmVJZCk7CiAgICBkb2N1bWVudElkcy5hZGQoZG9jdW1lbnQuZG9jdW1lbnRJZCk7CiAgfQoKICBjb25zdCBjYXB0dXJlcyA9IGF3YWl0IHJlcG9zaXRvcnkubG9hZENvbW1pdHRlZENhcHR1cmVzKAogICAgWy4uLmNhcHR1cmVJZHNdLnNvcnQoKSwKICApOwogIGNvbnN0IGNhcHR1cmVzQnlJZCA9IG5ldyBNYXA8c3RyaW5nLCBDb21taXR0ZWRLcmFrZW5MaWZlY3ljbGVDYXB0dXJlPigpOwogIGZvciAoY29uc3QgY2FwdHVyZSBvZiBjYXB0dXJlcykgewogICAgYXNzZXJ0RGlnZXN0KCJjb21taXR0ZWQgY2FwdHVyZUlkIiwgY2FwdHVyZS5jYXB0dXJlSWQpOwogICAgYXNzZXJ0RGlnZXN0KCJjb21taXR0ZWQgcGF5bG9hZFNoYTI1NiIsIGNhcHR1cmUucGF5bG9hZFNoYTI1Nik7CiAgICBhc3NlcnRUaW1lKCJjb21taXR0ZWQgZmV0Y2hlZEF0TXMiLCBjYXB0dXJlLmZldGNoZWRBdE1zKTsKICAgIGFzc2VydFRpbWUoImNvbW1pdHRlZCBjb21taXR0ZWRBdE1zIiwgY2FwdHVyZS5jb21taXR0ZWRBdE1zKTsKICAgIGlmICghY2FwdHVyZUlkcy5oYXMoY2FwdHVyZS5jYXB0dXJlSWQpKSB7CiAgICAgIHRocm93IG5ldyBFcnJvcihgVW5leHBlY3RlZCBjb21taXR0ZWQgY2FwdHVyZSAke2NhcHR1cmUuY2FwdHVyZUlkfWApOwogICAgfQogICAgaWYgKGNhcHR1cmVzQnlJZC5oYXMoY2FwdHVyZS5jYXB0dXJlSWQpKSB7CiAgICAgIHRocm93IG5ldyBFcnJvcihgQW1iaWd1b3VzIGNvbW1pdHRlZCBjYXB0dXJlICR7Y2FwdHVyZS5jYXB0dXJlSWR9YCk7CiAgICB9CiAgICBjYXB0dXJlc0J5SWQuc2V0KGNhcHR1cmUuY2FwdHVyZUlkLCBjYXB0dXJlKTsKICB9CgogIGNvbnN0IGJpbmRpbmdzOiBLcmFrZW5MaWZlY3ljbGVEZWNsYXJhdGlvbkJpbmRpbmdbXSA9IFtdOwogIGNvbnN0IGJvdW5kRG9jdW1lbnRzOiBCb3VuZEtyYWtlbkxpZmVjeWNsZURvY3VtZW50W10gPSBbXTsKICBmb3IgKGNvbnN0IGRvY3VtZW50IG9mIGRvY3VtZW50cykgewogICAgY29uc3QgY2FwdHVyZSA9IGNhcHR1cmVzQnlJZC5nZXQoZG9jdW1lbnQuY2FwdHVyZUlkKTsKICAgIGlmIChjYXB0dXJlID09PSB1bmRlZmluZWQpIHsKICAgICAgdGhyb3cgbmV3IEVycm9yKAogICAgICAgIGBSZXZpZXdlZCBsaWZlY3ljbGUgZG9jdW1lbnQgJHtkb2N1bWVudC5kb2N1bWVudElkfSBpcyBub3QgY29tbWl0dGVkYCwKICAgICAgKTsKICAgIH0KICAgIGlmICghaXNDb21wYXRpYmxlQ2FwdHVyZShkb2N1bWVudC5zb3VyY2VDbGFzcywgY2FwdHVyZSkpIHsKICAgICAgdGhyb3cgbmV3IEVycm9yKAogICAgICAgIGBSZXZpZXdlZCBsaWZlY3ljbGUgZG9jdW1lbnQgJHtkb2N1bWVudC5kb2N1bWVudElkfSBoYXMgaW5jb21wYXRpYmxlIGNvbW1pdHRlZCBzb3VyY2VgLAogICAgICApOwogICAgfQogICAgaWYgKAogICAgICBjYXB0dXJlLnNvdXJjZVJlZiAhPT0gZG9jdW1lbnQuc291cmNlUmVmIHx8CiAgICAgIGNhcHR1cmUuZmV0Y2hlZEF0TXMgIT09IGRvY3VtZW50LmZldGNoZWRBdE1zIHx8CiAgICAgIGNhcHR1cmUucGF5bG9hZFNoYTI1NiAhPT0gZG9jdW1lbnQucGF5bG9hZFNoYTI1NgogICAgKSB7CiAgICAgIHRocm93IG5ldyBFcnJvcigKICAgICAgICBgUmV2aWV3ZWQgbGlmZWN5Y2xlIGRvY3VtZW50ICR7ZG9jdW1lbnQuZG9jdW1lbnRJZH0gZG9lcyBub3QgbWF0Y2ggaXRzIGNvbW1pdHRlZCBjYXB0dXJlYCwKICAgICAgKTsKICAgIH0KICAgIGlmICgKICAgICAgY2FwdHVyZS5jb21taXR0ZWRBdE1zIDwgY2FwdHVyZS5mZXRjaGVkQXRNcyB8fAogICAgICBjYXB0dXJlLmNvbW1pdHRlZEF0TXMgPiByZWNvcmRlZEF0TXMKICAgICkgewogICAgICB0aHJvdyBuZXcgRXJyb3IoCiAgICAgICAgYFJldmlld2VkIGxpZmVjeWNsZSBkb2N1bWVudCAke2RvY3VtZW50LmRvY3VtZW50SWR9IGhhcyB1bmF2YWlsYWJsZSBjb21taXQgY2hyb25vbG9neWAsCiAgICAgICk7CiAgICB9CiAgICBiaW5kaW5ncy5wdXNoKHsKICAgICAgY2FwdHVyZUlkOiBjYXB0dXJlLmNhcHR1cmVJZCwKICAgICAgZG9jdW1lbnRJZDogZG9jdW1lbnQuZG9jdW1lbnRJZCwKICAgICAgc3RvcmFnZUtpbmQ6IGNhcHR1cmUuc3RvcmFnZUtpbmQsCiAgICAgIHNvdXJjZUtpbmQ6IGNhcHR1cmUuc291cmNlS2luZCwKICAgICAgc291cmNlUmVmOiBjYXB0dXJlLnNvdXJjZVJlZiwKICAgICAgZmV0Y2hlZEF0TXM6IGNhcHR1cmUuZmV0Y2hlZEF0TXMsCiAgICAgIHBheWxvYWRTaGEyNTY6IGNhcHR1cmUucGF5bG9hZFNoYTI1NiwKICAgICAgY29tbWl0dGVkQXRNczogY2FwdHVyZS5jb21taXR0ZWRBdE1zLAogICAgfSk7CiAgICBib3VuZERvY3VtZW50cy5wdXNoKHsKICAgICAgZG9jdW1lbnRJZDogZG9jdW1lbnQuZG9jdW1lbnRJZCwKICAgICAgc291cmNlQ2xhc3M6IGRvY3VtZW50LnNvdXJjZUNsYXNzLAogICAgICBzb3VyY2VSZWY6IGRvY3VtZW50LnNvdXJjZVJlZiwKICAgICAgcHVibGlzaGVkQXRNczogZG9jdW1lbnQucHVibGlzaGVkQXRNcywKICAgICAgZmV0Y2hlZEF0TXM6IGRvY3VtZW50LmZldGNoZWRBdE1zLAogICAgICBwYXlsb2FkU2hhMjU2OiBkb2N1bWVudC5wYXlsb2FkU2hhMjU2LAogICAgICBkZWNsYXJhdGlvbnM6IFsuLi5kb2N1bWVudC5kZWNsYXJhdGlvbnNdLnNvcnQoCiAgICAgICAgKGxlZnQsIHJpZ2h0KSA9PgogICAgICAgICAgbGVmdC5jYW5vbmljYWxQYWlyLmxvY2FsZUNvbXBhcmUocmlnaHQuY2Fub25pY2FsUGFpcikgfHwKICAgICAgICAgIGxlZnQuZWZmZWN0aXZlQXRNcyAtIHJpZ2h0LmVmZmVjdGl2ZUF0TXMgfHwKICAgICAgICAgIGxlZnQuZXZlbnRUeXBlLmxvY2FsZUNvbXBhcmUocmlnaHQuZXZlbnRUeXBlKSB8fAogICAgICAgICAgbGVmdC5zY29wZS5sb2NhbGVDb21wYXJlKHJpZ2h0LnNjb3BlKSwKICAgICAgKSwKICAgIH0pOwogIH0KICByZXR1cm4gewogICAgZG9jdW1lbnRzOiBib3VuZERvY3VtZW50cywKICAgIGJpbmRpbmdzLAogICAgYmluZGluZ1NoYTI1NjogYXdhaXQgc2hhMjU2SGV4KAogICAgICBjYW5vbmljYWxCaW5kaW5nSnNvbihyZWNvcmRlZEF0TXMsIGJvdW5kRG9jdW1lbnRzLCBiaW5kaW5ncyksCiAgICApLAogIH07Cn0KCmV4cG9ydCBhc3luYyBmdW5jdGlvbiBwcmVwYXJlQ29tbWl0dGVkS3Jha2VuTGlmZWN5Y2xlRXZpZGVuY2U8VD4oCiAgcmV2aWV3ZWREb2N1bWVudHM6IHJlYWRvbmx5IFJldmlld2VkS3Jha2VuTGlmZWN5Y2xlRG9jdW1lbnRbXSwKICByZWNvcmRlZEF0TXM6IG51bWJlciwKICByZXBvc2l0b3J5OiBLcmFrZW5MaWZlY3ljbGVDb21taXR0ZWRDYXB0dXJlUmVwb3NpdG9yeSwKICBwcmVwYXJlRXZpZGVuY2U6ICgKICAgIGRvY3VtZW50czogcmVhZG9ubHkgQm91bmRLcmFrZW5MaWZlY3ljbGVEb2N1bWVudFtdLAogICAgcmVjb3JkZWRBdE1zOiBudW1iZXIsCiAgKSA9PiBQcm9taXNlPFQ+LAopOiBQcm9taXNlPFByZXBhcmVkQ29tbWl0dGVkS3Jha2VuTGlmZWN5Y2xlRXZpZGVuY2U8VD4+IHsKICBjb25zdCBib3VuZCA9IGF3YWl0IGJpbmRSZXZpZXdlZEtyYWtlbkxpZmVjeWNsZURvY3VtZW50cygKICAgIHJldmlld2VkRG9jdW1lbnRzLAogICAgcmVjb3JkZWRBdE1zLAogICAgcmVwb3NpdG9yeSwKICApOwogIHJldHVybiB7CiAgICBwcmVwYXJlZEV2aWRlbmNlOiBhd2FpdCBwcmVwYXJlRXZpZGVuY2UoYm91bmQuZG9jdW1lbnRzLCByZWNvcmRlZEF0TXMpLAogICAgYmluZGluZ3M6IGJvdW5kLmJpbmRpbmdzLAogICAgYmluZGluZ1NoYTI1NjogYm91bmQuYmluZGluZ1NoYTI1NiwKICB9Owp9Cg==
+import { sha256Hex } from "../utils/crypto.ts";
+
+const SHA256_PATTERN = /^[0-9a-f]{64}$/;
+const CANONICAL_PAIR_PATTERN = /^[A-Z0-9][A-Z0-9.]{0,47}\/AUD$/;
+const DOCUMENT_ID_PATTERN =
+  /^[a-z0-9](?:[a-z0-9.-]{0,126}[a-z0-9])?$/;
+const MAXIMUM_DOCUMENTS = 200;
+const MAXIMUM_DECLARATIONS_PER_DOCUMENT = 500;
+const MAXIMUM_DECLARATIONS = 100_000;
+const SOURCE_CLASSES = new Set<KrakenLifecycleSourceClass>([
+  "asset-listing",
+  "delisting-notice",
+  "status-incident",
+  "regional-availability",
+]);
+const EVENT_TYPES = new Set<KrakenLifecycleEventType>([
+  "listed",
+  "trading-online",
+  "trading-suspended",
+  "trading-resumed",
+  "delisted",
+  "au-enabled",
+  "au-disabled",
+]);
+const SOURCE_EVENT_TYPES: Readonly<
+  Record<KrakenLifecycleSourceClass, ReadonlySet<KrakenLifecycleEventType>>
+> = {
+  "asset-listing": new Set(["listed", "trading-online"]),
+  "delisting-notice": new Set(["trading-suspended", "delisted"]),
+  "status-incident": new Set(["trading-suspended", "trading-resumed"]),
+  "regional-availability": new Set(["au-enabled", "au-disabled"]),
+};
+
+export type KrakenLifecycleSourceClass =
+  | "asset-listing"
+  | "delisting-notice"
+  | "status-incident"
+  | "regional-availability";
+
+export type KrakenLifecycleEventType =
+  | "listed"
+  | "trading-online"
+  | "trading-suspended"
+  | "trading-resumed"
+  | "delisted"
+  | "au-enabled"
+  | "au-disabled";
+
+export interface ReviewedKrakenLifecycleDeclaration {
+  readonly canonicalPair: string;
+  readonly eventType: KrakenLifecycleEventType;
+  readonly effectiveAtMs: number;
+  readonly scope: "global" | "AU";
+}
+
+export interface ReviewedKrakenLifecycleDocument {
+  readonly captureId: string;
+  readonly documentId: string;
+  readonly sourceClass: KrakenLifecycleSourceClass;
+  readonly sourceRef: string;
+  readonly publishedAtMs: number;
+  readonly fetchedAtMs: number;
+  readonly payloadSha256: string;
+  readonly declarations: readonly ReviewedKrakenLifecycleDeclaration[];
+}
+
+export interface BoundKrakenLifecycleDocument {
+  readonly documentId: string;
+  readonly sourceClass: KrakenLifecycleSourceClass;
+  readonly sourceRef: string;
+  readonly publishedAtMs: number;
+  readonly fetchedAtMs: number;
+  readonly payloadSha256: string;
+  readonly declarations: readonly ReviewedKrakenLifecycleDeclaration[];
+}
+
+export type KrakenLifecycleCaptureStorageKind =
+  | "fixed-source"
+  | "discovered-document";
+
+export type KrakenLifecycleCommittedSourceKind =
+  | "asset-listings-index"
+  | "delistings-index"
+  | "status-incidents"
+  | "status-maintenance"
+  | "asset-listing-document"
+  | "asset-listings-index-page"
+  | "support-lifecycle-document";
+
+export interface CommittedKrakenLifecycleCapture {
+  readonly captureId: string;
+  readonly storageKind: KrakenLifecycleCaptureStorageKind;
+  readonly sourceKind: KrakenLifecycleCommittedSourceKind;
+  readonly sourceRef: string;
+  readonly fetchedAtMs: number;
+  readonly payloadSha256: string;
+  readonly committedAtMs: number;
+}
+
+export interface KrakenLifecycleCommittedCaptureRepository {
+  loadCommittedCaptures(
+    captureIds: readonly string[],
+  ): Promise<readonly CommittedKrakenLifecycleCapture[]>;
+}
+
+export interface KrakenLifecycleDeclarationBinding {
+  readonly captureId: string;
+  readonly documentId: string;
+  readonly storageKind: KrakenLifecycleCaptureStorageKind;
+  readonly sourceKind: KrakenLifecycleCommittedSourceKind;
+  readonly sourceRef: string;
+  readonly fetchedAtMs: number;
+  readonly payloadSha256: string;
+  readonly committedAtMs: number;
+}
+
+export interface BoundKrakenLifecycleEvidence {
+  readonly documents: readonly BoundKrakenLifecycleDocument[];
+  readonly bindings: readonly KrakenLifecycleDeclarationBinding[];
+  readonly bindingSha256: string;
+}
+
+export interface PreparedCommittedKrakenLifecycleEvidence<T> {
+  readonly preparedEvidence: T;
+  readonly bindings: readonly KrakenLifecycleDeclarationBinding[];
+  readonly bindingSha256: string;
+}
+
+interface D1CaptureRow {
+  readonly capture_id: string;
+  readonly storage_kind: KrakenLifecycleCaptureStorageKind;
+  readonly source_kind: KrakenLifecycleCommittedSourceKind;
+  readonly source_ref: string;
+  readonly fetched_at_ms: number;
+  readonly payload_sha256: string;
+  readonly committed_at_ms: number;
+}
+
+export const LOAD_COMMITTED_KRAKEN_LIFECYCLE_CAPTURES_SQL = `
+WITH requested(capture_id) AS (
+  SELECT value
+  FROM json_each(?1)
+)
+SELECT
+  capture.capture_id,
+  'fixed-source' AS storage_kind,
+  capture.source_kind,
+  capture.source_ref,
+  capture.fetched_at_ms,
+  capture.payload_sha256,
+  committed.committed_at_ms
+FROM kraken_lifecycle_source_captures capture
+JOIN kraken_lifecycle_source_capture_commits committed
+  ON committed.capture_id = capture.capture_id
+JOIN requested
+  ON requested.capture_id = capture.capture_id
+UNION ALL
+SELECT
+  capture.capture_id,
+  'discovered-document' AS storage_kind,
+  capture.source_kind,
+  capture.source_ref,
+  capture.fetched_at_ms,
+  capture.payload_sha256,
+  committed.committed_at_ms
+FROM kraken_lifecycle_document_captures capture
+JOIN kraken_lifecycle_document_capture_commits committed
+  ON committed.capture_id = capture.capture_id
+JOIN requested
+  ON requested.capture_id = capture.capture_id
+ORDER BY 1, 2
+`;
+
+export class D1KrakenLifecycleCommittedCaptureRepository
+  implements KrakenLifecycleCommittedCaptureRepository
+{
+  private readonly database: D1Database;
+
+  constructor(database: D1Database) {
+    this.database = database;
+  }
+
+  async loadCommittedCaptures(
+    captureIds: readonly string[],
+  ): Promise<readonly CommittedKrakenLifecycleCapture[]> {
+    if (captureIds.length === 0 || captureIds.length > MAXIMUM_DOCUMENTS) {
+      throw new Error("Committed lifecycle lookup requires 1 to 200 captures");
+    }
+    const result = await this.database
+      .prepare(LOAD_COMMITTED_KRAKEN_LIFECYCLE_CAPTURES_SQL)
+      .bind(JSON.stringify(captureIds))
+      .all<D1CaptureRow>();
+    return result.results.map((row) => ({
+      captureId: row.capture_id,
+      storageKind: row.storage_kind,
+      sourceKind: row.source_kind,
+      sourceRef: row.source_ref,
+      fetchedAtMs: row.fetched_at_ms,
+      payloadSha256: row.payload_sha256,
+      committedAtMs: row.committed_at_ms,
+    }));
+  }
+}
+
+function assertDigest(name: string, value: string): void {
+  if (!SHA256_PATTERN.test(value)) {
+    throw new Error(`${name} must be lowercase SHA-256`);
+  }
+}
+
+function assertTime(name: string, value: number): void {
+  if (!Number.isSafeInteger(value) || value < 0) {
+    throw new Error(`${name} must be a non-negative safe integer`);
+  }
+}
+
+function assertReviewedDeclaration(
+  document: ReviewedKrakenLifecycleDocument,
+  declaration: ReviewedKrakenLifecycleDeclaration,
+): void {
+  if (!CANONICAL_PAIR_PATTERN.test(declaration.canonicalPair)) {
+    throw new Error(
+      `Reviewed lifecycle declaration pair ${declaration.canonicalPair} is not canonical AUD`,
+    );
+  }
+  if (!EVENT_TYPES.has(declaration.eventType)) {
+    throw new Error(
+      `Unknown lifecycle event type ${declaration.eventType as string}`,
+    );
+  }
+  assertTime("reviewed lifecycle effectiveAtMs", declaration.effectiveAtMs);
+  const requiredScope =
+    document.sourceClass === "regional-availability" ? "AU" : "global";
+  if (declaration.scope !== requiredScope) {
+    throw new Error(
+      `Lifecycle source class ${document.sourceClass} requires ${requiredScope} scope`,
+    );
+  }
+  if (!SOURCE_EVENT_TYPES[document.sourceClass].has(declaration.eventType)) {
+    throw new Error(
+      `Lifecycle event ${declaration.eventType} is incompatible with source class ${document.sourceClass}`,
+    );
+  }
+}
+
+function isCompatibleCapture(
+  sourceClass: KrakenLifecycleSourceClass,
+  capture: CommittedKrakenLifecycleCapture,
+): boolean {
+  if (sourceClass === "asset-listing") {
+    return (
+      capture.storageKind === "discovered-document" &&
+      capture.sourceKind === "asset-listing-document"
+    );
+  }
+  if (
+    sourceClass === "delisting-notice" ||
+    sourceClass === "regional-availability"
+  ) {
+    return (
+      capture.storageKind === "discovered-document" &&
+      capture.sourceKind === "support-lifecycle-document"
+    );
+  }
+  return (
+    capture.storageKind === "fixed-source" &&
+    capture.sourceKind === "status-incidents"
+  );
+}
+
+function canonicalBindingJson(
+  recordedAtMs: number,
+  documents: readonly BoundKrakenLifecycleDocument[],
+  bindings: readonly KrakenLifecycleDeclarationBinding[],
+): string {
+  return JSON.stringify({
+    schemaVersion: "kraken-lifecycle-committed-evidence-v1",
+    recordedAtMs,
+    documents,
+    bindings,
+  });
+}
+
+export async function bindReviewedKrakenLifecycleDocuments(
+  reviewedDocuments: readonly ReviewedKrakenLifecycleDocument[],
+  recordedAtMs: number,
+  repository: KrakenLifecycleCommittedCaptureRepository,
+): Promise<BoundKrakenLifecycleEvidence> {
+  assertTime("recordedAtMs", recordedAtMs);
+  if (
+    reviewedDocuments.length === 0 ||
+    reviewedDocuments.length > MAXIMUM_DOCUMENTS
+  ) {
+    throw new Error("Lifecycle binding requires 1 to 200 reviewed documents");
+  }
+  const documents = [...reviewedDocuments].sort(
+    (left, right) =>
+      left.documentId.localeCompare(right.documentId) ||
+      left.captureId.localeCompare(right.captureId),
+  );
+  const captureIds = new Set<string>();
+  const documentIds = new Set<string>();
+  const declarationIds = new Set<string>();
+  let declarationCount = 0;
+  for (const document of documents) {
+    assertDigest("reviewed captureId", document.captureId);
+    assertDigest("reviewed payloadSha256", document.payloadSha256);
+    if (!DOCUMENT_ID_PATTERN.test(document.documentId)) {
+      throw new Error(
+        `Reviewed lifecycle documentId ${document.documentId} is not canonical`,
+      );
+    }
+    assertTime("reviewed publishedAtMs", document.publishedAtMs);
+    assertTime("reviewed fetchedAtMs", document.fetchedAtMs);
+    if (!SOURCE_CLASSES.has(document.sourceClass)) {
+      throw new Error(`Unknown lifecycle source class ${document.sourceClass}`);
+    }
+    if (
+      document.publishedAtMs > document.fetchedAtMs ||
+      document.fetchedAtMs > recordedAtMs
+    ) {
+      throw new Error(
+        `Reviewed lifecycle document ${document.documentId} has invalid publication/fetch chronology`,
+      );
+    }
+    if (
+      document.declarations.length === 0 ||
+      document.declarations.length > MAXIMUM_DECLARATIONS_PER_DOCUMENT
+    ) {
+      throw new Error(
+        `Reviewed lifecycle document ${document.documentId} requires 1 to 500 declarations`,
+      );
+    }
+    declarationCount += document.declarations.length;
+    if (declarationCount > MAXIMUM_DECLARATIONS) {
+      throw new Error(
+        "Lifecycle binding exceeds 100000 reviewed declarations",
+      );
+    }
+    for (const declaration of document.declarations) {
+      assertReviewedDeclaration(document, declaration);
+      const declarationId = JSON.stringify([
+        declaration.canonicalPair,
+        declaration.eventType,
+        declaration.effectiveAtMs,
+        document.publishedAtMs,
+        declaration.scope,
+      ]);
+      if (declarationIds.has(declarationId)) {
+        throw new Error(
+          `Duplicate reviewed lifecycle declaration ${declarationId}`,
+        );
+      }
+      declarationIds.add(declarationId);
+    }
+    if (captureIds.has(document.captureId)) {
+      throw new Error(`Duplicate reviewed capture ${document.captureId}`);
+    }
+    if (documentIds.has(document.documentId)) {
+      throw new Error(`Duplicate reviewed document ${document.documentId}`);
+    }
+    captureIds.add(document.captureId);
+    documentIds.add(document.documentId);
+  }
+
+  const captures = await repository.loadCommittedCaptures(
+    [...captureIds].sort(),
+  );
+  const capturesById = new Map<string, CommittedKrakenLifecycleCapture>();
+  for (const capture of captures) {
+    assertDigest("committed captureId", capture.captureId);
+    assertDigest("committed payloadSha256", capture.payloadSha256);
+    assertTime("committed fetchedAtMs", capture.fetchedAtMs);
+    assertTime("committed committedAtMs", capture.committedAtMs);
+    if (!captureIds.has(capture.captureId)) {
+      throw new Error(`Unexpected committed capture ${capture.captureId}`);
+    }
+    if (capturesById.has(capture.captureId)) {
+      throw new Error(`Ambiguous committed capture ${capture.captureId}`);
+    }
+    capturesById.set(capture.captureId, capture);
+  }
+
+  const bindings: KrakenLifecycleDeclarationBinding[] = [];
+  const boundDocuments: BoundKrakenLifecycleDocument[] = [];
+  for (const document of documents) {
+    const capture = capturesById.get(document.captureId);
+    if (capture === undefined) {
+      throw new Error(
+        `Reviewed lifecycle document ${document.documentId} is not committed`,
+      );
+    }
+    if (!isCompatibleCapture(document.sourceClass, capture)) {
+      throw new Error(
+        `Reviewed lifecycle document ${document.documentId} has incompatible committed source`,
+      );
+    }
+    if (
+      capture.sourceRef !== document.sourceRef ||
+      capture.fetchedAtMs !== document.fetchedAtMs ||
+      capture.payloadSha256 !== document.payloadSha256
+    ) {
+      throw new Error(
+        `Reviewed lifecycle document ${document.documentId} does not match its committed capture`,
+      );
+    }
+    if (
+      capture.committedAtMs < capture.fetchedAtMs ||
+      capture.committedAtMs > recordedAtMs
+    ) {
+      throw new Error(
+        `Reviewed lifecycle document ${document.documentId} has unavailable commit chronology`,
+      );
+    }
+    bindings.push({
+      captureId: capture.captureId,
+      documentId: document.documentId,
+      storageKind: capture.storageKind,
+      sourceKind: capture.sourceKind,
+      sourceRef: capture.sourceRef,
+      fetchedAtMs: capture.fetchedAtMs,
+      payloadSha256: capture.payloadSha256,
+      committedAtMs: capture.committedAtMs,
+    });
+    boundDocuments.push({
+      documentId: document.documentId,
+      sourceClass: document.sourceClass,
+      sourceRef: document.sourceRef,
+      publishedAtMs: document.publishedAtMs,
+      fetchedAtMs: document.fetchedAtMs,
+      payloadSha256: document.payloadSha256,
+      declarations: [...document.declarations].sort(
+        (left, right) =>
+          left.canonicalPair.localeCompare(right.canonicalPair) ||
+          left.effectiveAtMs - right.effectiveAtMs ||
+          left.eventType.localeCompare(right.eventType) ||
+          left.scope.localeCompare(right.scope),
+      ),
+    });
+  }
+  return {
+    documents: boundDocuments,
+    bindings,
+    bindingSha256: await sha256Hex(
+      canonicalBindingJson(recordedAtMs, boundDocuments, bindings),
+    ),
+  };
+}
+
+export async function prepareCommittedKrakenLifecycleEvidence<T>(
+  reviewedDocuments: readonly ReviewedKrakenLifecycleDocument[],
+  recordedAtMs: number,
+  repository: KrakenLifecycleCommittedCaptureRepository,
+  prepareEvidence: (
+    documents: readonly BoundKrakenLifecycleDocument[],
+    recordedAtMs: number,
+  ) => Promise<T>,
+): Promise<PreparedCommittedKrakenLifecycleEvidence<T>> {
+  const bound = await bindReviewedKrakenLifecycleDocuments(
+    reviewedDocuments,
+    recordedAtMs,
+    repository,
+  );
+  return {
+    preparedEvidence: await prepareEvidence(bound.documents, recordedAtMs),
+    bindings: bound.bindings,
+    bindingSha256: bound.bindingSha256,
+  };
+}
