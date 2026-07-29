@@ -41,7 +41,7 @@ Committed 60-minute and 1,440-minute candles may be persisted only through the i
 
 The D1 identity is venue, canonical pair, interval and open timestamp. Exact duplicate content is idempotent. Reuse of a batch identity with different provenance, or reuse of a candle identity with different OHLCV content, is a hard conflict. Stored batches and candles cannot be updated or deleted through normal application SQL.
 
-The scheduled ingestion path records canonical public-request provenance, exact response digests and request/receipt/availability chronology. It persists only closed intervals, re-reads aggregate committed history after persistence and stops research evaluation when required data is missing, stale, gapped or unreconciled.
+The scheduled ingestion path records canonical public-request provenance, exact response digests and request/receipt/availability chronology. It persists only closed intervals, scans the exact current 719-committed-row REST window, permits at most one bounded overlapping repair capture per pair/interval, re-reads the exact range and stops research evaluation when required data is missing, stale, gapped or unreconciled. Detected repairable gaps, missing candles and repair captures are recorded in the cycle audit.
 
 ## Scheduled hourly and daily acquisition
 
@@ -55,12 +55,13 @@ Each immutable batch binds the request URL, request/receipt/availability times, 
 
 Kraken's REST OHLC endpoint returns at most 720 recent entries and always includes the current uncommitted interval. This leaves no more than 719 committed rows available for repair at a selected interval.
 
-The current persistence and gap-planning primitives identify which missing ranges remain recoverable from Kraken REST and which have aged outside that boundary. They do not make Kraken REST a complete historical research source. Broader backtesting still requires progressive collection or a separately approved reproducible historical dataset with provenance and reconciliation.
+The persistence and gap-planning primitives identify which missing ranges remain recoverable from Kraken REST and which have aged outside that boundary. The approved account-free source beyond that boundary is Kraken's official downloadable historical OHLCVT archive and quarterly updates. A versioned source contract pins the exact official support page and archive identities, requires SHA-256 digests for the raw ZIP and each selected CSV, limits scope to BTC/AUD and ETH/AUD at 60 and 1,440 minutes, keeps raw archive content transient and never forward-fills missing no-trade intervals. Historical candles remain research-only and unusable until exact archive capture, validation, REST-overlap reconciliation and immutable derived-candle persistence succeed.
 
 ## Sources
 
 - https://docs.kraken.com/api-reference/market-data/get-tradable-asset-pairs
 - https://docs.kraken.com/api-reference/market-data/get-ohlc-data
+- https://support.kraken.com/articles/360047124832-downloadable-historical-ohlcvt-open-high-low-close-volume-trades-data
 
 ## Public market-quality evidence
 
