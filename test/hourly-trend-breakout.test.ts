@@ -35,6 +35,8 @@ test("enters only after the closed candle clears all three entry gates", () => {
     decision.targetExposurePct,
     HOURLY_TREND_BREAKOUT_BASELINE_POLICY.targetExposurePct,
   );
+  assert.deepEqual(decision.policy, HOURLY_TREND_BREAKOUT_BASELINE_POLICY);
+  assert.notEqual(decision.policy, HOURLY_TREND_BREAKOUT_BASELINE_POLICY);
   assert.equal(decision.signals.every((signal) => signal.entryEligible), true);
 });
 
