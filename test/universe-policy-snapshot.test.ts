@@ -4,6 +4,14 @@ import test from "node:test";
 import { DatabaseSync } from "node:sqlite";
 import { canonicalIntelligenceJson } from "../src/intelligence/canonical.ts";
 import {
+  bindUniverseMembershipToBacktestSteps,
+  runUniverseBoundBacktest,
+} from "../src/backtest/universeMembership.ts";
+import type {
+  BacktestConfig,
+  BacktestStep,
+} from "../src/backtest/types.ts";
+import {
   prepareSignedUniversePolicy,
   prepareUniverseSnapshotManifest,
   verifySignedUniversePolicy,
@@ -20,6 +28,10 @@ import {
   prepareUniversePolicySnapshotPersistence,
   UniversePolicySnapshotRepository,
 } from "../src/storage/universePolicySnapshot.ts";
+import {
+  prepareUniverseSignalTimeMembership,
+  verifyUniverseSignalTimeMembership,
+} from "../src/universe/signalTimeMembership.ts";
 
 const APPROVED_AT_MS = Date.parse("2026-07-29T01:30:00.000Z");
 const EFFECTIVE_FROM_MS = APPROVED_AT_MS + 60_000;
@@ -207,6 +219,7 @@ class SQLiteD1 {
         return statement;
       },
       run: () => prepared.run(...params),
+      first: <T>() => (prepared.get(...params) as T | undefined) ?? null,
     };
     return statement;
   }
@@ -449,4 +462,243 @@ test("fails closed on missing evidence and pre-snapshot persistence", async () =
     /evidence is not exactly committed/u,
   );
   sqlite.close();
+});
+
+const BACKTEST_CONFIG: BacktestConfig = {
+  initialCashAud: 200,
+  defaultExitStyle: "taker",
+  assumptions: {
+    makerFeeBps: 0,
+    takerFeeBps: 0,
+    takerSlippageBps: 0,
+    makerAdverseSelectionBps: 0,
+    impactCoefficientBps: 0,
+    maximumImpactBps: 0,
+    maximumParticipationRate: 1,
+    makerFillRate: 1,
+    minimumOrderAud: 0,
+    cashReserveAud: 0,
+  },
+};
+
+function backtestStep(
+  signalTimestampMs: number,
+  targets: BacktestStep["targets"],
+): BacktestStep {
+  return {
+    signalTimestampMs,
+    executionTimestampMs: signalTimestampMs + 3_600_000,
+    markets: [
+      {
+        pair: "BTC/AUD",
+        midPriceAud: 100,
+        spreadBps: 0,
+        availableQuoteVolumeAud: 1_000_000,
+      },
+      {
+        pair: "ETH/AUD",
+        midPriceAud: 100,
+        spreadBps: 0,
+        availableQuoteVolumeAud: 1_000_000,
+      },
+    ],
+    targets,
+  };
+}
+
+test("loads and re-verifies exact persisted signal-time membership", async () => {
+  const { sqlite, repository } = await database();
+  const signed = await signedPolicy();
+  const snapshotManifest = await manifest(signed);
+  const decisionAtMs = AS_OF_MS + 1_000;
+  await repository.persist({
+    signedPolicy: signed,
+    manifest: snapshotManifest,
+    persistedAtMs: decisionAtMs,
+  });
+  const membership = await repository.loadSignalTimeMembership(
+    snapshotManifest.snapshotSha256,
+    decisionAtMs,
+  );
+  await verifyUniverseSignalTimeMembership(membership);
+  assert.deepEqual(membership.eligiblePairs, ["BTC/AUD"]);
+  assert.equal(membership.snapshotSha256, snapshotManifest.snapshotSha256);
+  assert.equal(membership.signedPolicySha256, signed.signedPolicySha256);
+  sqlite.close();
+});
+
+test("fails closed when a persisted snapshot was unavailable or stale", async () => {
+  const { sqlite, repository } = await database();
+  const signed = await signedPolicy();
+  const snapshotManifest = await manifest(signed);
+  const persistedAtMs = AS_OF_MS + 1_000;
+  await repository.persist({
+    signedPolicy: signed,
+    manifest: snapshotManifest,
+    persistedAtMs,
+  });
+  await assert.rejects(
+    repository.loadSignalTimeMembership(
+      snapshotManifest.snapshotSha256,
+      AS_OF_MS,
+    ),
+    /not available/u,
+  );
+  await assert.rejects(
+    repository.loadSignalTimeMembership(
+      snapshotManifest.snapshotSha256,
+      AS_OF_MS + POLICY.maximumObservationAgeMs + 1,
+    ),
+    /stale/u,
+  );
+  sqlite.close();
+});
+
+test("binds complete verified memberships to exact backtest signal times", async () => {
+  const signed = await signedPolicy();
+  const snapshotManifest = await manifest(signed);
+  const decisionAtMs = AS_OF_MS + 1_000;
+  const membership = await prepareUniverseSignalTimeMembership({
+    decisionAtMs,
+    snapshotAvailableAtMs: decisionAtMs,
+    signedPolicy: signed,
+    manifest: snapshotManifest,
+  });
+  const steps = await bindUniverseMembershipToBacktestSteps(
+    [
+      backtestStep(decisionAtMs, [
+        {
+          pair: "BTC/AUD",
+          targetWeight: 1,
+          executionStyle: "taker",
+        },
+      ]),
+    ],
+    [membership],
+  );
+  const result = runUniverseBoundBacktest(BACKTEST_CONFIG, steps);
+  assert.equal(result.executions[0]?.side, "buy");
+  assert.deepEqual(result.universeMembershipSha256s, [
+    membership.membershipSha256,
+  ]);
+});
+
+test("rejects targets outside signal-time membership", async () => {
+  const signed = await signedPolicy();
+  const snapshotManifest = await manifest(signed);
+  const decisionAtMs = AS_OF_MS + 1_000;
+  const membership = await prepareUniverseSignalTimeMembership({
+    decisionAtMs,
+    snapshotAvailableAtMs: decisionAtMs,
+    signedPolicy: signed,
+    manifest: snapshotManifest,
+  });
+  const steps = await bindUniverseMembershipToBacktestSteps(
+    [
+      backtestStep(decisionAtMs, [
+        {
+          pair: "ETH/AUD",
+          targetWeight: 1,
+          executionStyle: "taker",
+        },
+      ]),
+    ],
+    [membership],
+  );
+  assert.throws(
+    () => runUniverseBoundBacktest(BACKTEST_CONFIG, steps),
+    /outside signal-time universe/u,
+  );
+});
+
+test("preserves exits after a held pair loses universe eligibility", async () => {
+  const signed = await signedPolicy();
+  const firstManifest = await manifest(signed);
+  const firstDecisionAtMs = AS_OF_MS + 1_000;
+  const secondDecisionAtMs = firstDecisionAtMs + 7_200_000;
+  const elapsedMs = secondDecisionAtMs - AS_OF_MS;
+  const ineligibleSnapshot: UniverseSnapshot = {
+    ...SNAPSHOT,
+    asOfMs: secondDecisionAtMs,
+    candidates: SNAPSHOT.candidates.map((candidate) => {
+      const { tier: _tier, ...withoutTier } = candidate;
+      if (candidate.listingAgeMs === undefined) {
+        throw new Error("Expected listing age in test fixture");
+      }
+      return {
+        ...withoutTier,
+        eligible: false,
+        reasons: ["not-eligible-at-signal-time"],
+        listingAgeMs: candidate.listingAgeMs + elapsedMs,
+      };
+    }),
+    eligiblePairs: [],
+  };
+  const secondManifest = await manifest(signed, ineligibleSnapshot);
+  const memberships = await Promise.all([
+    prepareUniverseSignalTimeMembership({
+      decisionAtMs: firstDecisionAtMs,
+      snapshotAvailableAtMs: firstDecisionAtMs,
+      signedPolicy: signed,
+      manifest: firstManifest,
+    }),
+    prepareUniverseSignalTimeMembership({
+      decisionAtMs: secondDecisionAtMs,
+      snapshotAvailableAtMs: secondDecisionAtMs,
+      signedPolicy: signed,
+      manifest: secondManifest,
+    }),
+  ]);
+  const steps = await bindUniverseMembershipToBacktestSteps(
+    [
+      backtestStep(firstDecisionAtMs, [
+        {
+          pair: "BTC/AUD",
+          targetWeight: 1,
+          executionStyle: "taker",
+        },
+      ]),
+      backtestStep(secondDecisionAtMs, []),
+    ],
+    memberships,
+  );
+  const result = runUniverseBoundBacktest(BACKTEST_CONFIG, steps);
+  assert.deepEqual(
+    result.executions.map((execution) => execution.side),
+    ["buy", "sell"],
+  );
+  assert.equal(result.finalPositions.length, 0);
+});
+
+test("rejects incomplete and identity-tampered backtest membership", async () => {
+  const signed = await signedPolicy();
+  const snapshotManifest = await manifest(signed);
+  const decisionAtMs = AS_OF_MS + 1_000;
+  const membership = await prepareUniverseSignalTimeMembership({
+    decisionAtMs,
+    snapshotAvailableAtMs: decisionAtMs,
+    signedPolicy: signed,
+    manifest: snapshotManifest,
+  });
+  await assert.rejects(
+    bindUniverseMembershipToBacktestSteps(
+      [backtestStep(decisionAtMs, [])],
+      [{ ...membership, eligiblePairs: ["ETH/AUD"] }],
+    ),
+    /identity is invalid/u,
+  );
+  await assert.rejects(
+    bindUniverseMembershipToBacktestSteps(
+      [backtestStep(decisionAtMs, [])],
+      [],
+    ),
+    /cover every/u,
+  );
+  assert.throws(
+    () =>
+      runUniverseBoundBacktest(BACKTEST_CONFIG, [
+        backtestStep(decisionAtMs, []),
+      ]),
+    /requires membership for every step/u,
+  );
 });

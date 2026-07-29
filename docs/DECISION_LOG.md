@@ -386,3 +386,10 @@ Accept a universe policy only after verifying a finite-validity P-256 signature 
 Bind each generated universe snapshot to the exact signed policy, one database-committed universe-ingestion batch and the batch's complete sorted source-digest membership. Re-verify scope, ordered candidate identity, lifecycle chronology, eligibility reasons and derived eligible-pair membership before content-addressing. Persist the policy and snapshot atomically; exact retries are idempotent while changed identity reuse, update, deletion, incomplete ingestion evidence and source-membership drift fail closed.
 
 This is a storage and provenance boundary only. It supplies no real owner signature or signing key and does not connect membership to strategy or execution. Signal-time strategy and backtest binding remains separate work; every market-data, strategy, signed-policy and risk gate remains mandatory.
+
+
+## 2026-07-29 — Persisted universe membership at backtest signal time
+
+Load a universe snapshot only by its exact persisted digest. Reconstruct and cryptographically re-verify the stored P-256 policy, snapshot manifest, ingestion batch and source membership before preparing a content-addressed signal-time membership artifact. The snapshot must have been persisted no later than the decision, remain within the signed policy validity interval and remain no older than the signed observation-freshness limit. Missing, malformed, future-unavailable, stale or identity-conflicting evidence fails closed.
+
+Require a universe-aware backtest to bind exactly one verified membership artifact to every signal time. Positive target weights must belong to that artifact's sorted eligible set; omitted or zero targets may still reduce or exit a position that subsequently became ineligible. Record the ordered membership identities in the result. Runtime strategy-decision binding remains separate and mandatory before this evidence can affect paper or live decisions. No deployment, signing material, credential, account, fund, wallet or order authority is added.

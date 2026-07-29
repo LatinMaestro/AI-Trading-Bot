@@ -191,6 +191,16 @@ export type {
   UniverseSnapshotManifest,
 } from "./signedPolicySnapshot.ts";
 
+export {
+  prepareUniverseSignalTimeMembership,
+  verifyUniverseSignalTimeMembership,
+} from "./signalTimeMembership.ts";
+
+export type {
+  PrepareUniverseSignalTimeMembershipInput,
+  UniverseSignalTimeMembership,
+} from "./signalTimeMembership.ts";
+
 export type {
   InstrumentKind,
   MarketDataQualityState,

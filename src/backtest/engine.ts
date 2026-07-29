@@ -13,6 +13,9 @@ import type {
   ExecutionStyle,
   TargetAllocation,
 } from "./types.ts";
+import type {
+  UniverseSignalTimeMembership,
+} from "../universe/signalTimeMembership.ts";
 
 const BPS_DENOMINATOR = 10_000;
 const EPSILON = 1e-9;
@@ -93,6 +96,45 @@ function validateExternalIntelligenceGate(
     throw new Error("External-intelligence gate reactions must be disjoint");
   }
   return gate;
+}
+
+function validateUniverseMembership(
+  step: BacktestStep,
+): UniverseSignalTimeMembership | null {
+  const membership = step.universeMembership;
+  if (membership === undefined) return null;
+  if (
+    membership.schemaVersion !== "universe-signal-time-membership-v1" ||
+    membership.decisionAtMs !== step.signalTimestampMs ||
+    !Number.isSafeInteger(membership.snapshotAsOfMs) ||
+    !Number.isSafeInteger(membership.snapshotAvailableAtMs) ||
+    membership.snapshotAsOfMs < 0 ||
+    membership.snapshotAsOfMs > membership.snapshotAvailableAtMs ||
+    membership.snapshotAvailableAtMs > membership.decisionAtMs ||
+    !SHA256_PATTERN.test(membership.snapshotSha256) ||
+    !SHA256_PATTERN.test(membership.signedPolicySha256) ||
+    !SHA256_PATTERN.test(membership.membershipSha256) ||
+    membership.eligiblePairs.length > 500 ||
+    membership.eligiblePairs.some(
+      (pair, index) =>
+        pair.length === 0 ||
+        pair.trim() !== pair ||
+        !pair.endsWith("/AUD") ||
+        (index > 0 &&
+          membership.eligiblePairs[index - 1]!.localeCompare(pair) >= 0),
+    )
+  ) {
+    throw new Error("backtest universe membership is invalid");
+  }
+  const eligible = new Set(membership.eligiblePairs);
+  if (
+    step.targets.some(
+      (target) => target.targetWeight > 0 && !eligible.has(target.pair),
+    )
+  ) {
+    throw new Error("backtest target is outside signal-time universe");
+  }
+  return membership;
 }
 
 function validateAssumptions(config: BacktestConfig): void {
@@ -546,12 +588,23 @@ export function runBacktest(
   const usesExternalIntelligenceGate = steps.some(
     (step) => step.externalIntelligenceGate !== undefined,
   );
+  const usesUniverseMembership = steps.some(
+    (step) => step.universeMembership !== undefined,
+  );
   if (
     usesExternalIntelligenceGate &&
     steps.some((step) => step.externalIntelligenceGate === undefined)
   ) {
     throw new Error(
       "External-intelligence execution gates must cover every backtest step",
+    );
+  }
+  if (
+    usesUniverseMembership &&
+    steps.some((step) => step.universeMembership === undefined)
+  ) {
+    throw new Error(
+      "signal-time universe membership must cover every backtest step",
     );
   }
 
@@ -562,12 +615,19 @@ export function runBacktest(
   const executions: BacktestExecution[] = [];
   const equityCurve: BacktestEquityPoint[] = [];
   const executionGateFrameSha256s: string[] = [];
+  const universeMembershipSha256s: string[] = [];
   const executionGateFrameIdentities = new Set<string>();
   const suppressedExecutions: BacktestSuppressedExecution[] = [];
   let previousExecutionTimestampMs: number | undefined;
   let highWaterMarkAud = config.initialCashAud;
 
   for (const step of steps) {
+    const universeMembership = validateUniverseMembership(step);
+    if (universeMembership !== null) {
+      universeMembershipSha256s.push(
+        universeMembership.membershipSha256,
+      );
+    }
     const externalIntelligenceGate =
       validateExternalIntelligenceGate(step);
     if (externalIntelligenceGate !== null) {
@@ -732,6 +792,7 @@ export function runBacktest(
     finalPositions,
     costs,
     executionGateFrameSha256s,
+    universeMembershipSha256s,
     suppressedExecutions,
   };
 }

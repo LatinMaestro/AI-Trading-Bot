@@ -91,7 +91,7 @@ A universe policy is accepted only as a finite-validity P-256 signature over the
 
 Each generated snapshot binds the exact signed policy, one database-committed universe-ingestion batch and its complete sorted source-digest membership. Candidate identity, eligibility reasons, lifecycle chronology and eligible-pair membership are re-verified before the snapshot is content-addressed and atomically persisted. Exact retries are idempotent; changed identity reuse, updates and deletions fail closed.
 
-Persistence does not make a snapshot strategy-authoritative. The strategy and backtest orchestrators must still load and verify the exact snapshot at the signal time before using its eligible membership.
+Persistence does not make a snapshot strategy-authoritative. The strategy and backtest orchestrators must still load and verify the exact snapshot at the signal time before using its eligible membership. The backtest boundary now loads one requested persisted snapshot by digest, re-verifies the signed policy and manifest, rejects evidence unavailable or stale at the decision, requires one membership artifact per step and rejects positive targets outside its eligible set. Exits remain permitted after eligibility loss. Runtime strategy-decision binding remains pending.
 
 ## Validation evidence
 
@@ -120,6 +120,6 @@ This contract does not yet:
 - backfill complete listing, trading-status, delisting and Australian-availability history;
 - derive cross-pair Australian-dollar valuation paths;
 - calibrate tier limits by venue, period, pair and portfolio scale;
-- connect exact persisted universe snapshots to the strategy and backtest orchestrators.
+- connect the verified membership artifact to runtime strategy-decision orchestration; backtest binding is complete.
 
 No strategy result may claim survivorship-safe venue-wide evidence until those inputs are versioned, reconciled and reproducible.
