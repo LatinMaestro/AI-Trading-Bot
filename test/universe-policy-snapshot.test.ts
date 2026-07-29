@@ -5,8 +5,8 @@ import { DatabaseSync } from "node:sqlite";
 import { canonicalIntelligenceJson } from "../src/intelligence/canonical.ts";
 import {
   bindUniverseMembershipToBacktestSteps,
+  runUniverseBoundBacktest,
 } from "../src/backtest/universeMembership.ts";
-import { runBacktest } from "../src/backtest/engine.ts";
 import type {
   BacktestConfig,
   BacktestStep,
@@ -576,7 +576,7 @@ test("binds complete verified memberships to exact backtest signal times", async
     ],
     [membership],
   );
-  const result = runBacktest(BACKTEST_CONFIG, steps);
+  const result = runUniverseBoundBacktest(BACKTEST_CONFIG, steps);
   assert.equal(result.executions[0]?.side, "buy");
   assert.deepEqual(result.universeMembershipSha256s, [
     membership.membershipSha256,
@@ -606,7 +606,7 @@ test("rejects targets outside signal-time membership", async () => {
     [membership],
   );
   assert.throws(
-    () => runBacktest(BACKTEST_CONFIG, steps),
+    () => runUniverseBoundBacktest(BACKTEST_CONFIG, steps),
     /outside signal-time universe/u,
   );
 });
@@ -662,7 +662,7 @@ test("preserves exits after a held pair loses universe eligibility", async () =>
     ],
     memberships,
   );
-  const result = runBacktest(BACKTEST_CONFIG, steps);
+  const result = runUniverseBoundBacktest(BACKTEST_CONFIG, steps);
   assert.deepEqual(
     result.executions.map((execution) => execution.side),
     ["buy", "sell"],
@@ -693,5 +693,12 @@ test("rejects incomplete and identity-tampered backtest membership", async () =>
       [],
     ),
     /cover every/u,
+  );
+  assert.throws(
+    () =>
+      runUniverseBoundBacktest(BACKTEST_CONFIG, [
+        backtestStep(decisionAtMs, []),
+      ]),
+    /requires membership for every step/u,
   );
 });
