@@ -128,6 +128,11 @@ export interface SignedStrategyAuthorisation
   readonly signedAuthorisationSha256: string;
 }
 
+export interface ReviewedP256VerificationKey {
+  readonly keyId: string;
+  readonly verificationKeySha256: string;
+}
+
 function assertCanonicalText(
   name: string,
   value: string,
@@ -173,6 +178,33 @@ function canonicalP256PublicKey(jwk: JsonWebKey): CanonicalP256PublicKey {
     throw new Error("verification key must be a public P-256 JWK");
   }
   return { kty: "EC", crv: "P-256", x: jwk.x, y: jwk.y };
+}
+
+export async function deriveP256VerificationKeySha256(
+  jwk: JsonWebKey,
+): Promise<string> {
+  return sha256CanonicalIntelligence(canonicalP256PublicKey(jwk));
+}
+
+async function assertReviewedVerificationKey(
+  keyId: string,
+  publicKey: CanonicalP256PublicKey,
+  reviewedKey: ReviewedP256VerificationKey,
+): Promise<string> {
+  assertCanonicalText("reviewedKey.keyId", reviewedKey.keyId, RECORD_ID);
+  assertDigest(
+    "reviewedKey.verificationKeySha256",
+    reviewedKey.verificationKeySha256,
+  );
+  const verificationKeySha256 =
+    await sha256CanonicalIntelligence(publicKey);
+  if (
+    keyId !== reviewedKey.keyId ||
+    verificationKeySha256 !== reviewedKey.verificationKeySha256
+  ) {
+    throw new Error("verification key does not match reviewed trust");
+  }
+  return verificationKeySha256;
 }
 
 function signatureBytes(signatureHex: string): ArrayBuffer {
@@ -326,12 +358,17 @@ export function strategyConfigurationSigningPayload(
 
 export async function prepareSignedStrategyConfiguration(
   input: SignedStrategyConfigurationInput,
+  reviewedKey: ReviewedP256VerificationKey,
 ): Promise<SignedStrategyConfiguration> {
   const publicKey = canonicalP256PublicKey(input.verificationKeyJwk);
+  const verificationKeySha256 = await assertReviewedVerificationKey(
+    input.signerKeyId,
+    publicKey,
+    reviewedKey,
+  );
   const signedPayloadJson = strategyConfigurationSigningPayload(input);
   await verifySignature(signedPayloadJson, input.signatureHex, publicKey);
   const verificationKeyJwkJson = canonicalIntelligenceJson(publicKey);
-  const verificationKeySha256 = await sha256CanonicalIntelligence(publicKey);
   const signedPayloadSha256 =
     await sha256CanonicalIntelligence(JSON.parse(signedPayloadJson));
   const envelope = {
@@ -362,6 +399,7 @@ export async function prepareSignedStrategyConfiguration(
 
 export async function verifySignedStrategyConfiguration(
   signed: SignedStrategyConfiguration,
+  reviewedKey: ReviewedP256VerificationKey,
 ): Promise<void> {
   let verificationKeyJwk: JsonWebKey;
   try {
@@ -371,16 +409,19 @@ export async function verifySignedStrategyConfiguration(
   } catch {
     throw new Error("strategy verification key JSON is invalid");
   }
-  const prepared = await prepareSignedStrategyConfiguration({
-    configurationVersion: signed.configurationVersion,
-    configuration: signed.configuration,
-    issuedAtMs: signed.issuedAtMs,
-    effectiveFromMs: signed.effectiveFromMs,
-    expiresAtMs: signed.expiresAtMs,
-    signerKeyId: signed.signerKeyId,
-    verificationKeyJwk,
-    signatureHex: signed.signatureHex,
-  });
+  const prepared = await prepareSignedStrategyConfiguration(
+    {
+      configurationVersion: signed.configurationVersion,
+      configuration: signed.configuration,
+      issuedAtMs: signed.issuedAtMs,
+      effectiveFromMs: signed.effectiveFromMs,
+      expiresAtMs: signed.expiresAtMs,
+      signerKeyId: signed.signerKeyId,
+      verificationKeyJwk,
+      signatureHex: signed.signatureHex,
+    },
+    reviewedKey,
+  );
   if (
     canonicalIntelligenceJson(prepared) !== canonicalIntelligenceJson(signed)
   ) {
@@ -464,16 +505,25 @@ export function strategyAuthorisationSigningPayload(
 export async function prepareSignedStrategyAuthorisation(
   input: SignedStrategyAuthorisationInput,
   configuration: SignedStrategyConfiguration,
+  configurationReviewedKey: ReviewedP256VerificationKey,
+  authorisationReviewedKey: ReviewedP256VerificationKey,
 ): Promise<SignedStrategyAuthorisation> {
-  await verifySignedStrategyConfiguration(configuration);
+  await verifySignedStrategyConfiguration(
+    configuration,
+    configurationReviewedKey,
+  );
   const publicKey = canonicalP256PublicKey(input.verificationKeyJwk);
+  const verificationKeySha256 = await assertReviewedVerificationKey(
+    input.authoriserKeyId,
+    publicKey,
+    authorisationReviewedKey,
+  );
   const signedPayloadJson = strategyAuthorisationSigningPayload(
     input,
     configuration,
   );
   await verifySignature(signedPayloadJson, input.signatureHex, publicKey);
   const verificationKeyJwkJson = canonicalIntelligenceJson(publicKey);
-  const verificationKeySha256 = await sha256CanonicalIntelligence(publicKey);
   const signedPayloadSha256 =
     await sha256CanonicalIntelligence(JSON.parse(signedPayloadJson));
   const envelope = {
@@ -513,6 +563,8 @@ export async function prepareSignedStrategyAuthorisation(
 export async function verifySignedStrategyAuthorisation(
   signed: SignedStrategyAuthorisation,
   configuration: SignedStrategyConfiguration,
+  configurationReviewedKey: ReviewedP256VerificationKey,
+  authorisationReviewedKey: ReviewedP256VerificationKey,
 ): Promise<void> {
   let verificationKeyJwk: JsonWebKey;
   try {
@@ -539,6 +591,8 @@ export async function verifySignedStrategyAuthorisation(
       signatureHex: signed.signatureHex,
     },
     configuration,
+    configurationReviewedKey,
+    authorisationReviewedKey,
   );
   if (
     canonicalIntelligenceJson(prepared) !== canonicalIntelligenceJson(signed)
