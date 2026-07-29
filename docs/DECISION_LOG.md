@@ -379,7 +379,6 @@ Re-verify exact payload length and SHA-256 through the bounded strict RSS parser
 
 Emit only neutral `regulatory-action` evidence under non-tradable `CFTC.REGULATOR`. Do not infer crypto relevance, severity, direction or asset scope from titles. The source cannot pause risk, create a positive candidate, approve an order or submit an order. No deployment, account, credential, fund, wallet or live authority is added.
 
-
 ## 2026-07-29 — Signed universe policy and immutable snapshot identity
 
 Accept a universe policy only after verifying a finite-validity P-256 signature over the exact venue/Australian scope, candidate order size, tier thresholds, calibration SHA-256 set, approval chronology and signer-key identity. Content-address the canonical public verification key, signed payload and complete signature envelope. Reject private JWK material, malformed or overlong validity, changed identity and failed signature verification.
