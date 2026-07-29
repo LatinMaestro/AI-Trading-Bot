@@ -110,9 +110,11 @@
   - [x] Add reproducible seeded moving-block bootstrap primitives.
   - [ ] Integrate validated walk-forward, holdout, benchmark and sensitivity inputs.
     - [x] Add content-addressed ordered walk-forward/final-holdout and same-period parameter-sensitivity manifests.
+    - [x] Persist immutable manifests with exact run memberships and bind their identities into research-report provenance.
 - [ ] Produce repeatable research reports and signed strategy configurations.
   - [x] Add content-addressed research-report v1 with mandatory provenance, benchmarks and explicit external-intelligence comparison identities.
   - [x] Persist reproducible content-addressed hourly candidate runs and bind their identities into research reports.
+  - [x] Bind immutable hourly evaluation-manifest identities into research reports.
   - [ ] Persist reports and bind approved strategy configurations to authorised signatures/approval records.
 
 ## Phase 2 — Aggressive strategy portfolio
