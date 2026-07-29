@@ -57,7 +57,9 @@ Historical input is accepted only from an exact reviewed source-contract version
 
 A prepared backfill must reconcile at least one exact committed REST candle. Every committed REST candle already stored within the selected CSV range must appear in the historical input and match OHLCV exactly. The complete capture, candle set and overlap evidence are content-addressed. Derived rows remain non-authoritative while chunked writes are incomplete; only a database-verified immutable commit marker makes the backfill complete. This does not connect historical candles to runtime strategy decisions.
 
-The validation and persistence boundary is implemented, but the actual official archive bytes have not yet been acquired or hashed. The four approved BTC/AUD and ETH/AUD 60-minute and 1,440-minute members therefore remain pending reviewed hosted capture and execution.
+A manual GitHub Actions workflow now provides the hosted acquisition boundary. It downloads only the exact reviewed complete-archive file, hashes the complete ZIP while it remains on the ephemeral runner, rejects unsafe or duplicate ZIP paths, extracts only one exact copy of each approved member, applies fatal UTF-8 decoding and the full CSV validator, and uploads only a content-addressed digest/count/range manifest for seven days. Raw ZIP and CSV bytes are not uploaded.
+
+The workflow has not executed because private-repository Actions capacity remains unavailable. Actual archive/member digests, REST reconciliation and the four immutable backfill executions therefore remain pending.
 
 ## Known limitation
 
