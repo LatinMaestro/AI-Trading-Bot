@@ -1,1 +1,147 @@
-PLACEHOLDER
+# Current status
+
+Last verified: 29 July 2026 (Australia/Brisbane)
+
+## Repository stack
+
+- Repository: `LatinMaestro/AI-Trading-Bot`
+- Draft stack: #1 foundation → #2 market data → #3 idempotency → #4 candles → #5 aggressive mandate → #6 backtest → #8 universe → #9 objective risk → #11 reports → #12 ingestion → #13 tax → #14 security → #15 universe persistence → #17 Kraken public quality → #19 scheduled universe cycle → #21 stored history evidence → #23 official lifecycle contracts → #25 lifecycle raw capture → #27 lifecycle document discovery → #28 external intelligence contracts → #29 external intelligence persistence → #30 external intelligence acquisition adapters → #31 minute intelligence queue pipeline → #32 Kraken Status incident intelligence → #33 durable external-intelligence cache → #34 discovered lifecycle document capture → #35 scheduled recursive lifecycle document cycle → #36 SEC press-release RSS intelligence → #37 RBA media-release RSS intelligence → #38 Kraken active-maintenance intelligence → #39 Reddit OAuth transport → #40 transient Reddit post retention → #41 purge-enforced Reddit watch-state persistence → #42 AUSTRAC RSS intelligence → #43 Bitcoin Core RSS intelligence → #44 fail-closed intelligence runtime bindings → #45 reviewed intelligence activation manifest → #46 deterministic intelligence evidence linking → #47 permitted-content repost and manipulation evidence → #48 manipulation-aware assessment persistence → #49 paper intelligence risk gate → #50 no-look-ahead intelligence replay → #51 replay-bound execution gate → #52 immutable comparison persistence and report provenance → #53 Ethereum Geth release intelligence → #54 committed lifecycle declaration evidence → #55 immutable lifecycle backfill completeness → #56 lifecycle declaration semantic gate → #57 CFTC press-release RSS intelligence → #58 signed universe policy snapshots → #59 signal-time universe membership → #60 runtime universe decision binding → #61 immutable runtime decision persistence → #62 scheduled immutable hourly/daily candle ingestion → #63 bounded scheduled candle gap repair and historical-source contract → #64 immutable sparse historical candle backfills → #65 hosted historical archive capture → #66 hourly trend/breakout research candidate → #67 universe-bound hourly candidate backtesting.
+- #7, #10, #16, #18, #20, #22, #24 and #26 were closed as superseded, reset or duplicate work.
+- All 59 active pull requests remain draft and unmerged.
+- `main` remains a one-line placeholder.
+- Deployment, credentials, funds and wallet connection: none.
+
+## Mandate and boundaries
+
+- Objective: aspirational US$200 → US$1,000,000 within five years; approximately 449.28% annual or 15.25% monthly compound growth required.
+- Research: market-cap agnostic; concentrated, high-volatility, high-turnover spot candidates permitted when after-cost evidence supports them.
+- Non-negotiable: spot only; no debt, leverage, derivatives, transfers, withdrawals, wallet signing, automatic top-up or access to other funds.
+- Live mode remains disabled and client-gated.
+
+## Verified slices
+
+- Foundation, market contracts, cycle/order idempotency and immutable candle persistence.
+- Aggressive mandate, execution-aware backtest, survivorship-safe universe and objective-risk metrics.
+- Mandatory benchmarks, content-addressed reports, AUD-valued universe ingestion and atomic batch persistence.
+- Australian tax exports and security/incident runbooks.
+- Kraken public quality: content-addressed AssetPairs/Ticker/Depth evidence and strict ticker/L2 quality calculations.
+- Scheduled universe cycle: bounded 15-minute depth rotation, fresh AUD paths, retry/timeout/size controls and atomic persistence before strategy evaluation.
+- Five focused orchestration tests and strict TypeScript checking pass in an isolated Node 22 harness.
+- The cycle audit records committed batch digest, selected/skipped pair counts and actual HTTP attempts.
+- Lifecycle events are never inferred from snapshots.
+- Stored history evidence: transactional aggregate counts/contiguity, bounded trailing volatility, signal-time availability, skew rejection and quality-manifest binding.
+- Official lifecycle contracts: allowlisted Kraken listing, delisting, status-incident and Australian-availability sources; deterministic coverage gaps; future-effective events; and relisting-era Australian reset.
+- PR #25 adds daily capture of fixed listing/delisting indexes and status feeds, full-body timeout and streaming limits, exact UTF-8/SHA-256 evidence, deduplicated immutable D1 payloads, commit markers and scheduled orchestration.
+- PR #25 strict TypeScript validation and 11/11 focused capture/persistence tests pass in an isolated hosted Node 22 harness.
+- PR #27 discovers canonical Kraken Blog listing articles and pagination plus generic Kraken Support lifecycle documents from exact preserved index captures, verifies payload identity, binds discovery provenance and applies bounded source-specific host/path rules without semantic extraction.
+- PR #27 strict TypeScript validation and 5/5 focused discovery tests pass in an isolated hosted Node 22 harness.
+- PR #28 defines near-real-time official/news/Reddit provenance, latency and deterministic reaction gates. Authoritative severe negative events may pause new risk; corroborated positive events create research candidates only; Reddit-only evidence remains watch-only.
+- PR #28 strict TypeScript validation and 7/7 focused reaction-gate tests pass in an isolated hosted Node 22 harness.
+- PR #29 adds versioned source contracts for provider, publisher, acquisition mode, licence, attribution, retention, deletion and model-use rules; immutable intelligence items; append-only corrections; deterministic assessment reproduction; content-addressed ingestion batches; and database-verified commit markers.
+- PR #29 strict source TypeScript validation plus focused hosted runtime and SQLite validation pass, including exact-retry idempotency, ten-statement atomic persistence, source-contract revocation, relational batch closure, post-commit membership immutability and incomplete-commit rejection.
+- PR #30 adds registry-bound bounded feed polling and authenticated webhook payload acquisition for approved official, regulator, issuer and publisher sources. It enforces source-contract origin/mode/effective-date checks, conditional polling, bounded transient retry, redirect/media-type/body-size/query rejection, full streamed-body deadlines, exact byte digests and explicit request/receipt/availability latency.
+- PR #30 strict source TypeScript validation and 7/7 focused adapter tests pass in an isolated hosted Node 22 harness.
+- PR #31 adds bounded content-addressed queue envelopes for normalised intelligence evidence, consumer-side deterministic assessment reproduction, per-message acknowledgement/retry and minute-source orchestration that exposes source failures as stale or delayed.
+- PR #31 excludes raw provider bytes and binary content, binds every queued item to the exact acquisition payload digest and receipt chronology, and advances cache validators only after successful enqueue or confirmed no-change/no-item processing.
+- PR #31 strict TypeScript validation and 7/7 focused queue/collector tests pass in an isolated hosted Node 22 harness.
+- PR #32 binds Kraken's official unresolved-incidents JSON endpoint to an exact digest-only minute source, verifies payload bytes and SHA-256, and normalises only structured Statuspage severity/status fields.
+- PR #32 maps only structured `major` and `critical` unresolved incidents to authoritative negative `network-incident` evidence; `minor` and `none` remain neutral. Raw update bodies are hashed but not retained or queued.
+- PR #32 strict TypeScript validation and 6/6 focused tests pass in an isolated hosted Node 22 harness.
+- PR #33 adds D1-backed conditional ETag/Last-Modified cache state with bounded canonical validation, monotonic observation time, exact-retry support and same-time conflict rejection.
+- PR #33 verifies every cache write by reading back the stored state; stale writes fail visibly instead of silently replacing newer validators.
+- PR #33 strict source TypeScript validation and 3/3 focused Node 22/SQLite tests pass in an isolated hosted harness.
+- PR #34 adds exact bounded HTML capture for discovered Kraken listing pages, listing documents and support lifecycle documents, with canonical target enforcement, redirect/media/size/UTF-8 controls, deterministic discovery provenance and retry-safe batches of at most ten targets.
+- PR #34 adds immutable D1 document-capture headers and commit markers linked to the exact committed index capture and payload that discovered each target; exact retries are idempotent and changed identities, incomplete provenance, mutation and commits before fetch fail closed.
+- PR #34 repository-equivalent strict TypeScript validation and 8/8 focused Node 22/SQLite tests pass in an isolated hosted harness.
+- PR #35 advances lifecycle discovery from the current fixed indexes plus the latest committed capture of each listing-index page, selects exact provenance deterministically, skips committed source references and captures at most ten documents in the daily lifecycle slot before universe evaluation.
+- PR #35 allows a captured listing-index page to serve as provenance only after its immutable document capture is committed, rotates through at most 32 latest page captures and 8 MiB of exact payloads per daily run, records the recursive frontier and capture counts in cycle audit detail, and performs no document work outside the daily slot.
+- PR #35 focused strict TypeScript validation and 13/13 focused Node/SQLite tests pass in an isolated hosted harness.
+- PR #36 adds a scheduled authoritative SEC press-release RSS manifest, runtime contact-bearing User-Agent enforcement and deterministic bounded metadata normalisation with exact payload verification, canonical SEC links, matching GUIDs and publication/receipt chronology.
+- PR #36 retains identity, source URL, chronology and digests but no titles or raw XML; every item is neutral `other` evidence scoped to non-tradable `SEC.REGULATOR`, so it cannot pause risk, create a positive candidate or submit/approve an order.
+- PR #36 isolated hosted strict TypeScript validation and 18/18 focused tests pass, including 5/5 SEC parser tests.
+- PR #37 adds a reusable strict RSS parser plus an exact scheduled RBA media-release manifest with WAF-aware source documentation, required attribution, digest-only retention and canonical release identity/chronology.
+- PR #37 emits only neutral `macro` evidence under non-tradable `AUD.MACRO`; it retains no titles or raw XML and cannot pause risk, create a positive candidate or submit/approve an order.
+- PR #37 isolated hosted strict TypeScript validation and 24/24 focused tests pass, including 6/6 RBA source tests.
+- PR #38 binds Kraken's official programmatic active-maintenance Status API endpoint to an account-free minute source with exact payload/page identity, active-state, schedule-chronology and update-identity validation.
+- PR #38 retains names and update bodies only through digests; `maintenance`, `none` and `minor` impacts remain neutral, while only structured `major` or `critical` impact may request `pause-new-risk` under non-tradable `KRAKEN.VENUE` scope.
+- PR #38 isolated hosted strict TypeScript validation and 31/31 focused tests pass, including 7/7 active-maintenance tests. Live endpoint identity/media type and documented programmatic access were verified; full live replay remains pending because direct hosted access returned an access-block HTML response.
+- PR #39 adds a bounded OAuth-only Reddit listing transport with truthful runtime User-Agent identity, exact approved subreddit targets, credential non-retention and adaptive header-derived pacing that preserves a 10% free-tier reserve.
+- PR #39 enforces metadata-only use, required deletion handling, no model-training use and at most 48-hour retention; invalid prior rate state, redirects, oversized/non-JSON responses, malformed limits and non-listing payloads fail closed.
+- PR #39 isolated hosted strict TypeScript validation and 39/39 focused tests pass, including 8/8 Reddit transport tests. Post normalization, deletion sweeps/corrections and approved deployed OAuth credentials remain pending.
+- PR #40 adds bounded canonical OAuth `/api/info` refresh targets, transient post metadata normalisation, immediate purge actions for missing/removed/expired observations and content-free aggregate compliance audits.
+- PR #40 discards titles, bodies, authors and provider permalinks, prevents post-level Reddit data from entering the durable intelligence queue, and avoids the immutable correction ledger because Reddit prohibits retaining deleted data even when de-identified.
+- PR #40 isolated hosted strict TypeScript validation and 44/44 focused tests pass, including 13 Reddit transport/lifecycle tests.
+- PR #41 adds dedicated transient D1 persistence with stable retry identity, non-extendable deletion deadlines, transaction-local purge authorization and expiry deletion that does not depend on provider availability.
+- PR #41 atomically invalidates aggregate watch state after removal and retains only content-free source-level audit/event counts; post identifiers and provider content never enter the immutable ledger or durable Queue.
+- PR #41 isolated hosted strict TypeScript validation and 50/50 focused tests pass, including 5/5 transient retention persistence tests.
+- PR #42 binds AUSTRAC's official media-release RSS feed to an account-free scheduled authoritative regulator manifest with exact payload verification, canonical current release links, matching GUIDs and publication/receipt chronology.
+- PR #42 retains no titles or raw XML and emits only neutral `regulatory-action` evidence under non-tradable `AUSTRAC.REGULATOR`; AUSTRAC's announced future feed withdrawal must surface as stale/unavailable without website-scraping fallback.
+- PR #42 isolated hosted strict TypeScript validation and 56/56 focused tests pass, including 6/6 AUSTRAC source tests. Official RSS-reader guidance, feed media type and copyright/attribution terms were verified on 28 July 2026; full live payload replay remains pending because the hosted web reader rejects RSS XML.
+- PR #43 binds Bitcoin Core's official English security/release announcement RSS feed to an account-free scheduled project-origin issuer manifest with exact payload verification, at most five canonical dated links, valid calendar dates, matching GUIDs and publication/receipt chronology.
+- PR #43 retains no titles or raw XML and emits only neutral `other` evidence under non-tradable `BTC.CORE`; authority is limited to Bitcoin Core software announcements and cannot pause risk, create a positive candidate or submit/approve an order.
+- PR #43 isolated hosted strict TypeScript validation and 62/62 focused tests pass, including 6/6 Bitcoin Core source tests. Official feed guidance, generator structure and the website repository's MIT licence notice were verified on 28 July 2026; full live feed replay remains pending because the hosted web reader rejects RSS XML.
+- PR #44 routes exact one-minute intelligence and 15-minute trading Cron events, binds the Kraken maintenance source to conditional D1 cache state, Queue production and the idempotent D1 consumer, and rejects unknown schedules or queue identities.
+- PR #44 adds a Preview-only bounded Queue consumer with at most ten messages, five-second batching, five retries, serial concurrency and an explicit DLQ. Collection remains exactly disabled with no committed source contract; Production explicitly has empty Queue and Cron configuration.
+- PR #44 isolated hosted strict TypeScript validation and 67/67 focused tests pass, including 5/5 runtime-binding tests. Wrangler 4.114.0 type generation and Preview/Production dry-run bundles completed without deployment or resource creation.
+- PR #45 adds a deterministic content-addressed Kraken maintenance Preview activation manifest that requires an exact reviewed licence-evidence SHA-256, valid chronology and renewal within 366 days; it does not commit real evidence or activation configuration.
+- PR #45 documents the owner-gated activation, evidence, verification and fail-closed rollback procedure. Isolated hosted strict TypeScript validation and 71/71 tests pass, including 4/4 activation-manifest tests.
+- PR #46 adds a content-addressed reviewed topic/entity registry, correction-effective evidence views and exact-content syndication clusters. One authority-ranked representative per cluster prevents copied content from inflating publisher corroboration; retractions/deletions remove active evidence while retaining correction digests.
+- PR #46 isolated hosted strict TypeScript validation and 79/79 tests pass, including 8/8 linkage tests.
+- PR #47 adds licensed/permitted-content fingerprints with exact effective-content binding, bounded five-token shingle digests, deterministic complete-link near-duplicate clusters and one corroboration unit per repost cluster.
+- PR #47 rejects digest-only, metadata-only and Reddit content, surfaces rapid multi-publisher near-duplicates as watch-only coordination patterns and retains no raw publisher text. Isolated hosted strict TypeScript validation and 87/87 tests pass, including 8/8 manipulation-evidence tests.
+- PR #48 adds immutable content-addressed linkage, manipulation-evidence and integrated-assessment persistence. Rapid reposts remain watch-only while authoritative severe negatives retain the fail-safe `pause-new-risk` boundary. Isolated hosted strict TypeScript validation and 92/92 tests pass.
+- PR #49 loads only fresh persisted effective pauses in paper mode, suppresses proposed buys while preserving exits, records immutable content-addressed risk events and binds evidence digests into the cycle audit. Isolated hosted strict TypeScript validation and 97/97 tests pass, including 5/5 paper-risk tests.
+- PR #50 adds deterministic complete-snapshot intelligence replay at hourly signal time, rejects look-ahead chronology and later-snapshot leakage, records publication/receipt/availability/assessment latency, expires reactions by versioned policy and keeps research candidates observational. Isolated hosted strict TypeScript validation and 103/103 tests pass, including 6/6 replay tests.
+- PR #51 binds exactly one verified replay frame to every backtest step, removes paused buy requests before fill modelling, preserves exits and partial-position reductions, audits suppressed notional/evidence and emits a content-addressed baseline comparison. Isolated hosted strict TypeScript validation and 116/116 tests pass, including 11/11 replay and 8/8 backtest-engine tests.
+- PR #52 separately hashes complete baseline and gated results, re-verifies exact replay/frame/suppression evidence, persists a compact immutable D1 comparison manifest and binds sorted unique comparison identities into research-report provenance. Isolated hosted strict TypeScript validation and 122/122 tests pass.
+- PR #53 binds the official account-free GitHub Releases API for `ethereum/go-ethereum` to a scheduled issuer manifest, validates bounded published non-draft release identity and chronology, and retains release names and bodies only through digests. Every item is neutral `other` evidence under non-tradable `ETH.GETH`.
+- PR #53 isolated hosted strict TypeScript validation and 128/128 tests pass, including 6/6 Geth release source tests. The Ethereum Foundation Blog feed was explicitly rejected because the current site terms prohibit automated access despite advertising RSS.
+- PR #54 binds every reviewed Kraken lifecycle declaration to an exact immutable source/document capture with a database commit marker before evidence preparation. Source class, URL, fetch time, payload SHA-256 and commit availability must all match; the sorted binding is content-addressed.
+- PR #54 isolated hosted strict TypeScript validation and 133/133 tests pass, including 5/5 committed-evidence binding tests.
+- PR #55 content-addresses and immutably persists lifecycle backfill coverage. Partial expected-pair sets remain explicitly non-authoritative; only database-verified all-pair completeness may become authoritative lifecycle evidence, without bypassing any other eligibility or risk gate.
+- PR #55 isolated hosted strict TypeScript validation and 138/138 tests pass, including 5/5 manifest and SQLite integrity tests.
+- PR #56 independently rejects noncanonical, empty, over-bounded, chronologically invalid, source-incompatible, scope-incompatible and duplicate reviewed lifecycle declarations before any D1 lookup or evidence preparation. Published future-effective events remain valid.
+- PR #56 isolated hosted strict TypeScript validation and 141/141 tests pass, including 8/8 committed-evidence semantic/binding tests.
+- PR #57 binds CFTC's official account-free General Press Releases RSS feed to a scheduled authoritative regulator manifest with exact payload verification, canonical numbered release URLs, matching GUIDs and publication/receipt chronology.
+- PR #57 retains no titles or raw XML and emits only neutral `regulatory-action` evidence under non-tradable `CFTC.REGULATOR`; it cannot pause risk, create a positive candidate or submit/approve an order.
+- PR #57 isolated hosted strict TypeScript validation, secret scan and 147/147 tests pass, including 6/6 CFTC source tests. A live 10-item feed replay passed against the official `application/rss+xml` response on 29 July 2026.
+- PR #58 verifies finite-validity P-256 universe policies, binds generated snapshots to exact committed ingestion/source evidence and persists both immutably without storing private signing material.
+- PR #58 isolated hosted strict TypeScript validation, 6/6 focused tests and 153/153 total tests pass; exact retries, source-membership drift, identity conflicts and mutation fail closed.
+- PR #59 loads one exact persisted snapshot by digest, re-verifies its P-256 policy and snapshot identities, rejects future-unavailable or stale membership, binds every backtest signal and target to one verified membership and preserves exits after eligibility loss.
+- PR #59 isolated hosted strict TypeScript validation and 159/159 tests pass, including 12/12 signed-policy, persistence and signal-time membership tests.
+- PR #60 requires one exact configured persisted snapshot before runtime public fetches, permits only the sorted configured/eligible intersection to reach momentum scoring and content-addresses the proposed decision with its verified policy, snapshot and membership identities. Empty, stale, future-unavailable, out-of-membership and tampered evidence fails closed.
+- PR #60 isolated hosted strict TypeScript validation and 165/165 tests pass, including 6/6 runtime universe-decision binding tests.
+- PR #61 persists each complete verified decision artifact once by digest and binds every runtime cycle immutably. Exact artifact reuse across retry cycles remains valid; one cycle cannot be rebound to a different decision.
+- PR #61 isolated hosted strict TypeScript validation, SQLite migration checks and 171/171 tests pass, including 6/6 immutable decision-persistence tests. Direct D1 inserts also reject noncanonical pairs, malformed artifact JSON and pre-decision persistence.
+- PR #62 incrementally fetches configured BTC/AUD and ETH/AUD Kraken OHLC at 60 and 1,440 minutes, enforces a streamed byte limit and strict UTF-8, discards the current row, applies interval-specific quality gates, preserves exact response digests and persists before universe/strategy evaluation.
+- PR #62 isolated hosted strict TypeScript validation, targeted secret scan and 179/179 tests pass, including 8/8 scheduled acquisition, streamed-body, retry, provenance, aggregate-history and SQLite cursor tests.
+- PR #63 scans each exact current 719-committed-row REST window, permits one bounded overlapping repair capture, re-reads the exact range and fails closed on remaining repairable gaps. It also binds Kraken's official downloadable historical OHLCVT archive to a versioned research-only source contract with mandatory raw/member digests and no forward-filling.
+- PR #63 hosted dependency-slice strict TypeScript validation, targeted secret scan and 183/183 tests pass, including 10/10 scheduled acquisition/repair and 2/2 historical-source contract tests.
+- PR #64 strictly validates bounded digest-bound sparse historical CSVs, requires complete exact committed-REST overlap, and persists immutable archive/member provenance, candles and memberships through bounded chunks whose final database commit marker proves completeness.
+- PR #64 hosted strict TypeScript validation, targeted secret scan and 188/188 tests pass, including 5/5 historical validation, reconciliation, SQLite idempotency, incomplete-commit and immutability tests. The actual official archive bytes and four approved member backfills remain pending.
+- PR #65 adds a manual contents-read-only hosted capture workflow that keeps the exact archive and selected CSVs ephemeral, rejects unsafe/duplicate ZIP membership, validates only the four approved members and uploads a seven-day digest/count/range manifest.
+- PR #65 hosted strict TypeScript validation and 191/191 tests pass, including 3/3 synthetic archive capture, missing-member, traversal, CLI and raw-content exclusion tests. The workflow has not executed and no real archive digest is claimed.
+- PR #66 adds a pure deterministic hourly Donchian/EMA/momentum candidate using prior-candle channels, one long position at 90% target exposure, AUD cash otherwise and no same-signal rotation after exit. It remains research-only and does not replace the daily runtime regression baseline.
+- PR #66 hosted strict TypeScript validation, targeted secret scan and 197/197 tests pass, including 6/6 hourly candidate entry, no-look-ahead, cash, low-turnover, exit and fail-closed tests. No profitability or promotion claim is made.
+- PR #67 binds every hourly candidate decision to exact verified signal-time universe membership, validates both configured pair histories before eligibility filtering, preserves AUD cash and eligibility-loss exits, and content-addresses the complete plan before the existing execution-aware engine runs.
+- PR #67 hosted strict TypeScript validation, targeted secret scan and 201/201 tests pass, including 10/10 hourly candidate and membership-bound backtest tests. The candidate remains unselected, unpromoted and runtime-disconnected.
+- Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #48, #49, #50, #51, #52, #53, #54, #55, #56, #57, #58, #59, #60, #61, #62, #63, #64, #65, #66 and #67 remain blocked before workflow steps.
+- A truthful runtime SEC contact, exact reviewed Kraken source evidence and owner-approved Preview Queue/DLQ provisioning and collector activation, additional approved issuer/news manifests/parsers/signatures and approved hosted Reddit OAuth credentials remain pending.
+- Missing, gapped, stale, delayed or insufficient evidence remains non-authoritative for strategy selection.
+- No private API, credential, fund, wallet or live-order capability changed.
+
+## External blocker
+
+GitHub Actions private-repository capacity remains unavailable until 1 August 2026. Exact-head jobs fail before steps or logs.
+
+Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #48, #49, #50, #51, #52, #53, #54, #55, #56, #57, #58, #59, #60 or #61 or #62 or #63 or #64 or #65 or #66 or #67 until fresh exact-head checks pass and the stack merges in order.
+
+## Next unblocked work
+
+1. Bind immutable hourly candidate backtest results into repeatable research-report provenance without selecting or promoting the strategy.
+2. Add further account-free approved issuer/news manifests and deterministic parsers while hosted archive execution remains capacity-blocked; keep deployed SEC collection blocked until a truthful public contact is configured.
+3. Run the manual complete-archive capture after Actions capacity returns, review its actual archive/member digests, reconcile committed REST overlap and execute immutable backfills.
+4. Populate complete reviewed Kraken lifecycle historical declarations using only committed-payload bindings and immutable coverage manifests.
+5. Integrate validated walk-forward, final-holdout, benchmark, parameter-sensitivity and ruin inputs after historical evidence is authoritative.
+
+Do not deploy, request credentials, create provider accounts, accept paid terms, move funds or enable live execution.
