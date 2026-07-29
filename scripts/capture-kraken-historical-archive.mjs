@@ -124,6 +124,7 @@ function validateArchivePath(entry) {
     path.length === 0 ||
     path.length > 512 ||
     path.includes("\\") ||
+    /[*?[\]\u0000-\u001f\u007f]/u.test(path) ||
     path.startsWith("/") ||
     /^[A-Za-z]:/u.test(path)
   ) {
