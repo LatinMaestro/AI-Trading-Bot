@@ -73,6 +73,7 @@ D1 stores:
 - immutable discovered lifecycle document captures bound to their exact discovery and committed index provenance;
 - immutable public market-data batch provenance;
 - immutable committed 60-minute and daily OHLCV candles;
+- immutable sparse historical OHLCVT candles, archive/CSV manifests, source memberships and database-verified backfill commits;
 - versioned market definitions;
 - immutable listing, trading-status, delisting and Australian-availability events;
 - immutable market-quality observations for spread, turnover, depth, impact, minimums, valuation and data state;
