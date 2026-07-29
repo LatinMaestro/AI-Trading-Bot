@@ -402,3 +402,11 @@ Require one exact configured persisted universe-snapshot digest before runtime m
 Intersect configured pairs with the verified eligible membership, sort that intersection deterministically and permit only those markets to reach the momentum strategy. Content-address the complete proposed decision with the exact signed-policy, snapshot and signal-time membership identities. A buy outside membership, malformed AUD-cash hold, unsorted signal set or changed binding fails closed; exits remain structurally permitted after eligibility loss.
 
 Keep the selector empty in committed Preview and Production configuration so no hosted strategy decision is generated without a separately reviewed signed snapshot. The binding is audit evidence only: it cannot approve an order, bypass market-data, liquidity, strategy, intelligence or risk gates, or enable deployment, signing material, credentials, funds, wallet access or live execution.
+
+## 2026-07-29 — Immutable runtime strategy-decision persistence
+
+Persist every verified universe-bound runtime decision before external-intelligence or order processing. Store the complete canonical artifact once under its content digest, then bind each canonical runtime cycle UUID to that artifact in a separate immutable table. This allows an identical decision artifact to support distinct retry cycles without duplicating its payload while preventing one cycle from being rebound to different decision evidence.
+
+Re-verify the complete decision identity and reproduce its binding from the exact signal-time membership before preparing D1 writes. Persist artifact and cycle membership atomically, read both records back and compare every identity and decision field. Exact retries preserve the first cycle persistence time; digest collisions, changed artifact content, cycle rebinding, updates and deletes fail closed through application and database constraints.
+
+This is an audit boundary for the proposed deterministic decision. External-intelligence gating remains downstream and may only suppress new paper risk; market-data, liquidity, impact, signed-policy and risk gates remain mandatory. No deployment, credential, signing key, account, fund, wallet or live-order authority is added.

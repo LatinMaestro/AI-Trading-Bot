@@ -50,6 +50,7 @@
     - [x] Verify expiring P-256 policy signatures and immutably persist content-addressed snapshots bound to exact committed ingestion evidence.
     - [x] Re-verify exact persisted snapshot availability and membership at decision time, then bind every backtest step and target to that evidence.
     - [x] Bind the same verified membership artifact to runtime strategy-decision orchestration.
+    - [x] Persist complete content-addressed runtime decisions with immutable cycle bindings and exact-retry verification.
 - [ ] Add near-real-time external intelligence from official sources, news and Reddit.
   - [x] Define deterministic provenance, latency, source-authority, retention and reaction contracts.
   - [x] Prevent Reddit-only/social-only evidence from creating a risk-on candidate.
