@@ -20,6 +20,9 @@
   - [x] Add immutable hashed batch and candle persistence.
   - [x] Add strict expected-range gap detection and Kraken REST-horizon classification.
   - [ ] Add scheduled gap repair and an approved historical source for data outside Kraken's REST horizon.
+    - [x] Scan the exact current 719-committed-row REST window after scheduled persistence, perform at most one bounded overlapping repair capture per pair/interval, and fail closed if any repairable gap remains.
+    - [x] Approve Kraken's official downloadable historical OHLCVT archive as the reproducible account-free source beyond the REST horizon, with content-addressed capture and no forward-filling.
+    - [ ] Capture and hash exact complete/quarterly archives, validate the BTC/AUD and ETH/AUD CSV members, reconcile REST overlap, and persist derived candles immutably.
 - [ ] Build a dynamic market-cap-agnostic spot universe from current Australian venue metadata.
   - [x] Define immutable versioned market definitions, lifecycle events and quality observations.
   - [x] Reconstruct established, high-volatility and new-listing tiers at historical signal times.
