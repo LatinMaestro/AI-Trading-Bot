@@ -2,13 +2,13 @@ import {
   canonicalIntelligenceJson,
   sha256CanonicalIntelligence,
 } from "../intelligence/canonical.ts";
+import {
+  HOURLY_TREND_BREAKOUT_STRATEGY_VERSION,
+} from "../strategies/hourlyTrendBreakout.ts";
 
 const SHA256_HEX = /^[0-9a-f]{64}$/u;
 const MAXIMUM_EVIDENCE_REFERENCES = 64;
 const MAXIMUM_ARTIFACTS_PER_GATE = 32;
-
-export const HOURLY_TREND_BREAKOUT_READINESS_STRATEGY_VERSION =
-  "hourly-trend-breakout-v0.1.0" as const;
 
 export const REQUIRED_HOURLY_TREND_BREAKOUT_READINESS_GATES = [
   {
@@ -120,7 +120,7 @@ export interface HourlyTrendBreakoutReadinessGateAssessment {
 export interface HourlyTrendBreakoutReadinessAssessment {
   readonly schemaVersion: "hourly-trend-breakout-readiness-v1";
   readonly strategyVersion:
-    typeof HOURLY_TREND_BREAKOUT_READINESS_STRATEGY_VERSION;
+    typeof HOURLY_TREND_BREAKOUT_STRATEGY_VERSION;
   readonly candidateStatus: "unselected-research-only";
   readonly decisionAuthority: "none";
   readonly assessedAtMs: number;
@@ -236,7 +236,7 @@ export async function prepareHourlyTrendBreakoutReadinessAssessment(
   const promotionGates = gates.filter((gate) => gate.stage === "promotion");
   const envelope = {
     schemaVersion: "hourly-trend-breakout-readiness-v1",
-    strategyVersion: HOURLY_TREND_BREAKOUT_READINESS_STRATEGY_VERSION,
+    strategyVersion: HOURLY_TREND_BREAKOUT_STRATEGY_VERSION,
     candidateStatus: "unselected-research-only",
     decisionAuthority: "none",
     assessedAtMs: input.assessedAtMs,
