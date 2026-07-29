@@ -47,7 +47,7 @@ Trading-cycle orchestrator
 2. Load runtime state and verify mode.
 3. At the daily 00:00 UTC slot, capture and atomically persist the fixed official Kraken listing/delisting indexes and status feeds. Any incomplete or malformed capture set fails the slot.
 4. Load only committed external-intelligence assessments available by the decision timestamp. External intelligence may pause new risk or create a research candidate; it cannot submit or approve an order.
-5. Discover the configured Australian Kraken spot markets and incrementally fetch both 60-minute and 1,440-minute OHLC with `assetVersion=1`, bounded retries, response limits and exact response digests.
+5. Discover the configured Australian Kraken spot markets and incrementally fetch both 60-minute and 1,440-minute OHLC with `assetVersion=1`, bounded retries, a streamed byte limit, strict UTF-8 and exact response digests.
 6. Discard Kraken's always-present current row, apply interval-specific alignment, contiguity, OHLCV, closure and freshness gates, then persist accepted batches and candles immutably before universe or strategy evaluation.
 7. Re-read aggregate committed history at the acquisition-availability time and require at least 220 complete candles at both intervals for every configured pair. Missing, duplicate, stale, conflicting or unrecoverable data fails the cycle closed.
 8. Reconstruct the Australian-available spot universe from definitions, lifecycle events and quality observations knowable at the signal time.
