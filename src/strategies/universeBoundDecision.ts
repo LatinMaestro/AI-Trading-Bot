@@ -76,11 +76,10 @@ function assertDecision(decision: StrategyDecision): void {
   }
 }
 
-function assertSignals(
-  signals: readonly AssetSignal[],
-  membership: UniverseSignalTimeMembership,
-): void {
-  const eligible = new Set(membership.eligiblePairs);
+function assertSignalOrderAndShape(signals: readonly AssetSignal[]): void {
+  if (signals.length > 500) {
+    throw new Error("strategy signals exceed the bounded universe");
+  }
   signals.forEach((signal, index) => {
     if (
       !CANONICAL_AUD_PAIR.test(signal.pair) ||
@@ -88,6 +87,47 @@ function assertSignals(
     ) {
       throw new Error("strategy signals must be canonical, sorted and unique");
     }
+    for (const value of [
+      signal.latestPrice,
+      signal.ema200,
+      signal.return7d,
+      signal.return30d,
+      signal.return90d,
+      signal.annualisedVolatility,
+      signal.recentDrawdown,
+      signal.score,
+    ]) {
+      if (!Number.isFinite(value)) {
+        throw new Error("strategy signal values must be finite");
+      }
+    }
+    if (
+      signal.latestPrice <= 0 ||
+      signal.ema200 <= 0 ||
+      signal.annualisedVolatility < 0 ||
+      signal.recentDrawdown < 0 ||
+      signal.recentDrawdown > 1 ||
+      signal.reasons.length === 0 ||
+      signal.reasons.length > 20 ||
+      signal.reasons.some(
+        (reason) =>
+          reason.trim() !== reason ||
+          reason.length === 0 ||
+          reason.length > 100,
+      )
+    ) {
+      throw new Error("strategy signal shape is invalid");
+    }
+  });
+}
+
+function assertSignals(
+  signals: readonly AssetSignal[],
+  membership: UniverseSignalTimeMembership,
+): void {
+  assertSignalOrderAndShape(signals);
+  const eligible = new Set(membership.eligiblePairs);
+  signals.forEach((signal) => {
     if (!eligible.has(signal.pair)) {
       throw new Error(
         `${signal.pair} strategy signal is outside verified universe membership`,
@@ -174,20 +214,22 @@ export async function verifyUniverseBoundStrategyDecision(
     }
   }
   assertDecision(artifact.decision);
+  assertSignalOrderAndShape(artifact.decision.signals);
+  const envelope = {
+    schemaVersion: artifact.schemaVersion,
+    decisionAtMs: artifact.decisionAtMs,
+    membershipSha256: artifact.membershipSha256,
+    snapshotSha256: artifact.snapshotSha256,
+    signedPolicySha256: artifact.signedPolicySha256,
+    decision: artifact.decision,
+  } as const;
   const expected = await sha256CanonicalIntelligence(
-    canonicalBinding({
-      schemaVersion: artifact.schemaVersion,
-      decisionAtMs: artifact.decisionAtMs,
-      membershipSha256: artifact.membershipSha256,
-      snapshotSha256: artifact.snapshotSha256,
-      signedPolicySha256: artifact.signedPolicySha256,
-      decision: artifact.decision,
-    }),
+    canonicalBinding(envelope),
   );
   if (
     expected !== artifact.bindingSha256 ||
     canonicalIntelligenceJson(artifact) !==
-      canonicalIntelligenceJson({ ...artifact, bindingSha256: expected })
+      canonicalIntelligenceJson({ ...envelope, bindingSha256: expected })
   ) {
     throw new Error("universe-bound strategy decision identity is invalid");
   }
