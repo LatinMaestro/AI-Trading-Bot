@@ -122,6 +122,8 @@ External-intelligence backtest comparison manifests re-verify the complete repla
 
 Hourly trend/breakout research runs bind the exact universe-verified plan, execution configuration and complete backtest result into one reproducible content identity. Verification re-runs the execution-aware backtest before persistence. D1 stores a compact immutable manifest of identities and derived aggregate metrics; conflicting retries, updates and deletes fail closed. Research reports bind sorted unique run identities, including an explicit empty list when no strategy run was evaluated. Run identity proves reproducibility only and cannot select or promote a strategy.
 
+Hourly evaluation manifests compose only verified research-run identities. Walk-forward evidence enforces ordered folds, later validation periods and a strictly later unique final holdout under one policy and execution configuration. Sensitivity evidence requires same-period runs, unique policies and exactly one baseline; variants are canonically ordered without a winner field. These content identities record research structure only and cannot activate a strategy.
+
 Reddit post-level state uses a separate transient boundary and never enters the immutable intelligence ledger or durable Queue. D1 preserves only bounded post identity metadata until the original deletion deadline. Deletes require a transaction-local purge authorization; provider removals and deadline expiry atomically delete transient rows, record only aggregate content-free compliance evidence and invalidate downstream watch state. Failed provider refreshes cannot extend retention.
 
 ## AI design
