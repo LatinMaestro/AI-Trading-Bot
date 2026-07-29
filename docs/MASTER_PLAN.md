@@ -117,7 +117,8 @@
   - [x] Persist reproducible content-addressed hourly candidate runs and bind their identities into research reports.
   - [x] Bind immutable hourly evaluation-manifest identities into research reports.
   - [x] Content-address the complete hourly final-holdout research evaluation with explicit aspirational-objective, complete-loss and non-promotion warnings.
-  - [ ] Persist reports and bind approved strategy configurations to authorised signatures/approval records.
+  - [x] Persist immutable complete-evaluation reports with database-verified bounded chunk commits.
+  - [ ] Bind approved strategy configurations to authorised signatures/approval records.
 
 ## Phase 2 — Aggressive strategy portfolio
 
