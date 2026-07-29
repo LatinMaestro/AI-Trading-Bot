@@ -70,4 +70,6 @@ Point-in-time loading is digest-selected rather than latest-record-selected. At 
 
 Persistence always repeats that verification, then stores one immutable compact evidence row. D1 rejects missing or backdated evidence, omitted then-known revocations, effective revocations, changed natural identities, conflicts, updates and deletion. Persistence neither selects the candidate nor consumes external authorisation.
 
+A deterministic review proposal may reference one exact verification identity and one separately signed external authorisation. Proposal construction re-verifies both role-separated trust paths, rejects expired or revoked evidence, mismatched capital/evaluation/readiness bindings and self-authorisation, and content-addresses the mandatory complete-loss, aspirational-objective and non-activation warnings. The candidate remains unselected; the proposal has no selection decision, activation authority or execution authority.
+
 The module produces targets only. It does not submit or approve orders, activate paper/live mode, connect credentials or weaken any market-data, liquidity, intelligence, risk or execution gate.

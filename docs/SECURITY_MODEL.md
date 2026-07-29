@@ -65,6 +65,8 @@ Runtime preparation accepts only an exact signed-configuration digest and explic
 
 The verification artifact is persisted only after the repository repeats the complete load and verification. D1 independently requires the same exact configuration, active trust state, then-known non-effective revocation state, fresh readiness, complete evaluation, report commit, calibration and stress identities at the decision timestamp. Exact retries preserve the first row; natural-identity conflicts, updates and deletion fail closed.
 
+A selection-review proposal must bind that exact verification digest to a separately signed authorisation, revalidate both signer roles and effective revocations at proposal time, reject self-authorisation and preserve the reviewed capital limit and mandatory loss/objective warnings. The proposal remains explicitly unselected and grants no activation or execution authority.
+
 ## Supply-chain controls
 
 - Minimise runtime dependencies.
