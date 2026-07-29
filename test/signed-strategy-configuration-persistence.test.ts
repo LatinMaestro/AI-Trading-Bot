@@ -31,6 +31,7 @@ import {
 import {
   prepareSignedStrategyAuthorisationPersistence,
   prepareSignedStrategyConfigurationPersistence,
+  prepareVerifiedStrategyConfigurationPersistence,
   SignedStrategyConfigurationRepository,
   type SignedStrategyPersistenceStatement,
 } from "../src/storage/signedStrategyConfiguration.ts";
@@ -124,6 +125,10 @@ function d1Database(db: DatabaseSync): D1Database {
             results: db.prepare(sql).all(...params) as T[],
             meta: {},
           };
+        },
+        async run() {
+          db.prepare(sql).run(...params);
+          return { success: true, meta: {} };
         },
       };
       return prepared;
@@ -259,6 +264,15 @@ async function database(
     readFileSync(
       new URL(
         "../migrations/0026_strategy_signer_trust.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
+  db.exec(
+    readFileSync(
+      new URL(
+        "../migrations/0027_verified_strategy_configuration_at_time.sql",
         import.meta.url,
       ),
       "utf8",
@@ -728,6 +742,133 @@ test("point-in-time loading observes only known revocations and exact evidence",
       10_010,
     ),
     /evaluation binding is invalid/u,
+  );
+});
+
+test("persists point-in-time verification immutably and idempotently", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture = await configurationFixture(readinessAssessmentSha256);
+  await persistTrustAnchor(db, fixture.trustAnchor);
+  execute(
+    db,
+    await prepareSignedStrategyConfigurationPersistence({
+      configuration: fixture.configuration,
+      signerTrustAnchor: fixture.trustAnchor,
+      signerTrustRevocation: null,
+      persistedAtMs: 10_006,
+    }),
+  );
+  const repository =
+    new SignedStrategyConfigurationRepository(d1Database(db));
+  const first = await repository.persistVerifiedConfigurationAtTime(
+    fixture.configuration.signedConfigurationSha256,
+    10_010,
+    10_013,
+  );
+  const retry = await repository.persistVerifiedConfigurationAtTime(
+    fixture.configuration.signedConfigurationSha256,
+    10_010,
+    10_014,
+  );
+  assert.equal(
+    retry.verificationEvidenceSha256,
+    first.verificationEvidenceSha256,
+  );
+  const row = db.prepare(
+    `SELECT selection_authority, execution_authority, persisted_at_ms
+     FROM hourly_trend_breakout_verified_configurations`,
+  ).get() as Record<string, unknown>;
+  assert.equal(row.selection_authority, "none");
+  assert.equal(row.execution_authority, "none");
+  assert.equal(row.persisted_at_ms, 10_013);
+  assert.throws(
+    () => db.prepare(
+      "DELETE FROM hourly_trend_breakout_verified_configurations",
+    ).run(),
+    /immutable/u,
+  );
+  assert.throws(
+    () => db.prepare(
+      `UPDATE hourly_trend_breakout_verified_configurations
+       SET persisted_at_ms = 10014`,
+    ).run(),
+    /immutable/u,
+  );
+  await assert.rejects(
+    prepareVerifiedStrategyConfigurationPersistence({
+      verification: {
+        ...first,
+        executionAuthority: "paper" as never,
+      },
+      persistedAtMs: 10_014,
+    }),
+    /identity is invalid/u,
+  );
+});
+
+test("database rejects a verification that omits then-known revocation", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture = await configurationFixture(readinessAssessmentSha256);
+  await persistTrustAnchor(db, fixture.trustAnchor);
+  execute(
+    db,
+    await prepareSignedStrategyConfigurationPersistence({
+      configuration: fixture.configuration,
+      signerTrustAnchor: fixture.trustAnchor,
+      signerTrustRevocation: null,
+      persistedAtMs: 10_006,
+    }),
+  );
+  const repository =
+    new SignedStrategyConfigurationRepository(d1Database(db));
+  const stale = await repository.loadVerifiedConfigurationAtTime(
+    fixture.configuration.signedConfigurationSha256,
+    10_010,
+  );
+  const revocation = await prepareStrategySignerTrustRevocation(
+    {
+      revocationId: "known-future-effective-revocation-v1",
+      trustAnchorSha256: fixture.trustAnchor.trustAnchorSha256,
+      reason: "planned-rotation",
+      effectiveAtMs: 10_011,
+      reviewedAtMs: 10_008,
+      reviewEvidenceSha256: "8".repeat(64),
+    },
+    fixture.trustAnchor,
+  );
+  execute(
+    db,
+    await prepareStrategySignerTrustRevocationPersistence(
+      revocation,
+      fixture.trustAnchor,
+      10_009,
+    ),
+  );
+  const staleStatement =
+    await prepareVerifiedStrategyConfigurationPersistence({
+      verification: stale,
+      persistedAtMs: 10_013,
+    });
+  assert.throws(
+    () => execute(db, staleStatement),
+    /evidence is invalid/u,
+  );
+  const persisted = await repository.persistVerifiedConfigurationAtTime(
+    fixture.configuration.signedConfigurationSha256,
+    10_010,
+    10_013,
+  );
+  assert.equal(
+    persisted.signerTrustRevocationSha256,
+    revocation.revocationSha256,
+  );
+  await assert.rejects(
+    repository.persistVerifiedConfigurationAtTime(
+      fixture.configuration.signedConfigurationSha256,
+      10_012,
+      10_013,
+    ),
+    /trust is revoked/u,
   );
 });
 
