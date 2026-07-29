@@ -189,10 +189,14 @@ export function buildHourlyTrendBreakoutSignal(
   ) {
     throw new Error(`${pair} produced invalid hourly strategy metrics`);
   }
+  const signalTimestampMs = latest.timestampMs + HOUR_MS;
+  if (!Number.isSafeInteger(signalTimestampMs)) {
+    throw new Error(`${pair} produced an invalid closed-hour signal time`);
+  }
 
   return {
     pair,
-    signalTimestampMs: latest.timestampMs,
+    signalTimestampMs,
     entryEligible,
     exitTriggered,
     latestClose: latest.close,
