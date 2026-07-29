@@ -248,6 +248,46 @@ test("rejects oversized and unsupported responses before parsing", async () => {
   assert.equal(store.inputs.length, 0);
 });
 
+test("enforces the response limit while streaming and rejects invalid UTF-8", async () => {
+  for (const mode of ["stream-size", "utf8"] as const) {
+    const store = new MemoryStore();
+    let cancelled = false;
+    const chunks =
+      mode === "stream-size"
+        ? [new Uint8Array(600_000), new Uint8Array(600_000)]
+        : [Uint8Array.from([0xc3, 0x28])];
+    const body = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        const chunk = chunks.shift();
+        if (chunk !== undefined) controller.enqueue(chunk);
+      },
+      cancel() {
+        cancelled = true;
+      },
+    });
+    await assert.rejects(
+      runScheduledKrakenCandleCycle({
+        scheduledAtMs: SCHEDULED_AT_MS,
+        pairs: [pair],
+        store,
+        historyProvider: () => Promise.resolve(history()),
+        fetchImpl: () =>
+          Promise.resolve(
+            new Response(body, {
+              headers: { "Content-Type": "application/json" },
+            }),
+          ),
+        nowMs: monotonicClock(),
+        sleep: () => Promise.resolve(),
+        requestSpacingMs: 0,
+      }),
+      mode === "stream-size" ? /body is oversized/u : /not valid UTF-8/u,
+    );
+    assert.equal(store.inputs.length, 0);
+    assert.equal(cancelled, true);
+  }
+});
+
 test("fails closed when aggregate persisted history remains incomplete", async () => {
   const store = new MemoryStore();
   await assert.rejects(
