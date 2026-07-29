@@ -393,3 +393,12 @@ This is a storage and provenance boundary only. It supplies no real owner signat
 Load a universe snapshot only by its exact persisted digest. Reconstruct and cryptographically re-verify the stored P-256 policy, snapshot manifest, ingestion batch and source membership before preparing a content-addressed signal-time membership artifact. The snapshot must have been persisted no later than the decision, remain within the signed policy validity interval and remain no older than the signed observation-freshness limit. Missing, malformed, future-unavailable, stale or identity-conflicting evidence fails closed.
 
 Require a universe-aware backtest to bind exactly one verified membership artifact to every signal time. Positive target weights must belong to that artifact's sorted eligible set; omitted or zero targets may still reduce or exit a position that subsequently became ineligible. Record the ordered membership identities in the result. Runtime strategy-decision binding remains separate and mandatory before this evidence can affect paper or live decisions. No deployment, signing material, credential, account, fund, wallet or order authority is added.
+
+
+## 2026-07-29 — Verified universe membership in runtime strategy decisions
+
+Require one exact configured persisted universe-snapshot digest before runtime market-data fetch or strategy evaluation. Load and re-verify its P-256 signed policy, snapshot manifest, persistence availability and freshness at the scheduled decision time. Empty, malformed, missing, future-unavailable or stale selectors fail the cycle.
+
+Intersect configured pairs with the verified eligible membership, sort that intersection deterministically and permit only those markets to reach the momentum strategy. Content-address the complete proposed decision with the exact signed-policy, snapshot and signal-time membership identities. A buy outside membership, malformed AUD-cash hold, unsorted signal set or changed binding fails closed; exits remain structurally permitted after eligibility loss.
+
+Keep the selector empty in committed Preview and Production configuration so no hosted strategy decision is generated without a separately reviewed signed snapshot. The binding is audit evidence only: it cannot approve an order, bypass market-data, liquidity, strategy, intelligence or risk gates, or enable deployment, signing material, credentials, funds, wallet access or live execution.
