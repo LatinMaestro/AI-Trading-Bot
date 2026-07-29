@@ -15,7 +15,7 @@
 - [x] Add scheduled-cycle leases and order-intent idempotency primitives.
 - [ ] Ingest validated daily and hourly OHLC data.
   - [x] Define supported 60-minute and 1,440-minute storage intervals.
-  - [ ] Wire scheduled public fetches, interval-specific quality gates and persistence.
+  - [x] Wire scheduled public fetches, interval-specific quality gates and persistence.
 - [ ] Add idempotent D1 persistence, gap detection and repair.
   - [x] Add immutable hashed batch and candle persistence.
   - [x] Add strict expected-range gap detection and Kraken REST-horizon classification.
