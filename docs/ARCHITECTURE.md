@@ -52,7 +52,8 @@ Trading-cycle orchestrator
 7. Detect missing, duplicate, stale, conflicting or unrecoverable market data and fail closed.
 8. Reconstruct the Australian-available spot universe from definitions, lifecycle events and quality observations knowable at the signal time.
 9. Apply signed tier-specific listing-age, history, spread, turnover, depth, impact, minimum-order and instrument gates.
-10. Generate a strategy decision only from eligible universe members and a versioned configuration.
+10. Load the exact persisted snapshot requested for the decision, re-verify its signed policy and content identities, and reject evidence persisted after or stale at that decision.
+11. Generate a strategy decision only from the verified signal-time eligible membership and a versioned configuration.
 11. Reconcile balances and orders when private access is available.
 12. Evaluate hard risk limits.
 13. Create an order intent with a deterministic idempotency key.
@@ -102,6 +103,8 @@ Market batches and candles use deterministic SHA-256 content digests. Database t
 Universe definitions, lifecycle events and quality observations are also append-only and hashed. Prepared universe evidence is submitted through one transactional D1 batch and is complete only when a final database-verified commit marker proves that every declared source and record membership exists. Historical reconstruction uses source publication and data-availability timestamps so later listings, suspensions, delistings or quality observations cannot leak into an earlier signal. The contract is defined in `docs/MARKET_UNIVERSE.md`.
 
 Signed universe policies use finite-validity P-256 verification and content-address the public key, exact signed payload and signature envelope. A universe snapshot is accepted only within that policy's validity interval and is bound to an immutable ingestion commit plus its exact database-committed source-digest membership. D1 persists the verified policy and snapshot atomically; natural-identity conflicts, mutation and incomplete evidence fail closed. No private signing key is stored, and persistence alone cannot make membership strategy-authoritative.
+
+The signal-time membership boundary loads one exact persisted snapshot by digest, reconstructs and cryptographically re-verifies its signed policy and snapshot manifest, and rejects policies invalid at the decision, snapshots persisted after the decision, or membership older than the signed freshness limit. Backtest orchestration requires complete one-to-one membership coverage, records every membership digest in result provenance and rejects positive targets outside eligiblePairs; an already-held asset may still be sold after it becomes ineligible. Runtime strategy binding remains a separate dependency before this membership can affect paper or live decisions.
 
 External-intelligence linkages bind each reviewed topic to exact entity keys and allowed event types, apply append-only corrections as an effective view, remove retracted/deleted evidence, and collapse exact syndicated content to one authority-ranked representative before corroboration. Linkage manifests and clusters are content-addressed.
 
