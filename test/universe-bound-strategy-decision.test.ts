@@ -134,6 +134,13 @@ test("rejects malformed cash targets and tampered bindings", async () => {
   await assert.rejects(
     bindUniverseMembershipToStrategyDecision(
       verifiedMembership,
+      decision({ action: "transfer" as StrategyDecision["action"] }),
+    ),
+    /strategy action is invalid/u,
+  );
+  await assert.rejects(
+    bindUniverseMembershipToStrategyDecision(
+      verifiedMembership,
       decision({ targetExposurePct: 10 }),
     ),
     /hold decisions must target AUD cash/u,
