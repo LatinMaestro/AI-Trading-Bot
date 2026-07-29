@@ -28,6 +28,8 @@ The deterministic contract is defined in `docs/MARKET_UNIVERSE.md`. Every signal
 
 Backtests must load that exact persisted snapshot by digest, re-verify the signed policy and manifest, and prove that persistence and freshness precede the decision. Every step carries one content-addressed membership artifact. Positive target weights outside its sorted eligiblePairs fail closed, while omitted or zero targets remain available to reduce or exit positions that later became ineligible. Complete membership identities are retained in result provenance.
 
+Runtime decisions use the same membership artifact selected by one exact configured snapshot digest. Only the sorted intersection of configured pairs and verified eligible membership reaches the deterministic strategy. The proposed decision, policy, snapshot and membership identities form one content-addressed binding retained by the cycle audit; a missing selector or changed binding fails closed.
+
 ## Baseline A — venue-wide relative-strength rotation
 
 For each established or high-volatility candidate:

@@ -1,7 +1,10 @@
 import type { RuntimeConfig } from "../config.ts";
 import { KrakenSpotAdapter } from "../exchanges/kraken.ts";
 import { TradingRepository } from "../storage/repository.ts";
-import { decideMomentumRotation } from "../strategies/momentumRotation.ts";
+import {
+  decideUniverseBoundMomentumRotation,
+  requireUniverseSnapshotSha256,
+} from "../strategies/universeBoundDecision.ts";
 import { assertDailyCandlesUsable } from "../marketData/candleQuality.ts";
 import { selectApprovedAudPairs } from "../marketData/pairs.ts";
 import {
@@ -19,6 +22,7 @@ import {
   ExternalIntelligencePaperRiskRepository,
   PAPER_INTELLIGENCE_PAUSE_MAXIMUM_AGE_MS,
 } from "../risk/externalIntelligencePaperRisk.ts";
+import { UniversePolicySnapshotRepository } from "../storage/universePolicySnapshot.ts";
 
 export interface CycleResult {
   readonly cycleId: string;
@@ -74,6 +78,13 @@ export async function runTradingCycle(
       };
     }
 
+    const universeMembership =
+      await new UniversePolicySnapshotRepository(env.DB)
+        .loadSignalTimeMembership(
+          requireUniverseSnapshotSha256(env.UNIVERSE_SNAPSHOT_SHA256),
+          invocation.scheduledAtMs,
+        );
+
     const lifecycleCapture = await runScheduledKrakenLifecycleCapture(
       lifecycleCaptures,
       {
@@ -100,10 +111,13 @@ export async function runTradingCycle(
 
     const exchange = new KrakenSpotAdapter();
     const availablePairs = await exchange.getSpotPairs("AU");
-    const approvedPairs = selectApprovedAudPairs(
-      availablePairs,
-      config.approvedPairs,
-    );
+    const configuredEligiblePairs = config.approvedPairs
+      .filter((pair) => universeMembership.eligiblePairs.includes(pair))
+      .sort((left, right) => left.localeCompare(right));
+    const approvedPairs =
+      configuredEligiblePairs.length === 0
+        ? []
+        : selectApprovedAudPairs(availablePairs, configuredEligiblePairs);
     const candlesEntries: Array<
       readonly [string, Awaited<ReturnType<typeof exchange.getDailyCandles>>]
     > = [];
@@ -112,7 +126,11 @@ export async function runTradingCycle(
       assertDailyCandlesUsable(pair.canonicalSymbol, candles);
       candlesEntries.push([pair.canonicalSymbol, candles]);
     }
-    const decision = decideMomentumRotation(Object.fromEntries(candlesEntries));
+    const boundDecision = await decideUniverseBoundMomentumRotation(
+      universeMembership,
+      Object.fromEntries(candlesEntries),
+    );
+    const decision = boundDecision.decision;
     const intelligenceRisk =
       await new ExternalIntelligencePaperRiskRepository(env.DB).apply({
         cycleId,
@@ -159,6 +177,13 @@ export async function runTradingCycle(
         externalIntelligenceIntegrationSha256s:
           intelligenceRisk.integrationSha256s,
         externalIntelligenceRiskReason: intelligenceRisk.reason,
+        universeMembershipSha256: universeMembership.membershipSha256,
+        universeSnapshotSha256: universeMembership.snapshotSha256,
+        universeSignedPolicySha256: universeMembership.signedPolicySha256,
+        universeMembershipEligiblePairCount:
+          universeMembership.eligiblePairs.length,
+        universeConfiguredEligiblePairCount: configuredEligiblePairs.length,
+        universeBoundDecisionSha256: boundDecision.bindingSha256,
         lifecycleCaptureDue: lifecycleCapture.due,
         lifecycleCaptureCount: lifecycleCapture.captures.length,
         lifecycleCaptureRequestCount: lifecycleCapture.requestCount,
