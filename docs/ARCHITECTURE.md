@@ -47,20 +47,18 @@ Trading-cycle orchestrator
 2. Load runtime state and verify mode.
 3. At the daily 00:00 UTC slot, capture and atomically persist the fixed official Kraken listing/delisting indexes and status feeds. Any incomplete or malformed capture set fails the slot.
 4. Load only committed external-intelligence assessments available by the decision timestamp. External intelligence may pause new risk or create a research candidate; it cannot submit or approve an order.
-5. Discover the configured Australian Kraken spot markets and incrementally fetch both 60-minute and 1,440-minute OHLC with `assetVersion=1`, bounded retries, a streamed byte limit, strict UTF-8 and exact response digests.
-6. Discard Kraken's always-present current row, apply interval-specific alignment, contiguity, OHLCV, closure and freshness gates, then persist accepted batches and candles immutably before universe or strategy evaluation.
-7. Scan the exact current 719-committed-row REST window for every pair/interval, perform at most one overlapping repair capture from one interval before the earliest detected gap, then re-read the range and fail closed if any repairable gap remains.
-8. Re-read aggregate committed history at the acquisition-availability time and require at least 220 complete candles at both intervals for every configured pair. Missing, duplicate, stale, conflicting or unrecoverable data fails the cycle closed.
-9. Reconstruct the Australian-available spot universe from definitions, lifecycle events and quality observations knowable at the signal time.
-10. Apply signed tier-specific listing-age, history, spread, turnover, depth, impact, minimum-order and instrument gates.
-11. Load the exact persisted snapshot requested for the decision, re-verify its signed policy and content identities, and reject evidence persisted after or stale at that decision.
-12. Generate a strategy decision only from the verified signal-time eligible membership and a versioned configuration.
-13. Reconcile balances and orders when private access is available.
-14. Evaluate hard risk limits.
-15. Create an order intent with a deterministic idempotency key.
-16. In non-live modes, record the proposed action only.
-17. In live mode, verify API permissions, activation secret and execution limits again immediately before submission.
-18. Submit, reconcile and record every response.
+5. Discover current approved markets and fetch public committed candles.
+6. Persist accepted public-data batches and candles immutably.
+7. Detect missing, duplicate, stale, conflicting or unrecoverable market data and fail closed.
+8. Reconstruct the Australian-available spot universe from definitions, lifecycle events and quality observations knowable at the signal time.
+9. Apply signed tier-specific listing-age, history, spread, turnover, depth, impact, minimum-order and instrument gates.
+10. Generate a strategy decision only from eligible universe members and a versioned configuration.
+11. Reconcile balances and orders when private access is available.
+12. Evaluate hard risk limits.
+13. Create an order intent with a deterministic idempotency key.
+14. In non-live modes, record the proposed action only.
+15. In live mode, verify API permissions, activation secret and execution limits again immediately before submission.
+16. Submit, reconcile and record every response.
 
 ## Data model
 
@@ -73,19 +71,17 @@ D1 stores:
 - immutable discovered lifecycle document captures bound to their exact discovery and committed index provenance;
 - immutable public market-data batch provenance;
 - immutable committed 60-minute and daily OHLCV candles;
-- immutable sparse historical OHLCVT candles, archive/CSV manifests, source memberships and database-verified backfill commits;
 - versioned market definitions;
 - immutable listing, trading-status, delisting and Australian-availability events;
 - immutable market-quality observations for spread, turnover, depth, impact, minimums, valuation and data state;
 - content-addressed universe-ingestion batch headers, source digests, record memberships and verified commit markers;
-- immutable expiring signed universe policies and content-addressed universe snapshots bound to exact committed ingestion evidence;
 - versioned external-intelligence source contracts covering provider, publisher, licence, attribution, retention, deletion and model-use rules;
 - immutable external-intelligence items, append-only corrections, content-addressed entity/syndication linkages and deterministic assessments;
 - immutable compact external-intelligence backtest comparison manifests bound to exact replay, baseline-result and gated-result digests;
 - content-addressed external-intelligence ingestion batches, memberships and database-verified commit markers;
 - purge-enforced transient Reddit post metadata with non-extendable deletion deadlines;
 - content-free aggregate Reddit watch state, retention audits and invalidation events;
-- immutable content-addressed strategy-decision artifacts and per-cycle bindings;
+- strategy decisions;
 - order intents, exchange orders and fills;
 - balances and equity snapshots;
 - risk events and kill-switch state;
@@ -102,13 +98,7 @@ Lifecycle backfill manifests bind the exact committed-evidence and prepared-evid
 
 Market batches and candles use deterministic SHA-256 content digests. Database triggers reject identity reuse with different content and prevent ordinary update or delete operations. Gap detection is performed against explicit expected ranges before strategy research is allowed to rely on stored data.
 
-Scheduled Kraken OHLC capture uses the latest immutable open time as an overlapping `since` cursor. Each canonical request uses display-name response keys, records request/receipt/availability chronology, exact response byte length and SHA-256 in the immutable batch identity, and validates the aggregate persisted hourly/daily history after writes. It then scans the exact current 719-committed-row REST window and permits at most one bounded overlapping repair capture per pair/interval before failing closed on any remaining repairable gap. The scheduled acquisition may build evidence for later cycles, but history remains usable at a decision only when its batch was available by that exact decision time. Older research history may come only from the exact official Kraken downloadable OHLCVT archives under a content-addressed source contract; raw ZIP bytes remain transient, selected CSV and archive digests are mandatory, missing no-trade rows are preserved, and derived candles are unusable until immutable persistence and REST-overlap reconciliation succeed.
-
 Universe definitions, lifecycle events and quality observations are also append-only and hashed. Prepared universe evidence is submitted through one transactional D1 batch and is complete only when a final database-verified commit marker proves that every declared source and record membership exists. Historical reconstruction uses source publication and data-availability timestamps so later listings, suspensions, delistings or quality observations cannot leak into an earlier signal. The contract is defined in `docs/MARKET_UNIVERSE.md`.
-
-Signed universe policies use finite-validity P-256 verification and content-address the public key, exact signed payload and signature envelope. A universe snapshot is accepted only within that policy's validity interval and is bound to an immutable ingestion commit plus its exact database-committed source-digest membership. D1 persists the verified policy and snapshot atomically; natural-identity conflicts, mutation and incomplete evidence fail closed. No private signing key is stored, and persistence alone cannot make membership strategy-authoritative.
-
-The signal-time membership boundary loads one exact persisted snapshot by digest, reconstructs and cryptographically re-verifies its signed policy and snapshot manifest, and rejects policies invalid at the decision, snapshots persisted after the decision, or membership older than the signed freshness limit. Backtest orchestration requires complete one-to-one membership coverage, records every membership digest in result provenance and rejects positive targets outside eligiblePairs; an already-held asset may still be sold after it becomes ineligible. Runtime orchestration requires an exact configured snapshot digest before any public fetch, intersects configuration with verified eligible membership, sorts the strategy inputs deterministically and content-addresses the complete proposed decision. Missing, stale, future-unavailable, out-of-membership or tampered evidence fails the cycle before an order path. Before intelligence or order processing, persist the complete verified decision artifact once by digest and bind the runtime cycle to it immutably. Exact artifact reuse across retry cycles is permitted; rebinding one cycle to a different decision fails atomically.
 
 External-intelligence linkages bind each reviewed topic to exact entity keys and allowed event types, apply append-only corrections as an effective view, remove retracted/deleted evidence, and collapse exact syndicated content to one authority-ranked representative before corroboration. Linkage manifests and clusters are content-addressed.
 
@@ -119,6 +109,8 @@ External-intelligence batches use deterministic source-contract, correction, pol
 Approved RSS adapters re-verify exact payload length and SHA-256 before a bounded strict XML parse. Source-specific manifests constrain canonical origins, item identities, GUIDs, publication chronology, acquisition mode, attribution and retention. SEC, RBA, AUSTRAC and CFTC regulator items remain neutral and non-tradable at ingestion; title text is hashed but not retained or used to infer direction. Bitcoin Core announcements follow the same digest-only boundary under project-limited issuer authority.
 
 External-intelligence backtest comparison manifests re-verify the complete replay and both full result digests before persistence. D1 stores the comparison, replay and result identities plus bounded aggregate differences rather than duplicating potentially large execution/equity arrays in one row. Exact retries preserve the first persistence time; changed identity reuse, updates and deletes fail closed. Research reports bind a sorted unique list of exact comparison identities, including an explicit empty list when external intelligence was not evaluated.
+
+Hourly trend/breakout research runs bind the exact universe-verified plan, execution configuration and complete backtest result into one reproducible content identity. Verification re-runs the execution-aware backtest before persistence. D1 stores a compact immutable manifest of identities and derived aggregate metrics; conflicting retries, updates and deletes fail closed. Research reports bind sorted unique run identities, including an explicit empty list when no strategy run was evaluated. Run identity proves reproducibility only and cannot select or promote a strategy.
 
 Reddit post-level state uses a separate transient boundary and never enters the immutable intelligence ledger or durable Queue. D1 preserves only bounded post identity metadata until the original deletion deadline. Deletes require a transaction-local purge authorization; provider removals and deadline expiry atomically delete transient rows, record only aggregate content-free compliance evidence and invalidate downstream watch state. Failed provider refreshes cannot extend retention.
 
