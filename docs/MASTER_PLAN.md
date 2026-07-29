@@ -24,7 +24,8 @@
     - [x] Approve Kraken's official downloadable historical OHLCVT archive as the reproducible account-free source beyond the REST horizon, with content-addressed capture and no forward-filling.
     - [ ] Capture and hash exact complete/quarterly archives, validate the BTC/AUD and ETH/AUD CSV members, reconcile REST overlap, and persist derived candles immutably.
       - [x] Add bounded digest-verified sparse CSV validation, exact committed-REST overlap reconciliation, chunked immutable candle/membership persistence and a database-verified commit marker.
-      - [ ] Acquire and hash the actual official archive bytes, extract the four approved CSV members and execute their reviewed backfills.
+      - [x] Add a manual contents-read-only hosted workflow that transiently downloads the exact complete archive, rejects unsafe ZIP membership, validates the four approved CSV members and emits a seven-day digest-only capture manifest.
+      - [ ] Run the hosted capture after Actions capacity returns, review the actual archive/member digests, reconcile committed REST overlap and execute the four immutable backfills.
 - [ ] Build a dynamic market-cap-agnostic spot universe from current Australian venue metadata.
   - [x] Define immutable versioned market definitions, lifecycle events and quality observations.
   - [x] Reconstruct established, high-volatility and new-listing tiers at historical signal times.
