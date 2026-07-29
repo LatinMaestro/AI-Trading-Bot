@@ -73,10 +73,18 @@ Only batches with a commit marker are complete ingestion evidence. Fixed stateme
 
 The summary does not automatically set policy limits. Final tier policies require reviewed, signed calibration choices by venue, period and equity scale.
 
+## Signed policy and snapshot persistence
+
+`prepareSignedUniversePolicy` verifies a bounded, expiring P-256 signature over the complete universe policy, calibration evidence and approval chronology. `prepareUniverseSnapshotManifest` then binds a generated snapshot to that exact policy, one committed ingestion batch and the batch's exact source-digest membership.
+
+Migration `0017_signed_universe_policy_snapshots.sql` stores immutable signed policy envelopes and content-addressed snapshots. D1 requires the referenced ingestion commit and exact source membership before insertion. Exact retries preserve the first persistence time; changed identities, updates and deletes fail closed.
+
+No real policy, signature or signing key is supplied by this contract. Policy approval and signing remain reviewed inputs, and persisted snapshots cannot bypass strategy, data-quality or risk gates.
+
 ## Remaining work
 
 - connect the content-addressed Kraken public client to a bounded scheduled orchestrator;
 - join ticker/depth evidence with committed candle counts and annualised volatility without fabricating missing inputs;
 - establish complete official lifecycle-source coverage;
 - calibrate AUD conversion freshness and tier thresholds from historical evidence;
-- persist signed universe policies and generated snapshots.
+- connect exact persisted signed snapshots to strategy and backtest orchestration.
