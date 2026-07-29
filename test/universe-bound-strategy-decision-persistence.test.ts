@@ -278,3 +278,53 @@ test("database rejects artifact conflicts, mutation and deletion", async () => {
   );
   sqlite.close();
 });
+
+test("database rejects malformed direct inserts and pre-decision cycle time", async () => {
+  const { sqlite, repository } = database();
+  const verifiedMembership = await membership();
+  const bound = await artifact(verifiedMembership);
+  await repository.persist({
+    cycleId: CYCLE_A,
+    membership: verifiedMembership,
+    artifact: bound,
+    persistedAtMs: DECISION_AT_MS + 1_000,
+  });
+  assert.throws(
+    () =>
+      sqlite
+        .prepare(
+          `INSERT INTO universe_bound_strategy_decision_artifacts
+           SELECT '${"c".repeat(64)}', decision_at_ms, membership_sha256,
+                  snapshot_sha256, signed_policy_sha256, strategy_version,
+                  'buy', 'btc/aud', 50, artifact_json
+           FROM universe_bound_strategy_decision_artifacts`,
+        )
+        .run(),
+    /constraint failed/u,
+  );
+  assert.throws(
+    () =>
+      sqlite
+        .prepare(
+          `INSERT INTO universe_bound_strategy_decision_artifacts
+           SELECT '${"d".repeat(64)}', decision_at_ms, membership_sha256,
+                  snapshot_sha256, signed_policy_sha256, strategy_version,
+                  action, target_pair, target_exposure_pct, 'not-json'
+           FROM universe_bound_strategy_decision_artifacts`,
+        )
+        .run(),
+    /constraint failed/u,
+  );
+  assert.throws(
+    () =>
+      sqlite
+        .prepare(
+          `INSERT INTO universe_bound_strategy_decision_cycles
+             (cycle_id, binding_sha256, persisted_at_ms)
+           VALUES (?, ?, ?)`,
+        )
+        .run(CYCLE_B, bound.bindingSha256, DECISION_AT_MS - 1),
+    /chronology is invalid/u,
+  );
+  sqlite.close();
+});
