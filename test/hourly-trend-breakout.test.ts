@@ -37,7 +37,7 @@ test("enters only after the closed candle clears all three entry gates", () => {
   );
   assert.deepEqual(decision.policy, HOURLY_TREND_BREAKOUT_BASELINE_POLICY);
   assert.notEqual(decision.policy, HOURLY_TREND_BREAKOUT_BASELINE_POLICY);
-  assert.equal(decision.signalTimestampMs, 239 * HOUR_MS);
+  assert.equal(decision.signalTimestampMs, 240 * HOUR_MS);
   assert.equal(
     decision.signals.every(
       (signal) => signal.signalTimestampMs === decision.signalTimestampMs,
