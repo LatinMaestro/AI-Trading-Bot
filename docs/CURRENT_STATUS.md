@@ -120,7 +120,7 @@ Last verified: 29 July 2026 (Australia/Brisbane)
 
 GitHub Actions private-repository capacity remains unavailable until 1 August 2026. Exact-head jobs fail before steps or logs.
 
-Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #48, #49, #50, #51, #52, #53, #54, #55, #56, #57 , #58 or #59 until fresh exact-head checks pass and the stack merges in order.
+Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #48, #49, #50, #51, #52, #53, #54, #55, #56, #57, #58 or #59 until fresh exact-head checks pass and the stack merges in order.
 
 ## Next unblocked work
 
