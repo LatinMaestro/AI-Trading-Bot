@@ -512,3 +512,9 @@ Persist a point-in-time strategy-configuration verification only after repeating
 D1 independently enforces that every referenced record existed by the decision timestamp, the configuration and trust remained active, finite readiness evidence remained valid, any known revocation was not yet effective and every compact research identity agreed. Exact retries preserve the first persistence time. Reused digest or configuration/decision identities with changed content, updates and deletion fail closed.
 
 The persisted artifact has `none` selection and execution authority, does not consume an external authorisation and cannot activate paper or live trading. No real signed configuration, verification record, deployment, credential, fund, wallet or live authority is committed.
+
+## 2026-07-30 — Selection proposals remain non-activating evidence
+
+A strategy-selection proposal may bind one exact persisted point-in-time configuration-verification identity to one separate externally signed authorisation. Re-verify configuration-signer and external-authoriser trust, revocation, expiry and exact evidence/capital bindings at proposal time, and reject self-authorisation.
+
+The proposal is content-addressed but is not a strategy selection, approval consumption or activation record. It must hard-code the candidate as unselected with no selection decision, activation authority or execution authority. A `canary-live` authorisation remains evidence only and cannot bypass the separate owner activation checklist, runtime gates or live flags.
