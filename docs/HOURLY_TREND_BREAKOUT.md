@@ -21,7 +21,13 @@ An existing position is retained while it remains above its exit channel, EMA an
 
 Every decision carries an immutable copy of the exact policy values used, so parameter variants cannot share a strategy version without retaining their complete configuration evidence.
 
-All pair histories must be internally contiguous, bounded to the approved research horizon and end at the same closed hourly signal timestamp. Every signal and decision carries that exact timestamp; mixed-time rankings fail closed.
+All pair histories must be internally contiguous, bounded to the approved research horizon and close at the same hourly decision timestamp. Candle timestamps identify interval opens, so the bound decision time is exactly one hour after the final committed candle timestamp. Every signal and decision carries that closed-hour timestamp; mixed-time rankings fail closed.
+
+## Universe-bound execution-aware backtest
+
+Research plans bind every decision to one independently verified, content-addressed signal-time universe membership artifact. Both configured BTC/AUD and ETH/AUD histories must remain valid even when one pair is ineligible, preventing malformed excluded data from bypassing evidence checks. Entries are evaluated only across the configured pairs present in exact eligible membership; no eligible pair produces an explicit AUD-cash decision, while a held pair that loses eligibility produces an exit without same-signal rotation.
+
+Each bound decision retains the exact policy, snapshot, signed-policy and membership identities plus the prior target. Complete decisions and the entire plan are content-addressed and independently re-verified before the existing execution-aware engine models fees, spread, slippage, adverse selection, participation, price impact and missed fills. This is research orchestration only and does not promote or connect the candidate to runtime selection.
 
 ## Research boundary
 

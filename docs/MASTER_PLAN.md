@@ -118,6 +118,7 @@
 - [ ] Complete venue-wide cross-sectional momentum and relative-strength rotation.
 - [ ] Add multi-timeframe breakout, volatility-expansion and trend-continuation candidates.
   - [x] Add a pure hourly Donchian/EMA/momentum trend-breakout candidate with one-position/AUD-cash semantics and no runtime promotion.
+  - [x] Bind the candidate to exact signal-time universe membership and content-addressed execution-aware backtest plans without runtime promotion.
 - [ ] Add separate high-volatility and new-listing strategy lanes.
 - [ ] Research short-horizon mean reversion separately after realistic execution modelling.
 - [ ] Research external-intelligence features only after provenance, latency and manipulation controls are validated.
