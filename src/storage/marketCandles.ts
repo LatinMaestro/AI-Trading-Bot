@@ -240,6 +240,12 @@ export interface MarketCandleBatchSink {
     canonicalPair: string,
     intervalMinutes: CandleIntervalMinutes,
   ): Promise<number | null>;
+  loadOpenTimesMs(
+    canonicalPair: string,
+    intervalMinutes: CandleIntervalMinutes,
+    startOpenTimeMs: number,
+    endOpenTimeMs: number,
+  ): Promise<readonly number[]>;
   persistBatch(input: MarketDataBatchInput): Promise<PreparedMarketDataBatch>;
 }
 
@@ -274,6 +280,60 @@ export class MarketCandleRepository implements MarketCandleBatchSink {
       throw new Error("Stored market candle cursor is invalid");
     }
     return value;
+  }
+
+  async loadOpenTimesMs(
+    canonicalPair: string,
+    intervalMinutes: CandleIntervalMinutes,
+    startOpenTimeMs: number,
+    endOpenTimeMs: number,
+  ): Promise<readonly number[]> {
+    assertSupportedInterval(intervalMinutes);
+    assertCanonicalText("canonicalPair", canonicalPair);
+    const stepMs = intervalMs(intervalMinutes);
+    if (
+      !Number.isSafeInteger(startOpenTimeMs) ||
+      startOpenTimeMs < 0 ||
+      startOpenTimeMs % stepMs !== 0 ||
+      !Number.isSafeInteger(endOpenTimeMs) ||
+      endOpenTimeMs < startOpenTimeMs ||
+      endOpenTimeMs % stepMs !== 0
+    ) {
+      throw new Error("Market candle scan range is invalid");
+    }
+    const result = await this.db
+      .prepare(
+        `SELECT open_time_ms AS openTimeMs
+         FROM market_candles
+         WHERE venue = ?
+           AND canonical_pair = ?
+           AND interval_minutes = ?
+           AND open_time_ms BETWEEN ? AND ?
+         ORDER BY open_time_ms`,
+      )
+      .bind(
+        "kraken",
+        canonicalPair,
+        intervalMinutes,
+        startOpenTimeMs,
+        endOpenTimeMs,
+      )
+      .all<{ readonly openTimeMs: number }>();
+    const openTimes = result.results.map((row) => row.openTimeMs);
+    let previous: number | undefined;
+    for (const openTimeMs of openTimes) {
+      if (
+        !Number.isSafeInteger(openTimeMs) ||
+        openTimeMs < startOpenTimeMs ||
+        openTimeMs > endOpenTimeMs ||
+        openTimeMs % stepMs !== 0 ||
+        (previous !== undefined && openTimeMs <= previous)
+      ) {
+        throw new Error("Stored market candle scan is invalid");
+      }
+      previous = openTimeMs;
+    }
+    return openTimes;
   }
 
   async persistBatch(
