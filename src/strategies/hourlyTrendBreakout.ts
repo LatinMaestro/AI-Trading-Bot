@@ -40,6 +40,7 @@ export interface HourlyTrendBreakoutSignal {
 
 export interface HourlyTrendBreakoutDecision {
   readonly strategyVersion: typeof HOURLY_TREND_BREAKOUT_STRATEGY_VERSION;
+  readonly policy: HourlyTrendBreakoutPolicy;
   readonly targetPair: string | null;
   readonly targetExposurePct: number;
   readonly reason: string;
@@ -197,7 +198,9 @@ export function buildHourlyTrendBreakoutSignal(
       breakoutEligible ? "donchian-entry-breakout" : "inside-entry-channel",
       trendEligible ? "above-hourly-ema" : "below-hourly-ema",
       momentumEligible ? "positive-hourly-momentum" : "non-positive-momentum",
-      latest.close < priorExitLow ? "donchian-exit-break" : "above-exit-channel",
+      latest.close < priorExitLow
+        ? "donchian-exit-break"
+        : "no-donchian-exit-break",
     ],
   };
 }
@@ -208,6 +211,7 @@ export function decideHourlyTrendBreakout(
   policy: HourlyTrendBreakoutPolicy = HOURLY_TREND_BREAKOUT_BASELINE_POLICY,
 ): HourlyTrendBreakoutDecision {
   assertPolicy(policy);
+  const decisionPolicy = Object.freeze({ ...policy });
   const entries = Object.entries(candlesByPair).sort(([left], [right]) =>
     left.localeCompare(right),
   );
@@ -229,6 +233,7 @@ export function decideHourlyTrendBreakout(
     if (held.exitTriggered) {
       return {
         strategyVersion: HOURLY_TREND_BREAKOUT_STRATEGY_VERSION,
+        policy: decisionPolicy,
         targetPair: null,
         targetExposurePct: 0,
         reason: `${currentPair} triggered a deterministic exit to AUD cash`,
@@ -237,6 +242,7 @@ export function decideHourlyTrendBreakout(
     }
     return {
       strategyVersion: HOURLY_TREND_BREAKOUT_STRATEGY_VERSION,
+      policy: decisionPolicy,
       targetPair: currentPair,
       targetExposurePct: policy.targetExposurePct,
       reason: `${currentPair} has not breached a deterministic exit gate`,
@@ -253,6 +259,7 @@ export function decideHourlyTrendBreakout(
   if (winner === undefined) {
     return {
       strategyVersion: HOURLY_TREND_BREAKOUT_STRATEGY_VERSION,
+      policy: decisionPolicy,
       targetPair: null,
       targetExposurePct: 0,
       reason: "No pair passed the hourly Donchian, EMA and momentum entry gates",
@@ -261,6 +268,7 @@ export function decideHourlyTrendBreakout(
   }
   return {
     strategyVersion: HOURLY_TREND_BREAKOUT_STRATEGY_VERSION,
+    policy: decisionPolicy,
     targetPair: winner.pair,
     targetExposurePct: policy.targetExposurePct,
     reason: `${winner.pair} has the strongest eligible hourly breakout score`,
