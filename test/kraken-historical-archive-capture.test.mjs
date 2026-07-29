@@ -102,6 +102,18 @@ test("rejects missing and unsafe archive membership", async () => {
         ),
       /entry count is invalid/u,
     );
+    assert.throws(
+      () =>
+        selectMembers(
+          [
+            "unsafe*/ETHAUD_1440.csv",
+            "ETHAUD_60.csv",
+            "XBTAUD_1440.csv",
+            "XBTAUD_60.csv",
+          ].join("\n"),
+        ),
+      /unsafe entry path/u,
+    );
   } finally {
     rmSync(fixture.root, { recursive: true, force: true });
   }
