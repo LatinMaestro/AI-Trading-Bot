@@ -426,3 +426,11 @@ After each primary scheduled candle capture, scan the exact current 719-committe
 Approve Kraken's official downloadable historical OHLCVT archive and quarterly updates as the reproducible account-free research source beyond the REST horizon. Pin the exact official support page, complete archive and quarterly folder in a versioned contract; require SHA-256 digests for each raw ZIP and selected CSV; restrict scope to BTC/AUD and ETH/AUD at 60 and 1,440 minutes; keep raw archives transient; and preserve missing no-trade intervals without forward-filling.
 
 Exact archive capture, member validation, REST-overlap reconciliation and immutable derived-candle persistence remain pending. Until those steps complete, older history is non-authoritative and cannot influence strategy. This public-data boundary adds no deployment, credential, account, fund, wallet or live-order authority.
+
+## 2026-07-29 — Immutable sparse historical Kraken candle backfills
+
+Accept historical OHLCVT only from an exact reviewed source-contract version and a separately verified raw-archive and selected-member SHA-256/byte-length identity. Parse only the four approved BTC/AUD and ETH/AUD 60-minute and 1,440-minute CSV identities under strict size, row-count, UTF-8, field, chronology and OHLCVT constraints. Preserve absent rows as no-trade gaps; never fabricate or forward-fill them.
+
+Require at least one exact committed Kraken REST overlap and reconcile every committed REST candle already stored within the selected historical range. Content-address the capture, candle set and overlap evidence. Persist sparse history in separate immutable tables through bounded chunks, but keep partial chunks non-authoritative. Permit a final commit marker only after database verification proves complete declared membership and REST coverage; conflicts, updates, deletion and identity reuse fail closed.
+
+The official archive acquisition and hashing, member extraction and four reviewed backfill executions remain pending. No historical row enters runtime strategy or order authority through this boundary, and no deployment, credential, account, fund, wallet or live capability is added.
