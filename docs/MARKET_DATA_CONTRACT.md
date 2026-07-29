@@ -51,6 +51,14 @@ The response must be JSON with one exact canonical display pair, a safe `last` c
 
 Each immutable batch binds the request URL, request/receipt/availability times, response byte length, exact response SHA-256, source cursor and canonical candle digests. After all writes, every configured pair must have at least 220 complete committed hourly candles and 220 complete committed daily candles. Otherwise the cycle fails closed. The committed default scope is BTC/AUD and ETH/AUD.
 
+## Historical OHLCVT backfill contract
+
+Historical input is accepted only from an exact reviewed source-contract version and one approved Kraken archive/member identity. The upstream hosted capture must supply independently verified SHA-256 and byte-length evidence for both the raw ZIP and selected CSV. The parser re-hashes the CSV, enforces a 64 MiB and two-million-row bound, strict UTF-8 without BOM or NUL, controlled line endings and exact eight-field OHLCVT rows. Rows must be interval-aligned, strictly increasing and internally consistent. Missing rows are preserved as no-trade gaps and are never manufactured or forward-filled.
+
+A prepared backfill must reconcile at least one exact committed REST candle. Every committed REST candle already stored within the selected CSV range must appear in the historical input and match OHLCV exactly. The complete capture, candle set and overlap evidence are content-addressed. Derived rows remain non-authoritative while chunked writes are incomplete; only a database-verified immutable commit marker makes the backfill complete. This does not connect historical candles to runtime strategy decisions.
+
+The validation and persistence boundary is implemented, but the actual official archive bytes have not yet been acquired or hashed. The four approved BTC/AUD and ETH/AUD 60-minute and 1,440-minute members therefore remain pending reviewed hosted capture and execution.
+
 ## Known limitation
 
 Kraken's REST OHLC endpoint returns at most 720 recent entries and always includes the current uncommitted interval. This leaves no more than 719 committed rows available for repair at a selected interval.
