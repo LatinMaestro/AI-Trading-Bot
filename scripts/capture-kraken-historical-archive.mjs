@@ -146,7 +146,8 @@ function selectMembers(listingText) {
   if (
     entries.length === 0 ||
     entries.length > MAXIMUM_ARCHIVE_ENTRIES ||
-    entries.some((entry) => entry.length === 0)
+    entries.some((entry) => entry.length === 0) ||
+    new Set(entries).size !== entries.length
   ) {
     throw new Error("Archive entry count is invalid");
   }
