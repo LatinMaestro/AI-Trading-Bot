@@ -59,7 +59,7 @@
         "TRADING_MODE": "paper",
         "LIVE_TRADING_ENABLED": "false",
         "APPROVED_PAIRS": "BTC/AUD,ETH/AUD,SOL/AUD",
-    "UNIVERSE_SNAPSHOT_SHA256": "",
+        "UNIVERSE_SNAPSHOT_SHA256": "",
         "MAX_GROSS_EXPOSURE_PCT": "90",
         "DAILY_LOSS_LIMIT_PCT": "5",
         "WEEKLY_LOSS_LIMIT_PCT": "10",
