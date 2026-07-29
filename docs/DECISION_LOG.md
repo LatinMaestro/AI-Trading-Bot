@@ -434,3 +434,11 @@ Accept historical OHLCVT only from an exact reviewed source-contract version and
 Require at least one exact committed Kraken REST overlap and reconcile every committed REST candle already stored within the selected historical range. Content-address the capture, candle set and overlap evidence. Persist sparse history in separate immutable tables through bounded chunks, but keep partial chunks non-authoritative. Permit a final commit marker only after database verification proves complete declared membership and REST coverage; conflicts, updates, deletion and identity reuse fail closed.
 
 The official archive acquisition and hashing, member extraction and four reviewed backfill executions remain pending. No historical row enters runtime strategy or order authority through this boundary, and no deployment, credential, account, fund, wallet or live capability is added.
+
+## 2026-07-29 — Transient hosted Kraken archive capture
+
+Use a manual GitHub Actions workflow with contents-read-only permission and no secrets to acquire the exact reviewed Kraken complete-history Drive file. Keep the ZIP and extracted CSV bytes on the ephemeral runner only. Bound the archive at eight GiB and its listing at 100,000 entries, reject absolute, traversal, Windows-drive, backslash, duplicate and missing member paths, and extract only one exact copy of each approved BTC/AUD and ETH/AUD 60-minute and 1,440-minute CSV.
+
+Hash the complete ZIP and every selected CSV, apply fatal UTF-8 decoding and the existing bounded sparse-OHLCVT validator, then emit only a content-addressed digest, byte-count, row-count and time-range manifest. Retain that digest-only artifact for seven days. The workflow neither writes D1 nor connects historical evidence to strategy or execution.
+
+Do not claim an actual capture until the exact workflow run completes and its manifest is reviewed. Private-repository Actions capacity currently prevents execution, so real archive/member digests, REST reconciliation and immutable backfills remain pending. No deployment, credential, account, fund, wallet or live authority is added.
