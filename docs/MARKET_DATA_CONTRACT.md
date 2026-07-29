@@ -45,7 +45,7 @@ The scheduled ingestion path records canonical public-request provenance, exact 
 
 ## Scheduled hourly and daily acquisition
 
-Every trading schedule incrementally collects the configured Australian Kraken spot pairs at exactly 60 and 1,440 minutes before universe or strategy evaluation. Requests use the canonical public OHLC endpoint, `assetVersion=1`, an overlapping latest-stored-open `since` cursor, bounded response size, timeout, spacing and at most one transient retry.
+Every trading schedule incrementally collects the configured Australian Kraken spot pairs at exactly 60 and 1,440 minutes before universe or strategy evaluation. Requests use the canonical public OHLC endpoint, `assetVersion=1`, an overlapping latest-stored-open `since` cursor, a bounded streamed response size, strict UTF-8, timeout, spacing and at most one transient retry.
 
 The response must be JSON with one exact canonical display pair, a safe `last` cursor and no more than 720 strict eight-field rows. The always-present final current row is discarded. Accepted committed rows must be interval-aligned, strictly contiguous, internally consistent, closed by availability and fresh for that interval.
 
