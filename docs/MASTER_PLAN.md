@@ -111,10 +111,12 @@
   - [ ] Integrate validated walk-forward, holdout, benchmark and sensitivity inputs.
     - [x] Add content-addressed ordered walk-forward/final-holdout and same-period parameter-sensitivity manifests.
     - [x] Persist immutable manifests with exact run memberships and bind their identities into research-report provenance.
+    - [x] Add a fail-closed complete final-holdout envelope binding reproduced strategy equity, every evaluation run, mandatory benchmarks, objective progress and scenario ruin evidence without selection.
 - [ ] Produce repeatable research reports and signed strategy configurations.
   - [x] Add content-addressed research-report v1 with mandatory provenance, benchmarks and explicit external-intelligence comparison identities.
   - [x] Persist reproducible content-addressed hourly candidate runs and bind their identities into research reports.
   - [x] Bind immutable hourly evaluation-manifest identities into research reports.
+  - [x] Content-address the complete hourly final-holdout research evaluation with explicit aspirational-objective, complete-loss and non-promotion warnings.
   - [ ] Persist reports and bind approved strategy configurations to authorised signatures/approval records.
 
 ## Phase 2 — Aggressive strategy portfolio

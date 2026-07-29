@@ -49,4 +49,6 @@ Walk-forward evidence binds contiguous fold indexes, increasing training cutoffs
 
 Persistence re-verifies the full manifest, requires every component run to exist in the immutable research-run ledger, writes the canonical manifest and ordered run memberships atomically, and reads the complete row set back before success. Research reports bind sorted unique evaluation-manifest digests. These identities remain evidence references only.
 
+Complete-evaluation orchestration independently re-verifies both manifest identities and the exact shared baseline final-holdout run. The report strategy series must equal the reproduced after-cost equity curve and bind its run/result digests; provenance must contain exactly every walk-forward, holdout and sensitivity run plus both evaluation manifests. All four mandatory benchmarks, objective progress, target-attainment/ruin analysis and explicit aspirational-objective, complete-loss and non-promotion warnings are required before one final envelope is content-addressed. The envelope contains no ranking, selection, promotion or runtime activation state.
+
 The module produces targets only. It does not submit or approve orders, activate paper/live mode, connect credentials or weaken any market-data, liquidity, intelligence, risk or execution gate.

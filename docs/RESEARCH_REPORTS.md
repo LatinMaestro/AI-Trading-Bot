@@ -39,4 +39,6 @@ Reports fail closed for missing/duplicate benchmarks, mismatched cadence, invali
 
 The digest proves content identity, not approval or authenticity. Strategy-backtest run and strategy-evaluation manifest identities are re-runnable evidence references, not ranking, selection or promotion records. A later signed-strategy gate must bind an approved configuration and report digest to an authorised approval record.
 
+The hourly candidate complete-evaluation envelope additionally requires the exact reproduced final-holdout equity curve, the shared baseline identity across walk-forward and sensitivity evidence, the complete deduplicated run set, both evaluation manifests, all mandatory benchmarks, objective progress, scenario target-attainment/ruin metrics and explicit warnings that the objective is aspirational, complete approved-capital loss is possible and the candidate is not selected or promoted. Its content digest remains research evidence only.
+
 Synthetic fixtures validate arithmetic and report reproducibility only. Promotion still requires validated after-cost walk-forward, final-holdout, sensitivity, universe, capacity and tax evidence.
