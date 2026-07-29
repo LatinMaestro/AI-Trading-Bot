@@ -1,13 +1,35 @@
 import { sha256Hex } from "../utils/crypto.ts";
 
 const SHA256_PATTERN = /^[0-9a-f]{64}$/;
+const CANONICAL_PAIR_PATTERN = /^[A-Z0-9][A-Z0-9.]{0,47}\/AUD$/;
+const DOCUMENT_ID_PATTERN =
+  /^[a-z0-9](?:[a-z0-9.-]{0,126}[a-z0-9])?$/;
 const MAXIMUM_DOCUMENTS = 200;
+const MAXIMUM_DECLARATIONS_PER_DOCUMENT = 500;
+const MAXIMUM_DECLARATIONS = 100_000;
 const SOURCE_CLASSES = new Set<KrakenLifecycleSourceClass>([
   "asset-listing",
   "delisting-notice",
   "status-incident",
   "regional-availability",
 ]);
+const EVENT_TYPES = new Set<KrakenLifecycleEventType>([
+  "listed",
+  "trading-online",
+  "trading-suspended",
+  "trading-resumed",
+  "delisted",
+  "au-enabled",
+  "au-disabled",
+]);
+const SOURCE_EVENT_TYPES: Readonly<
+  Record<KrakenLifecycleSourceClass, ReadonlySet<KrakenLifecycleEventType>>
+> = {
+  "asset-listing": new Set(["listed", "trading-online"]),
+  "delisting-notice": new Set(["trading-suspended", "delisted"]),
+  "status-incident": new Set(["trading-suspended", "trading-resumed"]),
+  "regional-availability": new Set(["au-enabled", "au-disabled"]),
+};
 
 export type KrakenLifecycleSourceClass =
   | "asset-listing"
@@ -192,6 +214,35 @@ function assertTime(name: string, value: number): void {
   }
 }
 
+function assertReviewedDeclaration(
+  document: ReviewedKrakenLifecycleDocument,
+  declaration: ReviewedKrakenLifecycleDeclaration,
+): void {
+  if (!CANONICAL_PAIR_PATTERN.test(declaration.canonicalPair)) {
+    throw new Error(
+      `Reviewed lifecycle declaration pair ${declaration.canonicalPair} is not canonical AUD`,
+    );
+  }
+  if (!EVENT_TYPES.has(declaration.eventType)) {
+    throw new Error(
+      `Unknown lifecycle event type ${declaration.eventType as string}`,
+    );
+  }
+  assertTime("reviewed lifecycle effectiveAtMs", declaration.effectiveAtMs);
+  const requiredScope =
+    document.sourceClass === "regional-availability" ? "AU" : "global";
+  if (declaration.scope !== requiredScope) {
+    throw new Error(
+      `Lifecycle source class ${document.sourceClass} requires ${requiredScope} scope`,
+    );
+  }
+  if (!SOURCE_EVENT_TYPES[document.sourceClass].has(declaration.eventType)) {
+    throw new Error(
+      `Lifecycle event ${declaration.eventType} is incompatible with source class ${document.sourceClass}`,
+    );
+  }
+}
+
 function isCompatibleCapture(
   sourceClass: KrakenLifecycleSourceClass,
   capture: CommittedKrakenLifecycleCapture,
@@ -249,12 +300,58 @@ export async function bindReviewedKrakenLifecycleDocuments(
   );
   const captureIds = new Set<string>();
   const documentIds = new Set<string>();
+  const declarationIds = new Set<string>();
+  let declarationCount = 0;
   for (const document of documents) {
     assertDigest("reviewed captureId", document.captureId);
     assertDigest("reviewed payloadSha256", document.payloadSha256);
+    if (!DOCUMENT_ID_PATTERN.test(document.documentId)) {
+      throw new Error(
+        `Reviewed lifecycle documentId ${document.documentId} is not canonical`,
+      );
+    }
+    assertTime("reviewed publishedAtMs", document.publishedAtMs);
     assertTime("reviewed fetchedAtMs", document.fetchedAtMs);
     if (!SOURCE_CLASSES.has(document.sourceClass)) {
       throw new Error(`Unknown lifecycle source class ${document.sourceClass}`);
+    }
+    if (
+      document.publishedAtMs > document.fetchedAtMs ||
+      document.fetchedAtMs > recordedAtMs
+    ) {
+      throw new Error(
+        `Reviewed lifecycle document ${document.documentId} has invalid publication/fetch chronology`,
+      );
+    }
+    if (
+      document.declarations.length === 0 ||
+      document.declarations.length > MAXIMUM_DECLARATIONS_PER_DOCUMENT
+    ) {
+      throw new Error(
+        `Reviewed lifecycle document ${document.documentId} requires 1 to 500 declarations`,
+      );
+    }
+    declarationCount += document.declarations.length;
+    if (declarationCount > MAXIMUM_DECLARATIONS) {
+      throw new Error(
+        "Lifecycle binding exceeds 100000 reviewed declarations",
+      );
+    }
+    for (const declaration of document.declarations) {
+      assertReviewedDeclaration(document, declaration);
+      const declarationId = JSON.stringify([
+        declaration.canonicalPair,
+        declaration.eventType,
+        declaration.effectiveAtMs,
+        document.publishedAtMs,
+        declaration.scope,
+      ]);
+      if (declarationIds.has(declarationId)) {
+        throw new Error(
+          `Duplicate reviewed lifecycle declaration ${declarationId}`,
+        );
+      }
+      declarationIds.add(declarationId);
     }
     if (captureIds.has(document.captureId)) {
       throw new Error(`Duplicate reviewed capture ${document.captureId}`);

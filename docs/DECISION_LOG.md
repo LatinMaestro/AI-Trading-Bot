@@ -232,6 +232,12 @@ Persist each reviewed lifecycle backfill state as a content-addressed manifest b
 
 Only an exact all-pair complete manifest may set `coverage_authoritative`. A database commit marker is rejected until the declared pair and complete-pair counts match immutable membership rows. Coverage authority concerns lifecycle history only; current venue state, data quality, liquidity, impact, strategy, signed-policy and risk gates remain separately mandatory.
 
+## 2026-07-29 — Committed lifecycle declaration semantic gate
+
+Re-validate every reviewed declaration at the committed-evidence boundary before querying D1 or calling lifecycle preparation. Require canonical document and AUD-pair identities, one to 500 declarations per document, bounded total input, publication no later than capture and recording, and non-negative effective time. Future-effective events remain permitted after publication.
+
+Apply the reviewed source matrix again at this boundary: listing documents may declare only global listing/online events; delisting notices only global suspension/delisting; status incidents only global suspension/resumption; and regional-availability documents only Australian enable/disable events. Reject duplicate natural declaration identities, unsupported runtime enum values and incompatible scope. This is deterministic validation of explicit reviewer input, not free-text extraction, and adds no lifecycle claim, deployment, credential, fund, wallet or order authority.
+
 ## 2026-07-28 — Scheduled SEC press-release metadata intelligence
 
 Use the SEC's official press-release RSS endpoint only through an enabled authoritative regulator contract that binds the exact SEC origin, scheduled-poll mode, digest-only retention, attribution, official RSS policy snapshot and model-training prohibition. Automated requests require a truthful contact-bearing User-Agent supplied at runtime; do not invent or commit that contact.
