@@ -24,7 +24,7 @@ The universe is divided into separately evaluated lanes:
 
 Each lane requires explicit online status, listing date, supported quote/AUD valuation, precision, minimums, spread, liquidity, price-impact and data-quality evidence. Leveraged, inverse and derivative-wrapper tokens are excluded.
 
-The deterministic contract is defined in `docs/MARKET_UNIVERSE.md`. Every signal-time snapshot must use only definitions and quality observations available by that time and lifecycle events both effective and published by that time. Suspended, Australian-disabled and delisted markets remain in the evidence set but are ineligible; a later relisting starts a new listing era. Tier boundaries and market-quality limits are signed policy inputs, not fixed claims about market behaviour.
+The deterministic contract is defined in `docs/MARKET_UNIVERSE.md`. Every signal-time snapshot must use only definitions and quality observations available by that time and lifecycle events both effective and published by that time. Suspended, Australian-disabled and delisted markets remain in the evidence set but are ineligible; a later relisting starts a new listing era. Tier boundaries and market-quality limits are signed policy inputs, not fixed claims about market behaviour. Every evaluated run must bind the exact verified `signedPolicySha256` and persisted `snapshotSha256` available at its signal time; recomputed, unsigned or later snapshots are not interchangeable evidence.
 
 ## Baseline A — venue-wide relative-strength rotation
 

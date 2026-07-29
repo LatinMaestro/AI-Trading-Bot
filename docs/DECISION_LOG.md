@@ -378,3 +378,11 @@ Use the CFTC's official General Press Releases RSS endpoint as an account-free a
 Re-verify exact payload length and SHA-256 through the bounded strict RSS parser. Accept only canonical numbered CFTC press-release URLs, exact matching GUIDs and publication times no later than receipt. Canonicalise provider outer whitespace only for titles; preserve exact link, GUID and date validation. Retain identity, source URL, chronology and content digests, but never titles or raw XML.
 
 Emit only neutral `regulatory-action` evidence under non-tradable `CFTC.REGULATOR`. Do not infer crypto relevance, severity, direction or asset scope from titles. The source cannot pause risk, create a positive candidate, approve an order or submit an order. No deployment, account, credential, fund, wallet or live authority is added.
+
+## 2026-07-29 — Signed universe policy and immutable snapshot identity
+
+Accept a universe policy only after verifying a finite-validity P-256 signature over the exact venue/Australian scope, candidate order size, tier thresholds, calibration SHA-256 set, approval chronology and signer-key identity. Content-address the canonical public verification key, signed payload and complete signature envelope. Reject private JWK material, malformed or overlong validity, changed identity and failed signature verification.
+
+Bind each generated universe snapshot to the exact signed policy, one database-committed universe-ingestion batch and the batch's complete sorted source-digest membership. Re-verify scope, ordered candidate identity, lifecycle chronology, eligibility reasons and derived eligible-pair membership before content-addressing. Persist the policy and snapshot atomically; exact retries are idempotent while changed identity reuse, update, deletion, incomplete ingestion evidence and source-membership drift fail closed.
+
+This is a storage and provenance boundary only. It supplies no real owner signature or signing key and does not connect membership to strategy or execution. Signal-time strategy and backtest binding remains separate work; every market-data, strategy, signed-policy and risk gate remains mandatory.

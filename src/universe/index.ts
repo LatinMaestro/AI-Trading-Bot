@@ -178,6 +178,19 @@ export type {
   VenueMarketObservationInput,
 } from "./ingestion.ts";
 
+export {
+  prepareSignedUniversePolicy,
+  prepareUniverseSnapshotManifest,
+  verifySignedUniversePolicy,
+  verifyUniverseSnapshotManifest,
+} from "./signedPolicySnapshot.ts";
+
+export type {
+  SignedUniversePolicy,
+  SignedUniversePolicyInput,
+  UniverseSnapshotManifest,
+} from "./signedPolicySnapshot.ts";
+
 export type {
   InstrumentKind,
   MarketDataQualityState,

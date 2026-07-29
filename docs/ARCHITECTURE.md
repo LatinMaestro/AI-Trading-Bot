@@ -75,6 +75,7 @@ D1 stores:
 - immutable listing, trading-status, delisting and Australian-availability events;
 - immutable market-quality observations for spread, turnover, depth, impact, minimums, valuation and data state;
 - content-addressed universe-ingestion batch headers, source digests, record memberships and verified commit markers;
+- immutable expiring signed universe policies and content-addressed universe snapshots bound to exact committed ingestion evidence;
 - versioned external-intelligence source contracts covering provider, publisher, licence, attribution, retention, deletion and model-use rules;
 - immutable external-intelligence items, append-only corrections, content-addressed entity/syndication linkages and deterministic assessments;
 - immutable compact external-intelligence backtest comparison manifests bound to exact replay, baseline-result and gated-result digests;
@@ -99,6 +100,8 @@ Lifecycle backfill manifests bind the exact committed-evidence and prepared-evid
 Market batches and candles use deterministic SHA-256 content digests. Database triggers reject identity reuse with different content and prevent ordinary update or delete operations. Gap detection is performed against explicit expected ranges before strategy research is allowed to rely on stored data.
 
 Universe definitions, lifecycle events and quality observations are also append-only and hashed. Prepared universe evidence is submitted through one transactional D1 batch and is complete only when a final database-verified commit marker proves that every declared source and record membership exists. Historical reconstruction uses source publication and data-availability timestamps so later listings, suspensions, delistings or quality observations cannot leak into an earlier signal. The contract is defined in `docs/MARKET_UNIVERSE.md`.
+
+Signed universe policies use finite-validity P-256 verification and content-address the public key, exact signed payload and signature envelope. A universe snapshot is accepted only within that policy's validity interval and is bound to an immutable ingestion commit plus its exact database-committed source-digest membership. D1 persists the verified policy and snapshot atomically; natural-identity conflicts, mutation and incomplete evidence fail closed. No private signing key is stored, and persistence alone cannot make membership strategy-authoritative.
 
 External-intelligence linkages bind each reviewed topic to exact entity keys and allowed event types, apply append-only corrections as an effective view, remove retracted/deleted evidence, and collapse exact syndicated content to one authority-ranked representative before corroboration. Linkage manifests and clusters are content-addressed.
 
