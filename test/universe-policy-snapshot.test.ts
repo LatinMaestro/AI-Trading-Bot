@@ -408,7 +408,7 @@ test("persists exact retries and rejects policy or snapshot mutation", async () 
   sqlite.close();
 });
 
-test("fails closed on missing committed ingestion evidence and future persistence", async () => {
+test("fails closed on missing evidence and pre-snapshot persistence", async () => {
   const { sqlite, repository } = await database();
   const signed = await signedPolicy();
   const snapshotManifest = await manifest(signed);
