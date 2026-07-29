@@ -120,6 +120,7 @@
   - [x] Persist immutable complete-evaluation reports with database-verified bounded chunk commits.
   - [ ] Bind approved strategy configurations to authorised signatures/approval records.
     - [x] Add independently trust-anchored, public-key-only P-256 verification contracts for exact signed configurations and external authorisation statements without committing a selection, approval record, private key or activation authority.
+    - [x] Persist verified signed configurations and external authorisation statements immutably with exact committed readiness/evaluation binding, version-identity protection and no activation authority.
   - [x] Add a deterministic Gate B–E readiness assessment that reports authoritative research gaps and external promotion dependencies without selection or approval authority.
   - [x] Persist canonical readiness inputs, assessments and ordered gates immutably; database-bind evidence-present evaluation, calibration and stress identities without promotion authority.
 
