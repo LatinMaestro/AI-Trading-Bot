@@ -1,0 +1,51 @@
+name: Capture Kraken historical archive
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kraken-historical-archive
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --ignore-scripts
+      - name: Download exact reviewed complete archive
+        env:
+          ARCHIVE_DOWNLOAD_URL: "https://drive.usercontent.google.com/download?id=1ptNqWYidLkhb2VAKuLCxmp2OXEfGO-AP&export=download&confirm=t"
+        run: |
+          mkdir -p "$RUNNER_TEMP/kraken-history"
+          curl \
+            --fail \
+            --location \
+            --proto '=https' \
+            --retry 2 \
+            --retry-all-errors \
+            --max-time 2400 \
+            --output "$RUNNER_TEMP/kraken-history/Kraken_OHLCVT.zip" \
+            "$ARCHIVE_DOWNLOAD_URL"
+      - name: Hash and validate four approved members
+        run: |
+          ACQUIRED_AT="$(date -u +'%Y-%m-%dT%H:%M:%S.000Z')"
+          node --experimental-strip-types \
+            scripts/capture-kraken-historical-archive.mjs \
+            --archive "$RUNNER_TEMP/kraken-history/Kraken_OHLCVT.zip" \
+            --acquired-at "$ACQUIRED_AT" \
+            --output "$RUNNER_TEMP/kraken-history/capture-manifest.json"
+      - name: Upload digest-only capture manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: kraken-historical-capture-manifest
+          path: ${{ runner.temp }}/kraken-history/capture-manifest.json
+          if-no-files-found: error
+          retention-days: 7
