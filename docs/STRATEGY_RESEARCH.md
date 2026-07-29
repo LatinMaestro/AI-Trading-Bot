@@ -26,6 +26,8 @@ Each lane requires explicit online status, listing date, supported quote/AUD val
 
 The deterministic contract is defined in `docs/MARKET_UNIVERSE.md`. Every signal-time snapshot must use only definitions and quality observations available by that time and lifecycle events both effective and published by that time. Suspended, Australian-disabled and delisted markets remain in the evidence set but are ineligible; a later relisting starts a new listing era. Tier boundaries and market-quality limits are signed policy inputs, not fixed claims about market behaviour. Every evaluated run must bind the exact verified `signedPolicySha256` and persisted `snapshotSha256` available at its signal time; recomputed, unsigned or later snapshots are not interchangeable evidence.
 
+Backtests must load that exact persisted snapshot by digest, re-verify the signed policy and manifest, and prove that persistence and freshness precede the decision. Every step carries one content-addressed membership artifact. Positive target weights outside its sorted eligiblePairs fail closed, while omitted or zero targets remain available to reduce or exit positions that later became ineligible. Complete membership identities are retained in result provenance.
+
 ## Baseline A — venue-wide relative-strength rotation
 
 For each established or high-volatility candidate:
