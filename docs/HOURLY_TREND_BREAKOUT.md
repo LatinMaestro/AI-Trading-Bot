@@ -45,4 +45,6 @@ The policy values are versioned hypotheses, not evidence of profitability. Befor
 
 Each completed candidate evaluation is bound into one reproducible research-run envelope containing the exact plan, execution assumptions and complete result identities. Verification re-runs the universe-bound execution-aware backtest and rejects any changed plan, configuration, result or outer digest. D1 retains only the immutable compact run manifest; research reports reference sorted unique run digests.
 
+Walk-forward evidence binds contiguous fold indexes, increasing training cutoffs, disjoint later validation windows and one strictly later final holdout. Every underlying run is re-verified and may appear only once. Parameter sensitivity compares unique same-period policies under one execution configuration, requires the baseline exactly once and sorts variants by policy digest. Neither manifest ranks, selects or promotes a policy.
+
 The module produces targets only. It does not submit or approve orders, activate paper/live mode, connect credentials or weaken any market-data, liquidity, intelligence, risk or execution gate.
