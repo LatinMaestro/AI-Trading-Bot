@@ -53,7 +53,7 @@ Historical gaps outside the Kraken REST horizon require one of:
 2. a separately approved, reproducible historical source with documented provenance and reconciliation;
 3. exclusion of the affected period from research and reporting.
 
-The scheduled ingestion and automated repair orchestration remain separate Phase 1 tasks. Until they are implemented, these primitives may be used only in research and test paths.
+Scheduled ingestion is now connected for the configured Australian Kraken pairs at 60 and 1,440 minutes. It overlaps the latest stored candle with Kraken's incremental `since` cursor, preserves the exact response SHA-256 in immutable batch provenance and requires aggregate complete history after persistence. Automated repair of discovered gaps and an approved source outside Kraken's REST horizon remain separate Phase 1 tasks.
 
 ## Validation evidence
 
