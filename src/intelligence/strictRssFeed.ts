@@ -11,7 +11,11 @@ export interface StrictRssItem {
   readonly publicationText: string;
 }
 
-function decodeXmlText(value: string, name: string): string {
+function decodeXmlText(
+  value: string,
+  name: string,
+  trimOuterWhitespace = false,
+): string {
   let text = value;
   const cdata = /^<!\[CDATA\[([\s\S]*)\]\]>$/u.exec(text);
   if (cdata !== null) text = cdata[1] ?? "";
@@ -54,6 +58,7 @@ function decodeXmlText(value: string, name: string): string {
       }
     },
   );
+  if (trimOuterWhitespace) text = text.trim();
   if (
     text.trim() !== text ||
     text.length === 0 ||
@@ -65,7 +70,12 @@ function decodeXmlText(value: string, name: string): string {
   return text;
 }
 
-function exactlyOneTag(block: string, tag: string, sourceName: string): string {
+function exactlyOneTag(
+  block: string,
+  tag: string,
+  sourceName: string,
+  trimOuterWhitespace = false,
+): string {
   const pattern = new RegExp(
     `<${tag}(?:\\s+[^<>]*)?>([\\s\\S]*?)<\\/${tag}>`,
     "gu",
@@ -74,7 +84,15 @@ function exactlyOneTag(block: string, tag: string, sourceName: string): string {
   if (values.length !== 1) {
     throw new Error(`${sourceName} RSS item must contain exactly one ${tag}`);
   }
-  return decodeXmlText(values[0]?.[1] ?? "", `${sourceName} RSS ${tag}`);
+  return decodeXmlText(
+    values[0]?.[1] ?? "",
+    `${sourceName} RSS ${tag}`,
+    trimOuterWhitespace,
+  );
+}
+
+export interface StrictRssOptions {
+  readonly trimTitleOuterWhitespace?: boolean;
 }
 
 async function exactPayloadDigest(
@@ -95,6 +113,7 @@ export async function parseStrictRssPayload(
   capture: ExternalIntelligencePayloadCapture,
   sourceName: string,
   maximumItems: number,
+  options: StrictRssOptions = {},
 ): Promise<readonly StrictRssItem[]> {
   if (
     !Number.isSafeInteger(maximumItems) ||
@@ -163,7 +182,12 @@ export async function parseStrictRssPayload(
   return itemBlocks.map((match) => {
     const block = match[1] ?? "";
     return {
-      title: exactlyOneTag(block, "title", sourceName),
+      title: exactlyOneTag(
+        block,
+        "title",
+        sourceName,
+        options.trimTitleOuterWhitespace === true,
+      ),
       link: exactlyOneTag(block, "link", sourceName),
       guid: exactlyOneTag(block, "guid", sourceName),
       publicationText: exactlyOneTag(block, "pubDate", sourceName),
