@@ -221,6 +221,48 @@ async function defaultSleep(milliseconds: number): Promise<void> {
   await new Promise<void>((resolve) => setTimeout(resolve, milliseconds));
 }
 
+async function readBoundedUtf8Body(
+  response: Response,
+  maximumResponseBytes: number,
+): Promise<{ readonly text: string; readonly byteLength: number }> {
+  if (response.body === null) {
+    throw new Error("Kraken OHLC body is missing");
+  }
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder("utf-8", { fatal: true });
+  let byteLength = 0;
+  let text = "";
+  try {
+    while (true) {
+      const chunk = await reader.read();
+      if (chunk.done) break;
+      byteLength += chunk.value.byteLength;
+      if (byteLength > maximumResponseBytes) {
+        throw new Error("Kraken OHLC body is oversized");
+      }
+      try {
+        text += decoder.decode(chunk.value, { stream: true });
+      } catch {
+        throw new Error("Kraken OHLC body is not valid UTF-8");
+      }
+    }
+    try {
+      text += decoder.decode();
+    } catch {
+      throw new Error("Kraken OHLC body is not valid UTF-8");
+    }
+  } catch (error: unknown) {
+    await reader.cancel().catch(() => undefined);
+    throw error;
+  } finally {
+    reader.releaseLock();
+  }
+  if (byteLength === 0) {
+    throw new Error("Kraken OHLC body is empty");
+  }
+  return { text, byteLength };
+}
+
 async function fetchOne(
   fetchImpl: PublicFetch,
   url: URL,
@@ -232,6 +274,7 @@ async function fetchOne(
   readonly receivedAtMs: number;
   readonly availableAtMs: number;
   readonly text: string;
+  readonly byteLength: number;
 }> {
   const requestStartedAtMs = clock();
   const response = await fetchImpl(url, {
@@ -268,11 +311,7 @@ async function fetchOne(
   ) {
     throw new Error("Kraken OHLC declared length is invalid or oversized");
   }
-  const text = await response.text();
-  const byteLength = new TextEncoder().encode(text).byteLength;
-  if (byteLength === 0 || byteLength > maximumResponseBytes) {
-    throw new Error("Kraken OHLC body is empty or oversized");
-  }
+  const body = await readBoundedUtf8Body(response, maximumResponseBytes);
   const availableAtMs = clock();
   if (
     receivedAtMs < requestStartedAtMs ||
@@ -280,7 +319,13 @@ async function fetchOne(
   ) {
     throw new Error("Kraken OHLC acquisition chronology is invalid");
   }
-  return { requestStartedAtMs, receivedAtMs, availableAtMs, text };
+  return {
+    requestStartedAtMs,
+    receivedAtMs,
+    availableAtMs,
+    text: body.text,
+    byteLength: body.byteLength,
+  };
 }
 
 async function fetchWithRetry(
@@ -425,7 +470,6 @@ export async function runScheduledKrakenCandleCycle(
           "Kraken OHLC request cannot precede its scheduled cycle",
         );
       }
-      const responseBytes = new TextEncoder().encode(acquired.text);
       const responseSha256 = await sha256Hex(acquired.text);
       let parsedJson: unknown;
       try {
@@ -459,7 +503,7 @@ export async function runScheduledKrakenCandleCycle(
           acquired.requestStartedAtMs,
           acquired.receivedAtMs,
           acquired.availableAtMs,
-          responseBytes.byteLength,
+          acquired.byteLength,
           responseSha256,
         ]),
       );
@@ -485,7 +529,7 @@ export async function runScheduledKrakenCandleCycle(
         requestStartedAtMs: acquired.requestStartedAtMs,
         receivedAtMs: acquired.receivedAtMs,
         availableAtMs: acquired.availableAtMs,
-        responseByteLength: responseBytes.byteLength,
+        responseByteLength: acquired.byteLength,
         responseSha256,
         sourceCursor,
         batch,
