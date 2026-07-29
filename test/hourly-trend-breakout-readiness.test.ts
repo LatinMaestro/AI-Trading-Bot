@@ -82,6 +82,21 @@ test("surfaces expired live-like calibration as stale", async () => {
     )?.status,
     "stale",
   );
+  const missingExpiry =
+    await prepareHourlyTrendBreakoutReadinessAssessment({
+      assessedAtMs: ASSESSED_AT_MS,
+      evidence: [
+        evidence("live-like-execution-calibration", {
+          validUntilMs: null,
+        }),
+      ],
+    });
+  assert.equal(
+    missingExpiry.gates.find(
+      (gate) => gate.gateId === "live-like-execution-calibration",
+    )?.status,
+    "partial",
+  );
 });
 
 test("can report complete evidence while retaining external promotion authority", async () => {
