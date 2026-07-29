@@ -119,6 +119,7 @@ test("can report complete evidence while retaining external promotion authority"
       .every((gate) => gate.status === "external-review-required"),
   );
   assert.equal(first.assessmentSha256, second.assessmentSha256);
+  assert.equal(first.evidenceInputSha256, second.evidenceInputSha256);
   assert.equal("selectedStrategyVersion" in first, false);
   assert.equal("promotionApproved" in first, false);
 });
