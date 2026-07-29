@@ -43,8 +43,8 @@ export const REQUIRED_HOURLY_TREND_BREAKOUT_READINESS_GATES = [
   },
   {
     id: "tax-and-audit-export",
-    stage: "research",
-    reviewGate: "B",
+    stage: "promotion",
+    reviewGate: "C",
     requiresAuthoritativeEvidence: true,
   },
   {
