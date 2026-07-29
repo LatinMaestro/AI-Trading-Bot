@@ -2,7 +2,12 @@ import {
   verifyUniverseSignalTimeMembership,
   type UniverseSignalTimeMembership,
 } from "../universe/signalTimeMembership.ts";
-import type { BacktestStep } from "./types.ts";
+import { runBacktest } from "./engine.ts";
+import type {
+  BacktestConfig,
+  BacktestResult,
+  BacktestStep,
+} from "./types.ts";
 
 const MAXIMUM_BACKTEST_STEPS = 100_000;
 
@@ -39,4 +44,19 @@ export async function bindUniverseMembershipToBacktestSteps(
     }
     return { ...step, universeMembership: membership };
   });
+}
+
+export function runUniverseBoundBacktest(
+  config: BacktestConfig,
+  steps: readonly BacktestStep[],
+): BacktestResult {
+  if (
+    steps.length < 1 ||
+    steps.some((step) => step.universeMembership === undefined)
+  ) {
+    throw new Error(
+      "universe-bound backtest requires membership for every step",
+    );
+  }
+  return runBacktest(config, steps);
 }
