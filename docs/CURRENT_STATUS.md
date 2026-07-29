@@ -113,7 +113,7 @@ Last verified: 29 July 2026 (Australia/Brisbane)
 - PR #60 isolated hosted strict TypeScript validation and 165/165 tests pass, including 6/6 runtime universe-decision binding tests.
 - PR #61 persists each complete verified decision artifact once by digest and binds every runtime cycle immutably. Exact artifact reuse across retry cycles remains valid; one cycle cannot be rebound to a different decision.
 - PR #61 isolated hosted strict TypeScript validation, SQLite migration checks and 171/171 tests pass, including 6/6 immutable decision-persistence tests. Direct D1 inserts also reject noncanonical pairs, malformed artifact JSON and pre-decision persistence.
-- Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #48, #49, #50, #51, #52, #53, #54, #55, #56, #57, #58, #59 and #60 remain blocked before workflow steps.
+- Exact-head GitHub Actions for #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #48, #49, #50, #51, #52, #53, #54, #55, #56, #57, #58, #59, #60 and #61 remain blocked before workflow steps.
 - A truthful runtime SEC contact, exact reviewed Kraken source evidence and owner-approved Preview Queue/DLQ provisioning and collector activation, additional approved issuer/news manifests/parsers/signatures and approved hosted Reddit OAuth credentials remain pending.
 - Missing, gapped, stale, delayed or insufficient evidence remains non-authoritative for strategy selection.
 - No private API, credential, fund, wallet or live-order capability changed.
@@ -122,7 +122,7 @@ Last verified: 29 July 2026 (Australia/Brisbane)
 
 GitHub Actions private-repository capacity remains unavailable until 1 August 2026. Exact-head jobs fail before steps or logs.
 
-Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #48, #49, #50, #51, #52, #53, #54, #55, #56, #57, #58, #59 or #60 until fresh exact-head checks pass and the stack merges in order.
+Do not merge #1–#6, #8, #9, #11–#15, #17, #19, #21, #23, #25, #27, #28, #29, #30, #31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #48, #49, #50, #51, #52, #53, #54, #55, #56, #57, #58, #59, #60 or #61 until fresh exact-head checks pass and the stack merges in order.
 
 ## Next unblocked work
 
