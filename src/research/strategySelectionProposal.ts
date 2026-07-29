@@ -120,6 +120,11 @@ export async function prepareStrategySelectionProposal(
     input.verifiedConfiguration.decisionAtMs > input.proposedAtMs ||
     configuration.effectiveFromMs > input.proposedAtMs ||
     configuration.expiresAtMs <= input.proposedAtMs ||
+    (
+      input.configurationSignerTrustRevocation !== null &&
+      input.configurationSignerTrustRevocation.reviewedAtMs >
+        input.proposedAtMs
+    ) ||
     input.configurationSignerTrustAnchor.trustAnchorSha256 !==
       input.verifiedConfiguration.signerTrustAnchorSha256
   ) {
@@ -150,6 +155,10 @@ export async function prepareStrategySelectionProposal(
     authorisation.reviewedAtMs > input.proposedAtMs ||
     authorisation.effectiveFromMs > input.proposedAtMs ||
     authorisation.expiresAtMs <= input.proposedAtMs ||
+    (
+      input.authoriserTrustRevocation !== null &&
+      input.authoriserTrustRevocation.reviewedAtMs > input.proposedAtMs
+    ) ||
     authorisation.standaloneExecutionAuthority !== "none" ||
     authorisation.requiresSeparateActivationChecklist !== true ||
     authorisation.maximumCapitalAud >
