@@ -55,6 +55,8 @@ Live execution requires all of:
 
 Any missing, malformed or ambiguous state means no order.
 
+Signed strategy configurations and external authorisation statements use public-key-only P-256 verification. They retain no private signing material and are content-bound to exact research evidence. Verification alone grants no execution authority and cannot satisfy the separate activation secret, D1 activation record, live flags, permission checks, freshness checks, reconciliation state or hard risk limits.
+
 ## Supply-chain controls
 
 - Minimise runtime dependencies.
