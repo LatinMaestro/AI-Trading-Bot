@@ -57,6 +57,8 @@ Any missing, malformed or ambiguous state means no order.
 
 Signed strategy configurations and external authorisation statements use public-key-only P-256 verification and must match independently reviewed key IDs and public-key digests. They retain no private signing material and are content-bound to exact research evidence. Verification alone grants no execution authority and cannot satisfy the separate activation secret, D1 activation record, live flags, permission checks, freshness checks, reconciliation state or hard risk limits.
 
+Verified envelopes are persisted once by content digest and exact human-readable identity. Database triggers require a committed research-complete readiness assessment bound to the same complete evaluation, reject version or authorisation-ID reuse, and prohibit updates or deletion. Even a persisted `canary-live` scope retains `none` standalone execution authority and still requires the separate activation checklist.
+
 ## Supply-chain controls
 
 - Minimise runtime dependencies.
