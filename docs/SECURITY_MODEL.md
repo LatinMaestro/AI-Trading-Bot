@@ -61,6 +61,8 @@ Verified envelopes are persisted once by content digest and exact human-readable
 
 Signer trust is independently content-addressed and role-separated between configuration signing and external authorisation. Each public-key digest has finite validity, exact review-evidence provenance and optional same-role rotation lineage. Revocations are immutable, become effective at an explicit time and block new verification/persistence once known and effective. A key ID or public key cannot be aliased, reused across roles or silently rebound.
 
+Runtime preparation accepts only an exact signed-configuration digest and explicit decision time. It rejects configuration, trust, revocation, readiness, evaluation, report-commit, calibration or stress evidence that was unavailable, expired, malformed or inconsistently bound at that time. Large immutable report chunks are not reloaded per cycle; their bounded commit identity is checked after full chunk verification at persistence. The returned artifact is content-addressed and explicitly has no selection or execution authority.
+
 ## Supply-chain controls
 
 - Minimise runtime dependencies.
