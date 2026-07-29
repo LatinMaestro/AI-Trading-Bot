@@ -1,6 +1,12 @@
 import {
   canonicalIntelligenceJson,
+  sha256CanonicalIntelligence,
 } from "../intelligence/canonical.ts";
+import {
+  prepareHourlyTrendBreakoutReadinessAssessment,
+  type HourlyTrendBreakoutReadinessAssessment,
+  type HourlyTrendBreakoutReadinessInput,
+} from "../research/hourlyTrendBreakoutReadiness.ts";
 import {
   verifySignedStrategyAuthorisation,
   verifySignedStrategyConfiguration,
@@ -61,6 +67,95 @@ interface PersistedAuthorisationRow {
   readonly persisted_at_ms: number;
 }
 
+interface PersistedTrustAnchorAtTimeRow {
+  readonly trust_anchor_sha256: string;
+  readonly key_id: string;
+  readonly verification_key_sha256: string;
+  readonly trust_anchor_canonical_json: string;
+  readonly persisted_at_ms: number;
+}
+
+interface PersistedTrustRevocationAtTimeRow {
+  readonly revocation_sha256: string;
+  readonly trust_anchor_sha256: string;
+  readonly revocation_canonical_json: string;
+  readonly persisted_at_ms: number;
+}
+
+interface PersistedReadinessAtTimeRow {
+  readonly assessment_sha256: string;
+  readonly evidence_input_sha256: string;
+  readonly assessed_at_ms: number;
+  readonly research_status: string;
+  readonly promotion_status: string;
+  readonly gate_count: number;
+  readonly input_canonical_json: string;
+  readonly assessment_canonical_json: string;
+  readonly persisted_at_ms: number;
+}
+
+interface PersistedReadinessGateAtTimeRow {
+  readonly gate_index: number;
+  readonly gate_id: string;
+  readonly stage: string;
+  readonly review_gate: string;
+  readonly status: string;
+  readonly artifact_sha256s_json: string;
+}
+
+interface PersistedReadinessBindingAtTimeRow {
+  readonly assessment_sha256: string;
+  readonly complete_evaluation_sha256: string | null;
+  readonly execution_calibration_sha256: string | null;
+  readonly execution_stress_manifest_sha256: string | null;
+  readonly persisted_at_ms: number;
+}
+
+interface PersistedCompleteEvaluationAtTimeRow {
+  readonly evaluation_sha256: string;
+  readonly schema_version: string;
+  readonly strategy_version: string;
+  readonly report_sha256: string;
+  readonly persisted_at_ms: number;
+}
+
+interface PersistedReportCommitAtTimeRow {
+  readonly report_sha256: string;
+  readonly chunk_count: number;
+  readonly canonical_byte_length: number;
+  readonly persisted_at_ms: number;
+}
+
+interface PersistedStressManifestAtTimeRow {
+  readonly manifest_sha256: string;
+  readonly calibration_sha256: string;
+  readonly persisted_at_ms: number;
+}
+
+interface PersistedStressBindingAtTimeRow {
+  readonly evaluation_sha256: string;
+  readonly report_sha256: string;
+  readonly stress_manifest_sha256: string;
+  readonly persisted_at_ms: number;
+}
+
+export interface VerifiedStrategyConfigurationAtTime {
+  readonly schemaVersion:
+    "verified-strategy-configuration-at-time-v1";
+  readonly configuration: SignedStrategyConfiguration;
+  readonly decisionAtMs: number;
+  readonly signerTrustAnchorSha256: string;
+  readonly signerTrustRevocationSha256: string | null;
+  readonly readinessAssessmentSha256: string;
+  readonly completeEvaluationSha256: string;
+  readonly researchReportSha256: string;
+  readonly executionCalibrationSha256: string;
+  readonly executionStressManifestSha256: string;
+  readonly selectionAuthority: "none";
+  readonly executionAuthority: "none";
+  readonly verificationEvidenceSha256: string;
+}
+
 export const INSERT_SIGNED_STRATEGY_CONFIGURATION_SQL =
   `INSERT INTO hourly_trend_breakout_signed_configurations
     (signed_configuration_sha256, schema_version, configuration_version,
@@ -101,6 +196,72 @@ const SELECT_SIGNED_AUTHORISATION_SQL =
    FROM hourly_trend_breakout_strategy_authorisations
    WHERE signed_authorisation_sha256 = ?`;
 
+const SELECT_TRUST_ANCHOR_AT_TIME_SQL =
+  `SELECT trust_anchor_sha256, key_id, verification_key_sha256,
+          trust_anchor_canonical_json, persisted_at_ms
+   FROM strategy_signer_trust_anchors
+   WHERE trust_anchor_sha256 = ?
+     AND persisted_at_ms <= ?`;
+
+const SELECT_TRUST_REVOCATION_AT_TIME_SQL =
+  `SELECT revocation_sha256, trust_anchor_sha256,
+          revocation_canonical_json, persisted_at_ms
+   FROM strategy_signer_trust_revocations
+   WHERE trust_anchor_sha256 = ?
+     AND persisted_at_ms <= ?`;
+
+const SELECT_READINESS_AT_TIME_SQL =
+  `SELECT assessment_sha256, evidence_input_sha256, assessed_at_ms,
+          research_status, promotion_status, gate_count,
+          input_canonical_json, assessment_canonical_json, persisted_at_ms
+   FROM hourly_trend_breakout_readiness_assessments
+   WHERE assessment_sha256 = ?
+     AND persisted_at_ms <= ?`;
+
+const SELECT_READINESS_GATES_AT_TIME_SQL =
+  `SELECT gate_index, gate_id, stage, review_gate, status,
+          artifact_sha256s_json
+   FROM hourly_trend_breakout_readiness_gates
+   WHERE assessment_sha256 = ?
+   ORDER BY gate_index`;
+
+const SELECT_READINESS_BINDING_AT_TIME_SQL =
+  `SELECT assessment_sha256, complete_evaluation_sha256,
+          execution_calibration_sha256, execution_stress_manifest_sha256,
+          persisted_at_ms
+   FROM hourly_trend_breakout_readiness_bindings
+   WHERE assessment_sha256 = ?
+     AND persisted_at_ms <= ?`;
+
+const SELECT_COMPLETE_EVALUATION_AT_TIME_SQL =
+  `SELECT evaluation_sha256, schema_version, strategy_version,
+          report_sha256, persisted_at_ms
+   FROM hourly_trend_breakout_complete_evaluations
+   WHERE evaluation_sha256 = ?
+     AND persisted_at_ms <= ?`;
+
+const SELECT_REPORT_COMMIT_AT_TIME_SQL =
+  `SELECT report_sha256, chunk_count, canonical_byte_length,
+          persisted_at_ms
+   FROM research_report_commits
+   WHERE report_sha256 = ?
+     AND persisted_at_ms <= ?`;
+
+const SELECT_STRESS_MANIFEST_AT_TIME_SQL =
+  `SELECT manifest_sha256, calibration_sha256, persisted_at_ms
+   FROM hourly_trend_breakout_execution_stress_manifests
+   WHERE manifest_sha256 = ?
+     AND persisted_at_ms <= ?`;
+
+const SELECT_STRESS_BINDING_AT_TIME_SQL =
+  `SELECT evaluation_sha256, report_sha256, stress_manifest_sha256,
+          persisted_at_ms
+   FROM hourly_trend_breakout_complete_evaluation_stress_bindings
+   WHERE evaluation_sha256 = ?
+     AND persisted_at_ms <= ?`;
+
+const SHA256_HEX = /^[0-9a-f]{64}$/u;
+
 function assertPersistenceTimestamp(
   name: string,
   value: number,
@@ -108,6 +269,61 @@ function assertPersistenceTimestamp(
 ): void {
   if (!Number.isSafeInteger(value) || value < minimum) {
     throw new Error(`${name} chronology is invalid`);
+  }
+}
+
+function assertDigest(name: string, value: string): void {
+  if (!SHA256_HEX.test(value)) throw new Error(`${name} is not SHA-256`);
+}
+
+function parseCanonicalJson<T>(name: string, value: string): T {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(value);
+  } catch {
+    throw new Error(`${name} is not valid JSON`);
+  }
+  if (
+    parsed === null ||
+    typeof parsed !== "object" ||
+    canonicalIntelligenceJson(parsed) !== value
+  ) {
+    throw new Error(`${name} is not canonical JSON`);
+  }
+  return parsed as T;
+}
+
+function exactReadinessGateRows(
+  rows: readonly PersistedReadinessGateAtTimeRow[],
+  assessment: HourlyTrendBreakoutReadinessAssessment,
+): boolean {
+  return (
+    rows.length === assessment.gates.length &&
+    rows.every((row, index) => {
+      const gate = assessment.gates[index];
+      return gate !== undefined &&
+        row.gate_index === index &&
+        row.gate_id === gate.gateId &&
+        row.stage === gate.stage &&
+        row.review_gate === gate.reviewGate &&
+        row.status === gate.status &&
+        row.artifact_sha256s_json ===
+          canonicalIntelligenceJson(gate.artifactSha256s);
+    })
+  );
+}
+
+function assertKnownByDecision(
+  name: string,
+  persistedAtMs: number,
+  decisionAtMs: number,
+): void {
+  if (
+    !Number.isSafeInteger(persistedAtMs) ||
+    persistedAtMs < 0 ||
+    persistedAtMs > decisionAtMs
+  ) {
+    throw new Error(`${name} was unavailable at the decision time`);
   }
 }
 
@@ -296,5 +512,300 @@ export class SignedStrategyConfigurationRepository {
       throw new Error("persisted signed strategy authorisation is invalid");
     }
     return input.authorisation;
+  }
+
+  async loadVerifiedConfigurationAtTime(
+    signedConfigurationSha256: string,
+    decisionAtMs: number,
+  ): Promise<VerifiedStrategyConfigurationAtTime> {
+    assertDigest(
+      "signed strategy configuration selector",
+      signedConfigurationSha256,
+    );
+    if (!Number.isSafeInteger(decisionAtMs) || decisionAtMs < 0) {
+      throw new Error("strategy configuration decision time is invalid");
+    }
+    const configurationRow = await this.db
+      .prepare(SELECT_SIGNED_CONFIGURATION_SQL)
+      .bind(signedConfigurationSha256)
+      .first<PersistedConfigurationRow>();
+    if (configurationRow === null) {
+      throw new Error("signed strategy configuration is unavailable");
+    }
+    assertKnownByDecision(
+      "signed strategy configuration",
+      configurationRow.persisted_at_ms,
+      decisionAtMs,
+    );
+    const configuration = parseCanonicalJson<SignedStrategyConfiguration>(
+      "signed strategy configuration",
+      configurationRow.configuration_canonical_json,
+    );
+    if (
+      configuration.signedConfigurationSha256 !==
+        signedConfigurationSha256 ||
+      configuration.configuration.completeEvaluationSha256 !==
+        configurationRow.complete_evaluation_sha256 ||
+      configuration.configuration.readinessAssessmentSha256 !==
+        configurationRow.readiness_assessment_sha256 ||
+      configuration.verificationKeySha256 !==
+        configurationRow.verification_key_sha256 ||
+      configuration.effectiveFromMs > decisionAtMs ||
+      configuration.expiresAtMs <= decisionAtMs
+    ) {
+      throw new Error("signed strategy configuration binding is invalid");
+    }
+
+    const [anchorRow, revocationRow, readinessRow, gateResult, bindingRow] =
+      await Promise.all([
+        this.db
+          .prepare(SELECT_TRUST_ANCHOR_AT_TIME_SQL)
+          .bind(configurationRow.signer_trust_anchor_sha256, decisionAtMs)
+          .first<PersistedTrustAnchorAtTimeRow>(),
+        this.db
+          .prepare(SELECT_TRUST_REVOCATION_AT_TIME_SQL)
+          .bind(configurationRow.signer_trust_anchor_sha256, decisionAtMs)
+          .first<PersistedTrustRevocationAtTimeRow>(),
+        this.db
+          .prepare(SELECT_READINESS_AT_TIME_SQL)
+          .bind(
+            configuration.configuration.readinessAssessmentSha256,
+            decisionAtMs,
+          )
+          .first<PersistedReadinessAtTimeRow>(),
+        this.db
+          .prepare(SELECT_READINESS_GATES_AT_TIME_SQL)
+          .bind(configuration.configuration.readinessAssessmentSha256)
+          .all<PersistedReadinessGateAtTimeRow>(),
+        this.db
+          .prepare(SELECT_READINESS_BINDING_AT_TIME_SQL)
+          .bind(
+            configuration.configuration.readinessAssessmentSha256,
+            decisionAtMs,
+          )
+          .first<PersistedReadinessBindingAtTimeRow>(),
+      ]);
+    if (anchorRow === null) {
+      throw new Error("strategy configuration signer trust is unavailable");
+    }
+    assertKnownByDecision(
+      "strategy configuration signer trust",
+      anchorRow.persisted_at_ms,
+      decisionAtMs,
+    );
+    const anchor = parseCanonicalJson<ReviewedStrategySignerTrustAnchor>(
+      "strategy configuration signer trust",
+      anchorRow.trust_anchor_canonical_json,
+    );
+    if (
+      anchor.trustAnchorSha256 !== anchorRow.trust_anchor_sha256 ||
+      anchor.trustAnchorSha256 !==
+        configurationRow.signer_trust_anchor_sha256 ||
+      anchor.keyId !== anchorRow.key_id ||
+      anchor.verificationKeySha256 !==
+        anchorRow.verification_key_sha256 ||
+      anchor.keyId !== configuration.signerKeyId ||
+      anchor.verificationKeySha256 !==
+        configuration.verificationKeySha256
+    ) {
+      throw new Error("strategy configuration signer trust binding is invalid");
+    }
+    const revocation = revocationRow === null
+      ? null
+      : parseCanonicalJson<StrategySignerTrustRevocation>(
+        "strategy configuration signer revocation",
+        revocationRow.revocation_canonical_json,
+      );
+    if (revocationRow !== null) {
+      assertKnownByDecision(
+        "strategy configuration signer revocation",
+        revocationRow.persisted_at_ms,
+        decisionAtMs,
+      );
+      if (
+        revocation === null ||
+        revocation.revocationSha256 !== revocationRow.revocation_sha256 ||
+        revocation.trustAnchorSha256 !==
+          revocationRow.trust_anchor_sha256 ||
+        revocation.trustAnchorSha256 !== anchor.trustAnchorSha256
+      ) {
+        throw new Error(
+          "strategy configuration signer revocation binding is invalid",
+        );
+      }
+    }
+    const reviewedKey = await resolveReviewedStrategySignerKey({
+      anchor,
+      revocation,
+      expectedRole: "strategy-configuration-signer",
+      artifactTimeMs: configuration.issuedAtMs,
+      checkedAtMs: decisionAtMs,
+    });
+    await verifySignedStrategyConfiguration(configuration, reviewedKey);
+
+    if (readinessRow === null || bindingRow === null) {
+      throw new Error("strategy configuration readiness is unavailable");
+    }
+    assertKnownByDecision(
+      "strategy configuration readiness",
+      readinessRow.persisted_at_ms,
+      decisionAtMs,
+    );
+    assertKnownByDecision(
+      "strategy configuration readiness binding",
+      bindingRow.persisted_at_ms,
+      decisionAtMs,
+    );
+    const readinessInput =
+      parseCanonicalJson<HourlyTrendBreakoutReadinessInput>(
+        "strategy configuration readiness input",
+        readinessRow.input_canonical_json,
+      );
+    const readiness =
+      parseCanonicalJson<HourlyTrendBreakoutReadinessAssessment>(
+        "strategy configuration readiness assessment",
+        readinessRow.assessment_canonical_json,
+      );
+    const reproducedReadiness =
+      await prepareHourlyTrendBreakoutReadinessAssessment(readinessInput);
+    if (
+      canonicalIntelligenceJson(reproducedReadiness) !==
+        canonicalIntelligenceJson(readiness) ||
+      readiness.assessmentSha256 !==
+        configuration.configuration.readinessAssessmentSha256 ||
+      readiness.assessmentSha256 !== readinessRow.assessment_sha256 ||
+      readiness.evidenceInputSha256 !== readinessRow.evidence_input_sha256 ||
+      readiness.assessedAtMs !== readinessRow.assessed_at_ms ||
+      readiness.assessedAtMs > decisionAtMs ||
+      readinessInput.evidence.some((item) =>
+        item.validUntilMs !== null && item.validUntilMs < decisionAtMs
+      ) ||
+      readinessRow.research_status !== "evidence-complete-for-review" ||
+      readinessRow.promotion_status !== "external-review-required" ||
+      readiness.gates.length !== readinessRow.gate_count ||
+      !exactReadinessGateRows(gateResult.results ?? [], readiness) ||
+      bindingRow.assessment_sha256 !== readiness.assessmentSha256 ||
+      bindingRow.complete_evaluation_sha256 !==
+        configuration.configuration.completeEvaluationSha256 ||
+      bindingRow.execution_calibration_sha256 === null ||
+      bindingRow.execution_stress_manifest_sha256 === null
+    ) {
+      throw new Error("strategy configuration readiness binding is invalid");
+    }
+
+    const [evaluationRow, stressManifestRow, stressBindingRow] =
+      await Promise.all([
+        this.db
+          .prepare(SELECT_COMPLETE_EVALUATION_AT_TIME_SQL)
+          .bind(
+            configuration.configuration.completeEvaluationSha256,
+            decisionAtMs,
+          )
+          .first<PersistedCompleteEvaluationAtTimeRow>(),
+        this.db
+          .prepare(SELECT_STRESS_MANIFEST_AT_TIME_SQL)
+          .bind(
+            bindingRow.execution_stress_manifest_sha256,
+            decisionAtMs,
+          )
+          .first<PersistedStressManifestAtTimeRow>(),
+        this.db
+          .prepare(SELECT_STRESS_BINDING_AT_TIME_SQL)
+          .bind(
+            configuration.configuration.completeEvaluationSha256,
+            decisionAtMs,
+          )
+          .first<PersistedStressBindingAtTimeRow>(),
+      ]);
+    if (
+      evaluationRow === null ||
+      stressManifestRow === null ||
+      stressBindingRow === null
+    ) {
+      throw new Error("strategy configuration evaluation is unavailable");
+    }
+    assertKnownByDecision(
+      "strategy configuration evaluation",
+      evaluationRow.persisted_at_ms,
+      decisionAtMs,
+    );
+    assertKnownByDecision(
+      "strategy configuration stress manifest",
+      stressManifestRow.persisted_at_ms,
+      decisionAtMs,
+    );
+    assertKnownByDecision(
+      "strategy configuration stress binding",
+      stressBindingRow.persisted_at_ms,
+      decisionAtMs,
+    );
+    if (
+      evaluationRow.evaluation_sha256 !==
+        configuration.configuration.completeEvaluationSha256 ||
+      evaluationRow.schema_version !==
+        "hourly-trend-breakout-complete-evaluation-v1" ||
+      evaluationRow.strategy_version !==
+        configuration.configuration.strategyVersion ||
+      stressManifestRow.manifest_sha256 !==
+        bindingRow.execution_stress_manifest_sha256 ||
+      stressManifestRow.calibration_sha256 !==
+        bindingRow.execution_calibration_sha256 ||
+      stressBindingRow.evaluation_sha256 !==
+        evaluationRow.evaluation_sha256 ||
+      stressBindingRow.report_sha256 !== evaluationRow.report_sha256 ||
+      stressBindingRow.stress_manifest_sha256 !==
+        stressManifestRow.manifest_sha256
+    ) {
+      throw new Error("strategy configuration evaluation binding is invalid");
+    }
+    assertDigest("research report identity", evaluationRow.report_sha256);
+    // The commit is the bounded runtime proof that persistence previously
+    // verified every immutable report chunk. Loading up to 90 chunks here
+    // would make a per-cycle safety check depend on tens of MiB of payload.
+    const reportCommit = await this.db
+      .prepare(SELECT_REPORT_COMMIT_AT_TIME_SQL)
+      .bind(evaluationRow.report_sha256, decisionAtMs)
+      .first<PersistedReportCommitAtTimeRow>();
+    if (
+      reportCommit === null ||
+      reportCommit.report_sha256 !== evaluationRow.report_sha256 ||
+      !Number.isSafeInteger(reportCommit.chunk_count) ||
+      reportCommit.chunk_count < 1 ||
+      reportCommit.chunk_count > 90 ||
+      !Number.isSafeInteger(reportCommit.canonical_byte_length) ||
+      reportCommit.canonical_byte_length < 1 ||
+      reportCommit.canonical_byte_length > 47_185_920
+    ) {
+      throw new Error("strategy configuration research report is unavailable");
+    }
+    assertKnownByDecision(
+      "strategy configuration research report",
+      reportCommit.persisted_at_ms,
+      decisionAtMs,
+    );
+
+    const evidence = {
+      schemaVersion: "verified-strategy-configuration-at-time-v1",
+      signedConfigurationSha256,
+      decisionAtMs,
+      signerTrustAnchorSha256: anchor.trustAnchorSha256,
+      signerTrustRevocationSha256:
+        revocation?.revocationSha256 ?? null,
+      readinessAssessmentSha256: readiness.assessmentSha256,
+      completeEvaluationSha256: evaluationRow.evaluation_sha256,
+      researchReportSha256: evaluationRow.report_sha256,
+      executionCalibrationSha256:
+        bindingRow.execution_calibration_sha256,
+      executionStressManifestSha256:
+        bindingRow.execution_stress_manifest_sha256,
+      selectionAuthority: "none",
+      executionAuthority: "none",
+    } as const;
+    return {
+      ...evidence,
+      configuration,
+      verificationEvidenceSha256:
+        await sha256CanonicalIntelligence(evidence),
+    };
   }
 }
