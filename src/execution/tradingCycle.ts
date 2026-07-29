@@ -233,6 +233,12 @@ export async function runTradingCycle(
         scheduledCandleCaptureCount: scheduledCandles.captures.length,
         scheduledCandleRequestCount: scheduledCandles.requestCount,
         scheduledCandleHistoryAsOfMs: scheduledCandles.historyAsOfMs,
+        scheduledCandleDetectedRepairableGapCount:
+          scheduledCandles.detectedRepairableGapCount,
+        scheduledCandleDetectedMissingCandleCount:
+          scheduledCandles.detectedMissingCandleCount,
+        scheduledCandleRepairCaptureCount:
+          scheduledCandles.repairCaptureCount,
         scheduledCandleBatchSha256s: scheduledCandles.captures.map(
           (capture) => capture.batch.payloadSha256,
         ),
