@@ -27,6 +27,15 @@ import type {
 import {
   sha256CanonicalIntelligence,
 } from "../src/intelligence/canonical.ts";
+import {
+  prepareSignedStrategySelectionReviewReceipt,
+  strategySelectionReviewReceiptSigningPayload,
+  verifySignedStrategySelectionReviewReceipt,
+  type UnsignedStrategySelectionReviewReceipt,
+} from "../src/security/strategySelectionReviewReceipt.ts";
+import type {
+  VerifiedStrategySelectionProposalAtTime,
+} from "../src/storage/strategySelectionProposal.ts";
 
 interface Keys {
   readonly privateKey: CryptoKey;
@@ -406,5 +415,154 @@ test("rejects role drift and self-authorisation", async () => {
       authoriserTrustAnchor: selfAuthoriserAnchor,
     }),
     /self-authorisation/u,
+  );
+});
+
+test("creates a signed review receipt with no selection or activation authority", async () => {
+  const value = await fixture();
+  const proposal = await prepareStrategySelectionProposal(value.input);
+  const verificationContent = {
+    schemaVersion:
+      "verified-strategy-selection-proposal-at-time-v1",
+    proposal,
+    reviewedAtMs: 13_500,
+    configurationSignerTrustAnchorSha256:
+      proposal.configurationSignerTrustAnchorSha256,
+    configurationSignerTrustRevocationSha256: null,
+    authoriserTrustAnchorSha256:
+      proposal.authoriserTrustAnchorSha256,
+    authoriserTrustRevocationSha256: null,
+    candidateStatus: "unselected",
+    selectionDecision: "none",
+    authorisationConsumed: false,
+    activationAuthority: "none",
+    executionAuthority: "none",
+  } as const;
+  const verifiedProposal: VerifiedStrategySelectionProposalAtTime = {
+    ...verificationContent,
+    proposalVerificationSha256:
+      await sha256CanonicalIntelligence(verificationContent),
+  };
+  const unsigned: UnsignedStrategySelectionReviewReceipt = {
+    receiptId: "owner-review-receipt-v1",
+    proposalSha256: proposal.proposalSha256,
+    proposalVerificationSha256:
+      verifiedProposal.proposalVerificationSha256,
+    reviewedAtMs: 13_500,
+    disposition: "acknowledged-for-owner-review",
+    reviewEvidenceSha256: "e".repeat(64),
+    reviewerKeyId: value.authorisation.authoriserKeyId,
+  };
+  const receipt = await prepareSignedStrategySelectionReviewReceipt({
+    ...unsigned,
+    verifiedProposal,
+    reviewerTrustAnchor: value.input.authoriserTrustAnchor,
+    reviewerTrustRevocation: null,
+    verificationKeyJwk: value.authorisationKeys.publicJwk,
+    signatureHex: await sign(
+      strategySelectionReviewReceiptSigningPayload(
+        unsigned,
+        verifiedProposal,
+      ),
+      value.authorisationKeys.privateKey,
+    ),
+  });
+  assert.equal(receipt.candidateStatus, "unselected");
+  assert.equal(receipt.selectionDecision, "none");
+  assert.equal(receipt.authorisationConsumed, false);
+  assert.equal(receipt.activationAuthority, "none");
+  assert.equal(receipt.executionAuthority, "none");
+  assert.equal("approval" in receipt, false);
+  await verifySignedStrategySelectionReviewReceipt(
+    receipt,
+    verifiedProposal,
+    value.input.authoriserTrustAnchor,
+    null,
+  );
+});
+
+test("review receipts reject approval semantics, changed evidence and revoked trust", async () => {
+  const value = await fixture();
+  const proposal = await prepareStrategySelectionProposal(value.input);
+  const verificationContent = {
+    schemaVersion:
+      "verified-strategy-selection-proposal-at-time-v1",
+    proposal,
+    reviewedAtMs: 13_500,
+    configurationSignerTrustAnchorSha256:
+      proposal.configurationSignerTrustAnchorSha256,
+    configurationSignerTrustRevocationSha256: null,
+    authoriserTrustAnchorSha256:
+      proposal.authoriserTrustAnchorSha256,
+    authoriserTrustRevocationSha256: null,
+    candidateStatus: "unselected",
+    selectionDecision: "none",
+    authorisationConsumed: false,
+    activationAuthority: "none",
+    executionAuthority: "none",
+  } as const;
+  const verifiedProposal: VerifiedStrategySelectionProposalAtTime = {
+    ...verificationContent,
+    proposalVerificationSha256:
+      await sha256CanonicalIntelligence(verificationContent),
+  };
+  const unsigned: UnsignedStrategySelectionReviewReceipt = {
+    receiptId: "owner-review-receipt-v1",
+    proposalSha256: proposal.proposalSha256,
+    proposalVerificationSha256:
+      verifiedProposal.proposalVerificationSha256,
+    reviewedAtMs: 13_500,
+    disposition: "deferred",
+    reviewEvidenceSha256: "e".repeat(64),
+    reviewerKeyId: value.authorisation.authoriserKeyId,
+  };
+  assert.throws(
+    () => strategySelectionReviewReceiptSigningPayload(
+      { ...unsigned, disposition: "approved" as never },
+      verifiedProposal,
+    ),
+    /receipt is invalid/u,
+  );
+  const signatureHex = await sign(
+    strategySelectionReviewReceiptSigningPayload(
+      unsigned,
+      verifiedProposal,
+    ),
+    value.authorisationKeys.privateKey,
+  );
+  await assert.rejects(
+    prepareSignedStrategySelectionReviewReceipt({
+      ...unsigned,
+      reviewEvidenceSha256: "f".repeat(64),
+      verifiedProposal,
+      reviewerTrustAnchor: value.input.authoriserTrustAnchor,
+      reviewerTrustRevocation: null,
+      verificationKeyJwk: value.authorisationKeys.publicJwk,
+      signatureHex,
+    }),
+    /signature verification failed/u,
+  );
+  const revocation = await prepareStrategySignerTrustRevocation(
+    {
+      revocationId: "review-receipt-authoriser-revocation-v1",
+      trustAnchorSha256:
+        value.input.authoriserTrustAnchor.trustAnchorSha256,
+      reason: "review-withdrawn",
+      effectiveAtMs: 13_400,
+      reviewedAtMs: 13_300,
+      reviewEvidenceSha256: "f".repeat(64),
+    },
+    value.input.authoriserTrustAnchor,
+  );
+  await assert.rejects(
+    prepareSignedStrategySelectionReviewReceipt({
+      ...unsigned,
+      verifiedProposal,
+      reviewerTrustAnchor: value.input.authoriserTrustAnchor,
+      reviewerTrustRevocation: revocation,
+      verificationKeyJwk: value.authorisationKeys.publicJwk,
+      signatureHex,
+    }),
+    /trust is revoked/u,
   );
 });

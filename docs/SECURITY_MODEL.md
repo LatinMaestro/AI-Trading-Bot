@@ -69,6 +69,8 @@ A selection-review proposal must bind that exact verification digest to a separa
 
 Proposal persistence reconstructs the artifact from exact digest-selected database evidence and D1 independently repeats verification availability, configuration/authorisation bindings, chronology, finite trust, omitted/effective revocation checks, distinct signer roles, capital and mandatory warnings. Exact retries preserve the first persistence time; proposal-ID rebinding, conflicts, updates and deletion fail closed.
 
+Review-time loading requires one exact persisted proposal digest and rechecks current trust, known revocations and configuration/authorisation expiry before producing a content-addressed verification. A signed external receipt binds that verification and permits only acknowledge-for-owner-review, defer or reject. It cannot approve or select a strategy, consume authorisation, activate a mode or grant execution authority.
+
 ## Supply-chain controls
 
 - Minimise runtime dependencies.

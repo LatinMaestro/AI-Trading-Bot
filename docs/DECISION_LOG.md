@@ -524,3 +524,10 @@ The proposal is content-addressed but is not a strategy selection, approval cons
 Persist a strategy-selection review proposal only after reloading its exact persisted verification and signed-authorisation digests and reconstructing both role-separated trust paths at the proposal timestamp. D1 independently enforces evidence availability, configuration/evaluation/readiness agreement, finite trust, then-known revocation state, capital, warnings and all non-authority fields.
 
 Rows are immutable and content-addressed. Exact retries preserve the first persistence time; proposal-ID reuse with changed evidence, conflicts, updates and deletion fail closed. Persistence remains non-activating: it does not select a strategy, consume approval or grant paper/live execution authority.
+
+
+## 2026-07-30 — Review receipts bind current proposal verification
+
+Load a persisted strategy-selection proposal only by exact digest and an explicit review timestamp. Reconstruct the immutable proposal, then revalidate both signer roles, known revocations and configuration/authorisation expiry at that timestamp. Content-address the review-time verification separately so a receipt cannot acknowledge stale proposal evidence.
+
+An external review receipt must sign both the proposal digest and its exact point-in-time verification digest. Its only dispositions are acknowledge-for-owner-review, defer or reject. It cannot express approval or selection, consume the earlier authorisation, activate paper/live mode, grant execution authority or submit an order. No real receipt, signing key, selection, deployment, credential, fund, wallet or live authority is committed.
