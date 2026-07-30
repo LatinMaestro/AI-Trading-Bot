@@ -565,3 +565,12 @@ Both rows remain pending and hard-code the candidate as unselected with no selec
 Load a pending owner decision proposal only by exact persisted digest and an explicit owner-review timestamp. Re-verify the original content-addressed proposal and receipt verification, then reconstruct current receipt/proposal trust, revocation and expiry evidence before returning a new content-addressed verification artifact.
 
 The resulting owner-decision record template is deliberately incomplete and non-signing: owner decision, decision time, owner identity, owner signature, selected configuration, selected authorisation and activation request remain null. The candidate remains unselected, authorisation remains unconsumed, and activation and execution authority remain none. Template preparation is not an owner decision and commits no selection, signing material, deployment, credential, fund, wallet or live authority.
+
+
+## 2026-07-30 — Deterministic cross-sectional momentum begins as research only
+
+Add the first Baseline A scoring contract over an exact sorted eligible AUD-pair membership. The fixed initial hypothesis combines 24-hour, 168-hour and 720-hour momentum with 20%, 30% and 50% weights, requires every horizon to be positive, records drawdown and volatility diagnostics, ranks ties by canonical pair, and holds AUD when no signal qualifies.
+
+The candidate permits one position at 95% target exposure, a 24-hour minimum hold and a five-percentage-point lead before rotation. Universe-ineligibility exits to AUD without same-signal replacement. These are synthetic research parameters, not profitability evidence or an approved configuration.
+
+Every output is content-addressed, marked research-only and unselected, states that runtime scope is unchanged, and grants no selection, activation or execution authority. The current BTC/AUD and ETH/AUD runtime scope is untouched. Signed signal-time universe loading, execution-aware orchestration, authoritative historical data, complete evaluation and any owner selection remain separate gates.
