@@ -4,6 +4,7 @@ import {
   prepareCrossSectionalMomentumBacktestPlan,
   runCrossSectionalMomentumResearch,
   verifyCrossSectionalMomentumBacktestPlan,
+  verifyCrossSectionalMomentumResearchRun,
   type CrossSectionalMomentumBacktestFrame,
   type CrossSectionalMomentumUniverseMembership,
 } from "../src/backtest/crossSectionalMomentum.ts";
@@ -140,11 +141,39 @@ test("passes only the verified plan to the universe-bound engine contract", asyn
   );
   assert.equal(observedSteps, 1);
   assert.equal(run.engineContract, "run-universe-bound-backtest-v1");
+  assert.deepEqual(run.config, { initialCashAud: 200 });
   assert.equal(run.result.initialCashAud, 200);
   assert.deepEqual(run.result.targetPairs, ["ETH/AUD"]);
   assert.match(run.resultSha256, /^[0-9a-f]{64}$/u);
   assert.match(run.runSha256, /^[0-9a-f]{64}$/u);
   assert.equal(run.executionAuthority, "none");
+
+  const runner = (
+    config: { readonly initialCashAud: number },
+    steps: Parameters<
+      Parameters<typeof runCrossSectionalMomentumResearch>[2]
+    >[1],
+  ) => ({
+    initialCashAud: config.initialCashAud,
+    membershipSha256s: steps.map(
+      (step) => step.universeMembership.membershipSha256,
+    ),
+    targetPairs: steps.flatMap((step) =>
+      step.targets.map((target) => target.pair)
+    ),
+  });
+  await verifyCrossSectionalMomentumResearchRun(plan, run, runner);
+  await assert.rejects(
+    verifyCrossSectionalMomentumResearchRun(
+      plan,
+      {
+        ...run,
+        config: { initialCashAud: 201 },
+      },
+      runner,
+    ),
+    /not reproducible/u,
+  );
 });
 
 test("fails closed on time drift, membership tampering and target tampering", async () => {
@@ -191,5 +220,26 @@ test("fails closed on time drift, membership tampering and target tampering", as
       ],
     }),
     /evidence binding is invalid|plan identity is invalid/u,
+  );
+  const originalHistory =
+    plan.steps[0]!.hourlyClosesByPair["ETH/AUD"]!;
+  await assert.rejects(
+    verifyCrossSectionalMomentumBacktestPlan({
+      ...plan,
+      steps: [
+        {
+          ...plan.steps[0]!,
+          hourlyClosesByPair: {
+            ...plan.steps[0]!.hourlyClosesByPair,
+            "ETH/AUD": originalHistory.map((observation, index) =>
+              index === originalHistory.length - 1
+                ? { ...observation, close: observation.close * 0.5 }
+                : observation
+            ),
+          },
+        },
+      ],
+    }),
+    /evidence binding is invalid/u,
   );
 });

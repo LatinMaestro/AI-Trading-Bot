@@ -580,3 +580,10 @@ Every output is content-addressed, marked research-only and unselected, states t
 Bind every cross-sectional momentum decision to one exact content-addressed signal-time universe membership, including its snapshot and signed-policy identities. Decision time must equal the common closed-candle signal time. Position-entry chronology is carried deterministically across frames, and an ineligible held asset retains market evidence so the execution model can price its AUD exit without a same-signal replacement.
 
 Translate verified decisions into at most one structurally compatible universe-bound backtest target. Content-address the plan and research run while retaining `research-only-unselected`, unchanged runtime scope and no selection, activation or execution authority. This is research plumbing, not historical performance evidence or strategy selection.
+## 2026-07-30 — Cross-sectional evaluation evidence remains reproducible and non-selecting
+
+Retain the exact hourly-close histories used by every cross-sectional backtest decision and reproduce the deterministic decision from those histories during plan verification. Retain the complete execution configuration in each research-run identity and replay the exact universe-bound engine result before accepting its digest.
+
+Content-address ordered walk-forward training/validation folds and one strictly later final holdout under a single policy and execution configuration. Parameter-sensitivity variants must use unique policies, include the baseline exactly once and share exact hourly-history, signal-time membership, market, execution and configuration evidence. Canonical variant order cannot imply ranking.
+
+These manifests describe research structure only. They contain no winner or selected-policy field, keep the candidate research-only and unselected, do not widen the BTC/AUD and ETH/AUD runtime scope, and grant no selection, activation, execution, deployment, credential, fund or wallet authority.
