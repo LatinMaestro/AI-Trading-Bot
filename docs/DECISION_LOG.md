@@ -518,3 +518,9 @@ The persisted artifact has `none` selection and execution authority, does not co
 A strategy-selection proposal may bind one exact persisted point-in-time configuration-verification identity to one separate externally signed authorisation. Re-verify configuration-signer and external-authoriser trust, revocation, expiry and exact evidence/capital bindings at proposal time, and reject self-authorisation.
 
 The proposal is content-addressed but is not a strategy selection, approval consumption or activation record. It must hard-code the candidate as unselected with no selection decision, activation authority or execution authority. A `canary-live` authorisation remains evidence only and cannot bypass the separate owner activation checklist, runtime gates or live flags.
+
+## 2026-07-30 — Proposal persistence repeats point-in-time enforcement
+
+Persist a strategy-selection review proposal only after reloading its exact persisted verification and signed-authorisation digests and reconstructing both role-separated trust paths at the proposal timestamp. D1 independently enforces evidence availability, configuration/evaluation/readiness agreement, finite trust, then-known revocation state, capital, warnings and all non-authority fields.
+
+Rows are immutable and content-addressed. Exact retries preserve the first persistence time; proposal-ID reuse with changed evidence, conflicts, updates and deletion fail closed. Persistence remains non-activating: it does not select a strategy, consume approval or grant paper/live execution authority.

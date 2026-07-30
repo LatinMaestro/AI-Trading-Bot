@@ -67,6 +67,8 @@ The verification artifact is persisted only after the repository repeats the com
 
 A selection-review proposal must bind that exact verification digest to a separately signed authorisation, revalidate both signer roles and effective revocations at proposal time, reject self-authorisation and preserve the reviewed capital limit and mandatory loss/objective warnings. The proposal remains explicitly unselected and grants no activation or execution authority.
 
+Proposal persistence reconstructs the artifact from exact digest-selected database evidence and D1 independently repeats verification availability, configuration/authorisation bindings, chronology, finite trust, omitted/effective revocation checks, distinct signer roles, capital and mandatory warnings. Exact retries preserve the first persistence time; proposal-ID rebinding, conflicts, updates and deletion fail closed.
+
 ## Supply-chain controls
 
 - Minimise runtime dependencies.
