@@ -26,6 +26,27 @@ export interface StrategySelectionReviewReceiptPersistenceInput {
   readonly persistedAtMs: number;
 }
 
+export interface VerifiedStrategySelectionReviewReceiptAtTime {
+  readonly schemaVersion:
+    "verified-strategy-selection-review-receipt-at-time-v1";
+  readonly receipt: SignedStrategySelectionReviewReceipt;
+  readonly ownerDecisionAtMs: number;
+  readonly currentProposalVerificationSha256: string;
+  readonly signedConfigurationSha256: string;
+  readonly signedAuthorisationSha256: string;
+  readonly authorisationScope: "paper" | "shadow" | "canary-live";
+  readonly maximumCapitalAud: number;
+  readonly reviewerTrustAnchorSha256: string;
+  readonly reviewerTrustRevocationSha256: string | null;
+  readonly receiptStatus: "verified-for-owner-decision";
+  readonly candidateStatus: "unselected";
+  readonly selectionDecision: "none";
+  readonly authorisationConsumed: false;
+  readonly activationAuthority: "none";
+  readonly executionAuthority: "none";
+  readonly receiptVerificationSha256: string;
+}
+
 interface PersistedTrustAnchorRow {
   readonly trust_anchor_sha256: string;
   readonly trust_anchor_canonical_json: string;
@@ -41,9 +62,13 @@ interface PersistedTrustRevocationRow {
 
 interface PersistedReviewReceiptRow {
   readonly receipt_sha256: string;
+  readonly receipt_id: string;
   readonly proposal_sha256: string;
   readonly proposal_verification_sha256: string;
   readonly reviewed_at_ms: number;
+  readonly disposition: string;
+  readonly review_evidence_sha256: string;
+  readonly reviewer_key_id: string;
   readonly reviewer_trust_anchor_sha256: string;
   readonly reviewer_trust_revocation_sha256: string | null;
   readonly candidate_status: string;
@@ -51,7 +76,20 @@ interface PersistedReviewReceiptRow {
   readonly authorisation_consumed: number;
   readonly activation_authority: string;
   readonly execution_authority: string;
+  readonly verification_key_jwk_json: string;
+  readonly verification_key_sha256: string;
+  readonly signature_hex: string;
+  readonly signed_payload_json: string;
+  readonly signed_payload_sha256: string;
   readonly receipt_canonical_json: string;
+  readonly persisted_at_ms: number;
+}
+
+interface PersistedProposalVerificationRow {
+  readonly proposal_verification_sha256: string;
+  readonly proposal_sha256: string;
+  readonly reviewed_at_ms: number;
+  readonly verification_canonical_json: string;
   readonly persisted_at_ms: number;
 }
 
@@ -99,15 +137,24 @@ const SELECT_TRUST_REVOCATION_SQL =
      AND reviewed_at_ms <= ?`;
 
 const SELECT_REVIEW_RECEIPT_SQL =
-  `SELECT receipt_sha256, proposal_sha256,
+  `SELECT receipt_sha256, receipt_id, proposal_sha256,
           proposal_verification_sha256, reviewed_at_ms,
+          disposition, review_evidence_sha256, reviewer_key_id,
           reviewer_trust_anchor_sha256,
           reviewer_trust_revocation_sha256, candidate_status,
           selection_decision, authorisation_consumed,
           activation_authority, execution_authority,
+          verification_key_jwk_json, verification_key_sha256,
+          signature_hex, signed_payload_json, signed_payload_sha256,
           receipt_canonical_json, persisted_at_ms
    FROM hourly_trend_breakout_strategy_selection_review_receipts
    WHERE receipt_sha256 = ?`;
+
+const SELECT_PROPOSAL_VERIFICATION_SQL =
+  `SELECT proposal_verification_sha256, proposal_sha256,
+          reviewed_at_ms, verification_canonical_json, persisted_at_ms
+   FROM hourly_trend_breakout_strategy_selection_proposal_verifications
+   WHERE proposal_verification_sha256 = ?`;
 
 const SHA256_HEX = /^[0-9a-f]{64}$/u;
 
@@ -236,10 +283,15 @@ function receiptRowMatches(
 ): boolean {
   return (
     row.receipt_sha256 === input.receipt.receiptSha256 &&
+    row.receipt_id === input.receipt.receiptId &&
     row.proposal_sha256 === input.receipt.proposalSha256 &&
     row.proposal_verification_sha256 ===
       input.receipt.proposalVerificationSha256 &&
     row.reviewed_at_ms === input.receipt.reviewedAtMs &&
+    row.disposition === input.receipt.disposition &&
+    row.review_evidence_sha256 ===
+      input.receipt.reviewEvidenceSha256 &&
+    row.reviewer_key_id === input.receipt.reviewerKeyId &&
     row.reviewer_trust_anchor_sha256 ===
       input.reviewerTrustAnchor.trustAnchorSha256 &&
     row.reviewer_trust_revocation_sha256 ===
@@ -249,6 +301,13 @@ function receiptRowMatches(
     row.authorisation_consumed === 0 &&
     row.activation_authority === "none" &&
     row.execution_authority === "none" &&
+    row.verification_key_jwk_json ===
+      input.receipt.verificationKeyJwkJson &&
+    row.verification_key_sha256 ===
+      input.receipt.verificationKeySha256 &&
+    row.signature_hex === input.receipt.signatureHex &&
+    row.signed_payload_json === input.receipt.signedPayloadJson &&
+    row.signed_payload_sha256 === input.receipt.signedPayloadSha256 &&
     row.receipt_canonical_json ===
       canonicalIntelligenceJson(input.receipt) &&
     row.persisted_at_ms >= input.receipt.reviewedAtMs &&
@@ -346,5 +405,120 @@ export class StrategySelectionReviewReceiptRepository {
       throw new Error("persisted strategy selection review receipt is invalid");
     }
     return receipt;
+  }
+
+  async loadPersistedAtTime(
+    receiptSha256: string,
+    ownerDecisionAtMs: number,
+  ): Promise<VerifiedStrategySelectionReviewReceiptAtTime> {
+    if (!SHA256_HEX.test(receiptSha256)) {
+      throw new Error("strategy selection review receipt selector is invalid");
+    }
+    assertTimestamp(
+      "strategy selection review receipt owner-decision time",
+      ownerDecisionAtMs,
+    );
+    const row = await this.db.prepare(SELECT_REVIEW_RECEIPT_SQL)
+      .bind(receiptSha256)
+      .first<PersistedReviewReceiptRow>();
+    if (row === null) {
+      throw new Error("strategy selection review receipt is unavailable");
+    }
+    if (row.persisted_at_ms > ownerDecisionAtMs) {
+      throw new Error(
+        "strategy selection review receipt was unavailable at owner-decision time",
+      );
+    }
+    const receipt =
+      parseCanonicalJson<SignedStrategySelectionReviewReceipt>(
+        "strategy selection review receipt",
+        row.receipt_canonical_json,
+      );
+    const proposalVerificationRow = await this.db
+      .prepare(SELECT_PROPOSAL_VERIFICATION_SQL)
+      .bind(receipt.proposalVerificationSha256)
+      .first<PersistedProposalVerificationRow>();
+    if (
+      proposalVerificationRow === null ||
+      proposalVerificationRow.persisted_at_ms > row.persisted_at_ms
+    ) {
+      throw new Error(
+        "strategy selection proposal verification is unavailable",
+      );
+    }
+    const verifiedAtReview =
+      parseCanonicalJson<VerifiedStrategySelectionProposalAtTime>(
+        "strategy selection proposal verification",
+        proposalVerificationRow.verification_canonical_json,
+      );
+    const reconstructedAtReview =
+      await this.proposalRepository.loadPersistedAtTime(
+        receipt.proposalSha256,
+        receipt.reviewedAtMs,
+      );
+    const reviewTrust = await this.loadReviewerTrust(
+      verifiedAtReview.authoriserTrustAnchorSha256,
+      receipt.reviewedAtMs,
+    );
+    const persistedInput = {
+      receipt,
+      verifiedProposal: verifiedAtReview,
+      reviewerTrustAnchor: reviewTrust.anchor,
+      reviewerTrustRevocation: reviewTrust.revocation,
+      persistedAtMs: ownerDecisionAtMs,
+    };
+    if (
+      proposalVerificationRow.proposal_verification_sha256 !==
+        receipt.proposalVerificationSha256 ||
+      proposalVerificationRow.proposal_sha256 !==
+        receipt.proposalSha256 ||
+      proposalVerificationRow.reviewed_at_ms !== receipt.reviewedAtMs ||
+      canonicalIntelligenceJson(verifiedAtReview) !==
+        canonicalIntelligenceJson(reconstructedAtReview) ||
+      !receiptRowMatches(row, persistedInput)
+    ) {
+      throw new Error(
+        "persisted strategy selection review receipt is invalid",
+      );
+    }
+    await verifySignedStrategySelectionReviewReceipt(
+      receipt,
+      verifiedAtReview,
+      reviewTrust.anchor,
+      reviewTrust.revocation,
+    );
+    const currentProposalVerification =
+      await this.proposalRepository.loadPersistedAtTime(
+        receipt.proposalSha256,
+        ownerDecisionAtMs,
+      );
+    const proposal = currentProposalVerification.proposal;
+    const evidence = {
+      schemaVersion:
+        "verified-strategy-selection-review-receipt-at-time-v1",
+      receipt,
+      ownerDecisionAtMs,
+      currentProposalVerificationSha256:
+        currentProposalVerification.proposalVerificationSha256,
+      signedConfigurationSha256: proposal.signedConfigurationSha256,
+      signedAuthorisationSha256: proposal.signedAuthorisationSha256,
+      authorisationScope: proposal.authorisationScope,
+      maximumCapitalAud: proposal.maximumCapitalAud,
+      reviewerTrustAnchorSha256:
+        currentProposalVerification.authoriserTrustAnchorSha256,
+      reviewerTrustRevocationSha256:
+        currentProposalVerification.authoriserTrustRevocationSha256,
+      receiptStatus: "verified-for-owner-decision",
+      candidateStatus: "unselected",
+      selectionDecision: "none",
+      authorisationConsumed: false,
+      activationAuthority: "none",
+      executionAuthority: "none",
+    } as const;
+    return {
+      ...evidence,
+      receiptVerificationSha256:
+        await sha256CanonicalIntelligence(evidence),
+    };
   }
 }

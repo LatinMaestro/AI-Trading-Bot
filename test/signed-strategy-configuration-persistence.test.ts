@@ -8,6 +8,10 @@ import {
   type HourlyTrendBreakoutReadinessEvidence,
 } from "../src/research/hourlyTrendBreakoutReadiness.ts";
 import {
+  prepareStrategySelectionOwnerDecisionProposal,
+  verifyStrategySelectionOwnerDecisionProposal,
+} from "../src/research/strategySelectionOwnerDecisionProposal.ts";
+import {
   deriveP256VerificationKeySha256,
   prepareSignedStrategyAuthorisation,
   prepareSignedStrategyConfiguration,
@@ -1444,5 +1448,148 @@ test("review receipt persistence rejects backdating and binding drift", async ()
       persistedAtMs: 10_015,
     }),
     /binding is invalid/u,
+  );
+});
+
+test("loads only an exact persisted receipt at owner-decision time", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  const { receipt } = await signedReviewReceipt(fixture);
+  const repository =
+    new StrategySelectionReviewReceiptRepository(d1Database(db));
+  await repository.persistAtTime(receipt, 10_015);
+  const loaded = await repository.loadPersistedAtTime(
+    receipt.receiptSha256,
+    10_016,
+  );
+  assert.deepEqual(loaded.receipt, receipt);
+  assert.equal(loaded.receiptStatus, "verified-for-owner-decision");
+  assert.equal(loaded.candidateStatus, "unselected");
+  assert.equal(loaded.selectionDecision, "none");
+  assert.equal(loaded.authorisationConsumed, false);
+  assert.equal(loaded.activationAuthority, "none");
+  assert.equal(loaded.executionAuthority, "none");
+  assert.match(loaded.receiptVerificationSha256, /^[0-9a-f]{64}$/u);
+  assert.notEqual(
+    loaded.currentProposalVerificationSha256,
+    receipt.proposalVerificationSha256,
+  );
+});
+
+test("receipt loading rejects unknown and future-unavailable evidence", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  const { receipt } = await signedReviewReceipt(fixture);
+  const repository =
+    new StrategySelectionReviewReceiptRepository(d1Database(db));
+  await repository.persistAtTime(receipt, 10_015);
+  await assert.rejects(
+    repository.loadPersistedAtTime("f".repeat(64), 10_016),
+    /receipt is unavailable/u,
+  );
+  await assert.rejects(
+    repository.loadPersistedAtTime(receipt.receiptSha256, 10_014),
+    /unavailable at owner-decision time/u,
+  );
+});
+
+test("receipt loading fails after effective current trust revocation", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  const { receipt } = await signedReviewReceipt(fixture);
+  const repository =
+    new StrategySelectionReviewReceiptRepository(d1Database(db));
+  await repository.persistAtTime(receipt, 10_015);
+  const revocation = await prepareStrategySignerTrustRevocation(
+    {
+      revocationId: "owner-decision-authoriser-revocation-v1",
+      trustAnchorSha256:
+        fixture.authorisation.trustAnchor.trustAnchorSha256,
+      reason: "review-withdrawn",
+      effectiveAtMs: 10_016,
+      reviewedAtMs: 10_015,
+      reviewEvidenceSha256: "5".repeat(64),
+    },
+    fixture.authorisation.trustAnchor,
+  );
+  execute(
+    db,
+    await prepareStrategySignerTrustRevocationPersistence(
+      revocation,
+      fixture.authorisation.trustAnchor,
+      10_015,
+    ),
+  );
+  await assert.rejects(
+    repository.loadPersistedAtTime(receipt.receiptSha256, 10_016),
+    /trust is revoked/u,
+  );
+});
+
+test("owner decision proposals remain pending and non-activating", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  const { receipt } = await signedReviewReceipt(fixture);
+  const repository =
+    new StrategySelectionReviewReceiptRepository(d1Database(db));
+  await repository.persistAtTime(receipt, 10_015);
+  const verifiedReceipt = await repository.loadPersistedAtTime(
+    receipt.receiptSha256,
+    10_016,
+  );
+  const proposal =
+    await prepareStrategySelectionOwnerDecisionProposal({
+      decisionProposalId:
+        "hourly-trend-breakout-owner-decision-proposal-v1",
+      preparedAtMs: 10_016,
+      verifiedReceipt,
+    });
+  await verifyStrategySelectionOwnerDecisionProposal(
+    proposal,
+    verifiedReceipt,
+  );
+  assert.equal(proposal.ownerActionRequired, true);
+  assert.equal(
+    proposal.ownerDecisionStatus,
+    "pending-explicit-owner-decision",
+  );
+  assert.equal(proposal.candidateStatus, "unselected");
+  assert.equal(proposal.selectionDecision, "none");
+  assert.equal(proposal.authorisationConsumed, false);
+  assert.equal(proposal.activationAuthority, "none");
+  assert.equal(proposal.executionAuthority, "none");
+
+  const deferred = await signedReviewReceipt(
+    fixture,
+    "deferred",
+    "hourly-trend-breakout-deferred-receipt-v1",
+  );
+  await assert.rejects(
+    prepareStrategySelectionOwnerDecisionProposal({
+      decisionProposalId:
+        "hourly-trend-breakout-invalid-owner-proposal-v1",
+      preparedAtMs: 10_016,
+      verifiedReceipt: {
+        ...verifiedReceipt,
+        receipt: deferred.receipt,
+      },
+    }),
+    /acknowledged exact receipt/u,
+  );
+  await assert.rejects(
+    prepareStrategySelectionOwnerDecisionProposal({
+      decisionProposalId:
+        "hourly-trend-breakout-drifted-owner-proposal-v1",
+      preparedAtMs: 10_016,
+      verifiedReceipt: {
+        ...verifiedReceipt,
+        currentProposalVerificationSha256: "f".repeat(64),
+      },
+    }),
+    /acknowledged exact receipt/u,
   );
 });

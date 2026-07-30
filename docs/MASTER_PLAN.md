@@ -128,6 +128,7 @@
     - [x] Persist exact selection-review proposals immutably with independent D1 verification, authorisation, chronology, role separation, revocation, capital, warning and non-authority enforcement.
     - [x] Load immutable proposals by exact digest at review time, revalidate current trust/revocation/expiry state and bind non-activating signed review receipts to the resulting point-in-time verification digest.
     - [x] Persist exact review-time proposal-verification artifacts and signed review receipts immutably with independent D1 trust, chronology, disposition, identity and non-authority enforcement.
+    - [x] Load only exact persisted receipt digests at an explicit owner-decision time, revalidate current evidence and create a content-addressed pending owner decision proposal with no selection or activation authority.
   - [x] Add a deterministic Gate B–E readiness assessment that reports authoritative research gaps and external promotion dependencies without selection or approval authority.
   - [x] Persist canonical readiness inputs, assessments and ordered gates immutably; database-bind evidence-present evaluation, calibration and stress identities without promotion authority.
 
