@@ -1158,3 +1158,75 @@ test("proposal IDs cannot be rebound to changed evidence", async () => {
     /proposal conflict/u,
   );
 });
+
+test("loads only the exact persisted proposal at review time", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  const persisted = await fixture.repository.persistAtTime(
+    fixture.selector,
+    10_013,
+  );
+  const loaded = await fixture.repository.loadPersistedAtTime(
+    persisted.proposalSha256,
+    10_014,
+  );
+  assert.deepEqual(loaded.proposal, persisted);
+  assert.equal(loaded.reviewedAtMs, 10_014);
+  assert.equal(loaded.candidateStatus, "unselected");
+  assert.equal(loaded.authorisationConsumed, false);
+  assert.equal(loaded.activationAuthority, "none");
+  assert.equal(loaded.executionAuthority, "none");
+  assert.match(loaded.proposalVerificationSha256, /^[0-9a-f]{64}$/u);
+  await assert.rejects(
+    fixture.repository.loadPersistedAtTime(
+      "f".repeat(64),
+      10_014,
+    ),
+    /proposal is unavailable/u,
+  );
+  await assert.rejects(
+    fixture.repository.loadPersistedAtTime(
+      persisted.proposalSha256,
+      10_011,
+    ),
+    /unavailable at proposal time/u,
+  );
+});
+
+test("proposal review loading fails after known effective revocation", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  const persisted = await fixture.repository.persistAtTime(
+    fixture.selector,
+    10_013,
+  );
+  const revocation = await prepareStrategySignerTrustRevocation(
+    {
+      revocationId: "review-loader-authoriser-revocation-v1",
+      trustAnchorSha256:
+        fixture.authorisation.trustAnchor.trustAnchorSha256,
+      reason: "review-withdrawn",
+      effectiveAtMs: 10_015,
+      reviewedAtMs: 10_014,
+      reviewEvidenceSha256: "e".repeat(64),
+    },
+    fixture.authorisation.trustAnchor,
+  );
+  execute(
+    db,
+    await prepareStrategySignerTrustRevocationPersistence(
+      revocation,
+      fixture.authorisation.trustAnchor,
+      10_014,
+    ),
+  );
+  await assert.rejects(
+    fixture.repository.loadPersistedAtTime(
+      persisted.proposalSha256,
+      10_015,
+    ),
+    /trust is revoked/u,
+  );
+});

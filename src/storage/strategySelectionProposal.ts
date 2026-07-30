@@ -31,6 +31,23 @@ export interface StrategySelectionProposalSelector {
   readonly signedAuthorisationSha256: string;
 }
 
+export interface VerifiedStrategySelectionProposalAtTime {
+  readonly schemaVersion:
+    "verified-strategy-selection-proposal-at-time-v1";
+  readonly proposal: StrategySelectionProposal;
+  readonly reviewedAtMs: number;
+  readonly configurationSignerTrustAnchorSha256: string;
+  readonly configurationSignerTrustRevocationSha256: string | null;
+  readonly authoriserTrustAnchorSha256: string;
+  readonly authoriserTrustRevocationSha256: string | null;
+  readonly candidateStatus: "unselected";
+  readonly selectionDecision: "none";
+  readonly authorisationConsumed: false;
+  readonly activationAuthority: "none";
+  readonly executionAuthority: "none";
+  readonly proposalVerificationSha256: string;
+}
+
 interface PersistedVerificationRow {
   readonly verification_evidence_sha256: string;
   readonly signed_configuration_sha256: string;
@@ -499,5 +516,79 @@ export class StrategySelectionProposalRepository {
       throw new Error("persisted strategy selection proposal is invalid");
     }
     return proposal;
+  }
+
+  async loadPersistedAtTime(
+    proposalSha256: string,
+    reviewedAtMs: number,
+  ): Promise<VerifiedStrategySelectionProposalAtTime> {
+    assertDigest("strategy selection proposal selector", proposalSha256);
+    assertTimestamp("strategy selection proposal review time", reviewedAtMs);
+    const row = await this.db.prepare(SELECT_PROPOSAL_SQL)
+      .bind(proposalSha256)
+      .first<PersistedProposalRow>();
+    if (row === null) {
+      throw new Error("strategy selection proposal is unavailable");
+    }
+    assertKnownAt(
+      "strategy selection proposal",
+      row.persisted_at_ms,
+      reviewedAtMs,
+    );
+    const content = parseCanonicalJson<
+      Omit<StrategySelectionProposal, "proposalSha256">
+    >(
+      "strategy selection proposal",
+      row.proposal_canonical_json,
+    );
+    const proposal: StrategySelectionProposal = {
+      ...content,
+      proposalSha256,
+    };
+    const input = { proposal, persistedAtMs: reviewedAtMs };
+    if (!proposalRowMatches(row, input)) {
+      throw new Error("persisted strategy selection proposal is invalid");
+    }
+    const selector = {
+      proposalId: row.proposal_id,
+      proposedAtMs: row.proposed_at_ms,
+      verificationEvidenceSha256: row.verification_evidence_sha256,
+      signedAuthorisationSha256: row.signed_authorisation_sha256,
+    };
+    const reconstructed = await this.prepareAtTime(selector);
+    if (
+      canonicalIntelligenceJson(reconstructed) !==
+        canonicalIntelligenceJson(proposal)
+    ) {
+      throw new Error("persisted strategy selection proposal is invalid");
+    }
+    const current = await this.prepareAtTime({
+      ...selector,
+      proposedAtMs: reviewedAtMs,
+    });
+    const evidence = {
+      schemaVersion:
+        "verified-strategy-selection-proposal-at-time-v1",
+      proposal,
+      reviewedAtMs,
+      configurationSignerTrustAnchorSha256:
+        current.configurationSignerTrustAnchorSha256,
+      configurationSignerTrustRevocationSha256:
+        current.configurationSignerTrustRevocationSha256,
+      authoriserTrustAnchorSha256:
+        current.authoriserTrustAnchorSha256,
+      authoriserTrustRevocationSha256:
+        current.authoriserTrustRevocationSha256,
+      candidateStatus: "unselected",
+      selectionDecision: "none",
+      authorisationConsumed: false,
+      activationAuthority: "none",
+      executionAuthority: "none",
+    } as const;
+    return {
+      ...evidence,
+      proposalVerificationSha256:
+        await sha256CanonicalIntelligence(evidence),
+    };
   }
 }

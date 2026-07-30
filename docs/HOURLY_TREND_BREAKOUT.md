@@ -74,4 +74,8 @@ A deterministic review proposal may reference one exact verification identity an
 
 Persistence reloads only those exact digests at the proposal timestamp. Application and D1 both reject missing, late, expired, revoked, role-aliased or rebound evidence; immutable rows retain the complete point-in-time trust state and all non-authority fields. Persistence does not consume the external authorisation or select the candidate.
 
+Review loading accepts only an exact persisted proposal digest and explicit review time. It reconstructs the original proposal, revalidates both signer trust paths, known revocations and configuration/authorisation expiry at review time, then emits a separate content-addressed verification that remains unselected and non-executable.
+
+A signed external review receipt must bind that exact verification digest. Its closed disposition set can only acknowledge the proposal for owner review, defer it or reject it; approval, selection, authorisation consumption, activation and execution authority are structurally absent.
+
 The module produces targets only. It does not submit or approve orders, activate paper/live mode, connect credentials or weaken any market-data, liquidity, intelligence, risk or execution gate.
