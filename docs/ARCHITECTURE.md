@@ -92,6 +92,7 @@ D1 stores:
 - immutable strategy-selection proposal artifacts whose exact evidence, point-in-time trust and revocation state, capital, warnings and non-authority fields are independently enforced by D1;
 - digest-selected review-time proposal-verification artifacts and externally signed review receipts that bind active trust, current revocation/expiry state and exact proposal evidence while retaining no selection, approval-consumption, activation or execution authority;
 - immutable persisted proposal-verification and signed review-receipt records with independent D1 trust, chronology, disposition, idempotency and zero-authority enforcement;
+- digest-selected owner-decision-time receipt verifications and content-addressed non-activating owner decision proposals that remain pending, unselected and non-executable;
 - order intents, exchange orders and fills;
 - balances and equity snapshots;
 - risk events and kill-switch state;

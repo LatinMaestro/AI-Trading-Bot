@@ -540,3 +540,12 @@ Persist the exact review-time proposal verification separately from its signed e
 D1 independently requires the exact persisted proposal, configuration, authorisation and role-scoped trust state to have been available and valid at the review timestamp. A known revocation must be selected explicitly and remain ineffective. The receipt must bind the exact verification digest, reviewer key and one closed disposition: acknowledge-for-owner-review, defer or reject. Identity rebinding, stale omitted revocations, conflicts, updates and deletion fail closed.
 
 Both records hard-code the candidate as unselected with no selection decision, authorisation consumption, activation authority or execution authority. Persistence is review evidence only; no real receipt, private key, strategy selection, deployment, credential, fund, wallet or live authority is committed.
+
+
+## 2026-07-30 — Owner decision proposals remain non-activating
+
+Load a signed review receipt only by exact persisted digest and an explicit owner-decision timestamp. Reconstruct and verify its immutable review-time proposal evidence, signature, reviewer trust and then-known revocation state, then independently revalidate current proposal trust, revocations and configuration/authorisation expiry. Later-effective revocation or expired evidence fails closed.
+
+Only a receipt with the exact acknowledge-for-owner-review disposition may produce a content-addressed owner decision proposal. The proposal records that a separate explicit owner action is required. It remains pending and hard-codes the candidate as unselected with no selection decision, authorisation consumption, activation authority or execution authority. Deferred or rejected receipts cannot produce it.
+
+This proposal is evidence for a future owner-controlled decision, not the decision itself. No real receipt, owner decision, strategy selection, signing key, deployment, credential, fund, wallet or live authority is committed.

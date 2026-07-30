@@ -80,4 +80,6 @@ A signed external review receipt must bind that exact verification digest. Its c
 
 Persistence stores the exact review-time proposal verification and signed receipt as separate immutable records. Application and D1 independently bind proposal, trust, known revocation, chronology, reviewer identity and the closed disposition set; stale evidence, identity reuse, mutation and any authority-bearing state fail closed.
 
+Owner-decision preparation loads only an exact persisted receipt digest, re-verifies the original receipt signature and review-time trust, then revalidates current proposal trust, revocation and expiry state. Only an acknowledged receipt may create a pending non-activating owner decision proposal. Deferred or rejected receipts fail closed; the proposal cannot select the candidate, consume authorisation, activate a mode or grant execution authority.
+
 The module produces targets only. It does not submit or approve orders, activate paper/live mode, connect credentials or weaken any market-data, liquidity, intelligence, risk or execution gate.
