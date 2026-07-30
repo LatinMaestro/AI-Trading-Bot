@@ -125,6 +125,7 @@
     - [x] Load only an exact signed-configuration digest at an explicit decision time; re-verify active trust, known revocation, configuration/readiness expiry and compact immutable evaluation/report bindings without selection or execution authority.
     - [x] Persist the content-addressed point-in-time verification artifact immutably with independent D1 chronology, revocation-state and evidence-binding enforcement.
     - [x] Add a content-addressed non-activating selection-review proposal that references exact verification and external-authorisation evidence, revalidates role-separated trust and retains no selection, activation or execution authority.
+    - [x] Persist exact selection-review proposals immutably with independent D1 verification, authorisation, chronology, role separation, revocation, capital, warning and non-authority enforcement.
   - [x] Add a deterministic Gate B–E readiness assessment that reports authoritative research gaps and external promotion dependencies without selection or approval authority.
   - [x] Persist canonical readiness inputs, assessments and ordered gates immutably; database-bind evidence-present evaluation, calibration and stress identities without promotion authority.
 
