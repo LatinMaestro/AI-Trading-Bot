@@ -558,3 +558,10 @@ Persist the exact owner-decision-time receipt verification separately from its p
 D1 independently requires the exact receipt and proposal evidence to have been available at the decision timestamp, rechecks configuration and authorisation expiry, role-scoped trust, explicitly selected known revocations, reviewed capital and the acknowledged disposition, and rejects identity reuse, stale omission, mutation and deletion.
 
 Both rows remain pending and hard-code the candidate as unselected with no selection decision, authorisation consumption, activation authority or execution authority. Persistence is evidence only; no owner decision, signed selection, activation, deployment, credential, fund, wallet or live authority is committed.
+
+
+## 2026-07-30 — Owner-review loading produces only an unsigned blank template
+
+Load a pending owner decision proposal only by exact persisted digest and an explicit owner-review timestamp. Re-verify the original content-addressed proposal and receipt verification, then reconstruct current receipt/proposal trust, revocation and expiry evidence before returning a new content-addressed verification artifact.
+
+The resulting owner-decision record template is deliberately incomplete and non-signing: owner decision, decision time, owner identity, owner signature, selected configuration, selected authorisation and activation request remain null. The candidate remains unselected, authorisation remains unconsumed, and activation and execution authority remain none. Template preparation is not an owner decision and commits no selection, signing material, deployment, credential, fund, wallet or live authority.

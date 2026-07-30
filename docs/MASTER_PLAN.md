@@ -130,6 +130,7 @@
     - [x] Persist exact review-time proposal-verification artifacts and signed review receipts immutably with independent D1 trust, chronology, disposition, identity and non-authority enforcement.
     - [x] Load only exact persisted receipt digests at an explicit owner-decision time, revalidate current evidence and create a content-addressed pending owner decision proposal with no selection or activation authority.
     - [x] Persist exact owner-decision-time receipt verifications and pending proposals immutably with independent D1 chronology, trust, revocation, identity, idempotency and zero-authority enforcement.
+    - [x] Load exact persisted owner decision-proposal digests at an explicit owner-review time and produce only an unsigned null-decision template with no selection or activation authority.
   - [x] Add a deterministic Gate B–E readiness assessment that reports authoritative research gaps and external promotion dependencies without selection or approval authority.
   - [x] Persist canonical readiness inputs, assessments and ordered gates immutably; database-bind evidence-present evaluation, calibration and stress identities without promotion authority.
 

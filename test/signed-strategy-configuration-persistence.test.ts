@@ -12,6 +12,10 @@ import {
   verifyStrategySelectionOwnerDecisionProposal,
 } from "../src/research/strategySelectionOwnerDecisionProposal.ts";
 import {
+  prepareStrategySelectionOwnerDecisionRecordTemplate,
+  verifyStrategySelectionOwnerDecisionRecordTemplate,
+} from "../src/research/strategySelectionOwnerDecisionTemplate.ts";
+import {
   deriveP256VerificationKeySha256,
   prepareSignedStrategyAuthorisation,
   prepareSignedStrategyConfiguration,
@@ -1788,5 +1792,171 @@ test("owner decision persistence rejects deferred receipts and backdating", asyn
       10_015,
     ),
     /backdated/u,
+  );
+});
+
+test("loads exact owner decision proposals and creates only a blank unsigned template", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  const { receipt } = await signedReviewReceipt(fixture);
+  const receiptRepository =
+    new StrategySelectionReviewReceiptRepository(d1Database(db));
+  await receiptRepository.persistAtTime(receipt, 10_015);
+  const repository =
+    new StrategySelectionOwnerDecisionProposalRepository(d1Database(db));
+  const proposal = await repository.persistAtTime(
+    {
+      receiptSha256: receipt.receiptSha256,
+      ownerDecisionAtMs: 10_016,
+      decisionProposalId:
+        "hourly-trend-breakout-owner-decision-template-v1",
+    },
+    10_017,
+  );
+  const verified = await repository.loadPersistedAtTime(
+    proposal.decisionProposalSha256,
+    10_018,
+  );
+  assert.equal(
+    verified.proposal.decisionProposalSha256,
+    proposal.decisionProposalSha256,
+  );
+  assert.equal(
+    verified.proposalStatus,
+    "verified-for-owner-decision-review",
+  );
+  assert.equal(verified.candidateStatus, "unselected");
+  assert.equal(verified.selectionDecision, "none");
+  assert.equal(verified.authorisationConsumed, false);
+  assert.equal(verified.activationAuthority, "none");
+  assert.equal(verified.executionAuthority, "none");
+
+  const template =
+    await prepareStrategySelectionOwnerDecisionRecordTemplate({
+      templateId:
+        "hourly-trend-breakout-owner-decision-record-template-v1",
+      preparedAtMs: 10_018,
+      verifiedProposal: verified,
+    });
+  assert.equal(template.ownerDecision, null);
+  assert.equal(template.ownerIdentityReference, null);
+  assert.equal(template.ownerSignatureSha256, null);
+  assert.equal(template.selectedConfigurationSha256, null);
+  assert.equal(template.selectedAuthorisationSha256, null);
+  assert.equal(template.activationRequestSha256, null);
+  assert.equal(template.candidateStatus, "unselected");
+  assert.equal(template.selectionDecision, "none");
+  assert.equal(template.activationAuthority, "none");
+  assert.equal(template.executionAuthority, "none");
+  await verifyStrategySelectionOwnerDecisionRecordTemplate(
+    template,
+    verified,
+  );
+  await assert.rejects(
+    verifyStrategySelectionOwnerDecisionRecordTemplate(
+      {
+        ...template,
+        ownerDecision: "select" as never,
+      },
+      verified,
+    ),
+    /template identity is invalid/u,
+  );
+  await assert.rejects(
+    prepareStrategySelectionOwnerDecisionRecordTemplate({
+      templateId:
+        "hourly-trend-breakout-drifted-owner-template-v1",
+      preparedAtMs: 10_018,
+      verifiedProposal: {
+        ...verified,
+        maximumCapitalAud: verified.maximumCapitalAud + 1,
+      },
+    }),
+    /template evidence is invalid/u,
+  );
+});
+
+test("owner decision proposal loading is digest-selected and point-in-time", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  const { receipt } = await signedReviewReceipt(fixture);
+  const receiptRepository =
+    new StrategySelectionReviewReceiptRepository(d1Database(db));
+  await receiptRepository.persistAtTime(receipt, 10_015);
+  const repository =
+    new StrategySelectionOwnerDecisionProposalRepository(d1Database(db));
+  const proposal = await repository.persistAtTime(
+    {
+      receiptSha256: receipt.receiptSha256,
+      ownerDecisionAtMs: 10_016,
+      decisionProposalId:
+        "hourly-trend-breakout-owner-decision-load-v1",
+    },
+    10_017,
+  );
+  await assert.rejects(
+    repository.loadPersistedAtTime("f".repeat(64), 10_018),
+    /proposal is unavailable/u,
+  );
+  await assert.rejects(
+    repository.loadPersistedAtTime(
+      proposal.decisionProposalSha256,
+      10_016,
+    ),
+    /unavailable at owner-review time/u,
+  );
+  await assert.rejects(
+    repository.loadPersistedAtTime("not-a-digest", 10_018),
+    /selector is invalid/u,
+  );
+});
+
+test("owner decision proposal revalidation rejects newly effective trust revocation", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  const { receipt } = await signedReviewReceipt(fixture);
+  const receiptRepository =
+    new StrategySelectionReviewReceiptRepository(d1Database(db));
+  await receiptRepository.persistAtTime(receipt, 10_015);
+  const repository =
+    new StrategySelectionOwnerDecisionProposalRepository(d1Database(db));
+  const proposal = await repository.persistAtTime(
+    {
+      receiptSha256: receipt.receiptSha256,
+      ownerDecisionAtMs: 10_016,
+      decisionProposalId:
+        "hourly-trend-breakout-owner-decision-revoked-v1",
+    },
+    10_017,
+  );
+  const revocation = await prepareStrategySignerTrustRevocation(
+    {
+      revocationId: "owner-review-newly-effective-revocation-v1",
+      trustAnchorSha256:
+        fixture.authorisation.trustAnchor.trustAnchorSha256,
+      reason: "review-withdrawn",
+      effectiveAtMs: 10_019,
+      reviewedAtMs: 10_018,
+      reviewEvidenceSha256: "3".repeat(64),
+    },
+    fixture.authorisation.trustAnchor,
+  );
+  execute(
+    db,
+    await prepareStrategySignerTrustRevocationPersistence(
+      revocation,
+      fixture.authorisation.trustAnchor,
+      10_018,
+    ),
+  );
+  await assert.rejects(
+    repository.loadPersistedAtTime(
+      proposal.decisionProposalSha256,
+      10_019,
+    ),
+    /trust is revoked/u,
   );
 });
