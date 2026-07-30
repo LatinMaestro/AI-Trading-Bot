@@ -137,6 +137,8 @@ Complete hourly final-holdout evaluations are reproduced before persistence. Can
 
 Reddit post-level state uses a separate transient boundary and never enters the immutable intelligence ledger or durable Queue. D1 preserves only bounded post identity metadata until the original deletion deadline. Deletes require a transaction-local purge authorization; provider removals and deadline expiry atomically delete transient rows, record only aggregate content-free compliance evidence and invalidate downstream watch state. Failed provider refreshes cannot extend retention.
 
+Cross-sectional momentum research consumes one exact eligible-pair membership and complete aligned hourly histories, computes deterministic multi-horizon rankings, and emits one-position/AUD-cash decisions with cooldown and hysteresis. The artifact is content-addressed, explicitly research-only and carries no selection, activation or execution authority. This pure slice does not widen the BTC/AUD and ETH/AUD runtime scope; later orchestration must load and verify the exact signed signal-time universe snapshot before invocation.
+
 ## AI design
 
 No large language model participates in real-time order decisions. Later adaptive components may draft summaries, classifications or approved deterministic strategy rankings, but their output remains untrusted. The source registry, reaction gates, risk engine and execution policy remain deterministic and authoritative.

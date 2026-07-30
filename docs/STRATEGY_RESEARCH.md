@@ -42,6 +42,8 @@ For each established or high-volatility candidate:
 6. Test hourly evaluation and multiple daily rebalance policies with cooldown and hysteresis variants.
 7. Use AUD or an approved low-risk quote asset only when no candidate has positive expected after-cost edge.
 
+The first pure Baseline A slice implements a research-only 24/168/720-hour weighted relative-strength rank over exact sorted eligible AUD pairs, with positive absolute-momentum gates, a 24-hour minimum hold, five-percentage-point rotation hysteresis, one position at 95% target exposure and AUD cash otherwise. It content-addresses every decision and explicitly retains no selection, activation or execution authority. It consumes but does not yet load or cryptographically verify the persisted signal-time universe snapshot; execution-aware orchestration and authoritative historical evaluation remain pending. The full contract is in `docs/CROSS_SECTIONAL_MOMENTUM.md`.
+
 The existing narrow daily momentum implementation remains a regression baseline until this wider strategy is implemented.
 
 ## Candidate B — hourly Donchian/EMA momentum trend/breakout
