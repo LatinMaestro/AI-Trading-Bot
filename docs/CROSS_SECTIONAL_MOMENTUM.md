@@ -152,6 +152,21 @@ reconstructs the report and re-verifies every chunk digest, stress result
 identity and compact evaluation binding before success. No selection,
 promotion, activation or execution authority is created.
 
+## Research readiness
+
+A fixed 14-gate assessment surfaces missing, partial, synthetic, stale and
+externally reviewed evidence across Gates B–E. Research completion requires
+authoritative history, signal-time universe, walk-forward/sensitivity/final
+holdout, complete after-cost evaluation, finite live-like calibration,
+capacity stress and a canonical report.
+
+Persistence binds evidence-present gates to the exact committed complete
+evaluation, calibration, stress manifest and report identities. D1
+independently checks their chronology and cross-binding, complete gate
+membership and immutable content. A complete assessment is eligible only for
+review: the candidate remains unselected, runtime-disconnected and carries no
+selection, activation or execution authority.
+
 ## Remaining evidence
 
 Synthetic tests prove deterministic mechanics and fail-closed invariants only. Promotion evidence still requires:
