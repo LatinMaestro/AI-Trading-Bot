@@ -36,6 +36,8 @@ export interface VerifiedStrategySelectionReviewReceiptAtTime {
   readonly signedAuthorisationSha256: string;
   readonly authorisationScope: "paper" | "shadow" | "canary-live";
   readonly maximumCapitalAud: number;
+  readonly configurationSignerTrustAnchorSha256: string;
+  readonly configurationSignerTrustRevocationSha256: string | null;
   readonly reviewerTrustAnchorSha256: string;
   readonly reviewerTrustRevocationSha256: string | null;
   readonly receiptStatus: "verified-for-owner-decision";
@@ -504,6 +506,10 @@ export class StrategySelectionReviewReceiptRepository {
       signedAuthorisationSha256: proposal.signedAuthorisationSha256,
       authorisationScope: proposal.authorisationScope,
       maximumCapitalAud: proposal.maximumCapitalAud,
+      configurationSignerTrustAnchorSha256:
+        currentProposalVerification.configurationSignerTrustAnchorSha256,
+      configurationSignerTrustRevocationSha256:
+        currentProposalVerification.configurationSignerTrustRevocationSha256,
       reviewerTrustAnchorSha256:
         currentProposalVerification.authoriserTrustAnchorSha256,
       reviewerTrustRevocationSha256:

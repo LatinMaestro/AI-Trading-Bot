@@ -82,4 +82,6 @@ Persistence stores the exact review-time proposal verification and signed receip
 
 Owner-decision preparation loads only an exact persisted receipt digest, re-verifies the original receipt signature and review-time trust, then revalidates current proposal trust, revocation and expiry state. Only an acknowledged receipt may create a pending non-activating owner decision proposal. Deferred or rejected receipts fail closed; the proposal cannot select the candidate, consume authorisation, activate a mode or grant execution authority.
 
+Persistence stores that exact owner-decision-time receipt verification and pending proposal separately. Application and D1 independently enforce availability, chronology, role-scoped trust, known revocation selection, capital and identity bindings; exact retries preserve the first rows while conflicts, mutation and deletion fail closed. Both records retain zero selection, authorisation-consumption, activation and execution authority.
+
 The module produces targets only. It does not submit or approve orders, activate paper/live mode, connect credentials or weaken any market-data, liquidity, intelligence, risk or execution gate.
