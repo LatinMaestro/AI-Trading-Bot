@@ -221,6 +221,16 @@ export async function prepareStrategySelectionProposalPersistence(
 ): Promise<SignedStrategyPersistenceStatement> {
   const content = proposalContent(input.proposal);
   if (
+    input.proposal.proposalId.trim() !== input.proposal.proposalId ||
+    !RECORD_ID.test(input.proposal.proposalId)
+  ) {
+    throw new Error("strategy selection proposal ID is invalid");
+  }
+  assertTimestamp(
+    "strategy selection proposal time",
+    input.proposal.proposedAtMs,
+  );
+  if (
     input.proposal.schemaVersion !== "strategy-selection-proposal-v1" ||
     input.proposal.candidateStatus !== "unselected" ||
     input.proposal.selectionDecision !== "none" ||
