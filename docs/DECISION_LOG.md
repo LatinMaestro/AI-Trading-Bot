@@ -587,3 +587,10 @@ Retain the exact hourly-close histories used by every cross-sectional backtest d
 Content-address ordered walk-forward training/validation folds and one strictly later final holdout under a single policy and execution configuration. Parameter-sensitivity variants must use unique policies, include the baseline exactly once and share exact hourly-history, signal-time membership, market, execution and configuration evidence. Canonical variant order cannot imply ranking.
 
 These manifests describe research structure only. They contain no winner or selected-policy field, keep the candidate research-only and unselected, do not widen the BTC/AUD and ETH/AUD runtime scope, and grant no selection, activation, execution, deployment, credential, fund or wallet authority.
+
+
+## 2026-07-30 — Cross-sectional research persistence commits only complete evidence
+
+Replay the exact cross-sectional plan, configuration and universe-bound engine result before preparing any research-run write. Persist the canonical run with its exact plan, configuration, result, policy and signal-time evidence identities. D1 independently enforces research-only status, unchanged runtime scope and zero selection, activation or execution authority.
+
+Reproduce every walk-forward or sensitivity manifest before persistence. Each ordered member must reference an already-persisted run and match the exact run, plan, result, policy and evidence identities embedded in the canonical manifest. Accept a separate immutable commit marker only after all declared members exist in canonical order. Exact retries preserve first persistence; incomplete evidence, rebinding, conflicts, updates and deletion fail closed. Persistence is research provenance only and cannot rank, select, promote or activate a strategy.

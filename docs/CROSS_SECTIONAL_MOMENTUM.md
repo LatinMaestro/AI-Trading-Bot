@@ -78,6 +78,23 @@ does not affect manifest identity. The manifests deliberately contain no
 ranking, winner or selected-policy field and grant no selection,
 activation or execution authority.
 
+## Immutable research persistence
+
+Research-run persistence replays the exact retained plan, configuration
+and universe-bound engine result before preparing a write. D1 stores the
+canonical run plus its plan, configuration, result, policy and exact
+signal-time evidence digests. The database independently enforces the
+research-only, unchanged-runtime and zero-authority fields; exact retries
+preserve first persistence while identity conflicts, mutation and deletion
+fail closed.
+
+Evaluation persistence reproduces the complete walk-forward or sensitivity
+manifest. Ordered member rows must reference already-persisted runs and
+match the exact run, plan, result, policy and evidence identities embedded
+in the canonical manifest. A separate immutable commit marker is accepted
+only after every declared member exists in canonical order. Persistence
+does not rank, select, promote or connect the candidate to runtime.
+
 ## Remaining evidence
 
 Synthetic tests prove deterministic mechanics and fail-closed invariants only. Promotion evidence still requires:
