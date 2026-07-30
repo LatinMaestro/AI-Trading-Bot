@@ -42,13 +42,30 @@ Every decision is content-addressed and hard-codes:
 
 The module cannot submit or approve an order, alter runtime configuration, select a strategy or bypass market-data, universe, liquidity, impact, external-intelligence, signed-policy or risk gates.
 
+## Signal-time backtest binding
+
+Research plans bind every decision to an exact, content-addressed
+`universe-signal-time-membership-v1` artifact. The closed-candle decision
+time must equal the membership decision time, and the plan preserves the
+snapshot, signed-policy and membership digests.
+
+Each verified decision is translated into at most one execution-aware
+target and retains position-entry chronology across frames. A held asset
+that leaves the signed universe exits to AUD without a same-signal
+replacement. The resulting steps use the
+`run-universe-bound-backtest-v1` contract so fees, spread, slippage,
+impact, participation and missed-fill assumptions remain outside the
+strategy decision.
+
+Plans and research runs remain content-addressed,
+`research-only-unselected`, runtime-disconnected and incapable of
+selection, activation or order authority.
+
 ## Remaining evidence
 
 Synthetic tests prove deterministic mechanics and fail-closed invariants only. Promotion evidence still requires:
 
 - authoritative survivorship-safe venue-wide historical data;
-- exact signal-time signed universe verification;
-- execution-aware backtest orchestration;
 - calibrated fees, spread, slippage, missed fills and price impact;
 - walk-forward, final-holdout and parameter-sensitivity evaluation;
 - benchmarks, target-attainment, drawdown, terminal-wealth and ruin analysis;
