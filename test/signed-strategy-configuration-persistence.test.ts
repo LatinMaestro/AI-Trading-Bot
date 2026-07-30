@@ -39,6 +39,11 @@ import {
   prepareStrategySignerTrustAnchorPersistence,
   prepareStrategySignerTrustRevocationPersistence,
 } from "../src/storage/strategySignerTrust.ts";
+import {
+  prepareStrategySelectionProposalPersistence,
+  StrategySelectionProposalRepository,
+  type StrategySelectionProposalSelector,
+} from "../src/storage/strategySelectionProposal.ts";
 
 const ASSESSED_AT_MS = 10_000;
 const READINESS_PERSISTED_AT_MS = 10_001;
@@ -273,6 +278,15 @@ async function database(
     readFileSync(
       new URL(
         "../migrations/0027_verified_strategy_configuration_at_time.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
+  db.exec(
+    readFileSync(
+      new URL(
+        "../migrations/0028_strategy_selection_proposals.sql",
         import.meta.url,
       ),
       "utf8",
@@ -952,5 +966,195 @@ test("rejects configuration conflicts and authorisation ID reuse", async () => {
   assert.throws(
     () => execute(db, secondStatement),
     /authorisation identity conflict/u,
+  );
+});
+
+async function proposalFixture(
+  db: DatabaseSync,
+  readinessAssessmentSha256: string,
+): Promise<{
+  readonly configuration: ConfigurationFixture;
+  readonly authorisation: AuthorisationFixture;
+  readonly repository: StrategySelectionProposalRepository;
+  readonly selector: StrategySelectionProposalSelector;
+}> {
+  const configuration =
+    await configurationFixture(readinessAssessmentSha256);
+  const authorisation = await authorisationFixture(
+    configuration.configuration,
+    configuration.reviewedKey,
+  );
+  await persistTrustAnchor(db, configuration.trustAnchor);
+  await persistTrustAnchor(db, authorisation.trustAnchor);
+  const d1 = d1Database(db);
+  const configurationRepository =
+    new SignedStrategyConfigurationRepository(d1);
+  await configurationRepository.persistConfiguration({
+    configuration: configuration.configuration,
+    signerTrustAnchor: configuration.trustAnchor,
+    signerTrustRevocation: null,
+    persistedAtMs: 10_006,
+  });
+  await configurationRepository.persistAuthorisation({
+    authorisation: authorisation.authorisation,
+    configuration: configuration.configuration,
+    configurationSignerTrustAnchor: configuration.trustAnchor,
+    configurationSignerTrustRevocation: null,
+    authoriserTrustAnchor: authorisation.trustAnchor,
+    authoriserTrustRevocation: null,
+    persistedAtMs: 10_007,
+  });
+  const verification =
+    await configurationRepository.persistVerifiedConfigurationAtTime(
+      configuration.configuration.signedConfigurationSha256,
+      10_010,
+      10_011,
+    );
+  return {
+    configuration,
+    authorisation,
+    repository: new StrategySelectionProposalRepository(d1),
+    selector: {
+      proposalId: "hourly-trend-breakout-review-proposal-v1",
+      proposedAtMs: 10_012,
+      verificationEvidenceSha256:
+        verification.verificationEvidenceSha256,
+      signedAuthorisationSha256:
+        authorisation.authorisation.signedAuthorisationSha256,
+    },
+  };
+}
+
+test("persists an exact non-activating proposal immutably", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  const first = await fixture.repository.persistAtTime(
+    fixture.selector,
+    10_013,
+  );
+  const retry = await fixture.repository.persistAtTime(
+    fixture.selector,
+    10_014,
+  );
+  assert.equal(retry.proposalSha256, first.proposalSha256);
+  const row = db.prepare(
+    `SELECT candidate_status, selection_decision,
+            activation_authority, execution_authority, persisted_at_ms
+     FROM hourly_trend_breakout_strategy_selection_proposals`,
+  ).get() as Record<string, unknown>;
+  assert.equal(row.candidate_status, "unselected");
+  assert.equal(row.selection_decision, "none");
+  assert.equal(row.activation_authority, "none");
+  assert.equal(row.execution_authority, "none");
+  assert.equal(row.persisted_at_ms, 10_013);
+  assert.throws(
+    () => db.prepare(
+      "DELETE FROM hourly_trend_breakout_strategy_selection_proposals",
+    ).run(),
+    /immutable/u,
+  );
+  assert.throws(
+    () => db.prepare(
+      `UPDATE hourly_trend_breakout_strategy_selection_proposals
+       SET persisted_at_ms = 10014`,
+    ).run(),
+    /immutable/u,
+  );
+});
+
+test("database rejects a proposal omitting then-known revocation", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  const staleProposal =
+    await fixture.repository.prepareAtTime(fixture.selector);
+  const revocation = await prepareStrategySignerTrustRevocation(
+    {
+      revocationId: "proposal-authoriser-rotation-v1",
+      trustAnchorSha256:
+        fixture.authorisation.trustAnchor.trustAnchorSha256,
+      reason: "planned-rotation",
+      effectiveAtMs: 10_014,
+      reviewedAtMs: 10_011,
+      reviewEvidenceSha256: "9".repeat(64),
+    },
+    fixture.authorisation.trustAnchor,
+  );
+  execute(
+    db,
+    await prepareStrategySignerTrustRevocationPersistence(
+      revocation,
+      fixture.authorisation.trustAnchor,
+      10_011,
+    ),
+  );
+  const staleStatement =
+    await prepareStrategySelectionProposalPersistence({
+      proposal: staleProposal,
+      persistedAtMs: 10_013,
+    });
+  assert.throws(
+    () => execute(db, staleStatement),
+    /proposal evidence is invalid/u,
+  );
+  const current = await fixture.repository.persistAtTime(
+    fixture.selector,
+    10_013,
+  );
+  assert.equal(
+    current.authoriserTrustRevocationSha256,
+    revocation.revocationSha256,
+  );
+});
+
+test("proposal loading rejects unavailable and effectively revoked evidence", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  await assert.rejects(
+    fixture.repository.prepareAtTime({
+      ...fixture.selector,
+      signedAuthorisationSha256: "f".repeat(64),
+    }),
+    /authorisation is unavailable/u,
+  );
+  const revocation = await prepareStrategySignerTrustRevocation(
+    {
+      revocationId: "proposal-authoriser-withdrawal-v1",
+      trustAnchorSha256:
+        fixture.authorisation.trustAnchor.trustAnchorSha256,
+      reason: "review-withdrawn",
+      effectiveAtMs: 10_012,
+      reviewedAtMs: 10_011,
+      reviewEvidenceSha256: "8".repeat(64),
+    },
+    fixture.authorisation.trustAnchor,
+  );
+  execute(
+    db,
+    await prepareStrategySignerTrustRevocationPersistence(
+      revocation,
+      fixture.authorisation.trustAnchor,
+      10_011,
+    ),
+  );
+  await assert.rejects(
+    fixture.repository.prepareAtTime(fixture.selector),
+    /trust is revoked/u,
+  );
+});
+
+test("proposal IDs cannot be rebound to changed evidence", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  await fixture.repository.persistAtTime(fixture.selector, 10_013);
+  await assert.rejects(
+    fixture.repository.persistAtTime(
+      { ...fixture.selector, proposedAtMs: 10_013 },
+      10_014,
+    ),
+    /proposal conflict/u,
   );
 });
