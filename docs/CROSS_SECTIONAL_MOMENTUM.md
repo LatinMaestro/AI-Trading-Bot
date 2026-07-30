@@ -114,6 +114,25 @@ The stress manifest remains `research-only-unselected`, changes no runtime
 scope and grants no selection, activation or execution authority. Synthetic
 or expired calibration evidence cannot satisfy production research gates.
 
+## Canonical complete evaluation
+
+The complete-evaluation artifact binds the exact immutable walk-forward
+and sensitivity manifests, final-holdout plan/run/result and 40-cell
+execution-stress manifest to one canonical `research-report-v1`.
+
+The report requires AUD cash, BTC hold, equal-weight hold and the
+five-year objective path; reproduces the final-holdout strategy equity,
+return and drawdown; and content-addresses objective-progress and scenario
+ruin evidence. A derived execution/capacity summary records turnover,
+costs, requested/filled/missed notional, constrained capital levels and
+worst stress return, drawdown and missed-fill ratio.
+
+Exact strategy, data, universe, execution, run and manifest provenance is
+mandatory. Missing warnings, stale report chronology, evidence drift or
+metrics detached from the final holdout fail closed. The artifact contains
+no winner or selected-policy field, leaves runtime scope unchanged and
+grants no selection, activation or execution authority.
+
 ## Remaining evidence
 
 Synthetic tests prove deterministic mechanics and fail-closed invariants only. Promotion evidence still requires:
@@ -121,6 +140,6 @@ Synthetic tests prove deterministic mechanics and fail-closed invariants only. P
 - authoritative survivorship-safe venue-wide historical data;
 - production-calibrated fees, spread, slippage, missed fills and price impact;
 - completed walk-forward, final-holdout and parameter-sensitivity results;
-- benchmarks, target-attainment, drawdown, terminal-wealth and ruin analysis;
-- canonical reports bound to complete execution/capacity stress across the five-year equity path; and
+- authoritative benchmark, target-attainment, terminal-wealth and ruin inputs;
+- persisted canonical complete-evaluation and report evidence; and
 - a separately reviewed and signed strategy configuration.
