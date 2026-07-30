@@ -608,3 +608,10 @@ This 40-cell matrix is research evidence only. It does not rank or select a resu
 Bind one canonical cross-sectional complete evaluation to the exact immutable walk-forward and sensitivity manifests, final-holdout plan/run/result and fixed execution-stress identity. The embedded research report must contain AUD cash, BTC hold, equal-weight hold and objective-path benchmarks, objective progress and scenario target-attainment/ruin evidence. It must reproduce the final-holdout equity, return and drawdown and bind exact strategy, data, signal-time universe, execution, run and manifest provenance.
 
 Derive turnover, costs, requested/filled/missed notional, constrained capital levels and worst stress return, drawdown and missed-fill ratio from the verified run and 40-cell stress manifest. Missing warnings, stale chronology, evidence drift or detached metrics fail closed. The artifact is research-only and unselected, leaves runtime scope unchanged and contains no ranking, winner, selected-policy, activation or execution authority.
+
+
+## 2026-07-30 — Cross-sectional complete evidence commits only after exact membership
+
+Reproduce the canonical cross-sectional complete evaluation before preparing persistence. Store the exact calibration, stress manifest and all 40 indexed stress results; accept a separate immutable stress commit only after membership is complete and contiguous. Split the canonical report only at valid UTF-8 boundaries and require exact declared chunk and byte completion before its commit.
+
+Accept the compact complete-evaluation binding only after the exact walk-forward, sensitivity, final-holdout, stress and report evidence has committed. Repository read-back reconstructs and digest-verifies report chunks and rechecks stress and evaluation identities. Exact retries preserve first persistence; incomplete evidence, rebinding, conflicts, updates and deletion fail closed. These records remain research-only, unselected and incapable of selection, promotion, activation or execution.

@@ -142,6 +142,7 @@
   - [x] Retain exact hourly histories, replay research runs and content-address ordered walk-forward/final-holdout plus exact-evidence sensitivity manifests without runtime promotion.
   - [x] Add fixed A$200–A$1m execution/capacity stress with exact calibration, transformed-input and result provenance and no runtime promotion.
   - [x] Bind a canonical complete evaluation to exact persisted run/manifest/stress identities, four mandatory benchmarks, objective/ruin evidence and derived turnover/capacity metrics without runtime promotion.
+  - [x] Persist exact calibration, 40-cell stress membership, canonical report chunks and the compact complete-evaluation binding with independent D1 completion and immutability enforcement.
 - [ ] Add multi-timeframe breakout, volatility-expansion and trend-continuation candidates.
   - [x] Add a pure hourly Donchian/EMA/momentum trend-breakout candidate with one-position/AUD-cash semantics and no runtime promotion.
   - [x] Bind the candidate to exact signal-time universe membership and content-addressed execution-aware backtest plans without runtime promotion.
