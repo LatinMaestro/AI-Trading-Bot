@@ -55,6 +55,8 @@ export interface CrossSectionalMomentumBacktestTarget {
 export interface CrossSectionalMomentumBacktestStep {
   readonly signalTimestampMs: number;
   readonly executionTimestampMs: number;
+  readonly hourlyClosesByPair:
+    Readonly<Record<string, readonly HourlyClose[]>>;
   readonly markets: readonly CrossSectionalMomentumBacktestMarket[];
   readonly targets: readonly CrossSectionalMomentumBacktestTarget[];
   readonly universeMembership:
@@ -100,13 +102,14 @@ export interface CrossSectionalMomentumBacktestPlan {
   readonly planSha256: string;
 }
 
-export interface CrossSectionalMomentumResearchRun<Result> {
+export interface CrossSectionalMomentumResearchRun<Config, Result> {
   readonly schemaVersion:
     "cross-sectional-momentum-research-run-v1";
   readonly strategyVersion:
     typeof CROSS_SECTIONAL_MOMENTUM_STRATEGY_VERSION;
   readonly engineContract: "run-universe-bound-backtest-v1";
   readonly planSha256: string;
+  readonly config: Config;
   readonly configSha256: string;
   readonly result: Result;
   readonly resultSha256: string;
@@ -122,6 +125,29 @@ export type RunUniverseBoundBacktest<Config, Result> = (
   config: Config,
   steps: readonly CrossSectionalMomentumBacktestStep[],
 ) => Result | Promise<Result>;
+
+function researchRunEnvelope<Config, Result>(
+  run: Omit<
+    CrossSectionalMomentumResearchRun<Config, Result>,
+    "runSha256"
+  >,
+) {
+  return {
+    schemaVersion: run.schemaVersion,
+    strategyVersion: run.strategyVersion,
+    engineContract: run.engineContract,
+    planSha256: run.planSha256,
+    config: run.config,
+    configSha256: run.configSha256,
+    result: run.result,
+    resultSha256: run.resultSha256,
+    candidateStatus: run.candidateStatus,
+    runtimeScopeChanged: run.runtimeScopeChanged,
+    selectionAuthority: run.selectionAuthority,
+    activationAuthority: run.activationAuthority,
+    executionAuthority: run.executionAuthority,
+  } as const;
+}
 
 function assertTime(name: string, value: number): void {
   if (!Number.isSafeInteger(value) || value < 0) {
@@ -602,6 +628,7 @@ export async function prepareCrossSectionalMomentumBacktestPlan(
     steps.push({
       signalTimestampMs: frame.membership.decisionAtMs,
       executionTimestampMs: frame.executionTimestampMs,
+      hourlyClosesByPair: frame.hourlyClosesByPair,
       markets: frame.markets,
       targets:
         decision.targetPair === null
@@ -691,6 +718,16 @@ export async function verifyCrossSectionalMomentumBacktestPlan(
       expectedPosition,
       bound.decision,
     );
+    const reproducedDecision = await decideCrossSectionalMomentum(
+      {
+        universeSnapshotSha256:
+          step.universeMembership.snapshotSha256,
+        eligiblePairs: step.universeMembership.eligiblePairs,
+        hourlyClosesByPair: step.hourlyClosesByPair,
+        currentPosition: expectedPosition,
+      },
+      plan.policy,
+    );
     const expectedTargets =
       bound.decision.targetPair === null
         ? []
@@ -730,6 +767,8 @@ export async function verifyCrossSectionalMomentumBacktestPlan(
         canonicalIntelligenceJson(expectedAfter) ||
       canonicalIntelligenceJson(bound.decision.policy) !==
         canonicalIntelligenceJson(plan.policy) ||
+      canonicalIntelligenceJson(bound.decision) !==
+        canonicalIntelligenceJson(reproducedDecision) ||
       bound.decision.universeSnapshotSha256 !== bound.snapshotSha256 ||
       canonicalIntelligenceJson(bound.decision.eligiblePairs) !==
         canonicalIntelligenceJson(
@@ -789,7 +828,7 @@ export async function runCrossSectionalMomentumResearch<Config, Result>(
   config: Config,
   plan: CrossSectionalMomentumBacktestPlan,
   runUniverseBoundBacktest: RunUniverseBoundBacktest<Config, Result>,
-): Promise<CrossSectionalMomentumResearchRun<Result>> {
+): Promise<CrossSectionalMomentumResearchRun<Config, Result>> {
   await verifyCrossSectionalMomentumBacktestPlan(plan);
   const result = await runUniverseBoundBacktest(config, plan.steps);
   const configSha256 = await sha256CanonicalIntelligence(config);
@@ -799,6 +838,7 @@ export async function runCrossSectionalMomentumResearch<Config, Result>(
     strategyVersion: CROSS_SECTIONAL_MOMENTUM_STRATEGY_VERSION,
     engineContract: "run-universe-bound-backtest-v1",
     planSha256: plan.planSha256,
+    config,
     configSha256,
     result,
     resultSha256,
@@ -810,6 +850,86 @@ export async function runCrossSectionalMomentumResearch<Config, Result>(
   } as const;
   return {
     ...envelope,
-    runSha256: await sha256CanonicalIntelligence(envelope),
+    runSha256: await sha256CanonicalIntelligence(
+      researchRunEnvelope(envelope),
+    ),
   };
+}
+
+export async function verifyCrossSectionalMomentumResearchRun<
+  Config,
+  Result,
+>(
+  plan: CrossSectionalMomentumBacktestPlan,
+  run: CrossSectionalMomentumResearchRun<Config, Result>,
+  runUniverseBoundBacktest: RunUniverseBoundBacktest<Config, Result>,
+): Promise<void> {
+  await verifyCrossSectionalMomentumBacktestPlan(plan);
+  if (
+    run.schemaVersion !==
+      "cross-sectional-momentum-research-run-v1" ||
+    run.strategyVersion !==
+      CROSS_SECTIONAL_MOMENTUM_STRATEGY_VERSION ||
+    run.engineContract !== "run-universe-bound-backtest-v1" ||
+    run.planSha256 !== plan.planSha256 ||
+    run.candidateStatus !== "research-only-unselected" ||
+    run.runtimeScopeChanged !== false ||
+    run.selectionAuthority !== "none" ||
+    run.activationAuthority !== "none" ||
+    run.executionAuthority !== "none"
+  ) {
+    throw new Error(
+      "cross-sectional research run envelope is invalid",
+    );
+  }
+  assertDigest("cross-sectional configSha256", run.configSha256);
+  assertDigest("cross-sectional resultSha256", run.resultSha256);
+  assertDigest("cross-sectional runSha256", run.runSha256);
+
+  const reproducedResult = await runUniverseBoundBacktest(
+    run.config,
+    plan.steps,
+  );
+  const expectedConfigSha256 =
+    await sha256CanonicalIntelligence(run.config);
+  const expectedResultSha256 =
+    await sha256CanonicalIntelligence(reproducedResult);
+  if (
+    run.configSha256 !== expectedConfigSha256 ||
+    run.resultSha256 !== expectedResultSha256 ||
+    canonicalIntelligenceJson(run.result) !==
+      canonicalIntelligenceJson(reproducedResult)
+  ) {
+    throw new Error(
+      "cross-sectional research run is not reproducible",
+    );
+  }
+
+  const envelope = researchRunEnvelope({
+    schemaVersion: run.schemaVersion,
+    strategyVersion: run.strategyVersion,
+    engineContract: run.engineContract,
+    planSha256: run.planSha256,
+    config: run.config,
+    configSha256: run.configSha256,
+    result: run.result,
+    resultSha256: run.resultSha256,
+    candidateStatus: run.candidateStatus,
+    runtimeScopeChanged: run.runtimeScopeChanged,
+    selectionAuthority: run.selectionAuthority,
+    activationAuthority: run.activationAuthority,
+    executionAuthority: run.executionAuthority,
+  });
+  if (
+    run.runSha256 !== await sha256CanonicalIntelligence(envelope) ||
+    canonicalIntelligenceJson(run) !==
+      canonicalIntelligenceJson({
+        ...envelope,
+        runSha256: run.runSha256,
+      })
+  ) {
+    throw new Error(
+      "cross-sectional research run identity is invalid",
+    );
+  }
 }

@@ -50,16 +50,33 @@ time must equal the membership decision time, and the plan preserves the
 snapshot, signed-policy and membership digests.
 
 Each verified decision is translated into at most one execution-aware
-target and retains position-entry chronology across frames. A held asset
-that leaves the signed universe exits to AUD without a same-signal
-replacement. The resulting steps use the
+target, retains the exact hourly-close histories used to produce it and
+retains position-entry chronology across frames. Verification reruns the
+deterministic decision from those histories. A held asset that leaves the
+signed universe exits to AUD without a same-signal replacement. The
+resulting steps use the
 `run-universe-bound-backtest-v1` contract so fees, spread, slippage,
 impact, participation and missed-fill assumptions remain outside the
 strategy decision.
 
-Plans and research runs remain content-addressed,
+Plans and reproducible research runs retain the full backtest
+configuration and remain content-addressed,
 `research-only-unselected`, runtime-disconnected and incapable of
 selection, activation or order authority.
+
+## Evaluation orchestration
+
+Content-addressed manifests bind ordered walk-forward training and
+validation runs to one strictly later final holdout. Every referenced run
+is independently replayed against its retained configuration and exact
+plan evidence before inclusion.
+
+Parameter-sensitivity manifests require unique policies, exactly one
+baseline and identical configuration, hourly histories, signal-time
+membership, market and execution evidence across variants. Variant order
+does not affect manifest identity. The manifests deliberately contain no
+ranking, winner or selected-policy field and grant no selection,
+activation or execution authority.
 
 ## Remaining evidence
 
@@ -67,7 +84,7 @@ Synthetic tests prove deterministic mechanics and fail-closed invariants only. P
 
 - authoritative survivorship-safe venue-wide historical data;
 - calibrated fees, spread, slippage, missed fills and price impact;
-- walk-forward, final-holdout and parameter-sensitivity evaluation;
+- completed walk-forward, final-holdout and parameter-sensitivity results;
 - benchmarks, target-attainment, drawdown, terminal-wealth and ruin analysis;
 - capacity testing across the five-year equity path; and
 - a separately reviewed and signed strategy configuration.
