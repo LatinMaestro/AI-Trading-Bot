@@ -95,13 +95,32 @@ in the canonical manifest. A separate immutable commit marker is accepted
 only after every declared member exists in canonical order. Persistence
 does not rank, select, promote or connect the candidate to runtime.
 
+## Execution and capacity stress
+
+A fixed, content-addressed stress matrix replays the exact final-holdout
+plan and run at A$200, A$1,000, A$10,000, A$100,000 and A$1,000,000.
+Each capital level is evaluated under baseline, all-maker, all-taker,
+double-spread, quarter-liquidity, quarter-maker-fill,
+double-taker-slippage and severe-combined scenarios.
+
+The calibration artifact binds the baseline plan and run, its source
+digests, availability and expiry, and the complete matrix. Every result
+retains transformed configuration, step and result digests plus return,
+drawdown, turnover, cost, requested/filled/missed notional and constrained
+execution counts. Verification reruns all 40 cells and requires the
+A$200 baseline to reproduce the exact final-holdout result.
+
+The stress manifest remains `research-only-unselected`, changes no runtime
+scope and grants no selection, activation or execution authority. Synthetic
+or expired calibration evidence cannot satisfy production research gates.
+
 ## Remaining evidence
 
 Synthetic tests prove deterministic mechanics and fail-closed invariants only. Promotion evidence still requires:
 
 - authoritative survivorship-safe venue-wide historical data;
-- calibrated fees, spread, slippage, missed fills and price impact;
+- production-calibrated fees, spread, slippage, missed fills and price impact;
 - completed walk-forward, final-holdout and parameter-sensitivity results;
 - benchmarks, target-attainment, drawdown, terminal-wealth and ruin analysis;
-- capacity testing across the five-year equity path; and
+- canonical reports bound to complete execution/capacity stress across the five-year equity path; and
 - a separately reviewed and signed strategy configuration.

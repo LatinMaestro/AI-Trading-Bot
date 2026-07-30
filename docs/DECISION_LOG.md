@@ -594,3 +594,10 @@ These manifests describe research structure only. They contain no winner or sele
 Replay the exact cross-sectional plan, configuration and universe-bound engine result before preparing any research-run write. Persist the canonical run with its exact plan, configuration, result, policy and signal-time evidence identities. D1 independently enforces research-only status, unchanged runtime scope and zero selection, activation or execution authority.
 
 Reproduce every walk-forward or sensitivity manifest before persistence. Each ordered member must reference an already-persisted run and match the exact run, plan, result, policy and evidence identities embedded in the canonical manifest. Accept a separate immutable commit marker only after all declared members exist in canonical order. Exact retries preserve first persistence; incomplete evidence, rebinding, conflicts, updates and deletion fail closed. Persistence is research provenance only and cannot rank, select, promote or activate a strategy.
+
+
+## 2026-07-30 — Cross-sectional capacity evidence is fixed, replayable and non-selecting
+
+Evaluate the exact final-holdout cross-sectional plan and run across five fixed capital levels from A$200 through A$1,000,000 and eight fixed execution scenarios covering maker/taker policy, spread, liquidity, maker fills, slippage and combined severity. Bind the calibration sources, availability and expiry plus every transformed configuration, step and result digest. Require the A$200 baseline to reproduce the exact final-holdout result and surface requested, filled and missed notional rather than hiding capacity constraints.
+
+This 40-cell matrix is research evidence only. It does not rank or select a result, does not widen the BTC/AUD and ETH/AUD runtime scope, and grants no selection, activation or execution authority. Synthetic calibration proves mechanics only; production-calibrated evidence remains mandatory before any promotion.
