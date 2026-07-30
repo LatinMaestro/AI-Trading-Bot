@@ -133,6 +133,25 @@ metrics detached from the final holdout fail closed. The artifact contains
 no winner or selected-policy field, leaves runtime scope unchanged and
 grants no selection, activation or execution authority.
 
+## Immutable complete-evaluation persistence
+
+Persistence independently reproduces the complete evaluation before
+preparing writes. D1 stores the exact calibration, canonical 40-cell
+stress manifest and every indexed result, then accepts a separate stress
+commit only when the declared membership is complete and contiguous.
+
+The canonical report is split only at valid UTF-8 boundaries and stored
+with content-addressed chunks. A report commit requires the exact declared
+chunk count and byte length. The compact complete-evaluation row is
+accepted only after the walk-forward, sensitivity, final-holdout, stress
+and report evidence has committed and its exact identities agree.
+
+Exact retries preserve first persistence. Changed membership, incomplete
+evidence, identity conflicts, updates and deletion fail closed. Read-back
+reconstructs the report and re-verifies every chunk digest, stress result
+identity and compact evaluation binding before success. No selection,
+promotion, activation or execution authority is created.
+
 ## Remaining evidence
 
 Synthetic tests prove deterministic mechanics and fail-closed invariants only. Promotion evidence still requires:
