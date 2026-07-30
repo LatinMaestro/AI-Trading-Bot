@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 import {
   prepareCrossSectionalMomentumBacktestPlan,
@@ -18,6 +20,10 @@ import {
   type CrossSectionalMomentumPolicy,
   type HourlyClose,
 } from "../src/strategies/crossSectionalMomentum.ts";
+import {
+  prepareCrossSectionalMomentumEvaluationPersistence,
+  prepareCrossSectionalMomentumResearchRunPersistence,
+} from "../src/storage/crossSectionalMomentumResearch.ts";
 
 const HOUR_MS = 3_600_000;
 const HISTORY_LENGTH = 721;
@@ -236,5 +242,299 @@ test("sensitivity fails closed when market evidence differs", async () => {
       runner,
     ),
     /share exact configuration and evidence/u,
+  );
+});
+
+function researchDatabase(): DatabaseSync {
+  const db = new DatabaseSync(":memory:");
+  db.exec("PRAGMA foreign_keys = ON");
+  db.exec(
+    readFileSync(
+      new URL(
+        "../migrations/0031_cross_sectional_momentum_research.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
+  return db;
+}
+
+test("persists replayed research runs immutably with zero authority", async () => {
+  const evaluation = await evaluationRun(0);
+  const persistedAtMs = (HISTORY_LENGTH + 2) * HOUR_MS;
+  const statement =
+    await prepareCrossSectionalMomentumResearchRunPersistence({
+      ...evaluation,
+      runner,
+      persistedAtMs,
+    });
+  const retry =
+    await prepareCrossSectionalMomentumResearchRunPersistence({
+      ...evaluation,
+      runner,
+      persistedAtMs: persistedAtMs + HOUR_MS,
+    });
+  const db = researchDatabase();
+  db.prepare(statement.sql).run(...statement.params);
+  db.prepare(retry.sql).run(...retry.params);
+  const row = db
+    .prepare(
+      `SELECT run_sha256, plan_sha256, result_sha256, decision_count,
+              membership_count, persisted_at_ms,
+              json_extract(run_canonical_json, '$.candidateStatus')
+                AS candidate_status,
+              json_extract(run_canonical_json, '$.executionAuthority')
+                AS execution_authority
+       FROM cross_sectional_momentum_research_runs`,
+    )
+    .get() as Record<string, string | number>;
+  assert.deepEqual({ ...row }, {
+    run_sha256: evaluation.run.runSha256,
+    plan_sha256: evaluation.plan.planSha256,
+    result_sha256: evaluation.run.resultSha256,
+    decision_count: 1,
+    membership_count: 1,
+    persisted_at_ms: persistedAtMs,
+    candidate_status: "research-only-unselected",
+    execution_authority: "none",
+  });
+
+  const conflicting = [...statement.params];
+  conflicting[4] = "f".repeat(64);
+  assert.throws(
+    () => db.prepare(statement.sql).run(...conflicting),
+    /research run conflict/u,
+  );
+  const authorityEscalation = [...statement.params];
+  authorityEscalation[13] = String(authorityEscalation[13]).replace(
+    '"executionAuthority":"none"',
+    '"executionAuthority":"live"',
+  );
+  const authorityDb = researchDatabase();
+  assert.throws(
+    () =>
+      authorityDb
+        .prepare(statement.sql)
+        .run(...authorityEscalation),
+    /CHECK constraint failed/u,
+  );
+  assert.throws(
+    () =>
+      db
+        .prepare(
+          `UPDATE cross_sectional_momentum_research_runs
+           SET persisted_at_ms = persisted_at_ms + 1`,
+        )
+        .run(),
+    /immutable/u,
+  );
+});
+
+test("commits only complete evaluation manifests bound to exact stored runs", async () => {
+  const folds = [{
+    foldIndex: 0,
+    training: await evaluationRun(0),
+    validation: await evaluationRun(2),
+  }];
+  const finalHoldout = await evaluationRun(4);
+  const manifest =
+    await prepareCrossSectionalMomentumWalkForwardManifest(
+      folds,
+      finalHoldout,
+      runner,
+    );
+  const persistedAtMs = (4 + HISTORY_LENGTH + 2) * HOUR_MS;
+  const runInputs = [
+    folds[0]!.training,
+    folds[0]!.validation,
+    finalHoldout,
+  ];
+  const runStatements = await Promise.all(
+    runInputs.map((evaluation) =>
+      prepareCrossSectionalMomentumResearchRunPersistence({
+        ...evaluation,
+        runner,
+        persistedAtMs,
+      })
+    ),
+  );
+  const statements =
+    await prepareCrossSectionalMomentumEvaluationPersistence({
+      kind: "walk-forward",
+      folds,
+      finalHoldout,
+      manifest,
+      runner,
+      persistedAtMs,
+    });
+  const db = researchDatabase();
+  for (const statement of runStatements) {
+    db.prepare(statement.sql).run(...statement.params);
+  }
+  for (const statement of statements) {
+    db.prepare(statement.sql).run(...statement.params);
+  }
+  for (const statement of statements) {
+    db.prepare(statement.sql).run(...statement.params);
+  }
+  const row = db
+    .prepare(
+      `SELECT manifest_kind, component_run_count, fold_count,
+              variant_count, persisted_at_ms
+       FROM cross_sectional_momentum_evaluation_manifests`,
+    )
+    .get() as Record<string, string | number | null>;
+  assert.deepEqual({ ...row }, {
+    manifest_kind: "walk-forward",
+    component_run_count: 3,
+    fold_count: 1,
+    variant_count: null,
+    persisted_at_ms: persistedAtMs,
+  });
+  assert.equal(
+    (
+      db
+        .prepare(
+          `SELECT COUNT(*) AS count
+           FROM cross_sectional_momentum_evaluation_manifest_commits`,
+        )
+        .get() as { readonly count: number }
+    ).count,
+    1,
+  );
+
+  const incomplete = researchDatabase();
+  for (const statement of runStatements) {
+    incomplete.prepare(statement.sql).run(...statement.params);
+  }
+  incomplete.prepare(statements[0]!.sql).run(...statements[0]!.params);
+  incomplete.prepare(statements[1]!.sql).run(...statements[1]!.params);
+  assert.throws(
+    () =>
+      incomplete
+        .prepare(statements.at(-1)!.sql)
+        .run(...statements.at(-1)!.params),
+    /manifest is incomplete/u,
+  );
+
+  const badMember = [...statements[1]!.params];
+  badMember[7] = "e".repeat(64);
+  const invalid = researchDatabase();
+  for (const statement of runStatements) {
+    invalid.prepare(statement.sql).run(...statement.params);
+  }
+  invalid.prepare(statements[0]!.sql).run(...statements[0]!.params);
+  assert.throws(
+    () => invalid.prepare(statements[1]!.sql).run(...badMember),
+    /member evidence is invalid/u,
+  );
+  assert.throws(
+    () =>
+      db
+        .prepare(
+          "DELETE FROM cross_sectional_momentum_evaluation_manifest_runs",
+        )
+        .run(),
+    /immutable/u,
+  );
+});
+
+test("persists deterministic sensitivity membership without ranking", async () => {
+  const variants = [
+    await evaluationRun(0),
+    await evaluationRun(0, {
+      ...CROSS_SECTIONAL_MOMENTUM_BASELINE_POLICY,
+      rotationScoreLead: 0.06,
+    }),
+  ];
+  const manifest =
+    await prepareCrossSectionalMomentumSensitivityManifest(
+      variants,
+      runner,
+    );
+  const persistedAtMs = (HISTORY_LENGTH + 2) * HOUR_MS;
+  const statements =
+    await prepareCrossSectionalMomentumEvaluationPersistence({
+      kind: "sensitivity",
+      variants,
+      manifest,
+      runner,
+      persistedAtMs,
+    });
+  const db = researchDatabase();
+  for (const evaluation of variants) {
+    const statement =
+      await prepareCrossSectionalMomentumResearchRunPersistence({
+        ...evaluation,
+        runner,
+        persistedAtMs,
+      });
+    db.prepare(statement.sql).run(...statement.params);
+  }
+  for (const statement of statements) {
+    db.prepare(statement.sql).run(...statement.params);
+  }
+  const memberKinds = db
+    .prepare(
+      `SELECT member_kind AS memberKind
+       FROM cross_sectional_momentum_evaluation_manifest_runs
+       ORDER BY member_index`,
+    )
+    .all() as unknown as {
+      readonly memberKind: string;
+    }[];
+  assert.deepEqual(
+    memberKinds.map((row) => row.memberKind),
+    ["sensitivity-variant", "sensitivity-variant"],
+  );
+  const canonicalManifest = db
+    .prepare(
+      `SELECT manifest_canonical_json AS manifestJson
+       FROM cross_sectional_momentum_evaluation_manifests`,
+    )
+    .get() as { readonly manifestJson: string };
+  assert.equal(canonicalManifest.manifestJson.includes("ranking"), false);
+  assert.equal(
+    canonicalManifest.manifestJson.includes("selectedPolicySha256"),
+    false,
+  );
+});
+
+test("rejects changed or premature persistence evidence", async () => {
+  const variants = [
+    await evaluationRun(0),
+    await evaluationRun(0, {
+      ...CROSS_SECTIONAL_MOMENTUM_BASELINE_POLICY,
+      minimumHoldHours: 48,
+    }),
+  ];
+  const manifest =
+    await prepareCrossSectionalMomentumSensitivityManifest(
+      variants,
+      runner,
+    );
+  await assert.rejects(
+    prepareCrossSectionalMomentumEvaluationPersistence({
+      kind: "sensitivity",
+      variants,
+      manifest: {
+        ...manifest,
+        decisionCount: manifest.decisionCount + 1,
+      },
+      runner,
+      persistedAtMs: manifest.evaluationEndAtMs + HOUR_MS,
+    }),
+    /not reproducible/u,
+  );
+  await assert.rejects(
+    prepareCrossSectionalMomentumEvaluationPersistence({
+      kind: "sensitivity",
+      variants,
+      manifest,
+      runner,
+      persistedAtMs: manifest.evaluationEndAtMs - 1,
+    }),
+    /persistence chronology/u,
   );
 });
