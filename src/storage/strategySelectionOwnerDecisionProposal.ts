@@ -1,5 +1,6 @@
 import {
   canonicalIntelligenceJson,
+  sha256CanonicalIntelligence,
 } from "../intelligence/canonical.ts";
 import {
   prepareStrategySelectionOwnerDecisionProposal,
@@ -35,6 +36,38 @@ interface PersistedOwnerDecisionProposalRow {
   readonly receipt_verification_sha256: string;
   readonly proposal_canonical_json: string;
   readonly persisted_at_ms: number;
+}
+
+interface PersistedReceiptVerificationRow {
+  readonly receipt_verification_sha256: string;
+  readonly receipt_sha256: string;
+  readonly owner_decision_at_ms: number;
+  readonly verification_canonical_json: string;
+  readonly persisted_at_ms: number;
+}
+
+export interface VerifiedStrategySelectionOwnerDecisionProposalAtTime {
+  readonly schemaVersion:
+    "verified-strategy-selection-owner-decision-proposal-at-time-v1";
+  readonly proposal: StrategySelectionOwnerDecisionProposal;
+  readonly ownerReviewAtMs: number;
+  readonly originalReceiptVerificationSha256: string;
+  readonly currentReceiptVerificationSha256: string;
+  readonly signedConfigurationSha256: string;
+  readonly signedAuthorisationSha256: string;
+  readonly authorisationScope: "paper" | "shadow" | "canary-live";
+  readonly maximumCapitalAud: number;
+  readonly configurationSignerTrustAnchorSha256: string;
+  readonly configurationSignerTrustRevocationSha256: string | null;
+  readonly reviewerTrustAnchorSha256: string;
+  readonly reviewerTrustRevocationSha256: string | null;
+  readonly proposalStatus: "verified-for-owner-decision-review";
+  readonly candidateStatus: "unselected";
+  readonly selectionDecision: "none";
+  readonly authorisationConsumed: false;
+  readonly activationAuthority: "none";
+  readonly executionAuthority: "none";
+  readonly ownerDecisionProposalVerificationSha256: string;
 }
 
 export const INSERT_STRATEGY_SELECTION_RECEIPT_VERIFICATION_SQL =
@@ -74,10 +107,36 @@ const SELECT_OWNER_DECISION_PROPOSAL_SQL =
    FROM hourly_trend_breakout_strategy_selection_owner_decision_proposals
    WHERE decision_proposal_sha256 = ?`;
 
+const SELECT_RECEIPT_VERIFICATION_SQL =
+  `SELECT receipt_verification_sha256, receipt_sha256,
+          owner_decision_at_ms, verification_canonical_json,
+          persisted_at_ms
+   FROM hourly_trend_breakout_strategy_selection_receipt_verifications
+   WHERE receipt_verification_sha256 = ?`;
+
+const SHA256_HEX = /^[0-9a-f]{64}$/u;
+
 function assertTimestamp(name: string, value: number): void {
   if (!Number.isSafeInteger(value) || value < 0) {
     throw new Error(`${name} is invalid`);
   }
+}
+
+function parseCanonicalJson<T>(name: string, value: string): T {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(value);
+  } catch {
+    throw new Error(`${name} is not valid JSON`);
+  }
+  if (
+    parsed === null ||
+    typeof parsed !== "object" ||
+    canonicalIntelligenceJson(parsed) !== value
+  ) {
+    throw new Error(`${name} is not canonical JSON`);
+  }
+  return parsed as T;
 }
 
 export async function prepareStrategySelectionOwnerDecisionProposalPersistence(
@@ -228,5 +287,144 @@ export class StrategySelectionOwnerDecisionProposalRepository {
       );
     }
     return proposal;
+  }
+
+  async loadPersistedAtTime(
+    decisionProposalSha256: string,
+    ownerReviewAtMs: number,
+  ): Promise<VerifiedStrategySelectionOwnerDecisionProposalAtTime> {
+    if (!SHA256_HEX.test(decisionProposalSha256)) {
+      throw new Error(
+        "strategy selection owner decision proposal selector is invalid",
+      );
+    }
+    assertTimestamp(
+      "strategy selection owner decision proposal owner-review time",
+      ownerReviewAtMs,
+    );
+    const row = await this.db.prepare(SELECT_OWNER_DECISION_PROPOSAL_SQL)
+      .bind(decisionProposalSha256)
+      .first<PersistedOwnerDecisionProposalRow>();
+    if (row === null) {
+      throw new Error(
+        "strategy selection owner decision proposal is unavailable",
+      );
+    }
+    if (row.persisted_at_ms > ownerReviewAtMs) {
+      throw new Error(
+        "strategy selection owner decision proposal was unavailable at owner-review time",
+      );
+    }
+    const proposal =
+      parseCanonicalJson<StrategySelectionOwnerDecisionProposal>(
+        "strategy selection owner decision proposal",
+        row.proposal_canonical_json,
+      );
+    const receiptVerificationRow = await this.db
+      .prepare(SELECT_RECEIPT_VERIFICATION_SQL)
+      .bind(proposal.receiptVerificationSha256)
+      .first<PersistedReceiptVerificationRow>();
+    if (
+      receiptVerificationRow === null ||
+      receiptVerificationRow.persisted_at_ms > row.persisted_at_ms
+    ) {
+      throw new Error(
+        "strategy selection receipt verification is unavailable",
+      );
+    }
+    const originalReceiptVerification =
+      parseCanonicalJson<VerifiedStrategySelectionReviewReceiptAtTime>(
+        "strategy selection receipt verification",
+        receiptVerificationRow.verification_canonical_json,
+      );
+    await verifyStrategySelectionOwnerDecisionProposal(
+      proposal,
+      originalReceiptVerification,
+    );
+    if (
+      !rowMatches(row, proposal, ownerReviewAtMs) ||
+      proposal.decisionProposalSha256 !== decisionProposalSha256 ||
+      receiptVerificationRow.receipt_verification_sha256 !==
+        proposal.receiptVerificationSha256 ||
+      receiptVerificationRow.receipt_sha256 !== proposal.receiptSha256 ||
+      receiptVerificationRow.owner_decision_at_ms !== proposal.preparedAtMs ||
+      originalReceiptVerification.receiptVerificationSha256 !==
+        proposal.receiptVerificationSha256
+    ) {
+      throw new Error(
+        "persisted strategy selection owner decision proposal is invalid",
+      );
+    }
+    const {
+      receiptVerificationSha256: _receiptVerificationSha256,
+      ...originalReceiptVerificationContent
+    } = originalReceiptVerification;
+    if (
+      await sha256CanonicalIntelligence(
+        originalReceiptVerificationContent,
+      ) !== proposal.receiptVerificationSha256
+    ) {
+      throw new Error(
+        "persisted strategy selection receipt verification is invalid",
+      );
+    }
+    const currentReceiptVerification =
+      await this.receiptRepository.loadPersistedAtTime(
+        proposal.receiptSha256,
+        ownerReviewAtMs,
+      );
+    if (
+      currentReceiptVerification.signedConfigurationSha256 !==
+        proposal.signedConfigurationSha256 ||
+      currentReceiptVerification.signedAuthorisationSha256 !==
+        proposal.signedAuthorisationSha256 ||
+      currentReceiptVerification.authorisationScope !==
+        proposal.authorisationScope ||
+      currentReceiptVerification.maximumCapitalAud !==
+        proposal.maximumCapitalAud ||
+      currentReceiptVerification.candidateStatus !== "unselected" ||
+      currentReceiptVerification.selectionDecision !== "none" ||
+      currentReceiptVerification.authorisationConsumed !== false ||
+      currentReceiptVerification.activationAuthority !== "none" ||
+      currentReceiptVerification.executionAuthority !== "none"
+    ) {
+      throw new Error(
+        "current strategy selection owner decision evidence is invalid",
+      );
+    }
+    const evidence = {
+      schemaVersion:
+        "verified-strategy-selection-owner-decision-proposal-at-time-v1",
+      proposal,
+      ownerReviewAtMs,
+      originalReceiptVerificationSha256:
+        proposal.receiptVerificationSha256,
+      currentReceiptVerificationSha256:
+        currentReceiptVerification.receiptVerificationSha256,
+      signedConfigurationSha256: proposal.signedConfigurationSha256,
+      signedAuthorisationSha256: proposal.signedAuthorisationSha256,
+      authorisationScope: proposal.authorisationScope,
+      maximumCapitalAud: proposal.maximumCapitalAud,
+      configurationSignerTrustAnchorSha256:
+        currentReceiptVerification.configurationSignerTrustAnchorSha256,
+      configurationSignerTrustRevocationSha256:
+        currentReceiptVerification
+          .configurationSignerTrustRevocationSha256,
+      reviewerTrustAnchorSha256:
+        currentReceiptVerification.reviewerTrustAnchorSha256,
+      reviewerTrustRevocationSha256:
+        currentReceiptVerification.reviewerTrustRevocationSha256,
+      proposalStatus: "verified-for-owner-decision-review",
+      candidateStatus: "unselected",
+      selectionDecision: "none",
+      authorisationConsumed: false,
+      activationAuthority: "none",
+      executionAuthority: "none",
+    } as const;
+    return {
+      ...evidence,
+      ownerDecisionProposalVerificationSha256:
+        await sha256CanonicalIntelligence(evidence),
+    };
   }
 }

@@ -84,4 +84,6 @@ Owner-decision preparation loads only an exact persisted receipt digest, re-veri
 
 Persistence stores that exact owner-decision-time receipt verification and pending proposal separately. Application and D1 independently enforce availability, chronology, role-scoped trust, known revocation selection, capital and identity bindings; exact retries preserve the first rows while conflicts, mutation and deletion fail closed. Both records retain zero selection, authorisation-consumption, activation and execution authority.
 
+Owner-review loading accepts only one exact persisted proposal digest and explicit timestamp, then revalidates current receipt/proposal trust, revocation and expiry state. It may produce only an unsigned blank record template: all owner-decision, owner-identity, signature, selected-artifact and activation-request fields are null, and the candidate remains unselected and non-executable.
+
 The module produces targets only. It does not submit or approve orders, activate paper/live mode, connect credentials or weaken any market-data, liquidity, intelligence, risk or execution gate.

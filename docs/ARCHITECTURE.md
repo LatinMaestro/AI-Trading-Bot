@@ -94,6 +94,7 @@ D1 stores:
 - immutable persisted proposal-verification and signed review-receipt records with independent D1 trust, chronology, disposition, idempotency and zero-authority enforcement;
 - digest-selected owner-decision-time receipt verifications and content-addressed non-activating owner decision proposals that remain pending, unselected and non-executable;
 - immutable receipt-verification and owner decision-proposal records with independent D1 chronology, trust, revocation, identity, idempotency and zero-authority enforcement;
+- digest-selected owner-review verification artifacts and unsigned null-decision templates that cannot select, activate or execute a strategy;
 - order intents, exchange orders and fills;
 - balances and equity snapshots;
 - risk events and kill-switch state;

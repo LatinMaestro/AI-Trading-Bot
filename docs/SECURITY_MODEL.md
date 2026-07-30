@@ -77,6 +77,8 @@ Owner-decision preparation is digest-selected and time-explicit. It re-verifies 
 
 Owner-decision proposal persistence writes the exact point-in-time receipt verification and pending proposal separately. D1 independently enforces acknowledged disposition, evidence availability, configuration/authorisation validity, role-scoped trust, explicit known-revocation state, capital, identity and zero-authority fields. Exact retries preserve first persistence; conflicts, updates and deletion fail closed.
 
+Owner-review loading is exact-digest and point-in-time only. It rechecks both the stored proposal/receipt verification identities and current trust, revocation and expiry state. Its only output beyond verification is an unsigned incomplete template with null owner decision, identity, signature, selected configuration/authorisation and activation request. That template grants no selection, activation or execution authority.
+
 ## Supply-chain controls
 
 - Minimise runtime dependencies.
