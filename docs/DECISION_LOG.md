@@ -601,3 +601,10 @@ Reproduce every walk-forward or sensitivity manifest before persistence. Each or
 Evaluate the exact final-holdout cross-sectional plan and run across five fixed capital levels from A$200 through A$1,000,000 and eight fixed execution scenarios covering maker/taker policy, spread, liquidity, maker fills, slippage and combined severity. Bind the calibration sources, availability and expiry plus every transformed configuration, step and result digest. Require the A$200 baseline to reproduce the exact final-holdout result and surface requested, filled and missed notional rather than hiding capacity constraints.
 
 This 40-cell matrix is research evidence only. It does not rank or select a result, does not widen the BTC/AUD and ETH/AUD runtime scope, and grants no selection, activation or execution authority. Synthetic calibration proves mechanics only; production-calibrated evidence remains mandatory before any promotion.
+
+
+## 2026-07-30 — Cross-sectional complete evaluations bind all mandatory evidence without selection
+
+Bind one canonical cross-sectional complete evaluation to the exact immutable walk-forward and sensitivity manifests, final-holdout plan/run/result and fixed execution-stress identity. The embedded research report must contain AUD cash, BTC hold, equal-weight hold and objective-path benchmarks, objective progress and scenario target-attainment/ruin evidence. It must reproduce the final-holdout equity, return and drawdown and bind exact strategy, data, signal-time universe, execution, run and manifest provenance.
+
+Derive turnover, costs, requested/filled/missed notional, constrained capital levels and worst stress return, drawdown and missed-fill ratio from the verified run and 40-cell stress manifest. Missing warnings, stale chronology, evidence drift or detached metrics fail closed. The artifact is research-only and unselected, leaves runtime scope unchanged and contains no ranking, winner, selected-policy, activation or execution authority.

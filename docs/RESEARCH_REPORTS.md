@@ -44,4 +44,6 @@ Complete report persistence reproduces that envelope, chunks the canonical repor
 
 The exact stress manifest is immutably bound to the persisted final-holdout plan/run/result, report and complete-evaluation identity. Calibration availability, fixed matrix cardinality, report chronology, conflicts and mutation fail closed; this persistence remains research evidence, not live-capacity proof.
 
+The cross-sectional complete-evaluation artifact binds exact immutable walk-forward and sensitivity manifests, the shared final-holdout plan/run/result and the 40-cell execution-stress identity. It requires exact strategy/data/universe/execution/run/manifest provenance, all four benchmarks, AUD objective progress and scenario target-attainment/ruin evidence. Derived evidence records final-holdout return, drawdown, turnover, cost and requested/filled/missed notional plus constrained capital levels and worst stress return, drawdown and missed-fill ratio. Missing warnings, stale chronology, detached metrics or authority-bearing manifest drift fail closed. No winner, ranking, selected-policy, activation or execution field is introduced.
+
 Synthetic fixtures validate arithmetic and report reproducibility only. Promotion still requires validated after-cost walk-forward, final-holdout, sensitivity, universe, capacity and tax evidence.
