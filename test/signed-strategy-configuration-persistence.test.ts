@@ -20,6 +20,12 @@ import {
   type StrategyAuthorisationScope,
 } from "../src/security/signedStrategyConfiguration.ts";
 import {
+  prepareSignedStrategySelectionReviewReceipt,
+  strategySelectionReviewReceiptSigningPayload,
+  type SignedStrategySelectionReviewReceipt,
+  type StrategySelectionReviewDisposition,
+} from "../src/security/strategySelectionReviewReceipt.ts";
+import {
   prepareReviewedStrategySignerTrustAnchor,
   prepareStrategySignerTrustRevocation,
   type ReviewedStrategySignerTrustAnchor,
@@ -44,6 +50,10 @@ import {
   StrategySelectionProposalRepository,
   type StrategySelectionProposalSelector,
 } from "../src/storage/strategySelectionProposal.ts";
+import {
+  prepareStrategySelectionReviewReceiptPersistence,
+  StrategySelectionReviewReceiptRepository,
+} from "../src/storage/strategySelectionReviewReceipt.ts";
 
 const ASSESSED_AT_MS = 10_000;
 const READINESS_PERSISTED_AT_MS = 10_001;
@@ -76,6 +86,8 @@ interface AuthorisationFixture {
   readonly authorisation: SignedStrategyAuthorisation;
   readonly reviewedKey: ReviewedP256VerificationKey;
   readonly trustAnchor: ReviewedStrategySignerTrustAnchor;
+  readonly privateKey: CryptoKey;
+  readonly publicJwk: JsonWebKey;
 }
 
 function digestForGate(
@@ -292,6 +304,15 @@ async function database(
       "utf8",
     ),
   );
+  db.exec(
+    readFileSync(
+      new URL(
+        "../migrations/0029_strategy_selection_review_receipts.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
   return {
     db,
     readinessAssessmentSha256: assessment.assessmentSha256,
@@ -436,6 +457,8 @@ async function authorisationFixture(
       key.reviewedKey,
       "external-strategy-authoriser",
     ),
+    privateKey: key.privateKey,
+    publicJwk: key.publicJwk,
   };
 }
 
@@ -1228,5 +1251,198 @@ test("proposal review loading fails after known effective revocation", async () 
       10_015,
     ),
     /trust is revoked/u,
+  );
+});
+
+async function signedReviewReceipt(
+  fixture: Awaited<ReturnType<typeof proposalFixture>>,
+  disposition: StrategySelectionReviewDisposition =
+    "acknowledged-for-owner-review",
+  receiptId = "hourly-trend-breakout-review-receipt-v1",
+): Promise<{
+  readonly receipt: SignedStrategySelectionReviewReceipt;
+  readonly verifiedProposal: Awaited<
+    ReturnType<StrategySelectionProposalRepository["loadPersistedAtTime"]>
+  >;
+}> {
+  const proposal = await fixture.repository.persistAtTime(
+    fixture.selector,
+    10_013,
+  );
+  const verifiedProposal =
+    await fixture.repository.loadPersistedAtTime(
+      proposal.proposalSha256,
+      10_014,
+    );
+  const unsigned = {
+    receiptId,
+    proposalSha256: proposal.proposalSha256,
+    proposalVerificationSha256:
+      verifiedProposal.proposalVerificationSha256,
+    reviewedAtMs: 10_014,
+    disposition,
+    reviewEvidenceSha256: "7".repeat(64),
+    reviewerKeyId: fixture.authorisation.reviewedKey.keyId,
+  } as const;
+  return {
+    verifiedProposal,
+    receipt: await prepareSignedStrategySelectionReviewReceipt({
+      ...unsigned,
+      verifiedProposal,
+      reviewerTrustAnchor: fixture.authorisation.trustAnchor,
+      reviewerTrustRevocation: null,
+      verificationKeyJwk: fixture.authorisation.publicJwk,
+      signatureHex: await sign(
+        strategySelectionReviewReceiptSigningPayload(
+          unsigned,
+          verifiedProposal,
+        ),
+        fixture.authorisation.privateKey,
+      ),
+    }),
+  };
+}
+
+test("persists an exact signed review receipt immutably", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  const { receipt } = await signedReviewReceipt(fixture);
+  const repository =
+    new StrategySelectionReviewReceiptRepository(d1Database(db));
+  await repository.persistAtTime(receipt, 10_015);
+  await repository.persistAtTime(receipt, 10_016);
+  const row = db.prepare(
+    `SELECT disposition, candidate_status, selection_decision,
+            authorisation_consumed, activation_authority,
+            execution_authority, persisted_at_ms
+     FROM hourly_trend_breakout_strategy_selection_review_receipts`,
+  ).get() as Record<string, unknown>;
+  assert.equal(row.disposition, "acknowledged-for-owner-review");
+  assert.equal(row.candidate_status, "unselected");
+  assert.equal(row.selection_decision, "none");
+  assert.equal(row.authorisation_consumed, 0);
+  assert.equal(row.activation_authority, "none");
+  assert.equal(row.execution_authority, "none");
+  assert.equal(row.persisted_at_ms, 10_015);
+  assert.throws(
+    () => db.prepare(
+      "DELETE FROM hourly_trend_breakout_strategy_selection_review_receipts",
+    ).run(),
+    /immutable/u,
+  );
+  assert.throws(
+    () => db.prepare(
+      `UPDATE hourly_trend_breakout_strategy_selection_proposal_verifications
+       SET persisted_at_ms = 10016`,
+    ).run(),
+    /immutable/u,
+  );
+});
+
+test("database rejects review evidence omitting a known revocation", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  const { receipt, verifiedProposal } =
+    await signedReviewReceipt(fixture);
+  const staleStatements =
+    await prepareStrategySelectionReviewReceiptPersistence({
+      receipt,
+      verifiedProposal,
+      reviewerTrustAnchor: fixture.authorisation.trustAnchor,
+      reviewerTrustRevocation: null,
+      persistedAtMs: 10_015,
+    });
+  const revocation = await prepareStrategySignerTrustRevocation(
+    {
+      revocationId: "review-receipt-authoriser-rotation-v1",
+      trustAnchorSha256:
+        fixture.authorisation.trustAnchor.trustAnchorSha256,
+      reason: "planned-rotation",
+      effectiveAtMs: 10_020,
+      reviewedAtMs: 10_014,
+      reviewEvidenceSha256: "6".repeat(64),
+    },
+    fixture.authorisation.trustAnchor,
+  );
+  execute(
+    db,
+    await prepareStrategySignerTrustRevocationPersistence(
+      revocation,
+      fixture.authorisation.trustAnchor,
+      10_014,
+    ),
+  );
+  assert.throws(
+    () => execute(db, staleStatements[0]!),
+    /proposal verification is invalid/u,
+  );
+});
+
+test("review receipt IDs cannot be rebound to another disposition", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  const first = await signedReviewReceipt(fixture);
+  const changed = await signedReviewReceipt(
+    fixture,
+    "rejected",
+    first.receipt.receiptId,
+  );
+  for (
+    const statement of await prepareStrategySelectionReviewReceiptPersistence({
+      receipt: first.receipt,
+      verifiedProposal: first.verifiedProposal,
+      reviewerTrustAnchor: fixture.authorisation.trustAnchor,
+      reviewerTrustRevocation: null,
+      persistedAtMs: 10_015,
+    })
+  ) {
+    execute(db, statement);
+  }
+  const changedStatements =
+    await prepareStrategySelectionReviewReceiptPersistence({
+      receipt: changed.receipt,
+      verifiedProposal: changed.verifiedProposal,
+      reviewerTrustAnchor: fixture.authorisation.trustAnchor,
+      reviewerTrustRevocation: null,
+      persistedAtMs: 10_015,
+    });
+  execute(db, changedStatements[0]!);
+  assert.throws(
+    () => execute(db, changedStatements[1]!),
+    /review receipt conflict/u,
+  );
+});
+
+test("review receipt persistence rejects backdating and binding drift", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  const { receipt, verifiedProposal } =
+    await signedReviewReceipt(fixture);
+  await assert.rejects(
+    prepareStrategySelectionReviewReceiptPersistence({
+      receipt,
+      verifiedProposal,
+      reviewerTrustAnchor: fixture.authorisation.trustAnchor,
+      reviewerTrustRevocation: null,
+      persistedAtMs: 10_013,
+    }),
+    /backdated/u,
+  );
+  await assert.rejects(
+    prepareStrategySelectionReviewReceiptPersistence({
+      receipt: {
+        ...receipt,
+        proposalVerificationSha256: "f".repeat(64),
+      },
+      verifiedProposal,
+      reviewerTrustAnchor: fixture.authorisation.trustAnchor,
+      reviewerTrustRevocation: null,
+      persistedAtMs: 10_015,
+    }),
+    /binding is invalid/u,
   );
 });

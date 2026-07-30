@@ -71,6 +71,8 @@ Proposal persistence reconstructs the artifact from exact digest-selected databa
 
 Review-time loading requires one exact persisted proposal digest and rechecks current trust, known revocations and configuration/authorisation expiry before producing a content-addressed verification. A signed external receipt binds that verification and permits only acknowledge-for-owner-review, defer or reject. It cannot approve or select a strategy, consume authorisation, activate a mode or grant execution authority.
 
+Review-receipt persistence stores the point-in-time proposal verification and signed receipt separately. D1 independently binds the exact proposal, configuration, authorisation, role-scoped trust, then-known revocation state, reviewer key, chronology and closed disposition set. Exact retries preserve the first rows; stale omission, identity rebinding, conflicts, mutation and deletion fail closed. Both records retain zero selection, authorisation-consumption, activation and execution authority.
+
 ## Supply-chain controls
 
 - Minimise runtime dependencies.

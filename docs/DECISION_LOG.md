@@ -531,3 +531,12 @@ Rows are immutable and content-addressed. Exact retries preserve the first persi
 Load a persisted strategy-selection proposal only by exact digest and an explicit review timestamp. Reconstruct the immutable proposal, then revalidate both signer roles, known revocations and configuration/authorisation expiry at that timestamp. Content-address the review-time verification separately so a receipt cannot acknowledge stale proposal evidence.
 
 An external review receipt must sign both the proposal digest and its exact point-in-time verification digest. Its only dispositions are acknowledge-for-owner-review, defer or reject. It cannot express approval or selection, consume the earlier authorisation, activate paper/live mode, grant execution authority or submit an order. No real receipt, signing key, selection, deployment, credential, fund, wallet or live authority is committed.
+
+
+## 2026-07-30 — Immutable strategy-selection review receipts
+
+Persist the exact review-time proposal verification separately from its signed external receipt. Both records are content-addressed and immutable. Application verification repeats the proposal identity, signature, public-key trust, known revocation and chronology checks before any write.
+
+D1 independently requires the exact persisted proposal, configuration, authorisation and role-scoped trust state to have been available and valid at the review timestamp. A known revocation must be selected explicitly and remain ineffective. The receipt must bind the exact verification digest, reviewer key and one closed disposition: acknowledge-for-owner-review, defer or reject. Identity rebinding, stale omitted revocations, conflicts, updates and deletion fail closed.
+
+Both records hard-code the candidate as unselected with no selection decision, authorisation consumption, activation authority or execution authority. Persistence is review evidence only; no real receipt, private key, strategy selection, deployment, credential, fund, wallet or live authority is committed.
