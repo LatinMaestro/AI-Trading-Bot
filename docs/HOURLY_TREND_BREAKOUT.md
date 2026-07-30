@@ -78,4 +78,6 @@ Review loading accepts only an exact persisted proposal digest and explicit revi
 
 A signed external review receipt must bind that exact verification digest. Its closed disposition set can only acknowledge the proposal for owner review, defer it or reject it; approval, selection, authorisation consumption, activation and execution authority are structurally absent.
 
+Persistence stores the exact review-time proposal verification and signed receipt as separate immutable records. Application and D1 independently bind proposal, trust, known revocation, chronology, reviewer identity and the closed disposition set; stale evidence, identity reuse, mutation and any authority-bearing state fail closed.
+
 The module produces targets only. It does not submit or approve orders, activate paper/live mode, connect credentials or weaken any market-data, liquidity, intelligence, risk or execution gate.
