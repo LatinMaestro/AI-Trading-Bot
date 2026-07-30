@@ -58,6 +58,10 @@ import {
   prepareStrategySelectionReviewReceiptPersistence,
   StrategySelectionReviewReceiptRepository,
 } from "../src/storage/strategySelectionReviewReceipt.ts";
+import {
+  prepareStrategySelectionOwnerDecisionProposalPersistence,
+  StrategySelectionOwnerDecisionProposalRepository,
+} from "../src/storage/strategySelectionOwnerDecisionProposal.ts";
 
 const ASSESSED_AT_MS = 10_000;
 const READINESS_PERSISTED_AT_MS = 10_001;
@@ -312,6 +316,15 @@ async function database(
     readFileSync(
       new URL(
         "../migrations/0029_strategy_selection_review_receipts.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
+  db.exec(
+    readFileSync(
+      new URL(
+        "../migrations/0030_strategy_selection_owner_decision_proposals.sql",
         import.meta.url,
       ),
       "utf8",
@@ -1591,5 +1604,189 @@ test("owner decision proposals remain pending and non-activating", async () => {
       },
     }),
     /acknowledged exact receipt/u,
+  );
+});
+
+test("persists owner decision proposals and verification immutably", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  const { receipt } = await signedReviewReceipt(fixture);
+  const receiptRepository =
+    new StrategySelectionReviewReceiptRepository(d1Database(db));
+  await receiptRepository.persistAtTime(receipt, 10_015);
+  const repository =
+    new StrategySelectionOwnerDecisionProposalRepository(d1Database(db));
+  const selector = {
+    receiptSha256: receipt.receiptSha256,
+    ownerDecisionAtMs: 10_016,
+    decisionProposalId:
+      "hourly-trend-breakout-owner-decision-proposal-v1",
+  };
+  const first = await repository.persistAtTime(selector, 10_017);
+  const retry = await repository.persistAtTime(selector, 10_018);
+  assert.equal(retry.decisionProposalSha256, first.decisionProposalSha256);
+  const row = db.prepare(
+    `SELECT owner_action_required, owner_decision_status,
+            candidate_status, selection_decision,
+            authorisation_consumed, activation_authority,
+            execution_authority, persisted_at_ms
+     FROM hourly_trend_breakout_strategy_selection_owner_decision_proposals`,
+  ).get() as Record<string, unknown>;
+  assert.equal(row.owner_action_required, 1);
+  assert.equal(
+    row.owner_decision_status,
+    "pending-explicit-owner-decision",
+  );
+  assert.equal(row.candidate_status, "unselected");
+  assert.equal(row.selection_decision, "none");
+  assert.equal(row.authorisation_consumed, 0);
+  assert.equal(row.activation_authority, "none");
+  assert.equal(row.execution_authority, "none");
+  assert.equal(row.persisted_at_ms, 10_017);
+  assert.throws(
+    () => db.prepare(
+      `UPDATE hourly_trend_breakout_strategy_selection_receipt_verifications
+       SET persisted_at_ms = 10018`,
+    ).run(),
+    /immutable/u,
+  );
+  assert.throws(
+    () => db.prepare(
+      `DELETE FROM
+       hourly_trend_breakout_strategy_selection_owner_decision_proposals`,
+    ).run(),
+    /immutable/u,
+  );
+});
+
+test("database rejects owner-decision evidence omitting a known revocation", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  const { receipt } = await signedReviewReceipt(fixture);
+  const receiptRepository =
+    new StrategySelectionReviewReceiptRepository(d1Database(db));
+  await receiptRepository.persistAtTime(receipt, 10_015);
+  const verifiedReceipt = await receiptRepository.loadPersistedAtTime(
+    receipt.receiptSha256,
+    10_016,
+  );
+  const proposal =
+    await prepareStrategySelectionOwnerDecisionProposal({
+      decisionProposalId:
+        "hourly-trend-breakout-stale-owner-proposal-v1",
+      preparedAtMs: 10_016,
+      verifiedReceipt,
+    });
+  const staleStatements =
+    await prepareStrategySelectionOwnerDecisionProposalPersistence({
+      verifiedReceipt,
+      proposal,
+      persistedAtMs: 10_017,
+    });
+  const revocation = await prepareStrategySignerTrustRevocation(
+    {
+      revocationId: "owner-decision-known-rotation-v1",
+      trustAnchorSha256:
+        fixture.authorisation.trustAnchor.trustAnchorSha256,
+      reason: "planned-rotation",
+      effectiveAtMs: 10_020,
+      reviewedAtMs: 10_016,
+      reviewEvidenceSha256: "4".repeat(64),
+    },
+    fixture.authorisation.trustAnchor,
+  );
+  execute(
+    db,
+    await prepareStrategySignerTrustRevocationPersistence(
+      revocation,
+      fixture.authorisation.trustAnchor,
+      10_016,
+    ),
+  );
+  assert.throws(
+    () => execute(db, staleStatements[0]!),
+    /receipt verification is invalid/u,
+  );
+});
+
+test("owner decision proposal IDs cannot be rebound", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  const { receipt } = await signedReviewReceipt(fixture);
+  const receiptRepository =
+    new StrategySelectionReviewReceiptRepository(d1Database(db));
+  await receiptRepository.persistAtTime(receipt, 10_015);
+  const repository =
+    new StrategySelectionOwnerDecisionProposalRepository(d1Database(db));
+  const decisionProposalId =
+    "hourly-trend-breakout-owner-decision-conflict-v1";
+  await repository.persistAtTime(
+    {
+      receiptSha256: receipt.receiptSha256,
+      ownerDecisionAtMs: 10_016,
+      decisionProposalId,
+    },
+    10_017,
+  );
+  await assert.rejects(
+    repository.persistAtTime(
+      {
+        receiptSha256: receipt.receiptSha256,
+        ownerDecisionAtMs: 10_017,
+        decisionProposalId,
+      },
+      10_018,
+    ),
+    /owner decision proposal conflict/u,
+  );
+});
+
+test("owner decision persistence rejects deferred receipts and backdating", async () => {
+  const { db, readinessAssessmentSha256 } = await database();
+  const fixture =
+    await proposalFixture(db, readinessAssessmentSha256);
+  const deferred = await signedReviewReceipt(
+    fixture,
+    "deferred",
+    "hourly-trend-breakout-owner-decision-deferred-v1",
+  );
+  const receiptRepository =
+    new StrategySelectionReviewReceiptRepository(d1Database(db));
+  await receiptRepository.persistAtTime(deferred.receipt, 10_015);
+  const repository =
+    new StrategySelectionOwnerDecisionProposalRepository(d1Database(db));
+  await assert.rejects(
+    repository.persistAtTime(
+      {
+        receiptSha256: deferred.receipt.receiptSha256,
+        ownerDecisionAtMs: 10_016,
+        decisionProposalId:
+          "hourly-trend-breakout-deferred-owner-proposal-v1",
+      },
+      10_017,
+    ),
+    /acknowledged exact receipt/u,
+  );
+
+  const acknowledged = await signedReviewReceipt(
+    fixture,
+    "acknowledged-for-owner-review",
+    "hourly-trend-breakout-owner-decision-backdated-v1",
+  );
+  await receiptRepository.persistAtTime(acknowledged.receipt, 10_015);
+  await assert.rejects(
+    repository.persistAtTime(
+      {
+        receiptSha256: acknowledged.receipt.receiptSha256,
+        ownerDecisionAtMs: 10_016,
+        decisionProposalId:
+          "hourly-trend-breakout-backdated-owner-proposal-v1",
+      },
+      10_015,
+    ),
+    /backdated/u,
   );
 });

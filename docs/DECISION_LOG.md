@@ -549,3 +549,12 @@ Load a signed review receipt only by exact persisted digest and an explicit owne
 Only a receipt with the exact acknowledge-for-owner-review disposition may produce a content-addressed owner decision proposal. The proposal records that a separate explicit owner action is required. It remains pending and hard-codes the candidate as unselected with no selection decision, authorisation consumption, activation authority or execution authority. Deferred or rejected receipts cannot produce it.
 
 This proposal is evidence for a future owner-controlled decision, not the decision itself. No real receipt, owner decision, strategy selection, signing key, deployment, credential, fund, wallet or live authority is committed.
+
+
+## 2026-07-30 — Immutable owner decision-proposal evidence
+
+Persist the exact owner-decision-time receipt verification separately from its pending owner decision proposal. Both records are content-addressed and immutable. Application verification repeats the acknowledged receipt, exact proposal/configuration/authorisation bindings and all non-authority fields before any write.
+
+D1 independently requires the exact receipt and proposal evidence to have been available at the decision timestamp, rechecks configuration and authorisation expiry, role-scoped trust, explicitly selected known revocations, reviewed capital and the acknowledged disposition, and rejects identity reuse, stale omission, mutation and deletion.
+
+Both rows remain pending and hard-code the candidate as unselected with no selection decision, authorisation consumption, activation authority or execution authority. Persistence is evidence only; no owner decision, signed selection, activation, deployment, credential, fund, wallet or live authority is committed.

@@ -75,6 +75,8 @@ Review-receipt persistence stores the point-in-time proposal verification and si
 
 Owner-decision preparation is digest-selected and time-explicit. It re-verifies the stored receipt against the exact review-time proposal verification and reviewer trust, then revalidates current proposal trust, revocation and expiry state. Only acknowledge-for-owner-review may produce a pending proposal; defer and reject fail closed. The proposal requires separate owner action and cannot itself select, consume authorisation, activate or execute.
 
+Owner-decision proposal persistence writes the exact point-in-time receipt verification and pending proposal separately. D1 independently enforces acknowledged disposition, evidence availability, configuration/authorisation validity, role-scoped trust, explicit known-revocation state, capital, identity and zero-authority fields. Exact retries preserve first persistence; conflicts, updates and deletion fail closed.
+
 ## Supply-chain controls
 
 - Minimise runtime dependencies.
