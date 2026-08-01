@@ -11,6 +11,8 @@ import {
 import { UniverseIngestionRepository } from "../storage/universeIngestion.ts";
 import { MarketCandleHistoryRepository } from "../marketData/historyEvidence.ts";
 import { runScheduledKrakenUniverseCycle } from "../universe/krakenPublicCycle.ts";
+import { KrakenLifecycleCaptureRepository } from "../storage/krakenLifecycleCapture.ts";
+import { runScheduledKrakenLifecycleCapture } from "../universe/krakenLifecycleCapture.ts";
 
 export interface CycleResult {
   readonly cycleId: string;
@@ -63,6 +65,13 @@ export async function runTradingCycle(
       };
     }
 
+    const lifecycleCapture = await runScheduledKrakenLifecycleCapture(
+      new KrakenLifecycleCaptureRepository(env.DB),
+      {
+        scheduledAtMs: invocation.scheduledAtMs,
+        nowMs: clock,
+      },
+    );
     const history = new MarketCandleHistoryRepository(env.DB);
     const universe = await runScheduledKrakenUniverseCycle(
       new UniverseIngestionRepository(env.DB),
@@ -118,6 +127,12 @@ export async function runTradingCycle(
         action: decision.action,
         targetPair: decision.targetPair ?? null,
         targetExposurePct: decision.targetExposurePct,
+        lifecycleCaptureDue: lifecycleCapture.due,
+        lifecycleCaptureCount: lifecycleCapture.captures.length,
+        lifecycleCaptureRequestCount: lifecycleCapture.requestCount,
+        lifecycleCaptureIds: lifecycleCapture.captures.map(
+          (capture) => capture.captureId,
+        ),
         universeBatchSha256: universe.batch.batchSha256,
         universeSelectedPairCount: universe.selectedPairs.length,
         universeSkippedPairCount: universe.skippedPairs.length,
