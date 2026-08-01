@@ -33,6 +33,9 @@
     - [x] Add content-addressed Kraken AssetPairs, Ticker and Depth clients with strict fail-closed quality parsers.
     - [x] Schedule bounded rotating public collection and atomic persistence with incomplete history explicitly marked ineligible.
     - [x] Join committed candle and volatility evidence from D1 at the exact signal time.
+    - [x] Add an allowlisted official-source manifest, future-effective event handling and deterministic coverage audit.
+    - [ ] Backfill complete listing, trading-status, delisting and Australian-availability history.
+    - [ ] Add scheduled raw-source capture and immutable persistence.
     - [ ] Complete authoritative lifecycle coverage and promote only signed, evidence-complete universe snapshots.
   - [ ] Support complete Australian-dollar valuation paths for every researched pair.
   - [ ] Persist signed universe policies and content-addressed snapshots.
