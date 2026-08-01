@@ -25,6 +25,7 @@
   - [x] Add deterministic established, high-volatility and new-listing research tiers.
   - [x] Reconstruct listing, suspension, delisting, relisting and Australian availability without look-ahead.
   - [x] Enforce spread, liquidity, price-impact, order-minimum, data-quality and instrument-type gates.
+  - [x] Add content-addressed ingestion, fresh AUD-valuation and venue-specific calibration contracts.
   - [ ] Ingest authoritative venue metadata and official lifecycle evidence on schedule.
   - [ ] Support complete Australian-dollar valuation paths for every researched pair.
   - [ ] Persist signed universe policies and content-addressed snapshots.
