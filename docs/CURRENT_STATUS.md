@@ -1,0 +1,349 @@
+# Current status
+
+Last verified: 2 August 2026 (Australia/Brisbane)
+
+## Integration checkpoint
+
+- Repository: `LatinMaestro/AI-Trading-Bot`
+- Verified base `main`: `5155a251e6d00ccd3a535da0739be96c0dfdceb1`
+- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #39 are repaired, exact-head validated and squash-merged; replacement PRs #99 through #106 carry reconstructed historical #40 through #47 slices; PRs #7, #10, #16, #18, #20, #22, #24, #26 and historical #40 through #48 are closed without merge.
+- This tree reconstructs historical pull request #48 as deterministic assessment integration and immutable persistence directly on that verified base, with exact cross-artifact partition and representative binding.
+- The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
+- Live deployment: none
+- Credentials: none
+- Funds: none
+- Wallet connection: none
+
+## Exact merged evidence
+
+- PR #1 run [30683491866](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30683491866): locked validation passed with 12 tests.
+- PR #2 run [30685163521](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30685163521): locked validation passed with 25 tests.
+- PR #3 run [30685331786](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30685331786): locked validation passed with 33 tests.
+- PR #4 run [30687339258](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30687339258): locked validation passed with 42 tests.
+- PR #5 run [30687528855](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30687528855): locked validation passed with 42 tests.
+- PR #6 run [30689248766](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30689248766): locked validation passed with 51 tests.
+- PR #8 run [30689578186](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30689578186): locked validation passed with 67 tests.
+- PR #9 run [30689770015](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30689770015): locked validation passed with 72 tests.
+- PR #11 run [30689958962](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30689958962): lockfile reproduction, paper type generation, strict TypeScript, 77 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #12 run [30690340466](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30690340466): lockfile reproduction, paper type generation, strict TypeScript, 87 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #13 run [30690624243](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30690624243): lockfile reproduction, paper type generation, strict TypeScript, 96 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #14 run [30690795113](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30690795113): lockfile reproduction, paper type generation, strict TypeScript, 96 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #15 run [30691290356](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30691290356): lockfile reproduction, paper type generation, strict TypeScript, 102 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #17 run [30691425536](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30691425536): lockfile reproduction, paper type generation, strict TypeScript, 108 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #19 run [30691621315](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30691621315): lockfile reproduction, paper type generation, strict TypeScript, 114 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #21 run [30691823979](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30691823979): lockfile reproduction, paper type generation, strict TypeScript, 123 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #23 run [30692009871](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30692009871): lockfile reproduction, paper type generation, strict TypeScript, 129 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #25 run [30693134018](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30693134018): lockfile reproduction, paper type generation, strict TypeScript, 140 tests, SQLite migration integrity, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #27 run [30693321913](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30693321913): lockfile reproduction, paper type generation, strict TypeScript, 145 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #28 run [30695191920](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30695191920): lockfile reproduction, paper type generation, strict TypeScript, 155 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #29 run [30695473230](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30695473230): lockfile reproduction, paper type generation, strict TypeScript, 162 tests including live SQLite migrations, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #30 run [30696901264](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30696901264): lockfile reproduction, paper type generation, strict TypeScript, 171 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #31 run [30697343236](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30697343236): lockfile reproduction, paper type generation, strict TypeScript, 180 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #32 run [30700221664](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30700221664): lockfile reproduction, paper type generation, strict TypeScript, 189 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #33 run [30700528088](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30700528088): lockfile reproduction, paper type generation, strict TypeScript, 193 tests including SQLite cache migration integrity, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #34 run [30702337446](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30702337446): lockfile reproduction, paper type generation, strict TypeScript, 205 tests including independently hardened lifecycle-document migration integrity, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #35 run [30702600500](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30702600500): lockfile reproduction, paper type generation, strict TypeScript, 212 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #36 run [30704381225](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30704381225): lockfile reproduction, paper type generation, strict TypeScript, 218 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #37 run [30704701287](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30704701287): lockfile reproduction, paper type generation, strict TypeScript, 224 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #38 run [30705019227](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30705019227): lockfile reproduction, paper type generation, strict TypeScript, 232 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #39 run [30706612840](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30706612840): lockfile reproduction, paper type generation, strict TypeScript, 244 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- Replacement PR #99 run [30708648325](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30708648325): lockfile reproduction, paper type generation, strict TypeScript, 253 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- Replacement PR #100 run [30711114230](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30711114230): lockfile reproduction, paper type generation, strict TypeScript, 259 tests including Reddit transient-persistence migration integrity, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- Replacement PR #101 run [30713065420](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30713065420): lockfile reproduction, paper type generation, strict TypeScript, 265 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- Replacement PR #102 run [30713313847](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30713313847): lockfile reproduction, paper type generation, strict TypeScript, 271 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- Replacement PR #103 run [30713688105](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30713688105): lockfile reproduction, paper type generation, strict TypeScript, 276 tests, paper dry-run with paper-only Queue/D1 bindings, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- Replacement PR #104 run [30713916329](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30713916329): lockfile reproduction, paper type generation, strict TypeScript, 280 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- Replacement PR #105 run [30714124100](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30714124100): lockfile reproduction, paper type generation, strict TypeScript, 289 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- Replacement PR #106 run [30715219700](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30715219700): lockfile reproduction, paper type generation, strict TypeScript, 297 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+
+## Universe-ingestion evidence
+
+- Creates deterministic content-addressed batches from separate public metadata, quality, official lifecycle and AUD-conversion evidence.
+- Timestamps definitions and observations no earlier than the source fetch that made them knowable.
+- Retains published future-effective lifecycle events without applying them early and never infers delisting from snapshot absence.
+- Resolves fresh shortest-path AUD valuations while rejecting missing, multiple, stale, chronologically invalid or non-finite paths.
+- Converts turnover, execution depth and minimum-order values into AUD.
+- Produces venue-specific tier-calibration summaries while rejecting mixed venues and conflicting natural identities.
+- Calibration is evidence only; it does not automatically change signed policy or runtime scope.
+- Scheduled adapters, atomic persistence and complete official lifecycle coverage remain incomplete.
+
+## Tax-export evidence
+
+- Preserves factual transaction records before tax treatment or lot selection is complete.
+- Requires canonical UTC timestamps and matching Australian local dates in validated Australian IANA time zones.
+- Requires explicit complete acquisition-to-disposal allocations and rejects unknown enums, asset mismatches, later acquisitions, non-reciprocal links and over-allocation.
+- Produces formula-neutralised transaction, CGT-allocation and Australian financial-year CSV exports plus canonical machine-readable bundles.
+- Content digests prove identity only; tax treatment, lot-selection policy, discounts, exemptions, losses and capital-versus-revenue classification remain professional-review decisions.
+- Immutable fill ingestion, exchange reconciliation and professional review remain incomplete.
+
+## Security-runbook evidence
+
+- Defines minimum-permission provisioning, current-cycle permission checks, quarterly rotation and revocation drills without storing secrets.
+- Defines SEV-1 through SEV-3 playbooks for compromise, unknown orders, reconciliation drift, stale data, Cloudflare/D1 failure and supply-chain compromise.
+- Any authorised responder may stop automation; provider-side revocation requires the owner or provider support; live recovery remains owner-only.
+- Requires exchange-authoritative reconciliation, redacted evidence digests, exact-head validation, paper/shadow regression and explicit owner recovery approval.
+- Runbooks grant no deployment, credential, capital or live authority.
+
+## Universe-persistence evidence
+
+- Persists one immutable batch header, sorted source digests and exact definition, lifecycle-event and quality-observation memberships in one transactional D1 batch.
+- A database-enforced commit marker proves declared membership counts are complete; only committed batches are complete research evidence.
+- Exact retries are idempotent, while conflicting identity reuse, venue mismatch, partial writes and post-commit membership extension fail closed.
+- Fixed nine-statement batching avoids D1 subrequest growth with universe size.
+- Persistence grants no strategy-selection, runtime, deployment or order authority.
+
+## Kraken public-quality evidence
+
+- Uses official `assetVersion=1` AssetPairs, Ticker and Depth contracts with Australian, currency-class and international-venue filtering where supported.
+- Binds each accepted response to its public URL, fetch time and exact response-text digest before typed parsing.
+- Rejects redirects, unexpected media types, incomplete requested ticker sets, malformed numeric values, legacy pair keys, crossed markets, unordered books, unsafe timestamps and non-finite arithmetic.
+- Derives 24-hour quote turnover, coherent spread, conservative two-sided depth and candidate-order impact; insufficient depth remains explicitly unavailable.
+- Scheduled orchestration, candle/volatility joining, AUD conversion and lifecycle completeness remain separate required work.
+- Public evidence only; no credential, private endpoint, strategy-selection, deployment or order authority.
+
+## Scheduled Kraken universe evidence
+
+- Collects Australian-available spot metadata, all public tickers and a bounded rotating Depth window before strategy evaluation.
+- Spaces every public attempt and applies bounded retry, timeout and streaming response-size enforcement.
+- Resolves fresh AUD valuation paths, excludes missing/ambiguous paths, derives quality evidence and commits one atomic content-addressed universe batch.
+- Records the committed batch identity, request attempts and selected/skipped counts in cycle audit evidence.
+- Committed D1 candle history is queried at the exact signal time; incomplete, gapped, stale, shifted or non-finite histories remain explicitly ineligible rather than receiving fabricated completeness.
+- The existing BTC/AUD and ETH/AUD approved strategy path remains separate; no private endpoint, credential or order authority is added.
+
+## Market-history evidence
+
+- Queries committed 60-minute and 1,440-minute candle counts and contiguity only through the scheduled signal time.
+- Retains at most the latest 366 committed daily closes per selected pair, ordered deterministically and bounded by recorded availability.
+- Requires the retained sample to end at the latest committed daily candle; shifted or stale contiguous samples fail closed.
+- Computes annualised volatility only from verified contiguous daily closes and binds exact history and conversion evidence into the quality digest.
+- Loads history only for the bounded selected rotation and rejects material Ticker/Depth time skew.
+- This evidence does not grant dynamic-universe strategy selection, deployment or order authority.
+
+## Official lifecycle-source evidence
+
+- Allowlists exact Kraken Blog asset-listing articles, Kraken Support notices and Kraken Status incident/API documents.
+- Validates source class, official origin/path, publication/capture chronology, event type and global-versus-Australian scope.
+- Accepts published future-effective events as knowable evidence without applying them before their effective time.
+- Audits listing, trading-status and Australian-availability history independently for each expected pair and rejects declarations outside that set.
+- Complete historical backfill remains incomplete; this tree adds bounded exact individual-document capture and immutable persistence.
+- No free-text or language-model extraction, private API, credential, strategy-selection or order authority is added.
+
+## Scheduled lifecycle-capture evidence
+
+- At the daily 00:00 UTC slot, captures the fixed official Kraken listing index, delistings index, incidents feed and scheduled-maintenance feed before universe evaluation.
+- Enforces an exact allowlist, redirect rejection, strict media types, a full-body timeout, bounded retry/spacing, valid UTF-8 round-tripping and a one MiB streaming ceiling.
+- Deduplicates exact payload bytes by SHA-256 while preserving every fetch as an immutable source/time/header record with a database-verified commit marker.
+- Persists the complete four-source set atomically; incomplete or conflicting evidence fails the scheduled cycle closed.
+- Raw capture does not create lifecycle events and grants no strategy-selection, deployment, credential or order authority.
+
+## Lifecycle-document discovery evidence
+
+- Revalidates exact preserved listing and delisting index payload digests before discovery.
+- Extracts only bounded canonical anchor `href` attributes while ignoring comments and script, style and template raw-text regions.
+- Accepts only source-specific HTTPS Kraken Blog listing articles/pagination and Kraken Support article targets; malformed, encoded, queried, fragmented, cross-index or untrusted links fail closed or remain excluded.
+- Deduplicates and sorts targets deterministically, binds exact capture/payload provenance and content-addresses the complete discovery result.
+- Kraken Support targets remain semantically unclassified until reviewed; discovery creates no lifecycle declaration or runtime authority.
+
+
+## Lifecycle-document capture evidence
+
+- Accepts only canonical Kraken Blog listing pages/articles and Kraken Support article targets from a partition-consistent deterministic discovery result.
+- Enforces redirect, media-type, declared/streamed size, byte-exact UTF-8, cache-header, timeout, spacing and bounded-retry controls.
+- Orders at most ten targets deterministically, skips already committed source references and persists nothing when a selected target fails.
+- Reproduces payload and capture digests before persistence; D1 independently enforces canonical paths, CR/LF-safe headers, committed source-class provenance, retry identity, chronology and immutability.
+- Raw documents create no lifecycle declaration, strategy selection, deployment or order authority.
+
+
+## Scheduled lifecycle-document frontier evidence
+
+- After the fixed daily source set commits, loads a deterministic rotation of at most 32 latest committed listing-index pages and at most 8 MiB of exact payloads.
+- Revalidates every page digest, preserves root/lowest-page deterministic provenance and ignores links in comments and script, style or template raw-text regions.
+- Skips committed source references, captures at most ten remaining documents and advances newly captured pages only on a later daily cycle after commit.
+- Performs no document lookup, discovery or network work outside the daily lifecycle slot.
+- Records discovery, committed-page, selected, remaining, request and capture identities before universe evaluation; no lifecycle declaration or order authority is created.
+
+## SEC press-release intelligence evidence
+
+- Binds the exact official SEC press-release RSS feed and RSS-policy page to a scheduled authoritative regulator manifest with digest-only retention and no model-training permission.
+- Requires a runtime-supplied truthful contact-bearing User-Agent and retains no contact value in source.
+- Revalidates exact payload length and SHA-256, accepts one bounded UTF-8 RSS root, rejects declarations/entities and requires canonical current or legacy SEC press-release links, matching GUIDs and valid publication chronology.
+- Stores deterministic identity, source URL, timing and content digests without retaining titles or raw XML.
+- Emits only neutral `other` evidence under non-tradable `SEC.REGULATOR`; it cannot pause new risk, create a positive candidate, approve an order or submit an order.
+- No collector, runtime contact, credential, deployment or live source is activated.
+
+## RBA media-release intelligence evidence
+
+- Binds the official RBA media-release RSS feed and published copyright terms to a scheduled authoritative regulator manifest with digest-only retention, required attribution and no model training.
+- Reproduces active-contract capture identity, payload length and SHA-256 before accepting one bounded UTF-8 RSS root and canonical media-release identities.
+- Retains deterministic identifiers, source URLs, timing and digests without titles or raw XML.
+- Emits neutral `macro` evidence under non-tradable `AUD.MACRO`; no risk pause, positive candidate or order authority is created.
+- No collector, credential, deployment or live source is activated.
+
+
+
+## External-intelligence evidence-linkage evidence
+
+- Binds all evidence to one content-addressed reviewed topic registry with exact entity keys, tradability and allowed event types; unknown topics and entity/event drift fail closed.
+- Applies verified append-only content updates to the effective view and removes retracted/deleted items from active clusters while retaining exact correction identities.
+- Rejects future evidence, source-authority mismatches, changed natural identities, changed correction-digest identity reuse and invalid post-terminal correction chains.
+- Collapses exact effective content only within the same topic, event type and stance, selecting one deterministic authority-ranked representative before publisher corroboration.
+- Feeds a separate deterministic manipulation stage; this tree adds assessment persistence, while paper risk reactions and order paths remain separate.
+
+## External-intelligence manipulation evidence
+
+- Fingerprints only exact correction-effective representative content permitted for excerpt/full-content processing; digest-only, metadata-only and Reddit evidence remains excluded.
+- Requires each fingerprint to be created no earlier than its effective linkage and no later than analysis, preventing later correction content from leaking into earlier evidence.
+- Uses bounded five-token shingle digests, integer Jaccard thresholds and deterministic complete-link clustering; raw text is never returned or retained.
+- Collapses every exact/near-duplicate repost group to one corroboration unit and marks rapid multi-publisher repost patterns watch-only without asserting identity or intent.
+- Remains pure research evidence with no classification, risk, strategy, deployment or order authority.
+
+## External-intelligence assessment-integration evidence
+
+- Reproduces assessment inputs only from the correction-effective linkage and manipulation artifacts; raw publisher counts cannot be reintroduced after clustering.
+- Requires manipulation clusters to exactly partition linkage clusters, reproduce unioned member/publisher/source identities and bind representatives byte-for-byte to their linkage records.
+- Persists linkage, manipulation evidence and one or more integrated assessments through one fixed three-statement D1 batch without requiring a pre-populated base-assessment row.
+- Exact retries remain idempotent; digest, chronology, partition, representative, identity-conflict and mutation failures fail closed.
+- Rapid multi-publisher reposts remain watch-only, except that authoritative severe negatives preserve the fail-safe pause path. This slice grants no paper reaction, deployment or order authority.
+
+## External-intelligence activation-manifest evidence
+
+- Builds one canonical, content-addressed paper activation candidate from an exact reviewed lowercase SHA-256 evidence digest and bounded approval/effective/expiry chronology.
+- Binds the manifest to the exact paper minute Cron, Queue name and enabled source-contract JSON without changing repository runtime variables or creating a deployment.
+- Requires renewal within 366 days and changes both contract and manifest identities when reviewed evidence changes.
+- The manifest is a non-activating review artifact: provider terms, cost, hosted resources, variables, deployment and collection remain explicit owner gates.
+- The runbook keeps Production unchanged, requires a genuine reviewed end-to-end milestone for any paper deployment, and defines fail-closed rollback evidence.
+
+## External-intelligence runtime-binding evidence
+
+- Routes the exact every-minute intelligence slot and existing 15-minute trading slot through the module Worker scheduled handler; unknown Cron expressions fail closed.
+- Binds the existing Kraken active-maintenance source, durable D1 cache, Queue producer and idempotent per-message D1 consumer only in the `paper` environment.
+- Requires exact disabled/enabled configuration, an explicit bounded source contract and fail-closed paper mode before collection; Production declares no Cron or Queue resources.
+- Configures bounded ten-message batches, five-second waits, five retries, serial concurrency and a DLQ. Queue failures use the existing explicit per-message retry path.
+- Configuration is inert in this repository: external intelligence remains disabled and no Cloudflare resource or Worker is deployed.
+- Runtime authority remains BTC/AUD and ETH/AUD, hourly deterministic long-only spot, at most one position and otherwise AUD cash.
+
+## Bitcoin Core announcement intelligence evidence
+
+- Binds the official Bitcoin Core security/release announcement RSS feed and reviewed website licence to a scheduled authoritative issuer manifest with digest-only retention and no model training.
+- Reproduces active-contract and exact capture identities before accepting one bounded UTF-8 RSS root, canonical dated announcement URLs, matching GUIDs and strict publication chronology.
+- Retains deterministic identifiers, source URLs, timing and digests without titles or raw XML.
+- Emits neutral `other` evidence under non-tradable `BTC.CORE`; no risk pause, positive candidate or order authority is created.
+- No collector, credential, deployment or live source is activated.
+
+## AUSTRAC media-release intelligence evidence
+
+- Binds the official AUSTRAC media-release RSS feed and copyright terms to a scheduled authoritative regulator manifest with digest-only retention, required attribution and no model training.
+- Reproduces active-contract and exact capture identities before accepting one bounded UTF-8 RSS root, canonical official release paths, matching GUIDs and strict publication chronology.
+- Retains deterministic identifiers, source URLs, timing and digests without titles or raw XML.
+- Emits neutral `regulatory-action` evidence under non-tradable `AUSTRAC.REGULATOR`; no risk pause, positive candidate or order authority is created.
+- AUSTRAC's announced RSS retirement must become explicit stale/unavailable state; unsupported website scraping is not a fallback.
+- No collector, credential, deployment or live source is activated.
+
+## Runtime boundary
+
+- Runtime markets remain `BTC/AUD` and `ETH/AUD` only.
+- Decisions remain hourly, deterministic, long-only spot, at most one open position and otherwise AUD cash.
+- Live trading remains disabled.
+- No withdrawal, transfer, leverage, derivative, earn or wallet-signing capability exists.
+
+## External-intelligence contract evidence
+
+- Defines explicit official, regulator, issuer, reputable-news and social source classes with measured publication, receipt, availability and assessment latency.
+- Social publishers cannot satisfy reputable corroboration. Reddit-only and rumour-only evidence remains watch-only.
+- Authoritative severe negative evidence may pause new risk; positive evidence creates research candidates only and never approves or submits an order.
+- Requires complete per-source freshness policy, canonical identity, exact accepted-evidence digests and fail-closed chronology, authority and storage rules.
+- Approved acquisition adapters, minute collection, Queue/DLQ processing, source registry, immutable persistence and compliant Reddit OAuth remain incomplete.
+
+## External-intelligence persistence evidence
+
+- Versioned source contracts bind provider/publisher identity, approved acquisition modes, licence digest, attribution, retention, deletion, effective dates and explicit model-use prohibition.
+- Immutable items, append-only corrections and reproduced assessments persist through content-addressed batches with database-verified relational closure.
+- Assessment rows retain exact accepted-evidence digests; semantically identical reordered policies produce identical persisted evidence.
+- Exact retries are idempotent; identity conflicts, source revocation, invalid chronology, incomplete membership and post-commit extension fail closed.
+- Durable cache persistence, approved source manifests/parsers/signatures, deployed minute Cron and Queue/DLQ bindings, compliant Reddit OAuth, entity linking and paper risk integration remain incomplete.
+
+## External-intelligence acquisition evidence
+
+- Binds every feed or webhook request to an enabled, effective, digest-verified source contract with an approved origin and acquisition mode.
+- Rejects credential-bearing targets, redirects, unsupported media, invalid or oversized bodies and unsafe cache validators.
+- Applies bounded timeouts and retries across fetch, streamed body receipt, payload hashing and authenticated webhook verification.
+- Records request, receipt and availability times, exact payload identity, cache validators and deterministic capture identity.
+- Raw bytes remain transient unless the exact contract permits full retention; Reddit remains isolated for approved OAuth collection.
+- Acquisition creates no event classification, risk approval, strategy selection or order authority.
+
+## External-intelligence queue evidence
+
+- Queue envelopes contain only source-contract-verified normalised records, acquisition evidence and digests; raw provider bytes and binary content are rejected.
+- Capture identity, contract activity, approved origin/mode, retention class, chronology and measured latency are independently revalidated before enqueue.
+- The consumer reproduces deterministic assessments and completes immutable D1 persistence before acknowledging each message.
+- At-least-once deliveries are isolated per message with bounded retry; source or queue failures remain explicit stale/delayed outcomes.
+- Conditional validators advance only after successful enqueue, confirmed not-modified handling or confirmed no-item normalisation.
+- Durable cache state, hosted minute Cron, Queue/DLQ bindings and deployed consumer wiring remain pending.
+
+## Kraken Status intelligence evidence
+
+- Binds the exact official unresolved-incidents JSON endpoint and Kraken Status page identity to a digest-only minute-poll manifest.
+- Reproduces capture identity, validates contract activity and enforces a one MiB payload ceiling before parsing.
+- Accepts the provider's documented observed timestamp precision while rejecting impossible update chronology.
+- Maps only structured major and critical incidents to authoritative negative evidence; minor and none remain neutral.
+- Stores only content digests for update bodies and grants no risk-on, strategy-selection, deployment or order authority.
+
+## External-intelligence cache evidence
+
+- Persists conditional ETag and Last-Modified validators by source ID across Worker instances and restarts.
+- Enforces one shared 500-character transport ceiling, application-level canonical text, D1 CR/LF rejection and non-negative integer observation times.
+- Accepts exact retries, rejects time regression and same-time identity conflicts, and verifies every write by readback.
+- Cache validators are operational transport state only and cannot classify evidence, alter risk, approve or submit an order.
+
+## Kraken active-maintenance intelligence evidence
+
+- Binds Kraken's official programmatic active-maintenance Status API endpoint to an account-free one-minute official-exchange manifest.
+- Reproduces active-contract capture identity and enforces a one MiB payload ceiling before bounded structured parsing.
+- Validates the exact Kraken Status page, active state, schedule/update/receipt chronology, unique update identities and canonical provider timestamps.
+- Provider names and update bodies contribute only to digests; no raw provider text is retained or queued.
+- Statuspage `none`, `minor` and `maintenance` impacts remain neutral. Only structured `major` or `critical` impact becomes negative venue evidence that may request `pause-new-risk` through the existing deterministic policy.
+- The source creates no positive candidate, strategy selection, order approval, order submission, deployment or live authority.
+
+## Reddit OAuth acquisition evidence
+
+- Restricts listing acquisition to exact canonical `oauth.reddit.com` subreddit targets using a runtime bearer token and truthful canonical User-Agent.
+- Reproduces source-contract and shared payload-capture identities and requires the Reddit contract to be enabled and active at both the scheduled slot and request.
+- Converts official rate-limit headers into bounded integer state, retains a ten-percent reserve, spaces requests and defers without network access while the prior budget remains active.
+- Rejects redirects, malformed or inconsistent lengths, non-JSON media, invalid listings, unsafe chronology and time overflow.
+- Carries transient bytes and a maximum 48-hour deletion deadline; credentials and User-Agent values do not enter capture evidence.
+- Post normalisation, provider-deletion sweeps/corrections, approved Reddit account terms, credentials, deployment and any risk integration remain incomplete. Reddit remains social/watch-only.
+
+## Reddit transient-lifecycle evidence
+
+- Adds canonical bounded OAuth info targets for refreshing at most 100 exact post fullnames.
+- Reproduces source-contract, payload-capture, metadata and observation identities before accepting transient state.
+- Retains only post identity, subreddit and publication chronology; titles, bodies, authors and provider permalinks are validated transiently and discarded.
+- Provider-removed, deleted, missing or retention-expired observations produce immediate purge actions.
+- Durable output is limited to source-level aggregate compliance counts without Reddit post identifiers; post-level records remain prohibited from the immutable intelligence queue.
+- This tree adds purge-enforced transient persistence and downstream aggregate watch-state invalidation. An approved Reddit app, credentials and deployment remain pending. Reddit remains social/watch-only.
+
+## Reddit transient-persistence evidence
+
+- Persists only bounded post identity metadata in a dedicated transient D1 table; provider content, account data and post-level digests never enter immutable intelligence evidence or the durable Queue.
+- Stable source-contract-bound observation identity makes exact refreshes idempotent while preserving the first deletion deadline.
+- Provider removals and retention expiry use explicit batch-local deletion authorization, atomically purge transient rows and invalidate content-free aggregate watch state.
+- Expiry purges operate without a provider response, so provider unavailability cannot extend retention.
+- Application and D1 constraints independently reject changed identity, time regression, unauthorised deletion, audit/event mutation and identity conflicts.
+
+## Manipulation-aware assessment persistence evidence
+
+- Historical PR #48 was reconstructed as PR #107 and squash-merged at `3080d22ed16b30e15f90391e6210c9c12f90aefa`.
+- Exact-head Actions run 30717577097 passed lockfile reproduction, generated paper bindings, strict TypeScript, 303/303 tests, migration validation, the paper dry-run and all security/import scans.
+- Linkage, manipulation-evidence and integrated-assessment rows are immutable, content-addressed and atomically persisted without an unstated parent-row dependency.
+- Cross-artifact validation requires exact partitions, representative binding and JSON/column agreement before persistence.
+
+## Paper external-intelligence risk evidence
+
+- Loads only fresh persisted `pause-new-risk` integrations at the scheduled hourly decision time.
+- Re-verifies the complete linkage, manipulation-evidence and integrated-assessment chain against joined immutable rows before any paper decision can change.
+- Suppresses proposed paper buys to hold with zero exposure while preserving exits; non-paper modes remain disconnected.
+- Risk-event identity binds the complete proposed and resulting decisions and exact assessment evidence.
+
+## Next action
+
+Validate this reconstructed historical #49 slice at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #50 as the earliest remaining open dependency.
