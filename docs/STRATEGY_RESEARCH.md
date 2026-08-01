@@ -66,6 +66,8 @@ Every strategy must model:
 - listing, suspension, delisting and unavailable-market behaviour;
 - Australian-dollar conversion and tax-event generation.
 
+The initial pure calculation contract is defined in `docs/BACKTEST_EXECUTION_MODEL.md`. Its deterministic engine preserves fees, spread, slippage, adverse selection, capacity, price impact and missed fills, but synthetic assumptions are not research evidence. Each run must replace them with versioned, time-appropriate calibration data before results may support strategy promotion.
+
 ## Evaluation requirements
 
 Every candidate strategy must include:
