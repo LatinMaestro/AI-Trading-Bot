@@ -5,9 +5,9 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `360cbe198e1a28daa0bb548763b4067e0add9301`
-- Pull requests #1 through #6, #8, #9 and #11 through #14 are repaired, exact-head validated and squash-merged; PRs #7 and #10 are closed without merge.
-- This tree reconstructs pull request #15 as atomic universe-ingestion persistence directly on that verified base.
+- Verified base `main`: `4496e226ae2f024ebd18452f848fc8e075bc7f83`
+- Pull requests #1 through #6, #8, #9 and #11 through #15 are repaired, exact-head validated and squash-merged; PRs #7, #10 and #16 are closed without merge.
+- This tree reconstructs pull request #17 as content-addressed Kraken public market-quality evidence directly on that verified base.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -28,6 +28,7 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - PR #12 run [30690340466](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30690340466): lockfile reproduction, paper type generation, strict TypeScript, 87 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #13 run [30690624243](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30690624243): lockfile reproduction, paper type generation, strict TypeScript, 96 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #14 run [30690795113](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30690795113): lockfile reproduction, paper type generation, strict TypeScript, 96 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #15 run [30691290356](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30691290356): lockfile reproduction, paper type generation, strict TypeScript, 102 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 
 ## Universe-ingestion evidence
 
@@ -57,13 +58,22 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - Requires exchange-authoritative reconciliation, redacted evidence digests, exact-head validation, paper/shadow regression and explicit owner recovery approval.
 - Runbooks grant no deployment, credential, capital or live authority.
 
-## Universe-persistence candidate
+## Universe-persistence evidence
 
 - Persists one immutable batch header, sorted source digests and exact definition, lifecycle-event and quality-observation memberships in one transactional D1 batch.
 - A database-enforced commit marker proves declared membership counts are complete; only committed batches are complete research evidence.
 - Exact retries are idempotent, while conflicting identity reuse, venue mismatch, partial writes and post-commit membership extension fail closed.
 - Fixed nine-statement batching avoids D1 subrequest growth with universe size.
 - Persistence grants no strategy-selection, runtime, deployment or order authority.
+
+## Kraken public-quality candidate
+
+- Uses official `assetVersion=1` AssetPairs, Ticker and Depth contracts with Australian, currency-class and international-venue filtering where supported.
+- Binds each accepted response to its public URL, fetch time and exact response-text digest before typed parsing.
+- Rejects redirects, unexpected media types, incomplete requested ticker sets, malformed numeric values, legacy pair keys, crossed markets, unordered books, unsafe timestamps and non-finite arithmetic.
+- Derives 24-hour quote turnover, coherent spread, conservative two-sided depth and candidate-order impact; insufficient depth remains explicitly unavailable.
+- Scheduled orchestration, candle/volatility joining, AUD conversion and lifecycle completeness remain separate required work.
+- Public evidence only; no credential, private endpoint, strategy-selection, deployment or order authority.
 
 ## Runtime boundary
 
@@ -78,4 +88,4 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 
 ## Next action
 
-Validate reconstructed PR #15 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct the earliest remaining open dependency.
+Validate reconstructed PR #17 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct the earliest remaining open dependency.

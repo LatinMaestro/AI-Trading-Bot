@@ -99,3 +99,11 @@ Only the owner may restore live operation. Recovery approval does not increase c
 Persist each prepared universe-ingestion batch through one transactional nine-statement D1 batch. The content-addressed header declares source, definition, lifecycle-event and quality-observation counts; a database-enforced commit marker is accepted only when those memberships exactly match.
 
 Headers, memberships and commit markers are immutable. Once committed, no new membership may be appended, while an exact retry remains idempotent. Conflicting identity reuse, venue-mismatched membership and partial writes fail closed. A commit marker proves persistence completeness only and grants no strategy-selection, runtime, deployment or order authority.
+
+## 2026-08-01 — Content-addressed Kraken public quality evidence
+
+Use Kraken's official `assetVersion=1` AssetPairs, Ticker and Depth contracts for research-universe source evidence. Hash the exact successful response text and retain its public URL and fetch time before typed parsing.
+
+Reject redirects, unexpected media types, legacy or ambiguous pair keys, malformed envelopes and numeric values, incomplete requested ticker sets, crossed markets, unordered books, unsafe times and non-finite arithmetic. Derive quote turnover from 24-hour base volume and VWAP. Derive spread and conservative two-sided capacity from one coherent L2 book. Candidate impact remains unavailable when displayed depth cannot fill both sides.
+
+This slice stops before scheduled persistence. Complete observations still require committed candle counts, annualised volatility, fresh AUD conversion and official lifecycle evidence. It adds no private endpoint, credential, strategy-selection or order authority.
