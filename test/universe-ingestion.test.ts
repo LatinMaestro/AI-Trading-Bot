@@ -226,7 +226,7 @@ test("invalid identity and conversion chronology fail closed", async () => {
   assert.throws(
     () =>
       resolveAudValuationPath(
-        "AUD",
+        "USD",
         [
           {
             baseAsset: "USD",
