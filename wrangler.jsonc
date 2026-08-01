@@ -17,7 +17,9 @@
     "DAILY_LOSS_LIMIT_PCT": "5",
     "WEEKLY_LOSS_LIMIT_PCT": "10",
     "MAX_DRAWDOWN_PCT": "15",
-    "LIVE_ACTIVATION_SHA256": ""
+    "LIVE_ACTIVATION_SHA256": "",
+    "EXTERNAL_INTELLIGENCE_ENABLED": "false",
+    "KRAKEN_ACTIVE_MAINTENANCE_CONTRACT_JSON": ""
   },
   "d1_databases": [
     {
@@ -42,7 +44,9 @@
         "DAILY_LOSS_LIMIT_PCT": "5",
         "WEEKLY_LOSS_LIMIT_PCT": "10",
         "MAX_DRAWDOWN_PCT": "15",
-        "LIVE_ACTIVATION_SHA256": ""
+        "LIVE_ACTIVATION_SHA256": "",
+        "EXTERNAL_INTELLIGENCE_ENABLED": "false",
+        "KRAKEN_ACTIVE_MAINTENANCE_CONTRACT_JSON": ""
       },
       "d1_databases": [
         {
@@ -52,8 +56,26 @@
           "migrations_dir": "migrations"
         }
       ],
+      "queues": {
+        "producers": [
+          {
+            "binding": "EXTERNAL_INTELLIGENCE_QUEUE",
+            "queue": "ai-crypto-trader-paper-external-intelligence"
+          }
+        ],
+        "consumers": [
+          {
+            "queue": "ai-crypto-trader-paper-external-intelligence",
+            "max_batch_size": 10,
+            "max_batch_timeout": 5,
+            "max_retries": 5,
+            "dead_letter_queue": "ai-crypto-trader-paper-external-intelligence-dlq",
+            "max_concurrency": 1
+          }
+        ]
+      },
       "triggers": {
-        "crons": []
+        "crons": ["* * * * *", "*/15 * * * *"]
       }
     },
     "production": {
@@ -67,7 +89,9 @@
         "DAILY_LOSS_LIMIT_PCT": "5",
         "WEEKLY_LOSS_LIMIT_PCT": "10",
         "MAX_DRAWDOWN_PCT": "15",
-        "LIVE_ACTIVATION_SHA256": ""
+        "LIVE_ACTIVATION_SHA256": "",
+        "EXTERNAL_INTELLIGENCE_ENABLED": "false",
+        "KRAKEN_ACTIVE_MAINTENANCE_CONTRACT_JSON": ""
       },
       "d1_databases": [
         {
@@ -76,7 +100,14 @@
           "database_id": "00000000-0000-0000-0000-000000000000",
           "migrations_dir": "migrations"
         }
-      ]
+      ],
+      "queues": {
+        "producers": [],
+        "consumers": []
+      },
+      "triggers": {
+        "crons": []
+      }
     }
   }
 }
