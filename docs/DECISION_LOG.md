@@ -124,3 +124,12 @@ Join the bounded Kraken public-universe cycle to immutable committed D1 candles 
 Missing, incomplete, gapped, stale, shifted, future-available or non-finite history fails closed. Compute annualised volatility only from verified contiguous closes. Bind exact history and AUD-conversion provenance into the quality digest, restrict history loading to the bounded selected rotation, and reject material Ticker/Depth time skew.
 
 This evidence supports research-universe quality assessment only. It does not change the approved BTC/AUD and ETH/AUD strategy path or grant strategy-selection, deployment, private-API or order authority.
+
+
+## 2026-08-01 — Allowlisted official lifecycle evidence
+
+Accept lifecycle declarations only when they bind an exact content digest to a Kraken-owned listing article, support article or status incident/API document. Source class controls permitted event types and geographic scope: regional restrictions cannot become global delistings, and global listing announcements do not prove Australian availability.
+
+Do not derive lifecycle events from free text with a language model or keyword heuristic. Reviewed declarations state canonical pair, event type, scope, effective time and publication time. Future-effective events are knowable once published but apply to reconstruction only at their effective time.
+
+Audit listing, trading-status and Australian-availability coverage independently for every expected pair, and reject declarations outside that audited set. Missing coverage blocks survivorship-safe venue-wide claims. Historical backfill and scheduled immutable raw-source capture remain separate work.
