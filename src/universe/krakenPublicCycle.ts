@@ -8,6 +8,8 @@ import {
   type KrakenTickerObservation,
 } from "../marketData/krakenQuality.ts";
 import type { SpotPairDefinition } from "../marketData/pairs.ts";
+import type { KrakenUniverseHistoryEvidence } from "../marketData/historyEvidence.ts";
+export type { KrakenUniverseHistoryEvidence } from "../marketData/historyEvidence.ts";
 import { sha256Hex } from "../utils/crypto.ts";
 import type { MarketDataQualityState } from "./types.ts";
 import {
@@ -34,24 +36,22 @@ type PublicFetch = (
   init?: RequestInit,
 ) => Promise<Response>;
 
-export interface KrakenUniverseHistoryEvidence {
-  readonly dailyCommittedCandles: number;
-  readonly hourlyCommittedCandles: number;
-  readonly annualisedVolatility: number;
-  readonly dataQualityState: MarketDataQualityState;
-}
-
 export interface KrakenPublicUniverseOptions {
   readonly scheduledAtMs: number;
   readonly fetchImpl?: PublicFetch;
   readonly sleep?: (milliseconds: number) => Promise<void>;
   readonly nowMs?: () => number;
   readonly historyByPair?: Readonly<Record<string, KrakenUniverseHistoryEvidence>>;
+  readonly historyProvider?: (
+    pairs: readonly string[],
+    asOfMs: number,
+  ) => Promise<Readonly<Record<string, KrakenUniverseHistoryEvidence>>>;
   readonly maximumDepthPairs?: number;
   readonly rotationIntervalMs?: number;
   readonly depthLevelCount?: number;
   readonly referenceOrderAud?: number;
   readonly maximumAudQuoteAgeMs?: number;
+  readonly maximumEvidenceSkewMs?: number;
   readonly requestSpacingMs?: number;
   readonly retryBaseDelayMs?: number;
   readonly maximumAttempts?: number;
@@ -283,6 +283,7 @@ export async function prepareScheduledKrakenUniverse(
   const depthLevelCount = options.depthLevelCount ?? 50;
   const referenceOrderAud = options.referenceOrderAud ?? 200;
   const maximumAudQuoteAgeMs = options.maximumAudQuoteAgeMs ?? 300_000;
+  const maximumEvidenceSkewMs = options.maximumEvidenceSkewMs ?? 60_000;
   const requestSpacingMs = options.requestSpacingMs ?? 350;
   const retryBaseDelayMs = options.retryBaseDelayMs ?? 500;
   const maximumAttempts = options.maximumAttempts ?? 2;
@@ -300,10 +301,17 @@ export async function prepareScheduledKrakenUniverse(
     25_000_000,
   );
   assertSafeTime("maximumAudQuoteAgeMs", maximumAudQuoteAgeMs);
+  assertSafeTime("maximumEvidenceSkewMs", maximumEvidenceSkewMs);
   assertSafeTime("requestSpacingMs", requestSpacingMs);
   assertSafeTime("retryBaseDelayMs", retryBaseDelayMs);
   if (!Number.isFinite(referenceOrderAud) || referenceOrderAud <= 0) {
     throw new Error("referenceOrderAud must be positive");
+  }
+  if (
+    options.historyByPair !== undefined &&
+    options.historyProvider !== undefined
+  ) {
+    throw new Error("Supply historyByPair or historyProvider, not both");
   }
 
   const sleep = options.sleep ?? defaultSleep;
@@ -377,6 +385,21 @@ export async function prepareScheduledKrakenUniverse(
     maximumDepthPairs,
     rotationIntervalMs,
   );
+  const selectedPairs = selected.map((pair) => pair.canonicalSymbol);
+  const historyByPair =
+    options.historyProvider === undefined
+      ? options.historyByPair
+      : await options.historyProvider(selectedPairs, options.scheduledAtMs);
+  const historyEntries = selectedPairs.map(
+    (pair) =>
+      [
+        pair,
+        validateHistory(pair, historyByPair?.[pair]),
+      ] as const,
+  );
+  const validatedHistoryByPair = Object.fromEntries(historyEntries) as Readonly<
+    Record<string, KrakenUniverseHistoryEvidence>
+  >;
 
   const books: Array<{
     readonly pair: SpotPairDefinition;
@@ -395,6 +418,14 @@ export async function prepareScheduledKrakenUniverse(
     if (ticker === undefined) {
       throw new Error(`Kraken Ticker omitted ${pair.canonicalSymbol}`);
     }
+    if (
+      Math.abs(evidence.fetchedAtMs - tickerEvidence.fetchedAtMs) >
+      maximumEvidenceSkewMs
+    ) {
+      throw new Error(
+        `Kraken evidence skew exceeded for ${pair.canonicalSymbol}`,
+      );
+    }
     books.push({ pair, evidence, ticker });
   }
 
@@ -407,10 +438,11 @@ export async function prepareScheduledKrakenUniverse(
   assertSafeTime("recordedAtMs", recordedAtMs);
   const qualityDigest = await sha256Hex(
     canonicalJson({
-      version: "kraken-public-quality-v2",
+      version: "kraken-public-quality-v3",
       referenceOrderAud,
       depthLevelCount,
       rotationIntervalMs,
+      maximumEvidenceSkewMs,
       ticker: {
         sourceRef: tickerEvidence.sourceRef,
         payloadSha256: tickerEvidence.payloadSha256,
@@ -420,12 +452,29 @@ export async function prepareScheduledKrakenUniverse(
         sourceRef: item.evidence.sourceRef,
         payloadSha256: item.evidence.payloadSha256,
       })),
+      history: historyEntries.map(([pair, evidence]) => ({
+        pair,
+        ...evidence,
+      })),
+      conversions: conversionQuotes
+        .map((quote) => ({
+          baseAsset: quote.baseAsset,
+          quoteAsset: quote.quoteAsset,
+          observedAtMs: quote.observedAtMs,
+          availableAtMs: quote.availableAtMs,
+          payloadSha256: quote.payloadSha256,
+        }))
+        .sort((left, right) =>
+          `${left.baseAsset}/${left.quoteAsset}:${left.payloadSha256}`.localeCompare(
+            `${right.baseAsset}/${right.quoteAsset}:${right.payloadSha256}`,
+          ),
+        ),
     }),
   );
   const qualitySource: UniverseSourceEvidence = {
     sourceId: `kraken:market-quality:${recordedAtMs}:${qualityDigest.slice(0, 16)}`,
     sourceKind: "venue-market-quality",
-    sourceRef: `kraken:public-quality:v2:depth=${depthLevelCount}:aud=${referenceOrderAud}`,
+    sourceRef: `kraken:public-quality:v3:depth=${depthLevelCount}:aud=${referenceOrderAud}`,
     fetchedAtMs: recordedAtMs,
     payloadSha256: qualityDigest,
   };
@@ -444,10 +493,10 @@ export async function prepareScheduledKrakenUniverse(
         referenceOrderAud / valuation.rateToAud,
       );
       const mid = (ticker.ask + ticker.bid) / 2;
-      const storedHistory = validateHistory(
-        pair.canonicalSymbol,
-        options.historyByPair?.[pair.canonicalSymbol],
-      );
+      const storedHistory = validatedHistoryByPair[pair.canonicalSymbol];
+      if (storedHistory === undefined) {
+        throw new Error(`${pair.canonicalSymbol} history evidence is missing`);
+      }
       return {
         canonicalPair: pair.canonicalSymbol,
         exchangePair: pair.exchangeSymbol,
@@ -488,7 +537,7 @@ export async function prepareScheduledKrakenUniverse(
       markets,
       lifecycleAnnouncements: [],
     },
-    selectedPairs: selected.map((pair) => pair.canonicalSymbol),
+    selectedPairs,
     skippedPairs: skippedPairs.sort(),
     requestCount: requestCounter.value,
   };
