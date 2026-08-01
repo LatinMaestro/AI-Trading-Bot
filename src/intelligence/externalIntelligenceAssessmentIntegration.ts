@@ -416,6 +416,15 @@ async function verifyCrossArtifactBinding(
   }
 }
 
+export async function verifyExternalIntelligenceAssessmentIntegrationArtifacts(
+  linkage: ExternalIntelligenceLinkage,
+  evidence: ExternalIntelligenceManipulationEvidence,
+): Promise<void> {
+  await verifyExternalIntelligenceLinkageArtifact(linkage);
+  await verifyExternalIntelligenceManipulationEvidenceArtifact(evidence);
+  await verifyCrossArtifactBinding(linkage, evidence);
+}
+
 function groupKey(cluster: ExternalIntelligenceRepostCluster): string {
   return `${cluster.topicKey}\u001f${cluster.eventType}\u001f${cluster.stance}`;
 }
@@ -436,11 +445,10 @@ export async function prepareIntegratedExternalIntelligenceAssessments(
   input: ExternalIntelligenceAssessmentIntegrationInput,
 ): Promise<readonly IntegratedExternalIntelligenceAssessment[]> {
   assertTime("assessedAtMs", input.assessedAtMs);
-  await verifyExternalIntelligenceLinkageArtifact(input.linkage);
-  await verifyExternalIntelligenceManipulationEvidenceArtifact(
+  await verifyExternalIntelligenceAssessmentIntegrationArtifacts(
+    input.linkage,
     input.manipulationEvidence,
   );
-  await verifyCrossArtifactBinding(input.linkage, input.manipulationEvidence);
   if (
     input.assessedAtMs < input.manipulationEvidence.analysedAtMs
   ) {

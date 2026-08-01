@@ -330,6 +330,20 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 - Expiry purges operate without a provider response, so provider unavailability cannot extend retention.
 - Application and D1 constraints independently reject changed identity, time regression, unauthorised deletion, audit/event mutation and identity conflicts.
 
+## Manipulation-aware assessment persistence evidence
+
+- Historical PR #48 was reconstructed as PR #107 and squash-merged at `3080d22ed16b30e15f90391e6210c9c12f90aefa`.
+- Exact-head Actions run 30717577097 passed lockfile reproduction, generated paper bindings, strict TypeScript, 303/303 tests, migration validation, the paper dry-run and all security/import scans.
+- Linkage, manipulation-evidence and integrated-assessment rows are immutable, content-addressed and atomically persisted without an unstated parent-row dependency.
+- Cross-artifact validation requires exact partitions, representative binding and JSON/column agreement before persistence.
+
+## Paper external-intelligence risk evidence
+
+- Loads only fresh persisted `pause-new-risk` integrations at the scheduled hourly decision time.
+- Re-verifies the complete linkage, manipulation-evidence and integrated-assessment chain against joined immutable rows before any paper decision can change.
+- Suppresses proposed paper buys to hold with zero exposure while preserving exits; non-paper modes remain disconnected.
+- Risk-event identity binds the complete proposed and resulting decisions and exact assessment evidence.
+
 ## Next action
 
-Validate this reconstructed historical #48 slice at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #49 as the earliest remaining open dependency.
+Validate this reconstructed historical #49 slice at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #50 as the earliest remaining open dependency.
