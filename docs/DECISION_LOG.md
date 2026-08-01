@@ -57,3 +57,11 @@ Synthetic fixtures prove arithmetic and safety invariants only. Strategy conclus
 Use immutable, time-bounded market definitions, lifecycle events and quality observations to reconstruct eligibility strictly from evidence available by each signal time. Classify eligible markets deterministically into established, high-volatility and new-listing tiers, and retain every candidate with explicit reason codes.
 
 TypeScript validation and D1 constraints require lower-case SHA-256 payload digests. Delisting closes a listing era; relisting starts a new era and requires fresh evidence that the market is available in Australia. Synthetic fixtures prove reconstruction invariants only. This research boundary grants no strategy selection, runtime, deployment or order authority.
+
+## 2026-08-01 — Horizon-bound objective and ruin-risk metrics
+
+Use a deterministic constant-compounding reference path for objective progress and report remaining multiple plus required forward rates without treating the path as a forecast.
+
+Separate terminal capital-loss frequency from maximum-drawdown breach frequency. Every scenario must declare a common positive cadence and span exactly the configured five-year objective horizon; equal array length alone is insufficient evidence. Derived non-finite reference values, multiples or compound rates fail closed.
+
+Seeded moving-block bootstrap output is a reproducible scenario-frequency estimate, not a probability promise. It cannot repair survivorship bias, look-ahead leakage, incomplete costs or inadequate market coverage, and grants no strategy-selection or runtime authority.
