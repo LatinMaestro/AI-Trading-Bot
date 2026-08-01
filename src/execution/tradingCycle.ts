@@ -2,6 +2,8 @@ import type { RuntimeConfig } from "../config.ts";
 import { KrakenSpotAdapter } from "../exchanges/kraken.ts";
 import { TradingRepository } from "../storage/repository.ts";
 import { decideMomentumRotation } from "../strategies/momentumRotation.ts";
+import { assertDailyCandlesUsable } from "../marketData/candleQuality.ts";
+import { selectApprovedAudPairs } from "../marketData/pairs.ts";
 
 export interface CycleResult {
   readonly cycleId: string;
@@ -17,9 +19,19 @@ export async function runTradingCycle(
   const cycleId = crypto.randomUUID();
   const exchange = new KrakenSpotAdapter();
   const repository = new TradingRepository(env.DB);
-  const candlesEntries = await Promise.all(
-    config.approvedPairs.map(async (pair) => [pair, await exchange.getDailyCandles(pair)] as const),
+  const availablePairs = await exchange.getSpotPairs("AU");
+  const approvedPairs = selectApprovedAudPairs(
+    availablePairs,
+    config.approvedPairs,
   );
+  const candlesEntries: Array<
+    readonly [string, Awaited<ReturnType<typeof exchange.getDailyCandles>>]
+  > = [];
+  for (const pair of approvedPairs) {
+    const candles = await exchange.getDailyCandles(pair.exchangeSymbol);
+    assertDailyCandlesUsable(pair.canonicalSymbol, candles);
+    candlesEntries.push([pair.canonicalSymbol, candles]);
+  }
   const decision = decideMomentumRotation(Object.fromEntries(candlesEntries));
 
   if (config.mode === "live") {
