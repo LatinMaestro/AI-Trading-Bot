@@ -59,6 +59,17 @@ test("logical order fingerprint is deterministic and change-sensitive", async ()
   assert.match(first, /^[a-f0-9]{64}$/);
 });
 
+test("zero price and volume are rejected before fingerprinting", async () => {
+  await assert.rejects(
+    buildOrderRequestFingerprint({ ...fingerprintInput, priceQuote: "0" }),
+    /positive plain decimal/,
+  );
+  await assert.rejects(
+    buildOrderRequestFingerprint({ ...fingerprintInput, volume: "0.0000" }),
+    /positive plain decimal/,
+  );
+});
+
 test("database permits only one intent for a request fingerprint", async () => {
   const db = database();
   const fingerprint = await buildOrderRequestFingerprint(fingerprintInput);

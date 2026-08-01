@@ -41,8 +41,8 @@ export const RESERVE_ORDER_INTENT_SQL = `
 
 function canonicalDecimalString(value: string, field: string): string {
   const trimmed = value.trim();
-  if (!/^\d+(?:\.\d+)?$/.test(trimmed)) {
-    throw new Error(`${field} must be a non-negative plain decimal string`);
+  if (!/^\d+(?:\.\d+)?$/.test(trimmed) || !/[1-9]/.test(trimmed)) {
+    throw new Error(`${field} must be a positive plain decimal string`);
   }
   const [wholePart = "0", fractionPart = ""] = trimmed.split(".");
   const whole = wholePart.replace(/^0+(?=\d)/, "");
