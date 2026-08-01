@@ -38,7 +38,7 @@
     - [x] Add scheduled raw-source capture and immutable persistence.
       - [x] Discover canonical listing-index pages, listing articles and support lifecycle documents from preserved index payloads.
       - [x] Add bounded exact-document capture and immutable D1 persistence linked to discovery provenance.
-      - [ ] Wire committed-source lookup, recursive index-page discovery and scheduled orchestration.
+      - [x] Wire committed-source lookup, recursive index-page discovery and scheduled orchestration.
     - [ ] Complete authoritative lifecycle coverage and promote only signed, evidence-complete universe snapshots.
   - [ ] Support complete Australian-dollar valuation paths for every researched pair.
   - [ ] Persist signed universe policies and content-addressed snapshots.
