@@ -26,6 +26,7 @@ const MAXIMUM_RATE_WINDOW_MS = 600_000;
 const SHA256_PATTERN = /^[0-9a-f]{64}$/u;
 const SUBREDDIT_PATTERN = /^[A-Za-z0-9_]{3,21}$/u;
 const USERNAME_PATTERN = /^[A-Za-z0-9_-]{3,20}$/u;
+const POST_FULLNAME_PATTERN = /^t3_[0-9a-z]{1,13}$/u;
 const decoder = new TextDecoder("utf-8", { fatal: true });
 
 export interface RedditOAuthListingTarget {
@@ -35,6 +36,18 @@ export interface RedditOAuthListingTarget {
   readonly acquisitionMode: "minute-poll";
   readonly limit: 100;
 }
+
+export interface RedditOAuthInfoTarget {
+  readonly sourceId: string;
+  readonly subreddit: string;
+  readonly sourceRef: string;
+  readonly acquisitionMode: "minute-poll";
+  readonly fullnames: readonly string[];
+}
+
+export type RedditOAuthTarget =
+  | RedditOAuthListingTarget
+  | RedditOAuthInfoTarget;
 
 export interface RedditRateLimitState {
   readonly observedAtMs: number;
@@ -93,7 +106,7 @@ export interface RedditOAuthFetcher {
 
 export interface AcquireRedditOAuthListingOptions {
   readonly contract: ExternalIntelligenceSourceContract;
-  readonly target: RedditOAuthListingTarget;
+  readonly target: RedditOAuthTarget;
   readonly accessToken: string;
   readonly userAgent: string;
   readonly scheduledAtMs: number;
@@ -178,15 +191,57 @@ export function createRedditOAuthListingTarget(
   };
 }
 
-function assertTarget(target: RedditOAuthListingTarget): void {
-  const expected = createRedditOAuthListingTarget(
-    target.sourceId,
-    target.subreddit,
-  );
+export function createRedditOAuthInfoTarget(
+  sourceId: string,
+  subreddit: string,
+  fullnames: readonly string[],
+): RedditOAuthInfoTarget {
+  assertCanonicalText("Reddit sourceId", sourceId);
+  if (!SUBREDDIT_PATTERN.test(subreddit)) {
+    throw new Error("Reddit subreddit is not canonical");
+  }
+  if (fullnames.length < 1 || fullnames.length > 100) {
+    throw new Error("Reddit info target requires 1 to 100 post fullnames");
+  }
+  const canonicalFullnames = [...fullnames].sort();
+  for (const fullname of canonicalFullnames) {
+    if (!POST_FULLNAME_PATTERN.test(fullname)) {
+      throw new Error("Reddit post fullname is not canonical");
+    }
+  }
+  if (new Set(canonicalFullnames).size !== canonicalFullnames.length) {
+    throw new Error("Reddit info target contains duplicate post fullnames");
+  }
+  return {
+    sourceId,
+    subreddit,
+    sourceRef:
+      `https://oauth.reddit.com/r/${subreddit}/api/info?id=` +
+      `${canonicalFullnames.join("%2C")}&raw_json=1`,
+    acquisitionMode: "minute-poll",
+    fullnames: canonicalFullnames,
+  };
+}
+
+function assertTarget(target: RedditOAuthTarget): void {
+  const expected =
+    "fullnames" in target
+      ? createRedditOAuthInfoTarget(
+          target.sourceId,
+          target.subreddit,
+          target.fullnames,
+        )
+      : createRedditOAuthListingTarget(target.sourceId, target.subreddit);
   if (
     target.sourceRef !== expected.sourceRef ||
     target.acquisitionMode !== expected.acquisitionMode ||
-    target.limit !== expected.limit
+    ("fullnames" in target
+      ? !("fullnames" in expected) ||
+        target.fullnames.length !== expected.fullnames.length ||
+        target.fullnames.some(
+          (fullname, index) => fullname !== expected.fullnames[index],
+        )
+      : "fullnames" in expected || target.limit !== expected.limit)
   ) {
     throw new Error("Reddit OAuth target is not canonical");
   }
@@ -194,7 +249,7 @@ function assertTarget(target: RedditOAuthListingTarget): void {
 
 async function assertManifest(
   contract: ExternalIntelligenceSourceContract,
-  target: RedditOAuthListingTarget,
+  target: RedditOAuthTarget,
   atMs: number,
 ): Promise<void> {
   await verifyExternalIntelligenceSourceContract(contract);
