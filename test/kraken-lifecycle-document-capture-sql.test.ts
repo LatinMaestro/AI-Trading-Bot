@@ -4,6 +4,7 @@ import test from "node:test";
 import { DatabaseSync } from "node:sqlite";
 import {
   prepareKrakenLifecycleDocumentCapturePersistence,
+  SELECT_LATEST_COMMITTED_KRAKEN_LISTING_INDEX_PAGES_SQL,
   type KrakenLifecycleDocumentCaptureStatement,
 } from "../src/storage/krakenLifecycleDocumentCapture.ts";
 import type { KrakenLifecycleDocumentCapture } from "../src/universe/krakenLifecycleDocumentCapture.ts";
@@ -288,5 +289,106 @@ test("D1 independently rejects malformed paths, injected headers and commit drif
         )
         .run(valid.captureId, NOW + 2),
     /commit conflict/u,
+  );
+});
+
+
+test("accepts a committed listing page as exact recursive provenance", async () => {
+  const db = database();
+  const pagePayloadText =
+    '<a href="https://blog.kraken.com/product/asset-listings/older">older</a>';
+  const pageCapture = await capture({
+    sourceKind: "asset-listings-index-page",
+    sourceRef:
+      "https://blog.kraken.com/category/product/asset-listings/page/2",
+    payloadText: pagePayloadText,
+  });
+  execute(
+    db,
+    await prepareKrakenLifecycleDocumentCapturePersistence(
+      [pageCapture],
+      NOW + 1,
+    ),
+  );
+  const child = await capture({
+    sourceRef: "https://blog.kraken.com/product/asset-listings/older",
+    discoveredFromCaptureId: pageCapture.captureId,
+    discoveredFromPayloadSha256: pageCapture.payloadSha256,
+    fetchedAtMs: NOW + 2,
+  });
+  execute(
+    db,
+    await prepareKrakenLifecycleDocumentCapturePersistence([child], NOW + 3),
+  );
+  assert.equal(
+    db
+      .prepare(
+        "SELECT discovered_from_capture_id FROM kraken_lifecycle_document_captures WHERE capture_id = ?",
+      )
+      .get(child.captureId)?.discovered_from_capture_id,
+    pageCapture.captureId,
+  );
+});
+
+test("loads a bounded latest-page window from the requested rotation", async () => {
+  const db = database();
+  const pageTwo = await capture({
+    sourceKind: "asset-listings-index-page",
+    sourceRef:
+      "https://blog.kraken.com/category/product/asset-listings/page/2",
+  });
+  const pageTen = await capture({
+    sourceKind: "asset-listings-index-page",
+    sourceRef:
+      "https://blog.kraken.com/category/product/asset-listings/page/10",
+    fetchedAtMs: NOW + 1,
+  });
+  execute(
+    db,
+    await prepareKrakenLifecycleDocumentCapturePersistence(
+      [pageTwo, pageTen],
+      NOW + 2,
+    ),
+  );
+  const rows = db
+    .prepare(SELECT_LATEST_COMMITTED_KRAKEN_LISTING_INDEX_PAGES_SQL)
+    .all(10);
+  assert.deepEqual(
+    rows.map((row) => row.source_ref),
+    [
+      "https://blog.kraken.com/category/product/asset-listings/page/10",
+      "https://blog.kraken.com/category/product/asset-listings/page/2",
+    ],
+  );
+});
+
+test("caps the recursive page window at 32 rows and eight MiB", async () => {
+  const db = database();
+  const captures = await Promise.all(
+    Array.from({ length: 9 }, async (_, index) => {
+      const payloadText = `${index}` + "x".repeat(1_048_575);
+      return capture({
+        sourceKind: "asset-listings-index-page",
+        sourceRef:
+          `https://blog.kraken.com/category/product/asset-listings/page/${index + 2}`,
+        fetchedAtMs: NOW + index,
+        payloadText,
+      });
+    }),
+  );
+  execute(
+    db,
+    await prepareKrakenLifecycleDocumentCapturePersistence(captures, NOW + 10),
+  );
+  const rows = db
+    .prepare(SELECT_LATEST_COMMITTED_KRAKEN_LISTING_INDEX_PAGES_SQL)
+    .all(2);
+  assert.equal(rows.length, 8);
+  assert.equal(
+    rows.reduce(
+      (total, row) => total + Number(row.payload_byte_length),
+      0,
+    ),
+    8_388_608,
   );
 });
