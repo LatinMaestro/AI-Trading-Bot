@@ -222,13 +222,25 @@ function validateScenarioRisk(risk: ScenarioRiskAnalysis): void {
   })) {
     validateProbability(name, value);
   }
-  const terminalPercentiles = Object.values(risk.terminalWealth);
+  const terminalPercentiles = [
+    risk.terminalWealth.p05,
+    risk.terminalWealth.p25,
+    risk.terminalWealth.p50,
+    risk.terminalWealth.p75,
+    risk.terminalWealth.p95,
+  ];
   for (const value of terminalPercentiles) {
     if (!Number.isFinite(value) || value < 0) {
       throw new Error("terminalWealth contains invalid values");
     }
   }
-  const drawdownPercentiles = Object.values(risk.maximumDrawdownFraction);
+  const drawdownPercentiles = [
+    risk.maximumDrawdownFraction.p05,
+    risk.maximumDrawdownFraction.p25,
+    risk.maximumDrawdownFraction.p50,
+    risk.maximumDrawdownFraction.p75,
+    risk.maximumDrawdownFraction.p95,
+  ];
   for (const value of drawdownPercentiles) {
     validateProbability("maximumDrawdownFraction", value);
   }
