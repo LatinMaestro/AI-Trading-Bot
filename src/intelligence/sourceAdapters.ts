@@ -73,6 +73,22 @@ export interface ExternalIntelligencePayloadCapture {
   readonly modelTrainingAllowed: false;
 }
 
+export interface ExternalIntelligencePayloadCaptureIdentityInput {
+  readonly sourceId: string;
+  readonly sourceContractSha256: string;
+  readonly sourceKind: IntelligenceSourceKind;
+  readonly sourceRef: string;
+  readonly acquisitionMode: Exclude<IntelligenceAcquisitionMode, "stream">;
+  readonly requestStartedAtMs: number;
+  readonly receivedAtMs: number;
+  readonly availableAtMs: number;
+  readonly payloadSha256: string;
+  readonly payloadByteLength: number;
+  readonly contentType: string;
+  readonly etag: string | null;
+  readonly lastModified: string | null;
+}
+
 export interface ExternalIntelligenceNotModified {
   readonly status: "not-modified";
   readonly sourceId: string;
@@ -262,6 +278,31 @@ async function sha256Bytes(bytes: Uint8Array): Promise<string> {
   return bytesToHex(new Uint8Array(digest));
 }
 
+export async function externalIntelligencePayloadCaptureId(
+  input: ExternalIntelligencePayloadCaptureIdentityInput,
+): Promise<string> {
+  return sha256Bytes(
+    encoder.encode(
+      JSON.stringify({
+        schemaVersion: "external-intelligence-payload-capture-v1",
+        sourceId: input.sourceId,
+        sourceContractSha256: input.sourceContractSha256,
+        sourceKind: input.sourceKind,
+        sourceRef: input.sourceRef,
+        acquisitionMode: input.acquisitionMode,
+        requestStartedAtMs: input.requestStartedAtMs,
+        receivedAtMs: input.receivedAtMs,
+        availableAtMs: input.availableAtMs,
+        payloadSha256: input.payloadSha256,
+        payloadByteLength: input.payloadByteLength,
+        contentType: input.contentType,
+        etag: input.etag,
+        lastModified: input.lastModified,
+      }),
+    ),
+  );
+}
+
 function timeoutError(): Error {
   const error = new Error("External intelligence acquisition timed out");
   error.name = "TimeoutError";
@@ -433,8 +474,7 @@ async function createPayloadCapture(
   const payloadSha256 = await deadline.race(sha256Bytes(bytes));
   const availableAtMs = nowMs();
   assertChronology(requestStartedAtMs, receivedAtMs, availableAtMs);
-  const envelope = JSON.stringify({
-    schemaVersion: "external-intelligence-payload-capture-v1",
+  const identity: ExternalIntelligencePayloadCaptureIdentityInput = {
     sourceId: contract.sourceId,
     sourceContractSha256: contract.sourceContractSha256,
     sourceKind,
@@ -448,9 +488,11 @@ async function createPayloadCapture(
     contentType,
     etag,
     lastModified,
-  });
+  };
   return {
-    captureId: await deadline.race(sha256Bytes(encoder.encode(envelope))),
+    captureId: await deadline.race(
+      externalIntelligencePayloadCaptureId(identity),
+    ),
     sourceId: contract.sourceId,
     sourceContractSha256: contract.sourceContractSha256,
     sourceKind,
