@@ -5,9 +5,9 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `d2d885743fb4969b652ec063e836c97e3c58609b`
-- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #39 are repaired, exact-head validated and squash-merged; replacement PR #99 carries the reconstructed PR #40 slice; PRs #7, #10, #16, #18, #20, #22, #24, #26 and historical #40 are closed without merge.
-- This tree reconstructs historical pull request #41 as purge-enforced transient Reddit persistence and aggregate watch-state invalidation directly on that verified base.
+- Verified base `main`: `14003eb5094e32a9feb15e41579b73972ab344cf`
+- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #39 are repaired, exact-head validated and squash-merged; replacement PRs #99 and #100 carry the reconstructed historical #40 and #41 slices; PRs #7, #10, #16, #18, #20, #22, #24, #26 and historical #40 through #42 are closed without merge.
+- This tree reconstructs historical pull request #42 as deterministic AUSTRAC media-release RSS intelligence directly on that verified base.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -48,6 +48,7 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 - PR #38 run [30705019227](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30705019227): lockfile reproduction, paper type generation, strict TypeScript, 232 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #39 run [30706612840](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30706612840): lockfile reproduction, paper type generation, strict TypeScript, 244 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - Replacement PR #99 run [30708648325](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30708648325): lockfile reproduction, paper type generation, strict TypeScript, 253 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- Replacement PR #100 run [30711114230](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30711114230): lockfile reproduction, paper type generation, strict TypeScript, 259 tests including Reddit transient-persistence migration integrity, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 
 ## Universe-ingestion evidence
 
@@ -172,6 +173,16 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 - Emits neutral `macro` evidence under non-tradable `AUD.MACRO`; no risk pause, positive candidate or order authority is created.
 - No collector, credential, deployment or live source is activated.
 
+
+## AUSTRAC media-release intelligence evidence
+
+- Binds the official AUSTRAC media-release RSS feed and copyright terms to a scheduled authoritative regulator manifest with digest-only retention, required attribution and no model training.
+- Reproduces active-contract and exact capture identities before accepting one bounded UTF-8 RSS root, canonical official release paths, matching GUIDs and strict publication chronology.
+- Retains deterministic identifiers, source URLs, timing and digests without titles or raw XML.
+- Emits neutral `regulatory-action` evidence under non-tradable `AUSTRAC.REGULATOR`; no risk pause, positive candidate or order authority is created.
+- AUSTRAC's announced RSS retirement must become explicit stale/unavailable state; unsupported website scraping is not a fallback.
+- No collector, credential, deployment or live source is activated.
+
 ## Runtime boundary
 
 - Runtime markets remain `BTC/AUD` and `ETH/AUD` only.
@@ -265,4 +276,4 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 
 ## Next action
 
-Validate reconstructed PR #41 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #42 as the earliest remaining open dependency.
+Validate reconstructed PR #42 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #43 as the earliest remaining open dependency.
