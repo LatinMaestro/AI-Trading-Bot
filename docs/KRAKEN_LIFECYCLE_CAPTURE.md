@@ -60,9 +60,23 @@ The database rejects:
 
 The four payloads, capture headers and commit markers are submitted in one transactional D1 batch. Only captures with a commit marker are complete evidence.
 
+## Deterministic document discovery
+
+The discovery contract operates only on the exact preserved listing and delisting index captures. It verifies each payload digest again before processing and extracts only bounded, quoted anchor `href` attributes outside HTML comments and script, style or template raw-text regions.
+
+Source-specific canonical rules permit:
+
+- Kraken Blog listing articles under `/product/asset-listings/<slug>`;
+- Kraken Blog archive pagination under `/category/product/asset-listings/page/<number>`; and
+- Kraken Support candidates under `/articles/<identifier>`.
+
+The contract rejects non-HTTPS or untrusted hosts, credentials, ports, queries, fragments, escaped or encoded paths, cross-index links, invalid pagination and excessive link or target counts. Discovered targets are deduplicated, sorted, bound to the exact capture ID and payload digest, and represented by a deterministic discovery digest.
+
+Kraken Support targets remain generic lifecycle-document candidates. Their text or URL is not used to decide whether they prove a delisting, suspension or Australian-availability event. Classification and declarations remain reviewed evidence work.
+
 ## Declaration boundary
 
-Raw capture does not create lifecycle events. It does not use free-text AI extraction or keyword heuristics. A later reviewed backfill process must bind each declaration to an exact committed payload digest, source URL, publication time and effective time before `prepareKrakenLifecycleEvidence` accepts it.
+Raw capture and deterministic link discovery do not create lifecycle events. It does not use free-text AI extraction or keyword heuristics. A later reviewed backfill process must bind each declaration to an exact committed payload digest, source URL, publication time and effective time before `prepareKrakenLifecycleEvidence` accepts it.
 
 ## Safety
 
@@ -70,7 +84,7 @@ This capability uses public documents only. It adds no credentials, private API,
 
 ## Remaining work
 
-- discover and capture exact individual listing, delisting and regional-availability documents from the preserved indexes;
+- capture and immutably persist discovered listing-index pages and individual listing, delisting and regional-availability documents;
 - backfill complete pair-level declarations;
 - reconcile asset-level announcements to all affected canonical spot pairs;
 - add deterministic reviewed-declaration persistence linked to committed raw captures; and
