@@ -3,7 +3,7 @@ import test from "node:test";
 import { loadConfig } from "../src/config.ts";
 
 test("live mode remains disabled without explicit enablement", () => {
-  const env = {
+  const config = loadConfig({
     APP_ENV: "test",
     TRADING_MODE: "live",
     LIVE_TRADING_ENABLED: "false",
@@ -13,8 +13,7 @@ test("live mode remains disabled without explicit enablement", () => {
     WEEKLY_LOSS_LIMIT_PCT: "10",
     MAX_DRAWDOWN_PCT: "15",
     LIVE_ACTIVATION_SHA256: "",
-  } as Env;
-  const config = loadConfig(env);
+  });
   assert.equal(config.mode, "live");
   assert.equal(config.liveTradingEnabled, false);
   assert.equal(config.liveActivationSha256, "");
