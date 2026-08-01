@@ -1,9 +1,9 @@
 import { sha256CanonicalIntelligence } from "../intelligence/canonical.ts";
 import {
+  createRedditOAuthListingTarget,
   REDDIT_MAXIMUM_RETENTION_MS,
 } from "../intelligence/redditOAuthAdapter.ts";
 import {
-  createRedditOAuthListingTarget,
   type RedditRetentionSweep,
   type RedditTransientPostBatch,
   type RedditTransientPostObservation,
