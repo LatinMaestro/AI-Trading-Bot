@@ -305,6 +305,41 @@ test("migration preserves exact retries and rejects mutation", async () => {
       .get()?.count,
     2,
   );
+  const first = integrations[0];
+  assert.ok(first);
+  const forged = {
+    ...first,
+    integrationSha256: "f".repeat(64),
+  };
+  assert.throws(
+    () =>
+      db
+        .prepare(
+          `INSERT INTO integrated_external_intelligence_assessments
+            (integration_sha256, assessment_sha256, assessed_at_ms,
+             linkage_sha256, manipulation_evidence_sha256,
+             manipulation_policy_sha256, assessment_policy_sha256,
+             effective_reaction, actionable_repost_cluster_sha256s_json,
+             watch_only_repost_cluster_sha256s_json, warnings_json,
+             integration_json)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        )
+        .run(
+          forged.integrationSha256,
+          forged.assessment.assessmentSha256,
+          forged.assessedAtMs,
+          forged.linkageSha256,
+          forged.manipulationEvidenceSha256,
+          forged.manipulationPolicySha256,
+          forged.assessmentPolicySha256,
+          forged.effectiveReaction,
+          JSON.stringify(forged.actionableRepostClusterSha256s),
+          JSON.stringify(forged.watchOnlyRepostClusterSha256s),
+          JSON.stringify(["forged-warning"]),
+          JSON.stringify(forged),
+        ),
+    /constraint failed/u,
+  );
   assert.throws(
     () =>
       db
