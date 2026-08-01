@@ -74,6 +74,15 @@ The contract rejects non-HTTPS or untrusted hosts, credentials, ports, queries, 
 
 Kraken Support targets remain generic lifecycle-document candidates. Their text or URL is not used to decide whether they prove a delisting, suspension or Australian-availability event. Classification and declarations remain reviewed evidence work.
 
+
+## Discovered document capture
+
+A bounded capture batch accepts at most ten canonical targets from one content-addressed discovery result. It verifies that typed discovery partitions exactly cover the target set, skips source references already committed, orders the remaining targets deterministically, and fetches only exact Kraken Blog listing pages/articles or Kraken Support article paths admitted by discovery.
+
+Each request rejects redirects, non-HTML responses, invalid declared sizes, empty or greater-than-one-MiB bodies, invalid or non-round-tripping UTF-8 and unsafe cache headers. One bounded transient retry is permitted. The batch persists nothing unless every selected target succeeds.
+
+D1 stores each exact document payload content-addressably and preserves an immutable document-capture header containing its source identity, fetch time, discovery digest and exact committed index capture/payload provenance. Application validation reproduces both payload and capture digests. Database constraints independently reject noncanonical paths, CR/LF cache-header injection, incomplete or cross-class discovery provenance, changed identity or commit reuse, commits before fetch and ordinary mutation. A separate commit marker proves completion.
+
 ## Declaration boundary
 
 Raw capture and deterministic link discovery do not create lifecycle events. It does not use free-text AI extraction or keyword heuristics. A later reviewed backfill process must bind each declaration to an exact committed payload digest, source URL, publication time and effective time before `prepareKrakenLifecycleEvidence` accepts it.
@@ -84,7 +93,7 @@ This capability uses public documents only. It adds no credentials, private API,
 
 ## Remaining work
 
-- capture and immutably persist discovered listing-index pages and individual listing, delisting and regional-availability documents;
+- wire committed-source lookup, recursive discovery from captured listing-index pages and bounded document capture into the scheduled cycle;
 - backfill complete pair-level declarations;
 - reconcile asset-level announcements to all affected canonical spot pairs;
 - add deterministic reviewed-declaration persistence linked to committed raw captures; and

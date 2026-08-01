@@ -69,6 +69,7 @@ D1 stores:
 - content-addressed universe-ingestion batch headers, source and record memberships, and database-verified commit markers;
 - deduplicated exact Kraken lifecycle payloads keyed by SHA-256;
 - immutable Kraken lifecycle fetch records and database-verified commit markers;
+- immutable discovered lifecycle document captures bound to exact discovery and committed-index provenance;
 - versioned external-intelligence source contracts covering provider, publisher, licence, attribution, retention, deletion and model-use rules;
 - immutable external-intelligence items, append-only corrections and deterministic assessments;
 - content-addressed external-intelligence ingestion batches, memberships and database-verified commit markers;
@@ -84,6 +85,8 @@ Market batches and candles use deterministic SHA-256 content digests. Database t
 Universe definitions, lifecycle events and quality observations are append-only, carry lower-case SHA-256 payload digests, and use D1 checks and triggers to reject mutation or identity reuse. Prepared universe evidence is submitted through one transactional nine-statement D1 batch. A database commit marker is accepted only after every declared source and record membership exists; committed membership is then frozen, while exact retries remain idempotent. The universe module is a research-only boundary: it reconstructs eligibility without granting strategy-selection, runtime or order authority.
 
 Each distinct lifecycle payload is stored once as exact validated UTF-8 text with its original byte length and SHA-256. Every scheduled observation remains a separate immutable capture binding source kind, exact allowlisted URL, fetch time, media type and bounded response metadata to that payload. D1 permits a final capture commit marker only when the payload-backed capture exists and the commit does not predate the fetch. Raw captures do not create lifecycle declarations; reviewed pair-level events remain a separate, explicit evidence boundary.
+
+Discovered lifecycle pages and documents use a separate immutable capture table over the shared content-addressed payload store. Each header records the discovery digest and the exact committed index capture/payload that produced the canonical target. Application validation reproduces payload and capture identities; database constraints independently enforce canonical source paths, safe cache headers, source-class compatibility, provenance completion, natural-identity consistency, commit chronology, retry identity and immutability. Bounded capture batches persist only after every selected public document succeeds.
 
 External-intelligence batches use deterministic source-contract, correction, policy, assessment and batch digests. Application validation binds every item to an effective source-contract version and reproduces every assessment from referenced items and policy. Database constraints reject changed identities, enforce chronology and source-contract compatibility, preserve corrections instead of rewriting history and expose a batch only after declared memberships are complete.
 

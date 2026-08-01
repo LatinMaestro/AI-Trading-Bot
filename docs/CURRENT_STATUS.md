@@ -5,9 +5,9 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `728d653a416e121c0a45be6f9392bd32db119540`
-- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #32 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20, #22, #24 and #26 are closed without merge.
-- This tree reconstructs pull request #33 as durable external-intelligence cache state directly on that verified base.
+- Verified base `main`: `fa56fda3c44728dd99b0fbccd79628b5d1465e0e`
+- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #33 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20, #22, #24 and #26 are closed without merge.
+- This tree reconstructs pull request #34 as provenance-bound immutable Kraken lifecycle-document capture directly on that verified base.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -40,6 +40,7 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - PR #30 run [30696901264](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30696901264): lockfile reproduction, paper type generation, strict TypeScript, 171 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #31 run [30697343236](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30697343236): lockfile reproduction, paper type generation, strict TypeScript, 180 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #32 run [30700221664](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30700221664): lockfile reproduction, paper type generation, strict TypeScript, 189 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #33 run [30700528088](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30700528088): lockfile reproduction, paper type generation, strict TypeScript, 193 tests including SQLite cache migration integrity, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 
 ## Universe-ingestion evidence
 
@@ -110,7 +111,7 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - Validates source class, official origin/path, publication/capture chronology, event type and global-versus-Australian scope.
 - Accepts published future-effective events as knowable evidence without applying them before their effective time.
 - Audits listing, trading-status and Australian-availability history independently for each expected pair and rejects declarations outside that set.
-- Complete historical backfill and exact individual-document capture remain incomplete.
+- Complete historical backfill remains incomplete; this tree adds bounded exact individual-document capture and immutable persistence.
 - No free-text or language-model extraction, private API, credential, strategy-selection or order authority is added.
 
 ## Scheduled lifecycle-capture evidence
@@ -128,6 +129,15 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - Accepts only source-specific HTTPS Kraken Blog listing articles/pagination and Kraken Support article targets; malformed, encoded, queried, fragmented, cross-index or untrusted links fail closed or remain excluded.
 - Deduplicates and sorts targets deterministically, binds exact capture/payload provenance and content-addresses the complete discovery result.
 - Kraken Support targets remain semantically unclassified until reviewed; discovery creates no lifecycle declaration or runtime authority.
+
+
+## Lifecycle-document capture evidence
+
+- Accepts only canonical Kraken Blog listing pages/articles and Kraken Support article targets from a partition-consistent deterministic discovery result.
+- Enforces redirect, media-type, declared/streamed size, byte-exact UTF-8, cache-header, timeout, spacing and bounded-retry controls.
+- Orders at most ten targets deterministically, skips already committed source references and persists nothing when a selected target fails.
+- Reproduces payload and capture digests before persistence; D1 independently enforces canonical paths, CR/LF-safe headers, committed source-class provenance, retry identity, chronology and immutability.
+- Raw documents create no lifecycle declaration, strategy selection, deployment or order authority.
 
 ## Runtime boundary
 
@@ -187,4 +197,4 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 
 ## Next action
 
-Validate reconstructed PR #33 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct the earliest remaining open dependency.
+Validate reconstructed PR #34 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #35 as the earliest remaining open dependency.
