@@ -193,13 +193,15 @@ Statuspage `maintenance`, `none` and `minor` impacts remain neutral. Only struct
    - [x] Generate a content-addressed paper activation manifest from exact reviewed evidence and document owner-gated activation and rollback.
    - [ ] Provision hosted paper resources and deploy only after a reviewed milestone approval.
 7. [ ] Add deterministic entity/topic linking, syndication clustering and correction handling.
+   - [x] Add reviewed entity/topic rules, exact-content syndication clustering and correction-safe representative selection.
+   - [ ] Add permitted-content near-duplicate/repost clustering and coordinated-manipulation evidence.
 8. [ ] Integrate `pause-new-risk` with paper-mode risk controls.
 9. [ ] Backtest news/social features without look-ahead using original publication and receipt timestamps.
 10. [ ] Promote any risk-on use only after walk-forward, holdout, manipulation and cost evidence.
 
 ## Current limitation
 
-The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC, RBA, AUSTRAC and Bitcoin Core RSS parsers, the Kraken active-maintenance minute-source normaliser, paper-only Cron/Queue/DLQ runtime bindings, a content-addressed non-activating paper activation-manifest builder, bounded Reddit OAuth acquisition, transient post lifecycle, purge-enforced transient D1 persistence and downstream watch-state invalidation are implemented. All paper runtime bindings remain disabled and undeployed; no reviewed evidence digest, enabled source contract or activation configuration is committed. An approved Reddit app and deployed credentials remain absent. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, provisioned minute Cron Trigger, queue, model or order path is connected. Provider credentials, account terms, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
+The persistence, reaction, generic acquisition-transport and deterministic exact-content linkage boundaries, scheduled SEC, RBA, AUSTRAC and Bitcoin Core RSS parsers, the Kraken active-maintenance minute-source normaliser, paper-only Cron/Queue/DLQ runtime bindings, a content-addressed non-activating paper activation-manifest builder, bounded Reddit OAuth acquisition, transient post lifecycle, purge-enforced transient D1 persistence and downstream watch-state invalidation are implemented. All paper runtime bindings remain disabled and undeployed; no reviewed evidence digest, enabled source contract or activation configuration is committed. An approved Reddit app and deployed credentials remain absent. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, provisioned minute Cron Trigger, queue, model or order path is connected. Near-duplicate/repost and coordinated-manipulation evidence remains pending before linkage can enter deterministic assessment persistence. Provider credentials, account terms, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
 
 ## Official references
 

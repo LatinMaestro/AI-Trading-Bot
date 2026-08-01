@@ -302,3 +302,12 @@ Preserve BTC/AUD and ETH/AUD as the complete runtime pair scope. Production decl
 Generate any Kraken maintenance paper activation candidate from the exact reviewed source-evidence SHA-256, approval time, effective time and finite expiry. The expiry cannot exceed 366 days after the effective time. Bind the resulting enabled version-1 source contract to the exact minute Cron, Queue name and paper deployment target, then content-address both the canonical contract and complete manifest.
 
 The manifest is non-activating. Do not commit a real evidence digest, enabled runtime variable or activation configuration. Provider terms, hosted resources, deployment and collection remain explicit owner gates under the paper activation runbook. Production remains disabled with no Queue or Cron resources, and external intelligence remains unable to approve or submit an order.
+
+
+## 2026-08-02 — Correction-safe deterministic intelligence linking
+
+Bind external-intelligence evidence to a content-addressed reviewed topic registry that states exact entity keys, tradability and allowed event types. Unknown topics, entity drift, event drift, source-authority mismatch, future evidence, changed natural identities and changed correction-digest identities fail closed.
+
+Apply verified append-only corrections as an effective evidence view without rewriting immutable items. Content updates replace only effective payload/content digests; retractions and deletions remove the item from active clusters while retaining correction digests. Terminal corrections cannot be reversed by a later update.
+
+Cluster exact effective content only within the same topic, event type and stance. Select one deterministic representative per cluster, preferring authoritative over reputable over social evidence, so syndicated copies cannot inflate publisher corroboration. This remains pre-assessment research infrastructure; near-duplicate/repost manipulation controls, persistence integration and paper risk reactions remain separate reviewed work.
