@@ -278,3 +278,12 @@ Use AUSTRAC's official media-release RSS feed as an account-free scheduled Austr
 Reproduce source-contract and capture identities, re-verify exact payload length and SHA-256, and accept only official canonical AUSTRAC release path families, matching URL GUIDs and strict publication chronology. Retain identity, source URL, chronology and content digests, but never titles or raw XML.
 
 Emit only neutral `regulatory-action` evidence under non-tradable `AUSTRAC.REGULATOR`. Do not infer severity, direction or asset scope from titles. The source cannot pause risk, create a positive candidate, approve an order or submit an order. Because AUSTRAC has announced future RSS withdrawal, feed loss must surface as unavailable or stale; unsupported website scraping is not an allowed fallback.
+
+
+## 2026-08-02 — Scheduled Bitcoin Core announcement intelligence
+
+Use Bitcoin Core's official security and release announcement RSS feed as an account-free scheduled issuer source limited to the Bitcoin Core project's own software announcements. Bind the exact feed, origin, publisher/provider identity, digest-only retention, reviewed website licence snapshot and model-training prohibition.
+
+Reproduce active source-contract and exact capture identities, re-verify bounded payload length and SHA-256, and accept only canonical dated Bitcoin Core announcement URLs, matching URL GUIDs and strict publication chronology. Retain identity, source URL, chronology and content digests, but never titles or raw XML.
+
+Emit only neutral `other` evidence under non-tradable `BTC.CORE`. Do not infer severity, market direction or asset scope from titles. The source cannot pause risk, create a positive candidate, approve an order or submit an order.
