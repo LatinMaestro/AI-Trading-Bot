@@ -30,6 +30,8 @@
   - [x] Add content-addressed ingestion, fresh AUD-valuation and venue-specific calibration contracts.
   - [x] Persist each prepared universe batch atomically with verified commit markers and frozen memberships.
   - [ ] Ingest authoritative venue metadata and official lifecycle evidence on schedule.
+    - [x] Add content-addressed Kraken AssetPairs, Ticker and Depth clients with strict fail-closed quality parsers.
+    - [ ] Join bounded public fetches with committed candle, volatility, AUD-conversion and lifecycle evidence before persistence.
   - [ ] Support complete Australian-dollar valuation paths for every researched pair.
   - [ ] Persist signed universe policies and content-addressed snapshots.
 - [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
