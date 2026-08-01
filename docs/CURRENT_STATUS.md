@@ -5,9 +5,9 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `98bdb992afc42652c481638f610d1b442ff25e53`
-- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20, #22, #24 and #26 are closed without merge.
-- This tree reconstructs pull request #29 as immutable external-intelligence persistence directly on that verified base.
+- Verified base `main`: `95de353e4a7748d8de6dc5e595d3df36224b592c`
+- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #29 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20, #22, #24 and #26 are closed without merge.
+- This tree reconstructs pull request #30 as registry-bound external-intelligence acquisition transport directly on that verified base.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -36,6 +36,7 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - PR #25 run [30693134018](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30693134018): lockfile reproduction, paper type generation, strict TypeScript, 140 tests, SQLite migration integrity, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #27 run [30693321913](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30693321913): lockfile reproduction, paper type generation, strict TypeScript, 145 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #28 run [30695191920](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30695191920): lockfile reproduction, paper type generation, strict TypeScript, 155 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #29 run [30695473230](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30695473230): lockfile reproduction, paper type generation, strict TypeScript, 162 tests including live SQLite migrations, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 
 ## Universe-ingestion evidence
 
@@ -138,7 +139,7 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - Social publishers cannot satisfy reputable corroboration. Reddit-only and rumour-only evidence remains watch-only.
 - Authoritative severe negative evidence may pause new risk; positive evidence creates research candidates only and never approves or submits an order.
 - Requires complete per-source freshness policy, canonical identity, exact accepted-evidence digests and fail-closed chronology, authority and storage rules.
-- Provider adapters, minute collection, Queue/DLQ processing, source registry, immutable persistence and compliant Reddit OAuth remain incomplete.
+- Approved acquisition adapters, minute collection, Queue/DLQ processing, source registry, immutable persistence and compliant Reddit OAuth remain incomplete.
 
 ## External-intelligence persistence evidence
 
@@ -146,8 +147,17 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - Immutable items, append-only corrections and reproduced assessments persist through content-addressed batches with database-verified relational closure.
 - Assessment rows retain exact accepted-evidence digests; semantically identical reordered policies produce identical persisted evidence.
 - Exact retries are idempotent; identity conflicts, source revocation, invalid chronology, incomplete membership and post-commit extension fail closed.
-- Provider adapters, compliant Reddit OAuth, minute collection, Queue/DLQ processing and paper risk integration remain incomplete.
+- Approved source manifests, source-specific parsers and signatures, compliant Reddit OAuth, minute collection, Queue/DLQ processing and paper risk integration remain incomplete.
+
+## External-intelligence acquisition evidence
+
+- Binds every feed or webhook request to an enabled, effective, digest-verified source contract with an approved origin and acquisition mode.
+- Rejects credential-bearing targets, redirects, unsupported media, invalid or oversized bodies and unsafe cache validators.
+- Applies bounded timeouts and retries across fetch, streamed body receipt, payload hashing and authenticated webhook verification.
+- Records request, receipt and availability times, exact payload identity, cache validators and deterministic capture identity.
+- Raw bytes remain transient unless the exact contract permits full retention; Reddit remains isolated for approved OAuth collection.
+- Acquisition creates no event classification, risk approval, strategy selection or order authority.
 
 ## Next action
 
-Validate reconstructed PR #29 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct the earliest remaining open dependency.
+Validate reconstructed PR #30 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct the earliest remaining open dependency.
