@@ -65,3 +65,9 @@ Use a deterministic constant-compounding reference path for objective progress a
 Separate terminal capital-loss frequency from maximum-drawdown breach frequency. Every scenario must declare a common positive cadence and span exactly the configured five-year objective horizon; equal array length alone is insufficient evidence. Derived non-finite reference values, multiples or compound rates fail closed.
 
 Seeded moving-block bootstrap output is a reproducible scenario-frequency estimate, not a probability promise. It cannot repair survivorship bias, look-ahead leakage, incomplete costs or inadequate market coverage, and grants no strategy-selection or runtime authority.
+
+## 2026-08-01 — Mandatory evidence-bound benchmarks and reports
+
+Every candidate evaluation must include aligned AUD cash, BTC hold, survivorship-safe equal-weight hold and five-year objective-path benchmarks. Tradable benchmarks use AUD. A converted objective path must be built from positive time-aligned FX rates and bind the same lower-case SHA-256 FX source digest recorded in report provenance.
+
+Research reports content-address exact code, data, universe, strategy, execution, objective and benchmark configuration evidence. Objective progress, scenario horizon, probability nesting and percentiles must be internally consistent. A report digest proves content identity only; it grants no approval, selection, activation or order authority.
