@@ -10,9 +10,10 @@ import type {
   ExternalIntelligenceAssessmentRequestInput,
   NormalisedExternalIntelligenceCapture,
 } from "./queuePipeline.ts";
-import type {
-  ExternalIntelligenceFeedTarget,
-  ExternalIntelligencePayloadCapture,
+import {
+  externalIntelligencePayloadCaptureId,
+  type ExternalIntelligenceFeedTarget,
+  type ExternalIntelligencePayloadCapture,
 } from "./sourceAdapters.ts";
 import {
   verifyExternalIntelligenceSourceContract,
@@ -224,6 +225,13 @@ async function assertManifest(
   }
   if (capture === undefined) return;
   if (
+    capture.requestStartedAtMs < contract.effectiveFromMs ||
+    (contract.expiresAtMs !== null &&
+      capture.requestStartedAtMs >= contract.expiresAtMs)
+  ) {
+    throw new Error("SEC RSS source contract was not active at capture time");
+  }
+  if (
     capture.sourceId !== contract.sourceId ||
     capture.sourceContractSha256 !== contract.sourceContractSha256 ||
     capture.sourceKind !== "regulator" ||
@@ -239,11 +247,35 @@ async function assertManifest(
   ) {
     throw new Error("SEC RSS capture does not match the approved manifest");
   }
+  const reproducedCaptureId = await externalIntelligencePayloadCaptureId({
+    sourceId: capture.sourceId,
+    sourceContractSha256: capture.sourceContractSha256,
+    sourceKind: capture.sourceKind,
+    sourceRef: capture.sourceRef,
+    acquisitionMode: capture.acquisitionMode,
+    requestStartedAtMs: capture.requestStartedAtMs,
+    receivedAtMs: capture.receivedAtMs,
+    availableAtMs: capture.availableAtMs,
+    payloadSha256: capture.payloadSha256,
+    payloadByteLength: capture.payloadByteLength,
+    contentType: capture.contentType,
+    etag: capture.etag,
+    lastModified: capture.lastModified,
+  });
+  if (capture.captureId !== reproducedCaptureId) {
+    throw new Error("SEC RSS capture identity does not reproduce");
+  }
 }
 
 async function parsePayload(
   capture: ExternalIntelligencePayloadCapture,
 ): Promise<readonly SecPressRelease[]> {
+  if (
+    capture.payloadByteLength <= 0 ||
+    capture.payloadByteLength > MAXIMUM_XML_CHARACTERS
+  ) {
+    throw new Error("SEC RSS payload byte length is outside bounds");
+  }
   if (capture.payloadByteLength !== capture.payloadBytes.byteLength) {
     throw new Error("SEC RSS payload byte length does not match its capture");
   }
