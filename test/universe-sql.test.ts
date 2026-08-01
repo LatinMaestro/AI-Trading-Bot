@@ -201,8 +201,26 @@ test("chronology, instrument, state and numeric constraints are enforced", () =>
 
 test("universe digests must be lowercase SHA-256 hex", () => {
   const db = database();
+  const statement = db.prepare(
+    `INSERT INTO market_universe_definitions (
+      definition_id, venue, canonical_pair, exchange_pair, base_asset,
+      quote_asset, instrument_kind, available_at_ms, source_ref, payload_sha256
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  );
   assert.throws(
-    () => insertDefinition(db, "A".repeat(64)),
+    () =>
+      statement.run(
+        "definition:BTC/AUD",
+        "kraken",
+        "BTC/AUD",
+        "XBTAUD",
+        "BTC",
+        "AUD",
+        "spot",
+        100,
+        "asset-pairs:100",
+        "A".repeat(64),
+      ),
     /CHECK constraint failed/,
   );
 });
