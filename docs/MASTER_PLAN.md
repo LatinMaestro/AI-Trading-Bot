@@ -57,7 +57,8 @@
   - [ ] Add compliant Reddit OAuth collection with adaptive rate limits, deletion handling and minimal storage.
     - [x] Add OAuth-only watchlist acquisition with truthful runtime identity, active-contract checks, shared capture identity, adaptive header budgets and a maximum 48-hour deletion contract.
     - [x] Add minimal transient post normalisation and provider-deletion/retention reconciliation.
-    - [ ] Add purge-enforced transient persistence, downstream invalidation and deployed approved credentials.
+    - [x] Add purge-enforced transient persistence and downstream invalidation.
+    - [ ] Supply approved hosted credentials and deploy the Reddit collector.
   - [x] Add deterministic bounded queue envelopes, per-message acknowledgement/retry and source-level stale outcomes.
   - [x] Persist conditional cache validators durably with monotonic conflict controls.
   - [ ] Bind approved source manifests, minute Cron, Queue/DLQ and the deployed consumer.

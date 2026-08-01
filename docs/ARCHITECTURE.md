@@ -72,6 +72,8 @@ D1 stores:
 - immutable discovered lifecycle document captures bound to exact discovery and committed-index provenance;
 - versioned external-intelligence source contracts covering provider, publisher, licence, attribution, retention, deletion and model-use rules;
 - immutable external-intelligence items, append-only corrections and deterministic assessments;
+- purge-enforced transient Reddit post metadata with non-extendable deletion deadlines;
+- content-free aggregate Reddit watch state, retention audits and invalidation events;
 - content-addressed external-intelligence ingestion batches, memberships and database-verified commit markers;
 - strategy decisions;
 - order intents, exchange orders and fills;
@@ -87,6 +89,8 @@ Universe definitions, lifecycle events and quality observations are append-only,
 Each distinct lifecycle payload is stored once as exact validated UTF-8 text with its original byte length and SHA-256. Every scheduled observation remains a separate immutable capture binding source kind, exact allowlisted URL, fetch time, media type and bounded response metadata to that payload. D1 permits a final capture commit marker only when the payload-backed capture exists and the commit does not predate the fetch. Raw captures do not create lifecycle declarations; reviewed pair-level events remain a separate, explicit evidence boundary.
 
 Discovered lifecycle pages and documents use a separate immutable capture table over the shared content-addressed payload store. Each header records the discovery digest and the exact committed index capture/payload that produced the canonical target. Application validation reproduces payload and capture identities; database constraints independently enforce canonical source paths, safe cache headers, source-class compatibility, provenance completion, natural-identity consistency, commit chronology, retry identity and immutability. Bounded capture batches persist only after every selected public document succeeds.
+
+Reddit post-level state uses a separate transient boundary and never enters the immutable intelligence ledger or durable Queue. D1 preserves only bounded post identity metadata until the original deletion deadline. Deletes require a batch-local purge authorization; provider removals and deadline expiry atomically delete transient rows, record only aggregate content-free compliance evidence and invalidate downstream watch state. Failed provider refreshes cannot extend retention.
 
 External-intelligence batches use deterministic source-contract, correction, policy, assessment and batch digests. Application validation binds every item to an effective source-contract version and reproduces every assessment from referenced items and policy. Database constraints reject changed identities, enforce chronology and source-contract compatibility, preserve corrections instead of rewriting history and expose a batch only after declared memberships are complete.
 
