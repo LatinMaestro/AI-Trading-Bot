@@ -24,6 +24,8 @@ Supported factual event kinds are acquisition, disposal, fee disposal, transfer,
 
 `buildTaxRecordArchive` exports factual records and `transactions.csv` immediately, even when tax treatment or lot allocation remains incomplete. The archive receives its own canonical SHA-256 digest.
 
+Adapter-supplied values are runtime validated. Unknown record/ownership enums, mismatched UTC/local dates, invalid Australian time zones, missing or non-reciprocal linked records, duplicate exchange identities and non-finite or negative values fail closed.
+
 ## Explicit lot allocations
 
 The final CGT worksheet never selects lots automatically. Each disposal must be fully linked to explicit acquisition records through a versioned `selectionReference`.
