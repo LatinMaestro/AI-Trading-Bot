@@ -9,10 +9,10 @@ import {
 } from "../marketData/krakenQuality.ts";
 import type { SpotPairDefinition } from "../marketData/pairs.ts";
 import { sha256Hex } from "../utils/crypto.ts";
+import type { MarketDataQualityState } from "./types.ts";
 import {
   resolveAudValuationPath,
   type AudConversionQuote,
-  type MarketDataQualityState,
   type UniverseIngestionBatch,
   type UniverseIngestionInput,
   type UniverseSourceEvidence,
