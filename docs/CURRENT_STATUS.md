@@ -5,9 +5,9 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `09f208d22946780c709f8230a99ed791af90a424`
-- Pull requests #1 through #5 are repaired, exact-head validated and squash-merged.
-- This tree reconstructs pull request #6 as an execution-aware research calculation primitive directly on that verified base.
+- Verified base `main`: `69038c130e90ec26eec259e0a228bcc377135a7c`
+- Pull requests #1 through #6 are repaired, exact-head validated and squash-merged; PR #7 is closed without merge.
+- This tree reconstructs pull request #8 as a survivorship-safe research-universe boundary directly on that verified base.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -16,35 +16,35 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 
 ## Exact merged evidence
 
-- PR #1 run [30683491866](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30683491866): locked install and lockfile reproduction, paper types, strict TypeScript, 12 tests, paper dry-run and forbidden-capability scan passed.
-- PR #2 run [30685163521](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30685163521): the same required gates passed with 25 tests.
-- PR #3 run [30685331786](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30685331786): the same required gates passed with 33 tests.
-- PR #4 run [30687339258](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30687339258): locked validation passed with 42 tests, immutable candle-provenance checks, paper dry-run, forbidden-capability scan and current-tree secret scan.
-- PR #5 run [30687528855](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30687528855): locked validation passed with 42 tests, paper dry-run, forbidden-capability scan and current-tree secret scan.
-- The exact-head result for reconstructed PR #6 must be read from GitHub Actions; this document does not assert an unexecuted check.
+- PR #1 run [30683491866](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30683491866): locked validation passed with 12 tests.
+- PR #2 run [30685163521](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30685163521): locked validation passed with 25 tests.
+- PR #3 run [30685331786](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30685331786): locked validation passed with 33 tests.
+- PR #4 run [30687339258](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30687339258): locked validation passed with 42 tests and immutable candle-provenance checks.
+- PR #5 run [30687528855](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30687528855): locked validation passed with 42 tests.
+- PR #6 run [30689248766](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30689248766): lockfile reproduction, paper type generation, strict TypeScript, 51 tests, paper dry-run, forbidden-capability scan, secret scan and zero-vulnerability audit passed.
+- The exact-head result for reconstructed PR #8 must be read from GitHub Actions; this document does not assert an unexecuted check.
 
-## Execution-backtest candidate
+## Survivorship-safe universe candidate
 
-- Adds a pure deterministic target-weight engine with explicit signal and later execution timestamps.
-- Models maker/taker fees, spread, adverse selection, taker slippage, square-root impact, participation limits, minimum orders, cash reserves and missed fills.
-- Sells reductions before buys and scales cash-constrained multi-asset buys proportionally.
-- Invalid chronology, missing marks, duplicate markets or targets, gross spot targets above 100%, negative cash and short positions fail closed.
-- Synthetic fixtures validate arithmetic and safety invariants only; no profitability, strategy-selection or runtime authority is claimed.
-- Venue calibration, precision, multi-event order lifecycle, historical universe membership and objective-risk analysis remain separate tasks.
+- Adds immutable market definitions, lifecycle events and quality observations with application and D1 integrity enforcement.
+- Reconstructs market eligibility using only evidence available at the signal timestamp.
+- Models listing, suspension, resumption, delisting and relisting chronology without present-day membership leakage.
+- Requires fresh Australian-availability evidence for every relisting era.
+- Applies deterministic established, high-volatility and new-listing tiers plus spread, liquidity, impact, minimum-order, data-quality and instrument-type gates.
+- Returns all candidates with explicit reason codes; it grants no strategy-selection, runtime or order authority.
+- Synthetic fixtures validate safety invariants only. Authoritative scheduled sources, AUD valuation paths, calibration and signed policy persistence remain incomplete.
 
-## Authoritative runtime boundary
+## Runtime boundary
 
-- Current runtime remains deterministic long-only spot for `BTC/AUD` and `ETH/AUD` using hourly candles.
-- At most one open position; otherwise AUD cash.
-- Existing conservative implementation limits remain active until an exact signed replacement passes research, paper, shadow and owner activation gates.
-- Paper mode remains authoritative and live order transmission remains disabled.
-- No intelligence system or language model may approve or submit an order.
+- Runtime markets remain `BTC/AUD` and `ETH/AUD` only.
+- Decisions remain hourly, deterministic, long-only spot, at most one open position and otherwise AUD cash.
+- Live trading remains disabled.
+- No withdrawal, transfer, leverage, derivative, earn or wallet-signing capability exists.
 
 ## Known integration gap
 
-- `docs/EXTERNAL_INTELLIGENCE.md` is not yet present on merged `main`; external-intelligence work remains staged later and must not be reported as integrated.
-- No external-intelligence source may approve or submit an order when that work is integrated.
+- `docs/EXTERNAL_INTELLIGENCE.md` is not present on verified `main`. Its staged source-of-truth delta must be reconstructed in dependency order before external-intelligence implementation is treated as authoritative.
 
 ## Next action
 
-Run the complete exact-head PR #6 workflow, inspect every job and log, repair any real failure, and merge only a green reviewed head. Then reconstruct PR #7 as the next focused dependency.
+Validate reconstructed PR #8 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct the earliest remaining open dependency.
