@@ -59,6 +59,7 @@ test("polls an approved feed with exact payload identity and measured latency", 
       sourceRef: SOURCE_REF,
       acquisitionMode: "minute-poll",
       acceptedContentTypes: ["application/rss+xml"],
+      userAgent: "Example-Intelligence-Collector/1 operations@example.com",
     },
     {
       scheduledAtMs: 2_000,
@@ -268,6 +269,23 @@ test("rejects redirects, unsupported content, oversized bodies and credential qu
       optionsForRejectedBeforeFetch(),
     ),
     /must not contain credentials/u,
+  );
+});
+
+test("rejects an unsafe configured User-Agent before fetch", async () => {
+  await assert.rejects(
+    pollExternalIntelligenceFeed(
+      await contract(),
+      {
+        sourceId: "official-feed",
+        sourceRef: SOURCE_REF,
+        acquisitionMode: "minute-poll",
+        acceptedContentTypes: ["application/rss+xml"],
+        userAgent: "Example/1 operations@example.com\r\nInjected: true",
+      },
+      optionsForRejectedBeforeFetch(),
+    ),
+    /userAgent must be canonical text/u,
   );
 });
 

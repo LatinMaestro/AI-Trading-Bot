@@ -5,9 +5,9 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `e088764f112d34281868bc962973d04115bc21af`
-- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #34 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20, #22, #24 and #26 are closed without merge.
-- This tree reconstructs pull request #35 as the bounded scheduled recursive Kraken lifecycle-document frontier directly on that verified base.
+- Verified base `main`: `a09745244839ad9991aa7ddbc3b4ee58acb42f90`
+- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #35 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20, #22, #24 and #26 are closed without merge.
+- This tree reconstructs pull request #36 as deterministic, digest-only SEC press-release RSS intelligence directly on that verified base.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -42,6 +42,7 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - PR #32 run [30700221664](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30700221664): lockfile reproduction, paper type generation, strict TypeScript, 189 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #33 run [30700528088](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30700528088): lockfile reproduction, paper type generation, strict TypeScript, 193 tests including SQLite cache migration integrity, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #34 run [30702337446](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30702337446): lockfile reproduction, paper type generation, strict TypeScript, 205 tests including independently hardened lifecycle-document migration integrity, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #35 run [30702600500](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30702600500): lockfile reproduction, paper type generation, strict TypeScript, 212 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 
 ## Universe-ingestion evidence
 
@@ -149,6 +150,15 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - Performs no document lookup, discovery or network work outside the daily lifecycle slot.
 - Records discovery, committed-page, selected, remaining, request and capture identities before universe evaluation; no lifecycle declaration or order authority is created.
 
+## SEC press-release intelligence evidence
+
+- Binds the exact official SEC press-release RSS feed and RSS-policy page to a scheduled authoritative regulator manifest with digest-only retention and no model-training permission.
+- Requires a runtime-supplied truthful contact-bearing User-Agent and retains no contact value in source.
+- Revalidates exact payload length and SHA-256, accepts one bounded UTF-8 RSS root, rejects declarations/entities and requires canonical current or legacy SEC press-release links, matching GUIDs and valid publication chronology.
+- Stores deterministic identity, source URL, timing and content digests without retaining titles or raw XML.
+- Emits only neutral `other` evidence under non-tradable `SEC.REGULATOR`; it cannot pause new risk, create a positive candidate, approve an order or submit an order.
+- No collector, runtime contact, credential, deployment or live source is activated.
+
 ## Runtime boundary
 
 - Runtime markets remain `BTC/AUD` and `ETH/AUD` only.
@@ -207,4 +217,4 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 
 ## Next action
 
-Validate reconstructed PR #35 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #36 as the earliest remaining open dependency.
+Validate reconstructed PR #36 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #37 as the earliest remaining open dependency.
