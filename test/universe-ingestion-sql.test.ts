@@ -227,11 +227,25 @@ test("batch provenance and memberships are immutable and venue-bound", async () 
   db.prepare(INSERT_UNIVERSE_DEFINITIONS_JSON_SQL).run(
     JSON.stringify([otherDefinition]),
   );
+  const venueBoundBatchDigest = digest("9");
+  db.prepare(INSERT_UNIVERSE_INGESTION_BATCH_SQL).run(
+    venueBoundBatchDigest,
+    "kraken",
+    NOW,
+    1,
+    0,
+    0,
+    1,
+  );
+  db.prepare(INSERT_UNIVERSE_INGESTION_SOURCES_JSON_SQL).run(
+    venueBoundBatchDigest,
+    JSON.stringify([digest("8")]),
+  );
   assert.throws(
     () =>
       db
         .prepare(INSERT_UNIVERSE_DEFINITION_MEMBERSHIPS_JSON_SQL)
-        .run(prepared.batch.batchSha256, JSON.stringify([otherDefinition])),
+        .run(venueBoundBatchDigest, JSON.stringify([otherDefinition])),
     /invalid universe definition batch membership/,
   );
 });
