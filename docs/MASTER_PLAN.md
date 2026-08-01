@@ -55,6 +55,8 @@
     - [x] Add a one-minute Kraken active-maintenance Status API manifest and deterministic digest-only normaliser.
     - [ ] Add further approved source manifests, source-specific parsing, provider signature implementations and deployed endpoints.
   - [ ] Add compliant Reddit OAuth collection with adaptive rate limits, deletion handling and minimal storage.
+    - [x] Add OAuth-only watchlist acquisition with truthful runtime identity, active-contract checks, shared capture identity, adaptive header budgets and a maximum 48-hour deletion contract.
+    - [ ] Add minimal post normalisation, provider-deletion sweeps/corrections and deployed approved credentials.
   - [x] Add deterministic bounded queue envelopes, per-message acknowledgement/retry and source-level stale outcomes.
   - [x] Persist conditional cache validators durably with monotonic conflict controls.
   - [ ] Bind approved source manifests, minute Cron, Queue/DLQ and the deployed consumer.

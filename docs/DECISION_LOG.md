@@ -241,3 +241,14 @@ Emit only neutral `macro` evidence under non-tradable `AUD.MACRO`. The source ca
 Use Kraken's official programmatic Status API active-maintenance endpoint as an account-free one-minute official-exchange source. Bind the exact Kraken Status identity and endpoint, reproduce capture and payload identities, and validate only bounded structured maintenance state, impact, schedule chronology and update identities.
 
 Retain provider names and update bodies only through content digests. Statuspage `maintenance`, `none` and `minor` impacts remain neutral; only structured `major` or `critical` active maintenance becomes negative `market-structure` evidence under non-tradable `KRAKEN.VENUE` scope and may request `pause-new-risk` through deterministic policy. Unknown values fail closed. The source cannot approve or submit an order and adds no deployment, credential, account, paid service, private API, funds, wallet or live-trading capability.
+
+
+## 2026-08-02 — OAuth-only adaptive Reddit acquisition
+
+Collect Reddit only through an approved OAuth Data API identity and the exact `oauth.reddit.com` origin. Require a truthful runtime User-Agent containing the actual Reddit username, and never return or persist the bearer token or User-Agent in capture evidence.
+
+Bind each Reddit source contract to metadata-only storage, required attribution, deletion handling, model-training prohibition and a maximum 48-hour retention period. Reproduce the contract digest, require the contract to be active at the scheduled slot and request time, and use the shared external-intelligence payload identity. Reject redirects, inconsistent lengths, invalid listings and unsafe chronology.
+
+The official Reddit Data API documentation rechecked on 2 August 2026 states a free-access limit of 100 QPM per OAuth client ID averaged over ten minutes. Convert response headers into bounded integer milliquery state, retain a ten-percent reserve, space requests by at least one second and honour bounded `Retry-After` responses without retaining their bodies.
+
+This slice provides bounded OAuth listing acquisition only. Post normalisation, provider-deletion sweeps/corrections, an approved Reddit app and deployed credentials remain pending. Reddit remains social/watch-only and cannot create a risk-on candidate, approve an order or submit an order. No account, credential, deployment, paid service, private exchange API, funds, wallet or live-trading capability is added.

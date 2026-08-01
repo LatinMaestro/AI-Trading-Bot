@@ -53,6 +53,16 @@ Reddit access must use an approved Reddit Data API or another expressly permitte
 
 Reddit posts and comments may support attention, novelty, topic velocity, cross-community spread and rumour detection. They cannot independently create a risk-on candidate or a live order.
 
+## Reddit OAuth acquisition boundary
+
+Reddit collection uses a separate OAuth-only transport rather than the generic publisher-feed adapter. An enabled Reddit source contract must bind the exact `https://oauth.reddit.com/` origin, the Reddit Data API terms, required attribution, metadata-only storage, deletion handling, model-training prohibition and a finite retention limit no longer than 48 hours.
+
+The runtime must supply an approved OAuth access token and a truthful canonical User-Agent containing the actual Reddit username. Neither value enters capture evidence or durable state. Targets are exact canonical `/r/{subreddit}/new?limit=100&raw_json=1` endpoints; redirects, unauthenticated traffic, non-JSON media, inconsistent lengths, invalid listings and bodies over one MiB fail closed.
+
+As rechecked against Reddit's official documentation on 2 August 2026, eligible free access is limited to 100 queries per minute per OAuth client ID, averaged over a ten-minute window. The transport converts `X-Ratelimit-Used`, `X-Ratelimit-Remaining` and `X-Ratelimit-Reset` into bounded integer milliquery state, preserves a ten-percent reserve, spaces requests by at least one second and defers without network access while the prior budget remains active. HTTP 429 requires a bounded `Retry-After` and produces an explicit rate-limited outcome without retaining the response body.
+
+Capture identity uses the shared external-intelligence payload contract and binds source, contract, mode, chronology, exact payload digest, byte length and media type. Full listing bytes remain transient and carry a deletion deadline only. Minimal post normalisation, recurring provider-deletion sweeps, immutable deletion corrections, approved account terms and deployed credentials remain separate work. Reddit evidence remains social/watch-only and cannot approve or submit an order.
+
 ## News and official-source compliance
 
 Every collector requires a versioned source contract covering:
@@ -154,6 +164,8 @@ Statuspage `maintenance`, `none` and `minor` impacts remain neutral. Only struct
    - [x] Add a one-minute Kraken active-maintenance Status API manifest and deterministic digest-only normaliser.
    - [ ] Add further approved source manifests, source-specific parsing, provider signature implementations and deployed endpoints.
 5. [ ] Add compliant Reddit OAuth collection with adaptive rate limiting.
+   - [x] Add OAuth-only watchlist acquisition with truthful runtime identity, active-contract checks, shared capture identity, adaptive rate-limit state and a maximum 48-hour deletion contract.
+   - [ ] Add minimal post normalisation, provider-deletion sweeps/corrections and deployed approved credentials.
 6. [ ] Add minute-level collectors and queue-backed deduplicated processing.
 7. [ ] Add deterministic entity/topic linking, syndication clustering and correction handling.
 8. [ ] Integrate `pause-new-risk` with paper-mode risk controls.
@@ -162,7 +174,7 @@ Statuspage `maintenance`, `none` and `minor` impacts remain neutral. Only struct
 
 ## Current limitation
 
-The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC and RBA RSS parsers, and the Kraken active-maintenance minute-source normaliser are implemented. No truthful SEC runtime contact, deployed SEC collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
+The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC and RBA RSS parsers, the Kraken active-maintenance minute-source normaliser and the bounded Reddit OAuth acquisition transport are implemented. Reddit post normalisation, provider-deletion sweeps/corrections, an approved Reddit app and deployed credentials remain absent. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, account terms, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
 
 ## Official references
 
