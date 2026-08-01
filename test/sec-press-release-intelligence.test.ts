@@ -16,7 +16,11 @@ import {
   externalIntelligencePayloadCaptureId,
   type ExternalIntelligencePayloadCapture,
 } from "../src/intelligence/sourceAdapters.ts";
-import type { ExternalIntelligenceSourceContract } from "../src/intelligence/sourceRegistry.ts";
+import {
+  createExternalIntelligenceSourceContract,
+  type ExternalIntelligenceSourceContract,
+  type ExternalIntelligenceSourceContractInput,
+} from "../src/intelligence/sourceRegistry.ts";
 
 const RECEIVED_AT_MS = Date.parse("2026-07-28T08:00:00.000Z");
 const DECLARED_USER_AGENT =
@@ -36,10 +40,10 @@ const policy: ExternalIntelligencePolicy = {
   maximumItems: 50,
 };
 
-function contract(
-  overrides: Partial<ExternalIntelligenceSourceContract> = {},
-): ExternalIntelligenceSourceContract {
-  return {
+async function contract(
+  overrides: Partial<ExternalIntelligenceSourceContractInput> = {},
+): Promise<ExternalIntelligenceSourceContract> {
+  return createExternalIntelligenceSourceContract({
     sourceId: SEC_PRESS_RELEASES_SOURCE_ID,
     contractVersion: 1,
     sourceKind: "regulator",
@@ -59,9 +63,8 @@ function contract(
     effectiveFromMs: 1_000,
     expiresAtMs: null,
     enabled: true,
-    sourceContractSha256: "b".repeat(64),
     ...overrides,
-  };
+  });
 }
 
 function rss(items: readonly string[]): string {
@@ -97,7 +100,7 @@ async function capture(
   ).join("");
   const values: Omit<ExternalIntelligencePayloadCapture, "captureId"> = {
     sourceId: SEC_PRESS_RELEASES_SOURCE_ID,
-    sourceContractSha256: contract().sourceContractSha256,
+    sourceContractSha256: (await contract()).sourceContractSha256,
     sourceKind: "regulator",
     publisherId: SEC_PUBLISHER_ID,
     providerId: SEC_PROVIDER_ID,
@@ -140,7 +143,7 @@ async function capture(
 
 test("binds the approved scheduled SEC manifest and declared contact", async () => {
   const source = await createSecPressReleaseScheduledSource(
-    contract(),
+    await contract(),
     policy,
     DECLARED_USER_AGENT,
   );
@@ -161,7 +164,7 @@ test("binds the approved scheduled SEC manifest and declared contact", async () 
     "AI-Trading-Bot/1 operations@example.com\r\nInjected: true",
   ]) {
     await assert.rejects(
-      createSecPressReleaseScheduledSource(contract(), policy, invalid),
+      createSecPressReleaseScheduledSource(await contract(), policy, invalid),
       /truthful contact email/u,
     );
   }
@@ -169,7 +172,7 @@ test("binds the approved scheduled SEC manifest and declared contact", async () 
 
 test("normalises metadata deterministically without retaining titles or raw XML", async () => {
   const left = await normaliseSecPressReleaseCapture(
-    contract(),
+    await contract(),
     await capture(
       rss([
         item("2026-71", "other"),
@@ -179,7 +182,7 @@ test("normalises metadata deterministically without retaining titles or raw XML"
     policy,
   );
   const right = await normaliseSecPressReleaseCapture(
-    contract(),
+    await contract(),
     await capture(
       rss([
         item("2026-70", "<![CDATA[First bounded title]]>"),
@@ -211,7 +214,7 @@ test("normalises metadata deterministically without retaining titles or raw XML"
 test("returns no work for an empty channel", async () => {
   assert.equal(
     await normaliseSecPressReleaseCapture(
-      contract(),
+      await contract(),
       await capture(rss([])),
       policy,
     ),
@@ -222,7 +225,7 @@ test("returns no work for an empty channel", async () => {
 test("fails closed on unsafe XML, duplicate ids and unapproved links", async () => {
   await assert.rejects(
     normaliseSecPressReleaseCapture(
-      contract(),
+      await contract(),
       await capture(`<!DOCTYPE rss [<!ENTITY xxe SYSTEM "file:///etc/passwd">]>${rss([])}`),
       policy,
     ),
@@ -230,7 +233,7 @@ test("fails closed on unsafe XML, duplicate ids and unapproved links", async () 
   );
   await assert.rejects(
     normaliseSecPressReleaseCapture(
-      contract(),
+      await contract(),
       await capture(rss([item("2026-70"), item("2026-70")])),
       policy,
     ),
@@ -238,7 +241,7 @@ test("fails closed on unsafe XML, duplicate ids and unapproved links", async () 
   );
   await assert.rejects(
     normaliseSecPressReleaseCapture(
-      contract(),
+      await contract(),
       await capture(
         rss([item("2026-70").replace("</item>", "")]),
       ),
@@ -252,7 +255,7 @@ test("fails closed on unsafe XML, duplicate ids and unapproved links", async () 
   );
   await assert.rejects(
     normaliseSecPressReleaseCapture(
-      contract(),
+      await contract(),
       await capture(rss([badHost])),
       policy,
     ),
@@ -260,7 +263,7 @@ test("fails closed on unsafe XML, duplicate ids and unapproved links", async () 
   );
   await assert.rejects(
     normaliseSecPressReleaseCapture(
-      contract(),
+      await contract(),
       await capture(rss([item("2026-70", "Title", "wrong-guid")])),
       policy,
     ),
@@ -268,7 +271,7 @@ test("fails closed on unsafe XML, duplicate ids and unapproved links", async () 
   );
   await assert.rejects(
     normaliseSecPressReleaseCapture(
-      contract(),
+      await contract(),
       await capture(
         `${rss([item("2026-70")])}<rss version="2.0"></rss>`,
       ),
@@ -281,7 +284,7 @@ test("fails closed on unsafe XML, duplicate ids and unapproved links", async () 
 test("fails closed on manifest, digest and publication chronology mismatch", async () => {
   await assert.rejects(
     normaliseSecPressReleaseCapture(
-      contract({ allowedAcquisitionModes: ["scheduled-poll", "webhook"] }),
+      await contract({ allowedAcquisitionModes: ["scheduled-poll", "webhook"] }),
       await capture(),
       policy,
     ),
@@ -289,7 +292,7 @@ test("fails closed on manifest, digest and publication chronology mismatch", asy
   );
   await assert.rejects(
     normaliseSecPressReleaseCapture(
-      contract({ maximumRetentionMs: 60_000 }),
+      await contract({ maximumRetentionMs: 60_000 }),
       await capture(),
       policy,
     ),
@@ -297,7 +300,7 @@ test("fails closed on manifest, digest and publication chronology mismatch", asy
   );
   await assert.rejects(
     normaliseSecPressReleaseCapture(
-      contract(),
+      await contract(),
       await capture(undefined, { requestStartedAtMs: 0 }),
       policy,
     ),
@@ -305,7 +308,7 @@ test("fails closed on manifest, digest and publication chronology mismatch", asy
   );
   await assert.rejects(
     normaliseSecPressReleaseCapture(
-      contract(),
+      await contract(),
       await capture(undefined, { captureId: "d".repeat(64) }),
       policy,
     ),
@@ -313,7 +316,7 @@ test("fails closed on manifest, digest and publication chronology mismatch", asy
   );
   await assert.rejects(
     normaliseSecPressReleaseCapture(
-      contract({ sourceKind: "official-exchange" }),
+      await contract({ sourceKind: "official-exchange" }),
       await capture(),
       policy,
     ),
@@ -321,7 +324,7 @@ test("fails closed on manifest, digest and publication chronology mismatch", asy
   );
   await assert.rejects(
     normaliseSecPressReleaseCapture(
-      contract(),
+      await contract(),
       await capture(undefined, { payloadSha256: "d".repeat(64) }),
       policy,
     ),
@@ -333,7 +336,7 @@ test("fails closed on manifest, digest and publication chronology mismatch", asy
   );
   await assert.rejects(
     normaliseSecPressReleaseCapture(
-      contract(),
+      await contract(),
       await capture(rss([malformed])),
       policy,
     ),
@@ -345,7 +348,7 @@ test("fails closed on manifest, digest and publication chronology mismatch", asy
   );
   await assert.rejects(
     normaliseSecPressReleaseCapture(
-      contract(),
+      await contract(),
       await capture(rss([future])),
       policy,
     ),
