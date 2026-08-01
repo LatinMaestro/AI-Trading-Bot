@@ -58,7 +58,7 @@ export interface ExternalIntelligenceRuntimeDependencies {
   readonly createRepository: (
     db: D1Database,
   ) => ExternalIntelligenceQueueRepository;
-  readonly fetch: typeof fetch;
+  readonly fetchImpl: typeof fetch;
   readonly nowMs: () => number;
 }
 
@@ -68,7 +68,7 @@ const DEFAULT_DEPENDENCIES: ExternalIntelligenceRuntimeDependencies = {
   processQueueBatch: processExternalIntelligenceQueueBatch,
   createCacheState: (db) => new D1ExternalIntelligenceCacheState(db),
   createRepository: (db) => new ExternalIntelligenceRepository(db),
-  fetch,
+  fetchImpl: fetch,
   nowMs: Date.now,
 };
 
@@ -165,7 +165,7 @@ export async function runExternalIntelligenceMinuteCycle(
     dependencies.createCacheState(env.DB),
     {
       scheduledAtMs,
-      fetch: dependencies.fetch,
+      fetchImpl: dependencies.fetchImpl,
       nowMs: dependencies.nowMs,
     },
   );
