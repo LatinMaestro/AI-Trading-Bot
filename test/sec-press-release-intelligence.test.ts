@@ -290,6 +290,18 @@ test("fails closed on manifest, digest and publication chronology mismatch", asy
     ),
     /digest does not match/u,
   );
+  const malformed = item("2026-70").replace(
+    "Mon, 27 Jul 2026 17:00:00 GMT",
+    "Tue, 27 Jul 2026 17:00:00 GMT",
+  );
+  await assert.rejects(
+    normaliseSecPressReleaseCapture(
+      contract(),
+      await capture(rss([malformed])),
+      policy,
+    ),
+    /publication time is invalid/u,
+  );
   const future = item("2026-70").replace(
     "Mon, 27 Jul 2026 17:00:00 GMT",
     "Wed, 29 Jul 2026 17:00:00 GMT",
