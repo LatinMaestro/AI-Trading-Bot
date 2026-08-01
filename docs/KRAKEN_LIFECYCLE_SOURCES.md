@@ -14,6 +14,12 @@ Only Kraken-owned HTTPS sources are accepted:
 
 Individual evidence records must reference an exact Kraken Blog listing article, Kraken Support article or Kraken Status incident/API document. The exact successful payload is captured separately and identified by a lowercase SHA-256 digest.
 
+## Raw-source capture
+
+`docs/KRAKEN_LIFECYCLE_CAPTURE.md` defines the scheduled preservation boundary. The daily 00:00 UTC cycle captures the official listing and delisting indexes plus Kraken Status incident and scheduled-maintenance feeds. Exact valid UTF-8 bytes are SHA-256 hashed and stored once as bounded content-addressed D1 payloads; each fetch remains a separate immutable capture with a database-verified commit marker.
+
+Raw capture does not create lifecycle events. Complete pair-level evidence still requires reviewed declarations tied to exact committed source payloads. Exact individual listing, delisting and Australian-availability documents must be discovered and captured before their declarations are admitted.
+
 ## Source classes
 
 - `asset-listing` may declare a global `listed` or `trading-online` event.
@@ -56,9 +62,10 @@ Missing classes remain explicit. Coverage completeness does not imply current el
 
 ## Remaining work
 
+- Discover and capture exact individual listing, delisting and regional-availability documents from the preserved indexes.
 - Backfill the complete Kraken listing, delisting, suspension/resumption and Australian-availability history.
 - Reconcile asset-level announcements to every affected canonical spot pair.
-- Add scheduled content capture and immutable raw-source persistence.
+- Persist reviewed declarations with an explicit link to committed raw captures.
 - Supply only reviewed, complete announcements to the scheduled universe ingestion boundary.
 
 Until those items are complete, venue-wide strategy research cannot claim complete lifecycle coverage.
