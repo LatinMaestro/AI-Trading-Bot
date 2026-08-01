@@ -210,3 +210,11 @@ Capture only canonical Kraken lifecycle targets produced by the deterministic di
 Persist each exact document payload content-addressably with an immutable capture header that binds source kind and URL, fetch time, discovery digest, originating committed index capture and originating index payload digest. Reproduce payload and capture digests before D1 persistence. Database constraints independently reject noncanonical paths, injected cache headers, changed commit identity, incomplete provenance, mutation and commits before fetch.
 
 This slice establishes the capture and persistence boundary only. Daily committed-source lookup, recursive discovery from captured listing-index pages and scheduled orchestration remain separate work. Public Kraken documents add no credential, private API, account, fund, wallet, withdrawal, transfer, leverage, derivative or order authority.
+
+## 2026-08-01 — Bounded recursive lifecycle document cycle
+
+After the daily fixed Kraken lifecycle sources commit, rotate deterministically through at most 32 latest committed listing-index page captures whose combined exact payloads do not exceed 8 MiB, and use those payloads as additional discovery sources. Prefer the root listing index, then the lowest page number, when the same target appears more than once; bind each selected target to the exact committed capture and payload that supplied it.
+
+Skip every already committed source reference and fetch at most ten remaining canonical HTML documents per daily run. A newly captured pagination page may extend discovery only on a later daily run after its commit marker exists, so recursion advances as a bounded durable frontier rather than an in-memory crawler. Outside the daily lifecycle slot, perform no document lookup, discovery or network work.
+
+Permit recursive provenance in D1 only when the parent is a committed `asset-listings-index-page` capture with the exact preserved payload digest. Record discovery, frontier and request counts in scheduled-cycle audit evidence before strategy evaluation. This public evidence path creates no lifecycle declaration and adds no credential, private API, account, fund, wallet, withdrawal, transfer, leverage, derivative or order authority.
