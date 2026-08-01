@@ -260,3 +260,12 @@ Normalise Reddit listing and info responses only inside a transient, source-cont
 Reproduce the source-contract, capture, metadata and observation digests before use. Refresh no more than 100 exact post fullnames per bounded OAuth request. Missing, provider-removed, deleted or retention-expired observations create immediate purge actions, while the next sweep is bounded by both a fifteen-minute interval and the earliest deletion deadline.
 
 Do not send post-level Reddit observations through the immutable intelligence queue or correction ledger. Durable compliance evidence contains source-level time and aggregate counts only, with no post identifiers or content-derived evidence. Purge-enforced transient persistence and downstream invalidation remain separate required work. Reddit remains social/watch-only and cannot approve risk, select a strategy or submit an order.
+
+
+## 2026-08-02 — Purge-enforced transient Reddit persistence
+
+Store bounded Reddit post identity metadata only in a dedicated transient D1 table, never in the immutable intelligence ledger or durable Queue. Preserve the first deletion deadline across refreshes and require a batch-local authorization before any post row can be deleted. The expiry path runs independently of provider availability so an API failure cannot extend retention.
+
+After a provider removal or retention expiry, atomically remove transient rows, persist only source-level aggregate counts and timestamps, and invalidate downstream aggregate watch state. Immutable audits and watch events contain no post identifiers, account identifiers, provider content or content-derived hashes. Stable observation identity enables exact retries without extending retention; changed immutable metadata fails closed.
+
+This storage path remains social/watch-only. It cannot create a positive research candidate, pause risk, approve an order or submit an order. Approved OAuth credentials and hosted deployment remain owner-gated separate work.
