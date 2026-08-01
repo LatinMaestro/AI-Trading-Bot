@@ -12,7 +12,10 @@ import {
   SEC_RSS_POLICY_REF,
   SEC_SOURCE_ORIGIN,
 } from "../src/intelligence/secPressReleaseIntelligence.ts";
-import type { ExternalIntelligencePayloadCapture } from "../src/intelligence/sourceAdapters.ts";
+import {
+  externalIntelligencePayloadCaptureId,
+  type ExternalIntelligencePayloadCapture,
+} from "../src/intelligence/sourceAdapters.ts";
 import type { ExternalIntelligenceSourceContract } from "../src/intelligence/sourceRegistry.ts";
 
 const RECEIVED_AT_MS = Date.parse("2026-07-28T08:00:00.000Z");
@@ -86,13 +89,13 @@ async function capture(
   xml = rss([item("2026-70")]),
   overrides: Partial<ExternalIntelligencePayloadCapture> = {},
 ): Promise<ExternalIntelligencePayloadCapture> {
+  const { captureId: captureIdOverride, ...captureOverrides } = overrides;
   const bytes = new TextEncoder().encode(xml);
   const payloadSha256 = Array.from(
     new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)),
     (byte) => byte.toString(16).padStart(2, "0"),
   ).join("");
-  return {
-    captureId: "c".repeat(64),
+  const values: Omit<ExternalIntelligencePayloadCapture, "captureId"> = {
     sourceId: SEC_PRESS_RELEASES_SOURCE_ID,
     sourceContractSha256: contract().sourceContractSha256,
     sourceKind: "regulator",
@@ -112,9 +115,27 @@ async function capture(
     etag: null,
     lastModified: null,
     payloadRetention: "transient-only",
-    modelTrainingAllowed: false,
-    ...overrides,
+    modelTrainingAllowed: false as const,
+    ...captureOverrides,
   };
+  const captureId =
+    captureIdOverride ??
+    (await externalIntelligencePayloadCaptureId({
+      sourceId: values.sourceId,
+      sourceContractSha256: values.sourceContractSha256,
+      sourceKind: values.sourceKind,
+      sourceRef: values.sourceRef,
+      acquisitionMode: values.acquisitionMode,
+      requestStartedAtMs: values.requestStartedAtMs,
+      receivedAtMs: values.receivedAtMs,
+      availableAtMs: values.availableAtMs,
+      payloadSha256: values.payloadSha256,
+      payloadByteLength: values.payloadByteLength,
+      contentType: values.contentType,
+      etag: values.etag,
+      lastModified: values.lastModified,
+    }));
+  return { captureId, ...values };
 }
 
 test("binds the approved scheduled SEC manifest and declared contact", async () => {
@@ -273,6 +294,22 @@ test("fails closed on manifest, digest and publication chronology mismatch", asy
       policy,
     ),
     /approved manifest/u,
+  );
+  await assert.rejects(
+    normaliseSecPressReleaseCapture(
+      contract(),
+      await capture(undefined, { requestStartedAtMs: 0 }),
+      policy,
+    ),
+    /not active/u,
+  );
+  await assert.rejects(
+    normaliseSecPressReleaseCapture(
+      contract(),
+      await capture(undefined, { captureId: "d".repeat(64) }),
+      policy,
+    ),
+    /identity does not reproduce/u,
   );
   await assert.rejects(
     normaliseSecPressReleaseCapture(
