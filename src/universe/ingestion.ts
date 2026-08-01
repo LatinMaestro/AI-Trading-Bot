@@ -254,6 +254,8 @@ export function resolveAudValuationPath(
   maximumHops = 3,
 ): AudValuationPath {
   assertCanonical("sourceAsset", sourceAsset);
+  assertTime("asOfMs", asOfMs);
+  assertTime("maximumAudQuoteAgeMs", maximumAgeMs);
   if (!Number.isInteger(maximumHops) || maximumHops < 1 || maximumHops > 4) {
     throw new Error("maximumHops must be an integer between 1 and 4");
   }
@@ -375,7 +377,7 @@ async function prepareDefinition(
   };
   const payloadSha256 = await sha256Hex(canonicalJson(content));
   return {
-    definitionId: `definition:${venue}:${market.canonicalPair}:${market.availableAtMs}:${payloadSha256.slice(0, 16)}`,
+    definitionId: `definition:${venue}:${market.canonicalPair}:${source.fetchedAtMs}:${payloadSha256.slice(0, 16)}`,
     venue,
     canonicalPair: market.canonicalPair,
     exchangePair: market.exchangePair,
@@ -448,6 +450,19 @@ async function prepareLifecycleEvent(
   announcement: LifecycleAnnouncementInput,
 ): Promise<MarketLifecycleEvent> {
   assertCanonical("lifecycle canonicalPair", announcement.canonicalPair);
+  if (
+    ![
+      "listed",
+      "trading-online",
+      "trading-suspended",
+      "trading-resumed",
+      "delisted",
+      "au-enabled",
+      "au-disabled",
+    ].includes(announcement.eventType)
+  ) {
+    throw new Error("Lifecycle eventType is invalid");
+  }
   assertTime("lifecycle effectiveAtMs", announcement.effectiveAtMs);
   assertTime("lifecycle publishedAtMs", announcement.publishedAtMs);
   if (
