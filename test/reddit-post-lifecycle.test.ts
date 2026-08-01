@@ -165,6 +165,26 @@ test("normalises only transient post metadata and excludes provider content", as
   }
 });
 
+test("keeps transient observation identity stable across listing captures", async () => {
+  const currentContract = await contract();
+  const body = listing([post("abc123")]);
+  const first = await normaliseRedditPostListing(
+    currentContract,
+    LISTING_TARGET,
+    await capture(currentContract, body, LISTING_TARGET.sourceRef, 2_100),
+  );
+  const second = await normaliseRedditPostListing(
+    currentContract,
+    LISTING_TARGET,
+    await capture(currentContract, body, LISTING_TARGET.sourceRef, 3_100),
+  );
+  assert.equal(
+    first.observations[0]?.observationId,
+    second.observations[0]?.observationId,
+  );
+  assert.notEqual(first.captureId, second.captureId);
+});
+
 test("ignores posts already marked unavailable by Reddit", async () => {
   const currentContract = await contract();
   const result = await normaliseRedditPostListing(
