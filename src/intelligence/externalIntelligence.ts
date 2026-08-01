@@ -259,10 +259,11 @@ function assertPolicy(policy: ExternalIntelligencePolicy): void {
     throw new Error("maximumItemAgeMs must define every supported source kind exactly");
   }
   for (const sourceKind of SOURCE_KINDS) {
-    assertTime(
-      `${sourceKind} maximumItemAgeMs`,
-      policy.maximumItemAgeMs[sourceKind],
-    );
+    const maximumAgeMs = policy.maximumItemAgeMs[sourceKind];
+    if (maximumAgeMs === undefined) {
+      throw new Error("maximumItemAgeMs must define every supported source kind exactly");
+    }
+    assertTime(`${sourceKind} maximumItemAgeMs`, maximumAgeMs);
   }
 }
 
