@@ -167,3 +167,11 @@ Persist each external-intelligence slice as one content-addressed D1 batch conta
 Every source contract binds provider and publisher identity, allowed acquisition modes, content licence digest, attribution, retention, deletion handling, effective dates and explicit model-use prohibition. Reddit full-content storage remains disabled by default, finite retention and deletion handling are mandatory, and Reddit-only evidence cannot cross the watch boundary.
 
 Corrections, retractions and deletions create new immutable records rather than rewriting prior evidence. Assessments must reproduce exactly from referenced items and policy before persistence. This slice adds no provider connection, credential, collector, queue, private exchange API or order authority.
+
+## 2026-07-27 — Registry-bound external-intelligence acquisition transport
+
+Acquire approved official exchange, regulator, issuer and publisher feed or webhook payloads only through a verified, enabled and effective source-contract version whose origin and acquisition mode match the target. Keep Reddit outside this transport and reserve it for a separately approved OAuth collector.
+
+Polling rejects redirects, credential-bearing query parameters, unsupported media types, invalid lengths, empty or oversized bodies and unsafe cache validators. Use conditional requests, one bounded transient retry, bounded `Retry-After` handling and one deadline spanning request, streamed-body receipt and payload hashing. Authenticated webhooks require a provider-specific signature verifier before payload availability.
+
+Record request, receipt and availability times, measured delays, exact byte length, SHA-256, cache validators, contract digest and deterministic capture identity. Raw bytes remain transient unless the exact contract permits full retention. Acquisition does not parse events, classify evidence, approve risk or submit orders.
