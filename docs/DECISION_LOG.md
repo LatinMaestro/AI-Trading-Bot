@@ -192,3 +192,12 @@ Bind the exact official Kraken unresolved-incidents JSON endpoint and Kraken Sta
 Use only structured Statuspage identifiers, states and impact values. Major and critical unresolved incidents create authoritative negative network-incident evidence; minor and none remain neutral. Preserve provider display timestamps even when their precision places them slightly before creation timestamps, while requiring both to be no later than the update time.
 
 Hash update bodies without retaining or queueing raw text. The reserved KRAKEN.VENUE scope is not tradable, and this adapter grants no positive recommendation, strategy selection, deployment or order authority.
+
+
+## 2026-07-27 — Durable monotonic external-intelligence cache state
+
+Persist conditional `ETag` and `Last-Modified` validators in D1 by source ID so minute collectors retain transport state across Worker instances and restarts. Validator text shares the transport's 500-character ceiling; application validation rejects control characters while D1 independently blocks CR/LF header injection. Observation times are non-negative integers, and every write is verified by reading back the stored row.
+
+Exact retries at the same observation time are accepted only when the validator state is identical. Observation time may never regress, and a same-time changed validator is an identity conflict. A stale write is surfaced as an error rather than silently replacing or appearing to replace newer state.
+
+The collector remains responsible for saving cache state only after successful enqueue, confirmed not-modified handling or confirmed no-item normalisation. Cache validators are operational transport state, not authoritative market or intelligence evidence, and cannot classify an event, change exposure, approve an order or submit an order. This slice adds no provider credential, private exchange API, fund, withdrawal, transfer, wallet, leverage, derivative or live-trading capability.

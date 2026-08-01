@@ -51,7 +51,8 @@
   - [ ] Add approved source manifests, source-specific parsing, provider signature implementations and deployed endpoints.
   - [ ] Add compliant Reddit OAuth collection with adaptive rate limits, deletion handling and minimal storage.
   - [x] Add deterministic bounded queue envelopes, per-message acknowledgement/retry and source-level stale outcomes.
-  - [ ] Bind approved source manifests, durable cache state, minute Cron, Queue/DLQ and the deployed consumer.
+  - [x] Persist conditional cache validators durably with monotonic conflict controls.
+  - [ ] Bind approved source manifests, minute Cron, Queue/DLQ and the deployed consumer.
   - [ ] Add deterministic entity/topic linking, syndication clustering and manipulation controls.
   - [ ] Integrate `pause-new-risk` into paper-mode risk controls and incident reporting.
   - [ ] Backtest news/social features with original publication and receipt timestamps and no look-ahead.
