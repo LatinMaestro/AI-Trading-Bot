@@ -76,7 +76,8 @@ A summary is venue-specific and rejects mixed venues, duplicate natural identiti
 
 ## Remaining work
 
-- connect scheduled Kraken public endpoints;
+- connect the content-addressed Kraken public client to a bounded scheduled orchestrator;
+- join ticker and depth evidence with committed candle counts and annualised volatility without fabricating missing inputs;
 - establish complete official lifecycle-source coverage;
 - calibrate AUD conversion freshness and tier thresholds from historical evidence;
 - persist signed universe policies and generated snapshots.
