@@ -60,6 +60,7 @@ D1 stores:
 - immutable public market-data batch provenance;
 - immutable committed 60-minute and daily OHLCV candles;
 - immutable market definitions, lifecycle events and quality observations;
+- content-addressed universe-ingestion batch headers, source and record memberships, and database-verified commit markers;
 - strategy decisions;
 - order intents, exchange orders and fills;
 - balances and equity snapshots;
@@ -69,7 +70,7 @@ D1 stores:
 
 Market batches and candles use deterministic SHA-256 content digests. Database triggers bind each candle to matching source-batch metadata and range, reject identity reuse with different content, and prevent ordinary update or delete operations. Gap detection is performed against explicit expected ranges before strategy research is allowed to rely on stored data.
 
-Universe definitions, lifecycle events and quality observations are append-only, carry lower-case SHA-256 payload digests, and use D1 checks and triggers to reject mutation or identity reuse. The universe module is a research-only boundary: it reconstructs eligibility without granting strategy-selection, runtime or order authority.
+Universe definitions, lifecycle events and quality observations are append-only, carry lower-case SHA-256 payload digests, and use D1 checks and triggers to reject mutation or identity reuse. Prepared universe evidence is submitted through one transactional nine-statement D1 batch. A database commit marker is accepted only after every declared source and record membership exists; committed membership is then frozen, while exact retries remain idempotent. The universe module is a research-only boundary: it reconstructs eligibility without granting strategy-selection, runtime or order authority.
 
 ## AI design
 
