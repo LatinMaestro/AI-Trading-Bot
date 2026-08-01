@@ -5,9 +5,9 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `a09745244839ad9991aa7ddbc3b4ee58acb42f90`
-- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #35 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20, #22, #24 and #26 are closed without merge.
-- This tree reconstructs pull request #36 as deterministic, digest-only SEC press-release RSS intelligence directly on that verified base.
+- Verified base `main`: `14cd6ac75e25133b21b546721541e98b0e83c8e3`
+- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #36 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20, #22, #24 and #26 are closed without merge.
+- This tree reconstructs pull request #37 as deterministic, digest-only RBA media-release RSS intelligence directly on that verified base.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -43,6 +43,7 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - PR #33 run [30700528088](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30700528088): lockfile reproduction, paper type generation, strict TypeScript, 193 tests including SQLite cache migration integrity, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #34 run [30702337446](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30702337446): lockfile reproduction, paper type generation, strict TypeScript, 205 tests including independently hardened lifecycle-document migration integrity, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #35 run [30702600500](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30702600500): lockfile reproduction, paper type generation, strict TypeScript, 212 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #36 run [30704381225](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30704381225): lockfile reproduction, paper type generation, strict TypeScript, 218 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 
 ## Universe-ingestion evidence
 
@@ -159,6 +160,14 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - Emits only neutral `other` evidence under non-tradable `SEC.REGULATOR`; it cannot pause new risk, create a positive candidate, approve an order or submit an order.
 - No collector, runtime contact, credential, deployment or live source is activated.
 
+## RBA media-release intelligence evidence
+
+- Binds the official RBA media-release RSS feed and published copyright terms to a scheduled authoritative regulator manifest with digest-only retention, required attribution and no model training.
+- Reproduces active-contract capture identity, payload length and SHA-256 before accepting one bounded UTF-8 RSS root and canonical media-release identities.
+- Retains deterministic identifiers, source URLs, timing and digests without titles or raw XML.
+- Emits neutral `macro` evidence under non-tradable `AUD.MACRO`; no risk pause, positive candidate or order authority is created.
+- No collector, credential, deployment or live source is activated.
+
 ## Runtime boundary
 
 - Runtime markets remain `BTC/AUD` and `ETH/AUD` only.
@@ -217,4 +226,4 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 
 ## Next action
 
-Validate reconstructed PR #36 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #37 as the earliest remaining open dependency.
+Validate reconstructed PR #37 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #38 as the earliest remaining open dependency.
