@@ -12,6 +12,7 @@ import {
 const DAY_MS = 86_400_000;
 const LISTING_PAGE_COUNT = 499;
 const LISTING_PAGE_ROTATION_STEP = 32;
+const MAXIMUM_RECURSIVE_PAGE_BYTES = 8_388_608;
 
 export interface KrakenLifecycleDocumentCycleRepository
   extends KrakenLifecycleDocumentCaptureSink {
@@ -81,6 +82,26 @@ export async function runScheduledKrakenLifecycleDocumentCycle(
     repository.loadLatestCommittedListingIndexPages(rotationStartPage),
     repository.loadCommittedSourceRefs(),
   ]);
+  let committedPageBytes = 0;
+  if (committedPages.length > LISTING_PAGE_ROTATION_STEP) {
+    throw new Error("Lifecycle document page window exceeds resource bounds");
+  }
+  for (const page of committedPages) {
+    if (
+      !Number.isSafeInteger(page.payloadByteLength) ||
+      page.payloadByteLength < 1 ||
+      page.payloadByteLength > 1_048_576
+    ) {
+      throw new Error("Lifecycle document page window is malformed");
+    }
+    committedPageBytes += page.payloadByteLength;
+    if (
+      !Number.isSafeInteger(committedPageBytes) ||
+      committedPageBytes > MAXIMUM_RECURSIVE_PAGE_BYTES
+    ) {
+      throw new Error("Lifecycle document page window exceeds resource bounds");
+    }
+  }
   const discovery = await discoverKrakenLifecycleDocumentTargets(
     lifecycleCapture.captures,
     committedPages,
