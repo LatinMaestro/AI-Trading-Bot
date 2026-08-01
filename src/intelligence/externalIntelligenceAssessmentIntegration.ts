@@ -148,6 +148,7 @@ export async function verifyExternalIntelligenceLinkageArtifact(
     throw new Error("Linkage contains duplicate representatives");
   }
   const clusterDigests = new Set<string>();
+  const clusterRepresentativeIds = new Set<string>();
   for (const cluster of linkage.clusters) {
     assertDigest("clusterSha256", cluster.clusterSha256);
     assertDigest("effectiveContentSha256", cluster.effectiveContentSha256);
@@ -164,10 +165,14 @@ export async function verifyExternalIntelligenceLinkageArtifact(
     assertSortedUniqueText("publisherIds", cluster.publisherIds);
     assertSortedUniqueText("sourceIds", cluster.sourceIds);
     assertSortedUnique("correctionSha256s", cluster.correctionSha256s);
-    if (clusterDigests.has(cluster.clusterSha256)) {
+    if (
+      clusterDigests.has(cluster.clusterSha256) ||
+      clusterRepresentativeIds.has(cluster.representativeItemId)
+    ) {
       throw new Error("Linkage contains duplicate cluster identities");
     }
     clusterDigests.add(cluster.clusterSha256);
+    clusterRepresentativeIds.add(cluster.representativeItemId);
     const representative = representatives.get(cluster.representativeItemId);
     if (
       representative === undefined ||
