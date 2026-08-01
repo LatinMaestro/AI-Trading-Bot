@@ -80,7 +80,7 @@ test("authoritative severe negative evidence pauses new risk", async () => {
   assert.equal(assessment.authoritativeSourceCount, 1);
   assert.equal(assessment.maximumPublicationToReceiptMs, 30_000);
   assert.equal(assessment.acceptedEvidenceSha256.length, 1);
-  assert.match(assessment.acceptedEvidenceSha256[0], /^[0-9a-f]{64}$/);
+  assert.match(assessment.acceptedEvidenceSha256[0] ?? "", /^[0-9a-f]{64}$/);
   assert.match(assessment.assessmentSha256, /^[0-9a-f]{64}$/);
 });
 
