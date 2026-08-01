@@ -1,5 +1,17 @@
 import type { TradingMode } from "./domain/types.ts";
 
+export interface RuntimeEnvironment {
+  readonly APP_ENV: string;
+  readonly TRADING_MODE: string;
+  readonly LIVE_TRADING_ENABLED: string;
+  readonly APPROVED_PAIRS: string;
+  readonly MAX_GROSS_EXPOSURE_PCT: string;
+  readonly DAILY_LOSS_LIMIT_PCT: string;
+  readonly WEEKLY_LOSS_LIMIT_PCT: string;
+  readonly MAX_DRAWDOWN_PCT: string;
+  readonly LIVE_ACTIVATION_SHA256: string;
+}
+
 export interface RuntimeConfig {
   readonly appEnv: string;
   readonly mode: TradingMode;
@@ -28,7 +40,7 @@ function parsePercent(value: string, name: string): number {
   return parsed;
 }
 
-export function loadConfig(env: Env): RuntimeConfig {
+export function loadConfig(env: RuntimeEnvironment): RuntimeConfig {
   if (!TRADING_MODES.has(env.TRADING_MODE as TradingMode)) {
     throw new Error("TRADING_MODE is invalid");
   }
