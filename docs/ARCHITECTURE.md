@@ -11,6 +11,7 @@ Cloudflare Cron
 Trading-cycle orchestrator
       |
       +--> public market-data adapter
+      +--> immutable market-data persistence and gap checks
       +--> strategy engine
       +--> risk engine
       +--> execution adapter (disabled unless live gates pass)
@@ -38,28 +39,33 @@ Trading-cycle orchestrator
 
 1. Acquire a lease in D1 to prevent duplicate concurrent cycles.
 2. Load runtime state and verify mode.
-3. Fetch public data and reject stale or incomplete data.
-4. Generate a strategy decision from a versioned configuration.
-5. Reconcile balances and orders when private access is available.
-6. Evaluate hard risk limits.
-7. Create an order intent with a deterministic idempotency key.
-8. In non-live modes, record the proposed action only.
-9. In live mode, verify API permissions, activation secret and execution limits again immediately before submission.
-10. Submit, reconcile and record every response.
+3. Discover current approved markets and fetch public committed candles.
+4. Persist accepted public-data batches and candles immutably.
+5. Detect missing, duplicate, stale, conflicting or unrecoverable market data and fail closed.
+6. Generate a strategy decision from a versioned configuration.
+7. Reconcile balances and orders when private access is available.
+8. Evaluate hard risk limits.
+9. Create an order intent with a deterministic idempotency key.
+10. In non-live modes, record the proposed action only.
+11. In live mode, verify API permissions, activation secret and execution limits again immediately before submission.
+12. Submit, reconcile and record every response.
 
 ## Data model
 
 D1 stores:
 
 - system and activation state;
-- cycle leases;
-- market observations;
+- cycle leases and scheduled-cycle outcomes;
+- immutable public market-data batch provenance;
+- immutable committed 60-minute and daily OHLCV candles;
 - strategy decisions;
 - order intents, exchange orders and fills;
 - balances and equity snapshots;
 - risk events and kill-switch state;
 - immutable audit events;
 - Australian-dollar tax ledger entries.
+
+Market batches and candles use deterministic SHA-256 content digests. Database triggers bind each candle to matching source-batch metadata and range, reject identity reuse with different content, and prevent ordinary update or delete operations. Gap detection is performed against explicit expected ranges before strategy research is allowed to rely on stored data.
 
 ## AI design
 

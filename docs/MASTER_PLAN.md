@@ -6,14 +6,19 @@
 - [x] Define security, venue and live-activation boundaries.
 - [x] Scaffold Cloudflare Worker, D1 schema, Kraken adapter interfaces, strategy and risk modules.
 - [x] Add baseline CI and forbidden-capability checks.
-- [ ] Obtain green exact-head CI and merge the foundation pull request.
+- [x] Obtain green exact-head CI and merge the foundation pull request.
 
 ## Phase 1 — Market data and deterministic research
 
 - [x] Implement Kraken asset-pair discovery and pair normalisation.
 - [x] Add scheduled-cycle leases and order-intent idempotency primitives.
 - [ ] Ingest validated daily and hourly OHLC data.
+  - [x] Define supported 60-minute and 1,440-minute storage intervals.
+  - [ ] Wire scheduled public fetches, interval-specific quality gates and persistence.
 - [ ] Add idempotent D1 persistence, gap detection and repair.
+  - [x] Add immutable hashed batch and candle persistence.
+  - [x] Add strict expected-range gap detection and Kraken REST-horizon classification.
+  - [ ] Add scheduled gap repair and an approved historical source for data outside Kraken's REST horizon.
 - [ ] Build fee/slippage-aware backtest engine.
 - [ ] Add benchmark comparisons: AUD cash, BTC hold and equal-weight hold.
 - [ ] Produce repeatable research reports and signed strategy configurations.

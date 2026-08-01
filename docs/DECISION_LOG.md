@@ -27,3 +27,9 @@ Begin with transparent momentum rotation, fee-aware backtesting and hard risk co
 ## 2026-07-26 — Cloudflare foundation
 
 Use Cloudflare Workers and D1 to minimise infrastructure cost while preserving hosted scheduling, secrets, audit storage and deployment controls.
+
+## 2026-07-26 — Immutable market-data ledger
+
+Persist accepted committed 60-minute and daily candles as append-only D1 records with deterministic SHA-256 digests. Exact retries are idempotent, but a reused batch or candle identity with different content is a hard conflict. Every candle is additionally required by D1 to match its source batch's venue, symbols, interval and recorded time range. Ordinary updates and deletes are rejected by database triggers so research evidence cannot be silently rewritten.
+
+Kraken REST is not treated as a complete historical archive. Its documented 720-row response includes the current uncommitted row, so gap repair assumes no more than 719 committed intervals remain recoverable. Older gaps must use a separately approved reproducible source, progressive collection or explicit exclusion from research.

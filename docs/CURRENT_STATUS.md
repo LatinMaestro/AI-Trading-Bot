@@ -1,40 +1,42 @@
 # Current status
 
-Last verified: 26 July 2026 (Australia/Brisbane)
+Last verified: 1 August 2026 (Australia/Brisbane)
 
-## Repository state
+## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Foundation pull request: #1, `agent/phase-0-foundation` into `main`
-- State: draft and intentionally unmerged
+- Verified base `main`: `7db2a101819d3066689668897579b84368411dc7`
+- Pull requests #1, #2 and #3 are repaired, exact-head validated and squash-merged.
+- This tree reconstructs pull request #4, immutable market-candle persistence and gap classification, directly on that verified base.
+- At reconstruction time, 87 draft pull requests remained, beginning with #4, on historical stacked ancestry. Each must be recomposed as a focused delta onto the latest verified `main`; stale ancestry must not be merged wholesale.
 - Live deployment: none
 - Credentials: none
 - Funds: none
 - Wallet connection: none
 
-## Verified foundation checks
+## Exact merged evidence
 
-- 12 Node tests pass for strategy selection, risk limits, live fail-closed behaviour, monotonic Kraken nonces, committed-candle parsing and executable-order rejection.
-- Strict TypeScript source checking passes with Worker/D1 declarations.
-- Forbidden-capability scan passes.
-- The D1 migration applies successfully and creates the expected tables and indexes.
-- Preview and production Cloudflare configuration both parse with `TRADING_MODE=paper` and `LIVE_TRADING_ENABLED=false`.
-- Exact-head review corrected two exchange defects before merge: non-monotonic nonce generation and inclusion of Kraken's uncommitted final OHLC candle.
+- PR #1 run [30683491866](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30683491866): locked install and lockfile reproduction, Wrangler paper types, strict TypeScript, 12 tests, paper dry-run and forbidden-capability scan passed.
+- PR #2 run [30685163521](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30685163521): the same required gates passed with 25 tests.
+- PR #3 run [30685331786](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30685331786): the same required gates passed with 33 tests.
+- The exact-head result for this reconstructed PR #4 must be read from GitHub Actions; this document does not assert an unexecuted check.
 
-## External validation blocker
+## Candle-persistence candidate
 
-GitHub Actions runs currently fail before any job step starts and provide no job log. The account's private-repository Actions capacity is known to be unavailable until 1 August 2026. Full `npm install`, Wrangler-generated binding types and `wrangler deploy --dry-run` therefore remain unverified on GitHub exact head.
+- Adds immutable SHA-256-addressed public market-data batches and committed 60-minute/daily candles.
+- D1 independently enforces candle-to-source venue, symbol, interval and time-range bindings.
+- Exact retries are idempotent; content conflicts, updates and deletes fail closed.
+- Gap detection rejects malformed ranges and current/uncommitted intervals, and separates Kraken-REST-repairable history from unavailable history.
+- Adds migration and regression coverage without connecting the candidate to execution or live authority.
 
-Do not merge pull request #1 until a fresh exact-head CI run completes successfully.
+## Authoritative runtime boundary
 
-## Work permitted while Actions is unavailable
+- Deterministic long-only spot decisions only.
+- `BTC/AUD` and `ETH/AUD` only, using hourly runtime candles.
+- At most one open position; otherwise AUD cash.
+- Paper mode remains authoritative and live order transmission remains disabled.
+- No intelligence system or language model may approve or submit an order.
 
-Continue focused, non-live work that can be validated without GitHub Actions, preferably as stacked draft branches or documentation/research slices:
+## Next action
 
-1. Phase 1 market-data contracts, fixtures and pair normalisation.
-2. D1 cycle-lease and idempotency design/tests.
-3. Fee/slippage-aware backtest specification and pure calculation modules.
-4. Tax-record export schema and synthetic fixtures.
-5. Security and incident runbooks.
-
-Do not deploy, request credentials, create an exchange account, move funds or enable live execution.
+Run the complete exact-head PR #4 workflow, inspect every job and log, repair any real failure, and merge only a green reviewed head. Then reconstruct PR #5 as the next focused dependency.
