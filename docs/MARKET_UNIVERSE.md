@@ -108,8 +108,8 @@ Strict TypeScript source checking passes for the universe contracts, reconstruct
 
 This contract does not yet:
 
-- ingest scheduled venue metadata or official lifecycle announcements;
-- establish a complete historical source for all listing and delisting events;
+- capture and persist scheduled official lifecycle source payloads;
+- backfill complete listing, trading-status, delisting and Australian-availability history;
 - derive cross-pair Australian-dollar valuation paths;
 - calibrate tier limits by venue, period, pair and portfolio scale;
 - persist signed universe policies or generated snapshots;
