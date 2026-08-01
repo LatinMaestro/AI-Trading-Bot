@@ -211,7 +211,9 @@ test("prepares a deterministic fixed-statement immutable batch", async () => {
   );
 
   const assessmentRecord = input.assessmentRecords[0];
-  assert.notEqual(assessmentRecord, undefined);
+  if (assessmentRecord === undefined) {
+    throw new Error("Expected one assessment record");
+  }
   const reorderedPolicy: ExternalIntelligencePolicy = {
     maximumItems: policy.maximumItems,
     minimumCredibilityBps: policy.minimumCredibilityBps,
@@ -247,7 +249,9 @@ test("persists exact retries atomically with commit membership evidence", async 
   assert.equal(count(db, "external_intelligence_corrections"), 1);
   assert.equal(count(db, "external_intelligence_assessments"), 1);
   const assessment = prepared.batch.assessmentRecords[0]?.assessment;
-  assert.notEqual(assessment, undefined);
+  if (assessment === undefined) {
+    throw new Error("Expected one prepared assessment");
+  }
   assert.equal(
     (
       db
@@ -305,7 +309,9 @@ test("changed item identity aborts the complete batch without orphaned provenanc
 test("invalid assessments and source-contract mismatches fail before persistence", async () => {
   const input = await completeInput();
   const assessmentRecord = input.assessmentRecords[0];
-  assert.notEqual(assessmentRecord, undefined);
+  if (assessmentRecord === undefined) {
+    throw new Error("Expected one assessment record");
+  }
   await assert.rejects(
     prepareExternalIntelligencePersistence({
       ...input,
