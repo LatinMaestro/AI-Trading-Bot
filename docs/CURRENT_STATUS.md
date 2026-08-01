@@ -5,9 +5,9 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified `main`: `fa30367628911642612d6144db13ba6be40463d1`
-- Pull requests #1 through #4 are repaired, exact-head validated and squash-merged.
-- This tree adopts the five-year aggressive research mandate as a documentation and governance change only.
+- Verified base `main`: `09f208d22946780c709f8230a99ed791af90a424`
+- Pull requests #1 through #5 are repaired, exact-head validated and squash-merged.
+- This tree reconstructs pull request #6 as an execution-aware research calculation primitive directly on that verified base.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -20,15 +20,17 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - PR #2 run [30685163521](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30685163521): the same required gates passed with 25 tests.
 - PR #3 run [30685331786](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30685331786): the same required gates passed with 33 tests.
 - PR #4 run [30687339258](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30687339258): locked validation passed with 42 tests, immutable candle-provenance checks, paper dry-run, forbidden-capability scan and current-tree secret scan.
-- The exact-head result for the reconstructed PR #5 must be read from GitHub Actions; this document does not assert an unexecuted check.
+- PR #5 run [30687528855](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30687528855): locked validation passed with 42 tests, paper dry-run, forbidden-capability scan and current-tree secret scan.
+- The exact-head result for reconstructed PR #6 must be read from GitHub Actions; this document does not assert an unexecuted check.
 
-## Authoritative research direction
+## Execution-backtest candidate
 
-- The aspirational objective is US$200 toward US$1,000,000 within five years of first authorised live-capital activation.
-- The reference path requires approximately 449.28% annual or 15.25% monthly compound growth and may result in complete loss of the approved allocation.
-- Research is market-cap agnostic and may evaluate concentrated, high-volatility and high-turnover spot candidates only with authoritative survivorship-safe data and realistic after-cost evidence.
-- Reports must include objective-path, terminal-wealth, capacity, drawdown and ruin evidence.
-- The objective is not a forecast, guarantee, or permission to weaken custody and operational controls.
+- Adds a pure deterministic target-weight engine with explicit signal and later execution timestamps.
+- Models maker/taker fees, spread, adverse selection, taker slippage, square-root impact, participation limits, minimum orders, cash reserves and missed fills.
+- Sells reductions before buys and scales cash-constrained multi-asset buys proportionally.
+- Invalid chronology, missing marks, duplicate markets or targets, gross spot targets above 100%, negative cash and short positions fail closed.
+- Synthetic fixtures validate arithmetic and safety invariants only; no profitability, strategy-selection or runtime authority is claimed.
+- Venue calibration, precision, multi-event order lifecycle, historical universe membership and objective-risk analysis remain separate tasks.
 
 ## Authoritative runtime boundary
 
@@ -38,13 +40,11 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - Paper mode remains authoritative and live order transmission remains disabled.
 - No intelligence system or language model may approve or submit an order.
 
-## Venue direction
+## Known integration gap
 
-- Kraken remains the primary foundation adapter because current official permissions separate queries/order management from deposit and withdrawal authority.
-- CoinJar Exchange is a research comparison candidate because its current official API documentation separates `trades` from transfer-capable `allaccess`; all required reads and unattended-use terms remain unproven.
-- CoinSpot remains a secondary comparison candidate; withdrawal endpoints must remain disabled and permission/reconciliation evidence is incomplete.
-- No additional venue adapter, account, terms, credential or live authority is approved by this document.
+- `docs/EXTERNAL_INTELLIGENCE.md` is not yet present on merged `main`; external-intelligence work remains staged later and must not be reported as integrated.
+- No external-intelligence source may approve or submit an order when that work is integrated.
 
 ## Next action
 
-Run complete exact-head PR #5 validation and merge only a green reviewed head. Then reconstruct PR #6 as the next focused dependency.
+Run the complete exact-head PR #6 workflow, inspect every job and log, repair any real failure, and merge only a green reviewed head. Then reconstruct PR #7 as the next focused dependency.

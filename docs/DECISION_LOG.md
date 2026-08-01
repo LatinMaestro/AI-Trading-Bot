@@ -43,3 +43,11 @@ The universe is market-cap agnostic and may include approved blue chips, mid-cap
 The user accepts the possible complete loss of the approved allocation. This capital-risk direction does not weaken operational safety: no leverage, debt, negative-balance strategy, automatic top-up, withdrawal authority, transfer authority, wallet signing, permission bypass or access to other funds is permitted.
 
 Promotion requires objective-path reporting, risk-of-ruin and terminal-wealth analysis, realistic execution costs, survivorship-safe universe reconstruction, walk-forward evidence and a signed risk configuration. The target remains aspirational and must never be represented as promised or probable.
+
+## 2026-08-01 — Deterministic execution-aware backtest primitive
+
+Use a pure, runtime-disconnected target-weight engine to model maker/taker fees, spread, adverse selection, taker slippage, square-root price impact, participation limits, minimum orders, cash reserves and explicit missed fills.
+
+Sells execute before buys, cash-constrained buys scale proportionally, and invalid chronology, missing marks, duplicate markets or targets, gross spot targets above 100%, negative cash and short positions fail closed.
+
+Synthetic fixtures prove arithmetic and safety invariants only. Strategy conclusions require time-appropriate venue, pair, universe-tier and equity-scale calibration plus survivorship-safe market evidence. This primitive grants no strategy selection, runtime, deployment or order authority.
