@@ -297,9 +297,10 @@ export async function prepareRedditTransientPostBatch(
   for (const observation of observations) {
     await assertObservation(observation, batch.sourceId, recordedAtMs);
     if (
-      observation.sourceContractSha256 !== batch.sourceContractSha256
+      observation.sourceContractSha256 !== batch.sourceContractSha256 ||
+      observation.captureId !== batch.captureId
     ) {
-      throw new Error("Reddit observation uses the wrong source contract");
+      throw new Error("Reddit observation uses the wrong contract or capture");
     }
   }
   const observationsJson = JSON.stringify(observations.map(safeObservation));
