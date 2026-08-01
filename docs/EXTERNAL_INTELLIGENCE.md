@@ -129,6 +129,12 @@ The parser re-verifies payload length and SHA-256, accepts exactly one bounded U
 
 Every item remains a neutral `other` event scoped to the non-tradable `SEC.REGULATOR` marker until a separately reviewed deterministic entity/event linker exists. It cannot pause new risk, create a positive research candidate, approve an order or submit an order. Automated requests require a truthful contact-bearing User-Agent supplied at runtime; no contact address is committed.
 
+## RBA media-release RSS boundary
+
+The official RBA media-release RSS feed is an approved scheduled regulator source. Its contract requires digest-only retention, RBA attribution, the published copyright terms and no model training.
+
+The parser reproduces capture and payload identities, accepts one bounded UTF-8 RSS root and canonical RBA media-release identifiers, and retains only deterministic identity, chronology and digests. Titles and raw XML are transient. Items remain neutral `macro` evidence under non-tradable `AUD.MACRO`; they cannot pause new risk, create positive candidates or grant order authority.
+
 ## Planned implementation
 
 1. [x] Persist immutable intelligence items and assessments.
@@ -136,6 +142,7 @@ Every item remains a neutral `other` event scoped to the non-tradable `SEC.REGUL
 3. [x] Add registry-bound bounded feed polling and authenticated webhook payload acquisition.
 4. [ ] Add approved source manifests, source-specific parsing, provider signature implementations and deployed endpoints.
    - [x] Add a scheduled SEC press-release RSS manifest and deterministic metadata-only normaliser.
+   - [x] Add a scheduled RBA media-release RSS manifest and neutral metadata normaliser.
    - [ ] Add further approved source manifests, source-specific parsing, provider signature implementations and deployed endpoints.
 5. [ ] Add compliant Reddit OAuth collection with adaptive rate limiting.
 6. [ ] Add minute-level collectors and queue-backed deduplicated processing.
@@ -146,7 +153,7 @@ Every item remains a neutral `other` event scoped to the non-tradable `SEC.REGUL
 
 ## Current limitation
 
-The persistence, reaction and generic acquisition-transport boundaries plus one scheduled SEC RSS manifest and neutral metadata-only parser are implemented. No truthful SEC runtime contact, deployed SEC collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
+The persistence, reaction and generic acquisition-transport boundaries plus scheduled SEC and RBA RSS manifests with neutral metadata-only parsers are implemented. No truthful SEC runtime contact, deployed SEC collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
 
 ## Official references
 
