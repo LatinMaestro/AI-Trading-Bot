@@ -295,3 +295,10 @@ Route the exact every-minute external-intelligence schedule and existing 15-minu
 Collection remains disabled unless `EXTERNAL_INTELLIGENCE_ENABLED` is exactly `true`, the runtime is fail-closed paper mode and one bounded reviewed source contract is supplied. Configure bounded batches, retries, serial consumer concurrency and a DLQ. Unknown schedules, queue identities, missing bindings and non-paper authority fail closed.
 
 Preserve BTC/AUD and ETH/AUD as the complete runtime pair scope. Production declares empty Queue and Cron configuration. Repository configuration and dry-run validation do not create resources or deploy a Worker; no collector, credential, order authority or live authority is activated.
+
+
+## 2026-08-02 — Content-addressed paper intelligence activation manifest
+
+Generate any Kraken maintenance paper activation candidate from the exact reviewed source-evidence SHA-256, approval time, effective time and finite expiry. The expiry cannot exceed 366 days after the effective time. Bind the resulting enabled version-1 source contract to the exact minute Cron, Queue name and paper deployment target, then content-address both the canonical contract and complete manifest.
+
+The manifest is non-activating. Do not commit a real evidence digest, enabled runtime variable or activation configuration. Provider terms, hosted resources, deployment and collection remain explicit owner gates under the paper activation runbook. Production remains disabled with no Queue or Cron resources, and external intelligence remains unable to approve or submit an order.
