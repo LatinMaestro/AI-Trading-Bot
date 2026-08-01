@@ -1,0 +1,330 @@
+# Decision log
+
+## 2026-07-26 — Private repository and hosted-only development
+
+Use `LatinMaestro/AI-Trading-Bot`. Development is performed through GitHub and hosted services rather than requiring the user's computer to run the application.
+
+## 2026-07-26 — Spot-only scope
+
+Exclude leverage, margin, futures, perpetuals, options, borrowing, lending, staking and shorting. The growth objective does not override this boundary.
+
+## 2026-07-26 — No wallet custody
+
+Do not connect MetaMask or request wallet signing authority. The user's ETH on Polygon remains under user control.
+
+## 2026-07-26 — Kraken primary venue
+
+Choose Kraken as the primary implementation because it exposes granular API permissions and key introspection. Higher fees are accepted initially in exchange for enforceable withdrawal exclusion and mature API behaviour.
+
+## 2026-07-26 — Unsafe venue credentials excluded
+
+Do not use a venue for unattended execution when its selected API key grants transfer, withdrawal, address-management or unrestricted account control. A future venue may be reconsidered only after current documentation and programmatic permission checks prove that trading authority can be isolated from custody authority.
+
+## 2026-07-26 — Deterministic baseline before adaptive AI
+
+Begin with transparent strategies, fee-aware backtesting and hard operational controls. Adaptive model selection is a later gated enhancement, not a substitute for evidence.
+
+## 2026-07-26 — Cloudflare foundation
+
+Use Cloudflare Workers and D1 to minimise infrastructure cost while preserving hosted scheduling, secrets, audit storage and deployment controls.
+
+## 2026-07-26 — Immutable market-data ledger
+
+Persist accepted committed 60-minute and daily candles as append-only D1 records with deterministic SHA-256 digests. Exact retries are idempotent, but a reused batch or candle identity with different content is a hard conflict. Every candle is additionally required by D1 to match its source batch's venue, symbols, interval and recorded time range. Ordinary updates and deletes are rejected by database triggers so research evidence cannot be silently rewritten.
+
+Kraken REST is not treated as a complete historical archive. Its documented 720-row response includes the current uncommitted row, so gap repair assumes no more than 719 committed intervals remain recoverable. Older gaps must use a separately approved reproducible source, progressive collection or explicit exclusion from research.
+
+## 2026-07-26 — Five-year aggressive mandate
+
+Optimise strategy research for the aspirational objective of growing US$200 toward US$1,000,000 within five years of first authorised live-capital activation. Do not silently substitute a slow multi-decade wealth plan.
+
+The universe is market-cap agnostic and may include approved blue chips, mid-caps, micro-caps and newly listed spot assets. Candidate research may use concentrated positions, up to 100% gross spot exposure, hourly decisions, multiple daily rebalances and maker or taker execution when realistic after-cost evidence supports them.
+
+The user accepts the possible complete loss of the approved allocation. This capital-risk direction does not weaken operational safety: no leverage, debt, negative-balance strategy, automatic top-up, withdrawal authority, transfer authority, wallet signing, permission bypass or access to other funds is permitted.
+
+Promotion requires objective-path reporting, risk-of-ruin and terminal-wealth analysis, realistic execution costs, survivorship-safe universe reconstruction, walk-forward evidence and a signed risk configuration. The target remains aspirational and must never be represented as promised or probable.
+
+## 2026-08-01 — Deterministic execution-aware backtest primitive
+
+Use a pure, runtime-disconnected target-weight engine to model maker/taker fees, spread, adverse selection, taker slippage, square-root price impact, participation limits, minimum orders, cash reserves and explicit missed fills.
+
+Sells execute before buys, cash-constrained buys scale proportionally, and invalid chronology, missing marks, duplicate markets or targets, gross spot targets above 100%, negative cash and short positions fail closed.
+
+Synthetic fixtures prove arithmetic and safety invariants only. Strategy conclusions require time-appropriate venue, pair, universe-tier and equity-scale calibration plus survivorship-safe market evidence. This primitive grants no strategy selection, runtime, deployment or order authority.
+
+## 2026-08-01 — Survivorship-safe dynamic research universe
+
+Use immutable, time-bounded market definitions, lifecycle events and quality observations to reconstruct eligibility strictly from evidence available by each signal time. Classify eligible markets deterministically into established, high-volatility and new-listing tiers, and retain every candidate with explicit reason codes.
+
+TypeScript validation and D1 constraints require lower-case SHA-256 payload digests. Delisting closes a listing era; relisting starts a new era and requires fresh evidence that the market is available in Australia. Synthetic fixtures prove reconstruction invariants only. This research boundary grants no strategy selection, runtime, deployment or order authority.
+
+## 2026-08-01 — Horizon-bound objective and ruin-risk metrics
+
+Use a deterministic constant-compounding reference path for objective progress and report remaining multiple plus required forward rates without treating the path as a forecast.
+
+Separate terminal capital-loss frequency from maximum-drawdown breach frequency. Every scenario must declare a common positive cadence and span exactly the configured five-year objective horizon; equal array length alone is insufficient evidence. Derived non-finite reference values, multiples or compound rates fail closed.
+
+Seeded moving-block bootstrap output is a reproducible scenario-frequency estimate, not a probability promise. It cannot repair survivorship bias, look-ahead leakage, incomplete costs or inadequate market coverage, and grants no strategy-selection or runtime authority.
+
+## 2026-08-01 — Mandatory evidence-bound benchmarks and reports
+
+Every candidate evaluation must include aligned AUD cash, BTC hold, survivorship-safe equal-weight hold and five-year objective-path benchmarks. Tradable benchmarks use AUD. A converted objective path must be built from positive time-aligned FX rates and bind the same lower-case SHA-256 FX source digest recorded in report provenance.
+
+Research reports content-address exact code, data, universe, strategy, execution, objective and benchmark configuration evidence. Objective progress, scenario horizon, probability nesting and percentiles must be internally consistent. A report digest proves content identity only; it grants no approval, selection, activation or order authority.
+
+## 2026-08-01 — Time-correct universe ingestion and AUD valuation
+
+Prepare content-addressed public universe evidence from separately typed metadata, market-quality, official lifecycle and AUD-conversion sources. Definitions and observations may never claim availability before the source fetch that made them knowable. Future-effective official lifecycle events may be retained once published but do not apply before their effective time; snapshot absence never implies delisting.
+
+AUD conversion uses the shortest fresh simple path, rejects missing, multiple, chronologically invalid or numerically invalid paths, and binds every contributing digest. Calibration summaries remain venue-specific evidence and reject mixed venues, duplicate natural identities and conflicting payloads. They do not automatically change policy or grant runtime authority.
+
+## 2026-08-01 — Explicit tax lots and content-addressed exports
+
+Preserve one factual record for every crypto acquisition, disposal, crypto fee, transfer, income, expense or adjustment with a canonical UTC timestamp, the matching Australian local date in a validated Australian IANA time zone, AUD value and source/valuation digests.
+
+Do not choose tax lots automatically. Every disposal must be fully linked to explicit acquisition records through a versioned selection reference before a provisional CGT worksheet is produced. Asset mismatches, later acquisitions, non-reciprocal linked records and over-allocation fail closed.
+
+Export transactions, allocation outcomes and Australian financial-year summaries as deterministic CSV and canonical machine-readable content with one SHA-256 bundle digest. Spreadsheet formula-like text is neutralised. The digest proves content identity only; professional tax review remains mandatory.
+
+## 2026-08-01 — Broad containment, owner-only live recovery
+
+Any authorised responder may stop schedules or activate the kill switch. A responder already authorised for exchange order management may cancel an unexpected open order. Provider-side credential revocation is performed by the owner or provider support.
+
+All SEV-1 and SEV-2 incidents disable live operation and require exchange-authoritative reconciliation, redacted evidence digests, root-cause or capability removal, exact-head validation, paper/shadow regression evidence and no unresolved high-severity issue.
+
+Only the owner may restore live operation. Recovery approval does not increase capital, broaden credentials, approve a new venue or select a different strategy.
+
+## 2026-08-01 — Atomic committed universe evidence
+
+Persist each prepared universe-ingestion batch through one transactional nine-statement D1 batch. The content-addressed header declares source, definition, lifecycle-event and quality-observation counts; a database-enforced commit marker is accepted only when those memberships exactly match.
+
+Headers, memberships and commit markers are immutable. Once committed, no new membership may be appended, while an exact retry remains idempotent. Conflicting identity reuse, venue-mismatched membership and partial writes fail closed. A commit marker proves persistence completeness only and grants no strategy-selection, runtime, deployment or order authority.
+
+## 2026-08-01 — Content-addressed Kraken public quality evidence
+
+Use Kraken's official `assetVersion=1` AssetPairs, Ticker and Depth contracts for research-universe source evidence. Hash the exact successful response text and retain its public URL and fetch time before typed parsing.
+
+Reject redirects, unexpected media types, legacy or ambiguous pair keys, malformed envelopes and numeric values, incomplete requested ticker sets, crossed markets, unordered books, unsafe times and non-finite arithmetic. Derive quote turnover from 24-hour base volume and VWAP. Derive spread and conservative two-sided capacity from one coherent L2 book. Candidate impact remains unavailable when displayed depth cannot fill both sides.
+
+This slice stops before scheduled persistence. Complete observations still require committed candle counts, annualised volatility, fresh AUD conversion and official lifecycle evidence. It adds no private endpoint, credential, strategy-selection or order authority.
+
+## 2026-08-01 — Bounded scheduled Kraken universe collection
+
+Run content-addressed public AssetPairs, Ticker and rotating Depth collection inside the lease-protected scheduled cycle before strategy evaluation. Space every HTTP attempt, apply bounded retry and timeout controls, enforce the response-size limit while streaming, and persist only through the database-verified atomic universe boundary.
+
+Missing or ambiguous AUD valuation excludes the affected pair. Malformed, oversized, redirected or conflicting evidence fails the slot. Actual request attempts, selected and skipped counts, and the committed batch identity enter cycle audit evidence.
+
+Until committed D1 candle counts and volatility are joined, observations retain an ineligible history state. The approved BTC/AUD and ETH/AUD strategy path remains separate; this public collection adds no private API, credential, strategy-selection or order authority.
+
+
+## 2026-08-01 — Signal-time D1 candle-history evidence
+
+Join the bounded Kraken public-universe cycle to immutable committed D1 candles using only evidence recorded and closed by the scheduled signal time. Query 60-minute and 1,440-minute counts and contiguity, retain at most the latest 366 daily closes, and require that sample to end at the latest committed daily candle.
+
+Missing, incomplete, gapped, stale, shifted, future-available or non-finite history fails closed. Compute annualised volatility only from verified contiguous closes. Bind exact history and AUD-conversion provenance into the quality digest, restrict history loading to the bounded selected rotation, and reject material Ticker/Depth time skew.
+
+This evidence supports research-universe quality assessment only. It does not change the approved BTC/AUD and ETH/AUD strategy path or grant strategy-selection, deployment, private-API or order authority.
+
+
+## 2026-08-01 — Allowlisted official lifecycle evidence
+
+Accept lifecycle declarations only when they bind an exact content digest to a Kraken-owned listing article, support article or status incident/API document. Source class controls permitted event types and geographic scope: regional restrictions cannot become global delistings, and global listing announcements do not prove Australian availability.
+
+Do not derive lifecycle events from free text with a language model or keyword heuristic. Reviewed declarations state canonical pair, event type, scope, effective time and publication time. Future-effective events are knowable once published but apply to reconstruction only at their effective time.
+
+Audit listing, trading-status and Australian-availability coverage independently for every expected pair, and reject declarations outside that audited set. Missing coverage blocks survivorship-safe venue-wide claims. Historical backfill and scheduled immutable raw-source capture remain separate work.
+
+## 2026-08-01 — Daily immutable Kraken lifecycle source capture
+
+At the 00:00 UTC scheduled slot, capture the fixed Kraken asset-listing index, delistings index, status incidents feed and scheduled-maintenance feed before public universe evaluation. Use public HTTPS only, bounded timeout/retry/spacing controls, strict media types, a one MiB streaming ceiling and exact UTF-8 byte round-tripping.
+
+Store each distinct exact payload text once, keyed by its SHA-256 and original byte length. Preserve every fetch as a separate immutable capture binding source kind, exact URL, fetch time, media type and bounded cache headers to that payload. The one MiB ceiling remains below D1's documented two MB string/row limit and permits one bounded statement per payload without JSON expansion.
+
+Persist payloads, capture headers and database-verified commit markers in one D1 transactional batch; reject changed identity reuse, commits before fetch time and ordinary mutation. Raw capture does not create lifecycle events and uses no free-text AI extraction. Individual listing, delisting and regional-availability documents still require deterministic discovery, exact capture and reviewed pair-level declarations. This public evidence capability adds no credential, private API, account, wallet, fund or order authority.
+
+## 2026-08-01 — Deterministic Kraken lifecycle document discovery
+
+Discover candidate lifecycle documents only from the exact preserved Kraken listing and delisting index payloads after verifying their SHA-256 identities again. Parse bounded quoted anchor `href` attributes outside comments and raw-text elements, and accept only source-specific canonical Kraken Blog listing articles, listing-index pagination pages and Kraken Support article targets.
+
+Bind every target to its exact index capture and payload digest, deduplicate and sort deterministically, and content-address the complete discovery result. Reject non-HTTPS, untrusted, queried, fragmented, encoded, cross-index or excessively large link sets.
+
+Do not infer lifecycle meaning from support titles, link text or URL words. Support targets remain generic until reviewed, captured and explicitly classified. This discovery step creates no lifecycle declarations and adds no private endpoint, credential, account, wallet, fund or order capability.
+
+
+## 2026-07-27 — Near-real-time external intelligence boundary
+
+Collect official announcements, approved news and compliant Reddit observations through webhook, stream or scheduled polling adapters with explicit publication, receipt, availability and assessment times. “Live” means measured near-real-time delivery; source publication and provider delivery delays are never hidden.
+
+An authoritative severe negative event may pause new risk while deterministic market, account and portfolio checks run. Positive news requires authoritative or independent reputable corroboration and can create only a research candidate. Reddit-only and rumour-only evidence remains a watch signal regardless of volume. External intelligence never submits or approves an order.
+
+Reddit access must use approved API access, truthful OAuth identity, current rate limits, minimal permitted retention, deletion handling and no model-training permission. Publisher content requires a versioned licence/retention/attribution contract. Language-model output is an untrusted research draft and cannot cross the deterministic order boundary.
+
+
+## 2026-07-27 — Immutable external-intelligence evidence and source contracts
+
+Persist each external-intelligence slice as one content-addressed D1 batch containing versioned source contracts, immutable items, append-only corrections, deterministic assessment records, exact memberships and a final database-verified commit marker. Exact retries are idempotent; changed natural identities, source-contract mismatches, invalid chronology or incomplete memberships fail closed.
+
+Every source contract binds provider and publisher identity, allowed acquisition modes, content licence digest, attribution, retention, deletion handling, effective dates and explicit model-use prohibition. Reddit full-content storage remains disabled by default, finite retention and deletion handling are mandatory, and Reddit-only evidence cannot cross the watch boundary.
+
+Corrections, retractions and deletions create new immutable records rather than rewriting prior evidence. Assessments must reproduce exactly from referenced items and policy before persistence. This slice adds no provider connection, credential, collector, queue, private exchange API or order authority.
+
+## 2026-07-27 — Registry-bound external-intelligence acquisition transport
+
+Acquire approved official exchange, regulator, issuer and publisher feed or webhook payloads only through a verified, enabled and effective source-contract version whose origin and acquisition mode match the target. Keep Reddit outside this transport and reserve it for a separately approved OAuth collector.
+
+Polling rejects redirects, credential-bearing query parameters, unsupported media types, invalid lengths, empty or oversized bodies and unsafe cache validators. Use conditional requests, one bounded transient retry, bounded `Retry-After` handling and one deadline spanning request, streamed-body receipt and payload hashing. Authenticated webhooks require a provider-specific signature verifier before payload availability.
+
+Record request, receipt and availability times, measured delays, exact byte length, SHA-256, cache validators, contract digest and deterministic capture identity. Raw bytes remain transient unless the exact contract permits full retention. Acquisition does not parse events, classify evidence, approve risk or submit orders.
+
+## 2026-07-27 — Normalised at-least-once external-intelligence queue
+
+Queue only source-contract-verified normalised intelligence records, acquisition metadata and content digests. Raw provider bytes and arbitrary binary content never enter the queue. Every queued item must bind the exact acquisition mode, payload digest, receipt time and availability chronology of its capture. The canonical message identity covers its source contract, evidence, deterministic assessment requests and enqueue time, and the envelope remains below a conservative 120,000-byte ceiling.
+
+The consumer verifies the canonical message, reproduces deterministic assessments from the referenced items and policy, and completes the existing content-addressed transactional D1 persistence before acknowledging delivery. Process at-least-once deliveries independently: acknowledge successful messages, retry failed messages with bounded exponential delay, and rely on database identity-conflict and exact-retry rules rather than assuming exactly-once transport.
+
+Advance conditional polling validators only after successful enqueue, confirmed not-modified handling or confirmed no-item normalisation. Queue or source failures remain explicit stale/delayed outcomes. Durable cache storage, minute Cron, Queue/DLQ bindings and deployed consumer wiring remain separate work. This queue cannot submit or approve orders and adds no credential, private exchange, fund, withdrawal, transfer, wallet or live-trading capability.
+
+
+## 2026-07-27 — Structured Kraken Status incident intelligence
+
+Bind the exact official Kraken unresolved-incidents JSON endpoint and Kraken Status page identity to a digest-only, one-minute polling source contract. Reproduce capture identity, require the contract to be active at capture time and enforce the shared one MiB transport boundary before parsing.
+
+Use only structured Statuspage identifiers, states and impact values. Major and critical unresolved incidents create authoritative negative network-incident evidence; minor and none remain neutral. Preserve provider display timestamps even when their precision places them slightly before creation timestamps, while requiring both to be no later than the update time.
+
+Hash update bodies without retaining or queueing raw text. The reserved KRAKEN.VENUE scope is not tradable, and this adapter grants no positive recommendation, strategy selection, deployment or order authority.
+
+
+## 2026-07-27 — Durable monotonic external-intelligence cache state
+
+Persist conditional `ETag` and `Last-Modified` validators in D1 by source ID so minute collectors retain transport state across Worker instances and restarts. Validator text shares the transport's 500-character ceiling; application validation rejects control characters while D1 independently blocks CR/LF header injection. Observation times are non-negative integers, and every write is verified by reading back the stored row.
+
+Exact retries at the same observation time are accepted only when the validator state is identical. Observation time may never regress, and a same-time changed validator is an identity conflict. A stale write is surfaced as an error rather than silently replacing or appearing to replace newer state.
+
+The collector remains responsible for saving cache state only after successful enqueue, confirmed not-modified handling or confirmed no-item normalisation. Cache validators are operational transport state, not authoritative market or intelligence evidence, and cannot classify an event, change exposure, approve an order or submit an order. This slice adds no provider credential, private exchange API, fund, withdrawal, transfer, wallet, leverage, derivative or live-trading capability.
+
+
+## 2026-08-01 — Provenance-bound lifecycle document capture
+
+Capture only canonical Kraken lifecycle targets produced by the deterministic discovery contract. Each bounded batch accepts at most ten HTML documents, verifies the discovery partitions, skips already committed source references, applies strict HTTPS host/path, redirect, media-type, timeout, response-size, byte-exact UTF-8 and cache-header controls, and commits nothing when any selected target fails.
+
+Persist each exact document payload content-addressably with an immutable capture header that binds source kind and URL, fetch time, discovery digest, originating committed index capture and originating index payload digest. Reproduce payload and capture digests before D1 persistence. Database constraints independently reject noncanonical paths, injected cache headers, changed commit identity, incomplete provenance, mutation and commits before fetch.
+
+This slice establishes the capture and persistence boundary only. Daily committed-source lookup, recursive discovery from captured listing-index pages and scheduled orchestration remain separate work. Public Kraken documents add no credential, private API, account, fund, wallet, withdrawal, transfer, leverage, derivative or order authority.
+
+## 2026-08-01 — Bounded recursive lifecycle document cycle
+
+After the daily fixed Kraken lifecycle sources commit, rotate deterministically through at most 32 latest committed listing-index page captures whose combined exact payloads do not exceed 8 MiB, and use those payloads as additional discovery sources. Prefer the root listing index, then the lowest page number, when the same target appears more than once; bind each selected target to the exact committed capture and payload that supplied it.
+
+Skip every already committed source reference and fetch at most ten remaining canonical HTML documents per daily run. A newly captured pagination page may extend discovery only on a later daily run after its commit marker exists, so recursion advances as a bounded durable frontier rather than an in-memory crawler. Outside the daily lifecycle slot, perform no document lookup, discovery or network work.
+
+Permit recursive provenance in D1 only when the parent is a committed `asset-listings-index-page` capture with the exact preserved payload digest. Record discovery, frontier and request counts in scheduled-cycle audit evidence before strategy evaluation. This public evidence path creates no lifecycle declaration and adds no credential, private API, account, fund, wallet, withdrawal, transfer, leverage, derivative or order authority.
+
+## 2026-07-28 — Scheduled SEC press-release metadata intelligence
+
+Use the SEC's official press-release RSS endpoint only through an enabled authoritative regulator contract that binds the exact SEC origin, scheduled-poll mode, digest-only retention, attribution, official RSS policy snapshot and model-training prohibition. Automated requests require a truthful contact-bearing User-Agent supplied at runtime; do not invent or commit that contact.
+
+Re-verify payload length and SHA-256 before bounded UTF-8 RSS parsing. Accept only one canonical RSS root, canonical current or legacy SEC press-release paths, matching GUIDs and publication times no later than receipt. Retain content-addressed identity, source URL and chronology, but never the title or raw XML.
+
+Until a separately reviewed deterministic entity/event linker exists, emit only neutral `other` evidence under the non-tradable `SEC.REGULATOR` scope. This source cannot pause new risk, create a positive candidate, approve an order or submit an order. No collector deployment, credential, provider account, paid term, private API, fund, wallet or live-trading capability is added.
+
+## 2026-07-28 — Scheduled RBA media-release metadata intelligence
+
+Use the official RBA media-release RSS feed only through an enabled authoritative regulator contract binding the exact origin, scheduled-poll mode, digest-only retention, required attribution, copyright terms and model-training prohibition.
+
+Re-verify capture identity, payload length and SHA-256 before bounded UTF-8 RSS parsing. Accept one canonical RSS root, exact media-release paths, matching GUIDs and publication times no later than receipt. Retain content-addressed identity, source URL and chronology, but never titles or raw XML.
+
+Emit only neutral `macro` evidence under non-tradable `AUD.MACRO`. The source cannot pause new risk, create a positive candidate, approve or submit an order. No collector, credential, paid service, private API, fund, wallet or live capability is added.
+
+
+## 2026-08-02 — Structured Kraken active-maintenance intelligence
+
+Use Kraken's official programmatic Status API active-maintenance endpoint as an account-free one-minute official-exchange source. Bind the exact Kraken Status identity and endpoint, reproduce capture and payload identities, and validate only bounded structured maintenance state, impact, schedule chronology and update identities.
+
+Retain provider names and update bodies only through content digests. Statuspage `maintenance`, `none` and `minor` impacts remain neutral; only structured `major` or `critical` active maintenance becomes negative `market-structure` evidence under non-tradable `KRAKEN.VENUE` scope and may request `pause-new-risk` through deterministic policy. Unknown values fail closed. The source cannot approve or submit an order and adds no deployment, credential, account, paid service, private API, funds, wallet or live-trading capability.
+
+
+## 2026-08-02 — OAuth-only adaptive Reddit acquisition
+
+Collect Reddit only through an approved OAuth Data API identity and the exact `oauth.reddit.com` origin. Require a truthful runtime User-Agent containing the actual Reddit username, and never return or persist the bearer token or User-Agent in capture evidence.
+
+Bind each Reddit source contract to metadata-only storage, required attribution, deletion handling, model-training prohibition and a maximum 48-hour retention period. Reproduce the contract digest, require the contract to be active at the scheduled slot and request time, and use the shared external-intelligence payload identity. Reject redirects, inconsistent lengths, invalid listings and unsafe chronology.
+
+The official Reddit Data API documentation rechecked on 2 August 2026 states a free-access limit of 100 QPM per OAuth client ID averaged over ten minutes. Convert response headers into bounded integer milliquery state, retain a ten-percent reserve, space requests by at least one second and honour bounded `Retry-After` responses without retaining their bodies.
+
+This slice provides bounded OAuth listing acquisition only. Post normalisation, provider-deletion sweeps/corrections, an approved Reddit app and deployed credentials remain pending. Reddit remains social/watch-only and cannot create a risk-on candidate, approve an order or submit an order. No account, credential, deployment, paid service, private exchange API, funds, wallet or live-trading capability is added.
+
+## 2026-08-02 — Purge-oriented transient Reddit post lifecycle
+
+Normalise Reddit listing and info responses only inside a transient, source-contract-bound boundary. Retain the canonical post fullname, subreddit and publication chronology needed to refresh availability; validate but discard titles, bodies, authors and provider permalinks.
+
+Reproduce the source-contract, capture, metadata and observation digests before use. Refresh no more than 100 exact post fullnames per bounded OAuth request. Missing, provider-removed, deleted or retention-expired observations create immediate purge actions, while the next sweep is bounded by both a fifteen-minute interval and the earliest deletion deadline.
+
+Do not send post-level Reddit observations through the immutable intelligence queue or correction ledger. Durable compliance evidence contains source-level time and aggregate counts only, with no post identifiers or content-derived evidence. Purge-enforced transient persistence and downstream invalidation remain separate required work. Reddit remains social/watch-only and cannot approve risk, select a strategy or submit an order.
+
+
+## 2026-08-02 — Purge-enforced transient Reddit persistence
+
+Store bounded Reddit post identity metadata only in a dedicated transient D1 table, never in the immutable intelligence ledger or durable Queue. Preserve the first deletion deadline across refreshes and require a batch-local authorization before any post row can be deleted. The expiry path runs independently of provider availability so an API failure cannot extend retention.
+
+After a provider removal or retention expiry, atomically remove transient rows, persist only source-level aggregate counts and timestamps, and invalidate downstream aggregate watch state. Immutable audits and watch events contain no post identifiers, account identifiers, provider content or content-derived hashes. Stable observation identity enables exact retries without extending retention; changed immutable metadata fails closed.
+
+This storage path remains social/watch-only. It cannot create a positive research candidate, pause risk, approve an order or submit an order. Approved OAuth credentials and hosted deployment remain owner-gated separate work.
+
+
+## 2026-08-02 — Scheduled AUSTRAC media-release regulator intelligence
+
+Use AUSTRAC's official media-release RSS feed as an account-free scheduled Australian regulator source. Bind the exact feed, publisher/provider identity, digest-only retention, required attribution, reviewed AUSTRAC copyright snapshot and model-training prohibition. AUSTRAC currently documents RSS-reader polling and attributed reuse of AUSTRAC-produced material.
+
+Reproduce source-contract and capture identities, re-verify exact payload length and SHA-256, and accept only official canonical AUSTRAC release path families, matching URL GUIDs and strict publication chronology. Retain identity, source URL, chronology and content digests, but never titles or raw XML.
+
+Emit only neutral `regulatory-action` evidence under non-tradable `AUSTRAC.REGULATOR`. Do not infer severity, direction or asset scope from titles. The source cannot pause risk, create a positive candidate, approve an order or submit an order. Because AUSTRAC has announced future RSS withdrawal, feed loss must surface as unavailable or stale; unsupported website scraping is not an allowed fallback.
+
+
+## 2026-08-02 — Scheduled Bitcoin Core announcement intelligence
+
+Use Bitcoin Core's official security and release announcement RSS feed as an account-free scheduled issuer source limited to the Bitcoin Core project's own software announcements. Bind the exact feed, origin, publisher/provider identity, digest-only retention, reviewed website licence snapshot and model-training prohibition.
+
+Reproduce active source-contract and exact capture identities, re-verify bounded payload length and SHA-256, and accept only canonical dated Bitcoin Core announcement URLs, matching URL GUIDs and strict publication chronology. Retain identity, source URL, chronology and content digests, but never titles or raw XML.
+
+Emit only neutral `other` evidence under non-tradable `BTC.CORE`. Do not infer severity, market direction or asset scope from titles. The source cannot pause risk, create a positive candidate, approve an order or submit an order.
+
+## 2026-08-02 — Fail-closed paper intelligence Cron and Queue runtime
+
+Route the exact every-minute external-intelligence schedule and existing 15-minute trading schedule through the module Worker scheduled handler. Bind the Kraken active-maintenance source, D1 conditional cache, Queue producer and per-message idempotent D1 consumer only in the `paper` environment.
+
+Collection remains disabled unless `EXTERNAL_INTELLIGENCE_ENABLED` is exactly `true`, the runtime is fail-closed paper mode and one bounded reviewed source contract is supplied. Configure bounded batches, retries, serial consumer concurrency and a DLQ. Unknown schedules, queue identities, missing bindings and non-paper authority fail closed.
+
+Preserve BTC/AUD and ETH/AUD as the complete runtime pair scope. Production declares empty Queue and Cron configuration. Repository configuration and dry-run validation do not create resources or deploy a Worker; no collector, credential, order authority or live authority is activated.
+
+
+## 2026-08-02 — Content-addressed paper intelligence activation manifest
+
+Generate any Kraken maintenance paper activation candidate from the exact reviewed source-evidence SHA-256, approval time, effective time and finite expiry. The expiry cannot exceed 366 days after the effective time. Bind the resulting enabled version-1 source contract to the exact minute Cron, Queue name and paper deployment target, then content-address both the canonical contract and complete manifest.
+
+The manifest is non-activating. Do not commit a real evidence digest, enabled runtime variable or activation configuration. Provider terms, hosted resources, deployment and collection remain explicit owner gates under the paper activation runbook. Production remains disabled with no Queue or Cron resources, and external intelligence remains unable to approve or submit an order.
+
+
+## 2026-08-02 — Correction-safe deterministic intelligence linking
+
+Bind external-intelligence evidence to a content-addressed reviewed topic registry that states exact entity keys, tradability and allowed event types. Unknown topics, entity drift, event drift, source-authority mismatch, future evidence, changed natural identities and changed correction-digest identities fail closed.
+
+Apply verified append-only corrections as an effective evidence view without rewriting immutable items. Content updates replace only effective payload/content digests; retractions and deletions remove the item from active clusters while retaining correction digests. Terminal corrections cannot be reversed by a later update.
+
+Cluster exact effective content only within the same topic, event type and stance. Select one deterministic representative per cluster, preferring authoritative over reputable over social evidence, so syndicated copies cannot inflate publisher corroboration. This remains pre-assessment research infrastructure; near-duplicate/repost manipulation controls, persistence integration and paper risk reactions remain separate reviewed work.
+
+## 2026-08-02 — Permitted-content repost and manipulation evidence
+
+Create near-duplicate fingerprints only from exact effective publisher content whose reviewed retention policy is `permitted-excerpt` or `permitted-full`. Reject digest-only, metadata-only and Reddit evidence. Verify the exact content digest before transient NFKC/lowercase tokenisation, discard raw text and retain only a bounded, content-addressed set of five-token shingle digests. A fingerprint cannot predate the correction-effective linkage it represents.
+
+Compare only evidence with the same reviewed topic, event type and stance. Use a content-addressed policy, bounded publication window, integer Jaccard threshold and deterministic complete-link clustering so a transitive similarity bridge cannot combine materially different stories. Exact and near-duplicate clusters each contribute one corroboration unit regardless of publisher count.
+
+Record rapid near-duplicate publication across multiple publishers as a `rapid-multi-publisher-repost` pattern with watch-only handling. This is evidence of coordination risk, not identity proof or an accusation of manipulation. Missing permitted fingerprints, changed identities, unsafe thresholds, future chronology and digest conflicts fail closed. Reddit post content, identifiers and content-derived hashes remain excluded under the transient deletion contract. This stage cannot classify an event, approve risk, submit an order or change paper/live state.
+
+
+## 2026-08-02 — Immutable paper-only external-intelligence pause gate
+
+Load only immutable integrated assessments whose effective reaction is `pause-new-risk`, whose assessment time is no later than the scheduled hourly decision time and whose age is at most one hour. Re-verify the complete linkage, manipulation-evidence and integrated-assessment artifact chain against its exact D1 rows before it can affect a paper decision; malformed, conflicting, future or over-cap evidence fails the cycle.
+
+Suppress only proposed paper `buy` actions, converting them to `hold` with zero target exposure. Preserve `sell` actions because a pause on new risk is not a forced-liquidation instruction. Record every fresh pause assessment as an immutable content-addressed `pause` risk event whose identity binds the complete proposed and resulting decisions, and bind the gate result plus exact assessment digests into the cycle audit.
+
+Research, shadow, validate and live modes remain disconnected. External intelligence cannot submit or approve an order, and no deployment, credential, provider activation, fund, wallet or live-execution capability is added.
