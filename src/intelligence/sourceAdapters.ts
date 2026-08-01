@@ -36,6 +36,7 @@ export interface ExternalIntelligenceFeedTarget {
   readonly sourceRef: string;
   readonly acquisitionMode: ExternalIntelligenceFeedAcquisitionMode;
   readonly acceptedContentTypes: readonly string[];
+  readonly userAgent?: string;
 }
 
 export interface ExternalIntelligenceWebhookTarget {
@@ -520,9 +521,12 @@ function requestHeaders(
   target: ExternalIntelligenceFeedTarget,
   cacheValidators: ExternalIntelligenceCacheValidators | undefined,
 ): Headers {
+  const userAgent =
+    target.userAgent ?? "AI-Trading-Bot-External-Intelligence/1";
+  assertCanonicalText("userAgent", userAgent);
   const headers = new Headers({
     Accept: target.acceptedContentTypes.join(", "),
-    "User-Agent": "AI-Trading-Bot-External-Intelligence/1",
+    "User-Agent": userAgent,
   });
   if (cacheValidators?.etag !== null && cacheValidators?.etag !== undefined) {
     const etag = canonicalHeader(cacheValidators.etag);
