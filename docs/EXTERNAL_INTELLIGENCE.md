@@ -61,7 +61,7 @@ The runtime must supply an approved OAuth access token and a truthful canonical 
 
 As rechecked against Reddit's official documentation on 2 August 2026, eligible free access is limited to 100 queries per minute per OAuth client ID, averaged over a ten-minute window. The transport converts `X-Ratelimit-Used`, `X-Ratelimit-Remaining` and `X-Ratelimit-Reset` into bounded integer milliquery state, preserves a ten-percent reserve, spaces requests by at least one second and defers without network access while the prior budget remains active. HTTP 429 requires a bounded `Retry-After` and produces an explicit rate-limited outcome without retaining the response body.
 
-Capture identity uses the shared external-intelligence payload contract and binds source, contract, mode, chronology, exact payload digest, byte length and media type. Full listing bytes remain transient and carry a deletion deadline only. Minimal post normalisation, recurring provider-deletion sweeps, immutable deletion corrections, approved account terms and deployed credentials remain separate work. Reddit evidence remains social/watch-only and cannot approve or submit an order.
+Capture identity uses the shared external-intelligence payload contract and binds source, contract, mode, chronology, exact payload digest, byte length and media type. Full listing bytes remain transient and carry a deletion deadline only. Minimal post normalisation and bounded OAuth info sweeps discard titles, bodies, authors and provider permalinks. Missing, provider-removed, deleted or expired posts produce immediate purge actions. Dedicated transient D1 persistence requires explicit per-operation deletion authorization, preserves the first deletion deadline, purges expired rows even when Reddit is unavailable and invalidates downstream aggregate watch state after removal. Immutable retention audits and watch-state events contain source-level counts and state only. Approved account terms and deployed credentials remain separate work. Reddit evidence remains social/watch-only and cannot approve or submit an order.
 
 ## News and official-source compliance
 
@@ -166,7 +166,8 @@ Statuspage `maintenance`, `none` and `minor` impacts remain neutral. Only struct
 5. [ ] Add compliant Reddit OAuth collection with adaptive rate limiting.
    - [x] Add OAuth-only watchlist acquisition with truthful runtime identity, active-contract checks, shared capture identity, adaptive rate-limit state and a maximum 48-hour deletion contract.
    - [x] Add minimal transient post normalisation and provider-deletion/retention reconciliation.
-   - [ ] Add purge-enforced transient persistence, downstream invalidation and deployed approved credentials.
+   - [x] Add purge-enforced transient persistence and downstream invalidation.
+   - [ ] Supply approved hosted credentials and deploy the collector.
 6. [ ] Add minute-level collectors and queue-backed deduplicated processing.
 7. [ ] Add deterministic entity/topic linking, syndication clustering and correction handling.
 8. [ ] Integrate `pause-new-risk` with paper-mode risk controls.
@@ -175,7 +176,7 @@ Statuspage `maintenance`, `none` and `minor` impacts remain neutral. Only struct
 
 ## Current limitation
 
-The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC and RBA RSS parsers, the Kraken active-maintenance minute-source normaliser, bounded Reddit OAuth acquisition and transient Reddit post lifecycle are implemented. Purge-enforced Reddit persistence, downstream watch-state invalidation, an approved Reddit app and deployed credentials remain absent. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, account terms, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
+The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC and RBA RSS parsers, the Kraken active-maintenance minute-source normaliser, bounded Reddit OAuth acquisition, transient post lifecycle, purge-enforced transient D1 persistence and downstream watch-state invalidation are implemented. An approved Reddit app and deployed credentials remain absent. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, account terms, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
 
 ## Official references
 
