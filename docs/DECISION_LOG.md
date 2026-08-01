@@ -86,3 +86,11 @@ Do not choose tax lots automatically. Every disposal must be fully linked to exp
 
 Export transactions, allocation outcomes and Australian financial-year summaries as deterministic CSV and canonical machine-readable content with one SHA-256 bundle digest. Spreadsheet formula-like text is neutralised. The digest proves content identity only; professional tax review remains mandatory.
 
+## 2026-08-01 — Broad containment, owner-only live recovery
+
+Any authorised responder may stop schedules or activate the kill switch. A responder already authorised for exchange order management may cancel an unexpected open order. Provider-side credential revocation is performed by the owner or provider support.
+
+All SEV-1 and SEV-2 incidents disable live operation and require exchange-authoritative reconciliation, redacted evidence digests, root-cause or capability removal, exact-head validation, paper/shadow regression evidence and no unresolved high-severity issue.
+
+Only the owner may restore live operation. Recovery approval does not increase capital, broaden credentials, approve a new venue or select a different strategy.
+

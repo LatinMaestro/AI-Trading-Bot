@@ -32,8 +32,16 @@ Never store these in GitHub. Use `wrangler secret put` or the Cloudflare dashboa
 - daily balance and order reconciliation;
 - alert on stale data, permission changes, rejected orders, unknown order states, drawdown and failed schedules;
 - documented manual exchange-side kill procedure;
-- quarterly credential rotation at minimum and immediate rotation after suspected exposure.
+- quarterly credential rotation at minimum and immediate rotation after suspected exposure;
+- quarterly exchange-side revocation, backup restoration, alert and kill-switch drills;
+- redacted evidence digests for permission checks, incidents and recovery decisions.
+
+## Runbooks
+
+- `docs/SECURITY_OPERATIONS_RUNBOOK.md` controls provisioning, permission verification, rotation, revocation, backup evidence and drills.
+- `docs/INCIDENT_RESPONSE_RUNBOOK.md` controls severity, containment, reconciliation and recovery approval.
+- Any authorised responder may stop automation; live restoration and broader authority remain owner-only gates.
 
 ## Cost policy
 
-Use free hosted services while limits and reliability are adequate. Do not trade reliability, security or withdrawal safety for lower fees. Any move to a paid plan is a client-only decision.
+Use free hosted services while limits and reliability are adequate. Do not trade reliability, security or withdrawal safety for lower fees. Any move to a paid plan is an owner-only decision.

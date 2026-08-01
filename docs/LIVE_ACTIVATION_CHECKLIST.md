@@ -32,6 +32,10 @@ All items must be complete. A missing or uncertain item means live trading remai
 - [ ] Strategy version and risk configuration are approved.
 - [ ] D1 backup/export procedure is tested.
 - [ ] Alerts and exchange-side kill procedure are tested.
+- [ ] Credential-revocation, schedule-disable and backup-restore drills have recorded evidence.
+- [ ] Security and incident runbooks have named owners and current provider procedures.
+- [ ] No unresolved SEV-1 or SEV-2 incident remains.
+- [ ] Live-recovery authority remains owner-only.
 
 ## Activation
 

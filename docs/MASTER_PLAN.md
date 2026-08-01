@@ -8,6 +8,8 @@
 - [x] Add baseline CI, forbidden-capability checks and current-tree secret scanning.
 - [x] Define the five-year aggressive, market-cap-agnostic research mandate.
 - [x] Obtain green exact-head CI and merge the foundation pull request.
+- [x] Add security-operations and incident-response runbooks with owner-only recovery gates.
+- [ ] Record quarterly revocation, backup/restore, alert and kill-switch drill evidence.
 
 ## Phase 1 — Market data and deterministic research
 
