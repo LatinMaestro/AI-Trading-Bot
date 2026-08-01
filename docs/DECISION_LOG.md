@@ -287,3 +287,11 @@ Use Bitcoin Core's official security and release announcement RSS feed as an acc
 Reproduce active source-contract and exact capture identities, re-verify bounded payload length and SHA-256, and accept only canonical dated Bitcoin Core announcement URLs, matching URL GUIDs and strict publication chronology. Retain identity, source URL, chronology and content digests, but never titles or raw XML.
 
 Emit only neutral `other` evidence under non-tradable `BTC.CORE`. Do not infer severity, market direction or asset scope from titles. The source cannot pause risk, create a positive candidate, approve an order or submit an order.
+
+## 2026-08-02 — Fail-closed paper intelligence Cron and Queue runtime
+
+Route the exact every-minute external-intelligence schedule and existing 15-minute trading schedule through the module Worker scheduled handler. Bind the Kraken active-maintenance source, D1 conditional cache, Queue producer and per-message idempotent D1 consumer only in the `paper` environment.
+
+Collection remains disabled unless `EXTERNAL_INTELLIGENCE_ENABLED` is exactly `true`, the runtime is fail-closed paper mode and one bounded reviewed source contract is supplied. Configure bounded batches, retries, serial consumer concurrency and a DLQ. Unknown schedules, queue identities, missing bindings and non-paper authority fail closed.
+
+Preserve BTC/AUD and ETH/AUD as the complete runtime pair scope. Production declares empty Queue and Cron configuration. Repository configuration and dry-run validation do not create resources or deploy a Worker; no collector, credential, order authority or live authority is activated.

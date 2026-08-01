@@ -64,6 +64,8 @@
   - [x] Add deterministic bounded queue envelopes, per-message acknowledgement/retry and source-level stale outcomes.
   - [x] Persist conditional cache validators durably with monotonic conflict controls.
   - [ ] Bind approved source manifests, minute Cron, Queue/DLQ and the deployed consumer.
+    - [x] Add fail-closed paper-only Cron, Queue/DLQ, D1 and per-message consumer bindings with collection disabled.
+    - [ ] Provision hosted paper resources and deploy only at an approved milestone.
   - [ ] Add deterministic entity/topic linking, syndication clustering and manipulation controls.
   - [ ] Integrate `pause-new-risk` into paper-mode risk controls and incident reporting.
   - [ ] Backtest news/social features with original publication and receipt timestamps and no look-ahead.

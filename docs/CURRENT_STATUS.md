@@ -5,9 +5,9 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `ea3b695c067f014351cf39b9db0f02ae6b86595d`
-- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #39 are repaired, exact-head validated and squash-merged; replacement PRs #99 and #100 carry the reconstructed historical #40 and #41 slices; PRs #7, #10, #16, #18, #20, #22, #24, #26 and historical #40 through #43 are closed without merge.
-- This tree reconstructs historical pull request #43 as deterministic Bitcoin Core announcement RSS intelligence directly on that verified base.
+- Verified base `main`: `4beae62274c91b4339bc51a8f93c74721a9f5e50`
+- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #39 are repaired, exact-head validated and squash-merged; replacement PRs #99 and #100 carry the reconstructed historical #40 and #41 slices; PRs #7, #10, #16, #18, #20, #22, #24, #26 and historical #40 through #44 are closed without merge.
+- This tree reconstructs historical pull request #44 as fail-closed paper external-intelligence Cron and Queue runtime bindings directly on that verified base.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -50,6 +50,7 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 - Replacement PR #99 run [30708648325](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30708648325): lockfile reproduction, paper type generation, strict TypeScript, 253 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - Replacement PR #100 run [30711114230](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30711114230): lockfile reproduction, paper type generation, strict TypeScript, 259 tests including Reddit transient-persistence migration integrity, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - Replacement PR #101 run [30713065420](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30713065420): lockfile reproduction, paper type generation, strict TypeScript, 265 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- Replacement PR #102 run [30713313847](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30713313847): lockfile reproduction, paper type generation, strict TypeScript, 271 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 
 ## Universe-ingestion evidence
 
@@ -176,6 +177,15 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 
 
 
+## External-intelligence runtime-binding evidence
+
+- Routes the exact every-minute intelligence slot and existing 15-minute trading slot through the module Worker scheduled handler; unknown Cron expressions fail closed.
+- Binds the existing Kraken active-maintenance source, durable D1 cache, Queue producer and idempotent per-message D1 consumer only in the `paper` environment.
+- Requires exact disabled/enabled configuration, an explicit bounded source contract and fail-closed paper mode before collection; Production declares no Cron or Queue resources.
+- Configures bounded ten-message batches, five-second waits, five retries, serial concurrency and a DLQ. Queue failures use the existing explicit per-message retry path.
+- Configuration is inert in this repository: external intelligence remains disabled and no Cloudflare resource or Worker is deployed.
+- Runtime authority remains BTC/AUD and ETH/AUD, hourly deterministic long-only spot, at most one position and otherwise AUD cash.
+
 ## Bitcoin Core announcement intelligence evidence
 
 - Binds the official Bitcoin Core security/release announcement RSS feed and reviewed website licence to a scheduled authoritative issuer manifest with digest-only retention and no model training.
@@ -286,4 +296,4 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 
 ## Next action
 
-Validate reconstructed PR #43 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #44 as the earliest remaining open dependency.
+Validate reconstructed PR #44 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #45 as the earliest remaining open dependency.
