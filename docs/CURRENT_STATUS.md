@@ -5,9 +5,9 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `5a0eb7405d4044ff055ed3c2fb0375da5ef2f1b7`
-- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #30 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20, #22, #24 and #26 are closed without merge.
-- This tree reconstructs pull request #31 as a bounded idempotent minute external-intelligence queue pipeline directly on that verified base.
+- Verified base `main`: `d2d8b5715a2a15d707bb97cd6240145de6def9f0`
+- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #31 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20, #22, #24 and #26 are closed without merge.
+- This tree reconstructs pull request #32 as deterministic Kraken Status incident intelligence directly on that verified base.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -38,6 +38,7 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - PR #28 run [30695191920](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30695191920): lockfile reproduction, paper type generation, strict TypeScript, 155 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #29 run [30695473230](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30695473230): lockfile reproduction, paper type generation, strict TypeScript, 162 tests including live SQLite migrations, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #30 run [30696901264](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30696901264): lockfile reproduction, paper type generation, strict TypeScript, 171 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #31 run [30697343236](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30697343236): lockfile reproduction, paper type generation, strict TypeScript, 180 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 
 ## Universe-ingestion evidence
 
@@ -168,6 +169,14 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - Conditional validators advance only after successful enqueue, confirmed not-modified handling or confirmed no-item normalisation.
 - Durable cache state, hosted minute Cron, Queue/DLQ bindings and deployed consumer wiring remain pending.
 
+## Kraken Status intelligence evidence
+
+- Binds the exact official unresolved-incidents JSON endpoint and Kraken Status page identity to a digest-only minute-poll manifest.
+- Reproduces capture identity, validates contract activity and enforces a one MiB payload ceiling before parsing.
+- Accepts the provider's documented observed timestamp precision while rejecting impossible update chronology.
+- Maps only structured major and critical incidents to authoritative negative evidence; minor and none remain neutral.
+- Stores only content digests for update bodies and grants no risk-on, strategy-selection, deployment or order authority.
+
 ## Next action
 
-Validate reconstructed PR #31 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct the earliest remaining open dependency.
+Validate reconstructed PR #32 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct the earliest remaining open dependency.
