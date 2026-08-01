@@ -107,3 +107,11 @@ Use Kraken's official `assetVersion=1` AssetPairs, Ticker and Depth contracts fo
 Reject redirects, unexpected media types, legacy or ambiguous pair keys, malformed envelopes and numeric values, incomplete requested ticker sets, crossed markets, unordered books, unsafe times and non-finite arithmetic. Derive quote turnover from 24-hour base volume and VWAP. Derive spread and conservative two-sided capacity from one coherent L2 book. Candidate impact remains unavailable when displayed depth cannot fill both sides.
 
 This slice stops before scheduled persistence. Complete observations still require committed candle counts, annualised volatility, fresh AUD conversion and official lifecycle evidence. It adds no private endpoint, credential, strategy-selection or order authority.
+
+## 2026-08-01 — Bounded scheduled Kraken universe collection
+
+Run content-addressed public AssetPairs, Ticker and rotating Depth collection inside the lease-protected scheduled cycle before strategy evaluation. Space every HTTP attempt, apply bounded retry and timeout controls, enforce the response-size limit while streaming, and persist only through the database-verified atomic universe boundary.
+
+Missing or ambiguous AUD valuation excludes the affected pair. Malformed, oversized, redirected or conflicting evidence fails the slot. Actual request attempts, selected and skipped counts, and the committed batch identity enter cycle audit evidence.
+
+Until committed D1 candle counts and volatility are joined, observations retain an ineligible history state. The approved BTC/AUD and ETH/AUD strategy path remains separate; this public collection adds no private API, credential, strategy-selection or order authority.
