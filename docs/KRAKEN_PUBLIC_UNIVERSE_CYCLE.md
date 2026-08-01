@@ -14,23 +14,25 @@ Each cycle:
 2. fetches the public ticker snapshot;
 3. identifies pairs with a fresh AUD valuation path;
 4. selects a bounded pair window that rotates every 15 minutes;
-5. fetches those order books sequentially;
-6. derives spread, quote turnover, two-sided depth, venue minimum and reference-order impact; and
-7. commits the content-addressed ingestion batch through the database-verified atomic persistence boundary.
+5. queries immutable committed hourly and daily candle history for only the selected pairs at the scheduled signal time;
+6. fetches those order books sequentially;
+7. derives spread, quote turnover, two-sided depth, venue minimum, reference-order impact and verified annualised volatility; and
+8. commits the content-addressed ingestion batch through the database-verified atomic persistence boundary.
 
 The default depth window is six pairs. The runtime reduces it further when the approved candle-pair list is larger so the scheduled cycle retains public-request headroom.
 
 ## Request controls
 
 - Public requests have timeouts and response-size limits.
-- Depth requests are spaced sequentially.
+- Every public HTTP attempt is spaced sequentially, including retries.
 - HTTP throttling, temporary server/service failures and network timeouts receive bounded retries.
 - The cycle audit records actual HTTP attempts, selected/skipped pair counts and the committed batch digest.
 
 ## Fail-closed behaviour
 
 - Missing, stale or ambiguous AUD valuation paths exclude the affected pair.
-- Incomplete ticker sets, malformed books, crossed markets, unsafe timestamps, non-finite arithmetic or persistence conflicts fail the scheduled slot.
+- Missing, incomplete, gapped, stale, shifted, future-available or non-finite candle history remains ineligible.
+- Incomplete ticker sets, malformed books, crossed markets, material Ticker/Depth time skew, unsafe timestamps, non-finite arithmetic or persistence conflicts fail the scheduled slot.
 - Strategy evaluation starts only after the database accepts the universe commit marker.
 - Existing cycle failure and retry audit rules remain authoritative.
 
@@ -38,7 +40,8 @@ The default depth window is six pairs. The runtime reduces it further when the a
 
 - Current snapshots never infer listing, suspension, resumption, delisting or Australian-availability events.
 - Official lifecycle announcements remain separate evidence.
-- Until stored hourly/daily candle counts and volatility evidence are supplied, observations retain a `gap` history state and cannot satisfy research-tier history gates.
+- Stored history is bounded to committed candles available by the signal time. The verifier checks interval counts, contiguity and that the retained daily sample ends at the latest committed daily candle; it does not backfill missing data.
+- Official lifecycle completeness, scheduled OHLC ingestion and gaps beyond Kraken's REST horizon remain separate work.
 - Strategy selection still uses the separately approved-pair candle path; dynamic-universe eligibility is not yet authoritative for target selection.
 
 No live, private API, withdrawal, transfer, wallet, leverage or derivative capability is added.

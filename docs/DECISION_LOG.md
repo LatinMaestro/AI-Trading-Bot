@@ -115,3 +115,12 @@ Run content-addressed public AssetPairs, Ticker and rotating Depth collection in
 Missing or ambiguous AUD valuation excludes the affected pair. Malformed, oversized, redirected or conflicting evidence fails the slot. Actual request attempts, selected and skipped counts, and the committed batch identity enter cycle audit evidence.
 
 Until committed D1 candle counts and volatility are joined, observations retain an ineligible history state. The approved BTC/AUD and ETH/AUD strategy path remains separate; this public collection adds no private API, credential, strategy-selection or order authority.
+
+
+## 2026-08-01 — Signal-time D1 candle-history evidence
+
+Join the bounded Kraken public-universe cycle to immutable committed D1 candles using only evidence recorded and closed by the scheduled signal time. Query 60-minute and 1,440-minute counts and contiguity, retain at most the latest 366 daily closes, and require that sample to end at the latest committed daily candle.
+
+Missing, incomplete, gapped, stale, shifted, future-available or non-finite history fails closed. Compute annualised volatility only from verified contiguous closes. Bind exact history and AUD-conversion provenance into the quality digest, restrict history loading to the bounded selected rotation, and reject material Ticker/Depth time skew.
+
+This evidence supports research-universe quality assessment only. It does not change the approved BTC/AUD and ETH/AUD strategy path or grant strategy-selection, deployment, private-API or order authority.

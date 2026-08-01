@@ -5,9 +5,9 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `e9b2997a26d4e38f820a93f6cadaad5818a9a232`
-- Pull requests #1 through #6, #8, #9, #11 through #15 and #17 are repaired, exact-head validated and squash-merged; PRs #7, #10 and #16 are closed without merge.
-- This tree reconstructs pull request #19 as bounded scheduled Kraken public-universe collection directly on that verified base.
+- Verified base `main`: `0c7d10a6bb75bdea8779287580e575c496f0f97f`
+- Pull requests #1 through #6, #8, #9, #11 through #15, #17 and #19 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18 and #20 are closed without merge.
+- This tree reconstructs pull request #21 as signal-time D1 candle-history evidence directly on that verified base.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -30,6 +30,7 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - PR #14 run [30690795113](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30690795113): lockfile reproduction, paper type generation, strict TypeScript, 96 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #15 run [30691290356](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30691290356): lockfile reproduction, paper type generation, strict TypeScript, 102 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #17 run [30691425536](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30691425536): lockfile reproduction, paper type generation, strict TypeScript, 108 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #19 run [30691621315](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30691621315): lockfile reproduction, paper type generation, strict TypeScript, 114 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 
 ## Universe-ingestion evidence
 
@@ -76,14 +77,23 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - Scheduled orchestration, candle/volatility joining, AUD conversion and lifecycle completeness remain separate required work.
 - Public evidence only; no credential, private endpoint, strategy-selection, deployment or order authority.
 
-## Scheduled Kraken universe candidate
+## Scheduled Kraken universe evidence
 
 - Collects Australian-available spot metadata, all public tickers and a bounded rotating Depth window before strategy evaluation.
 - Spaces every public attempt and applies bounded retry, timeout and streaming response-size enforcement.
 - Resolves fresh AUD valuation paths, excludes missing/ambiguous paths, derives quality evidence and commits one atomic content-addressed universe batch.
 - Records the committed batch identity, request attempts and selected/skipped counts in cycle audit evidence.
-- Stored candle counts and volatility are not yet joined; affected observations remain explicitly ineligible rather than receiving fabricated completeness.
+- Committed D1 candle history is queried at the exact signal time; incomplete, gapped, stale, shifted or non-finite histories remain explicitly ineligible rather than receiving fabricated completeness.
 - The existing BTC/AUD and ETH/AUD approved strategy path remains separate; no private endpoint, credential or order authority is added.
+
+## Market-history evidence
+
+- Queries committed 60-minute and 1,440-minute candle counts and contiguity only through the scheduled signal time.
+- Retains at most the latest 366 committed daily closes per selected pair, ordered deterministically and bounded by recorded availability.
+- Requires the retained sample to end at the latest committed daily candle; shifted or stale contiguous samples fail closed.
+- Computes annualised volatility only from verified contiguous daily closes and binds exact history and conversion evidence into the quality digest.
+- Loads history only for the bounded selected rotation and rejects material Ticker/Depth time skew.
+- This evidence does not grant dynamic-universe strategy selection, deployment or order authority.
 
 ## Runtime boundary
 
@@ -98,4 +108,4 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 
 ## Next action
 
-Validate reconstructed PR #19 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct the earliest remaining open dependency.
+Validate reconstructed PR #21 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct the earliest remaining open dependency.

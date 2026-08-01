@@ -32,7 +32,8 @@
   - [ ] Ingest authoritative venue metadata and official lifecycle evidence on schedule.
     - [x] Add content-addressed Kraken AssetPairs, Ticker and Depth clients with strict fail-closed quality parsers.
     - [x] Schedule bounded rotating public collection and atomic persistence with incomplete history explicitly marked ineligible.
-    - [ ] Join committed candle and volatility evidence from D1 before authoritative universe use.
+    - [x] Join committed candle and volatility evidence from D1 at the exact signal time.
+    - [ ] Complete authoritative lifecycle coverage and promote only signed, evidence-complete universe snapshots.
   - [ ] Support complete Australian-dollar valuation paths for every researched pair.
   - [ ] Persist signed universe policies and content-addressed snapshots.
 - [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
