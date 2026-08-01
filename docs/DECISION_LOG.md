@@ -94,3 +94,8 @@ All SEV-1 and SEV-2 incidents disable live operation and require exchange-author
 
 Only the owner may restore live operation. Recovery approval does not increase capital, broaden credentials, approve a new venue or select a different strategy.
 
+## 2026-08-01 — Atomic committed universe evidence
+
+Persist each prepared universe-ingestion batch through one transactional nine-statement D1 batch. The content-addressed header declares source, definition, lifecycle-event and quality-observation counts; a database-enforced commit marker is accepted only when those memberships exactly match.
+
+Headers, memberships and commit markers are immutable. Once committed, no new membership may be appended, while an exact retry remains idempotent. Conflicting identity reuse, venue-mismatched membership and partial writes fail closed. A commit marker proves persistence completeness only and grants no strategy-selection, runtime, deployment or order authority.
