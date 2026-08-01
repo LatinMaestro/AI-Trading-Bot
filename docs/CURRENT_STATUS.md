@@ -5,9 +5,9 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `4beae62274c91b4339bc51a8f93c74721a9f5e50`
-- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #39 are repaired, exact-head validated and squash-merged; replacement PRs #99 and #100 carry the reconstructed historical #40 and #41 slices; PRs #7, #10, #16, #18, #20, #22, #24, #26 and historical #40 through #44 are closed without merge.
-- This tree reconstructs historical pull request #44 as fail-closed paper external-intelligence Cron and Queue runtime bindings directly on that verified base.
+- Verified base `main`: `5bdd264a4e7aa9388a946d68bb67d9ec339bc5e3`
+- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #39 are repaired, exact-head validated and squash-merged; replacement PRs #99 through #103 carry reconstructed historical #40 through #44 slices; PRs #7, #10, #16, #18, #20, #22, #24, #26 and historical #40 through #45 are closed without merge.
+- This tree reconstructs historical pull request #45 as a deterministic, non-activating paper external-intelligence activation manifest and owner-gated runbook directly on that verified base.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -51,6 +51,7 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 - Replacement PR #100 run [30711114230](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30711114230): lockfile reproduction, paper type generation, strict TypeScript, 259 tests including Reddit transient-persistence migration integrity, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - Replacement PR #101 run [30713065420](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30713065420): lockfile reproduction, paper type generation, strict TypeScript, 265 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - Replacement PR #102 run [30713313847](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30713313847): lockfile reproduction, paper type generation, strict TypeScript, 271 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- Replacement PR #103 run [30713688105](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30713688105): lockfile reproduction, paper type generation, strict TypeScript, 276 tests, paper dry-run with paper-only Queue/D1 bindings, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 
 ## Universe-ingestion evidence
 
@@ -177,6 +178,14 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 
 
 
+## External-intelligence activation-manifest evidence
+
+- Builds one canonical, content-addressed paper activation candidate from an exact reviewed lowercase SHA-256 evidence digest and bounded approval/effective/expiry chronology.
+- Binds the manifest to the exact paper minute Cron, Queue name and enabled source-contract JSON without changing repository runtime variables or creating a deployment.
+- Requires renewal within 366 days and changes both contract and manifest identities when reviewed evidence changes.
+- The manifest is a non-activating review artifact: provider terms, cost, hosted resources, variables, deployment and collection remain explicit owner gates.
+- The runbook keeps Production unchanged, requires a genuine reviewed end-to-end milestone for any paper deployment, and defines fail-closed rollback evidence.
+
 ## External-intelligence runtime-binding evidence
 
 - Routes the exact every-minute intelligence slot and existing 15-minute trading slot through the module Worker scheduled handler; unknown Cron expressions fail closed.
@@ -296,4 +305,4 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 
 ## Next action
 
-Validate reconstructed PR #44 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #45 as the earliest remaining open dependency.
+Validate reconstructed PR #45 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #46 as the earliest remaining open dependency.
