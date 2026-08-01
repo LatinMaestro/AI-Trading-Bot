@@ -8,7 +8,7 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - Verified base `main`: `7db2a101819d3066689668897579b84368411dc7`
 - Pull requests #1, #2 and #3 are repaired, exact-head validated and squash-merged.
 - This tree reconstructs pull request #4, immutable market-candle persistence and gap classification, directly on that verified base.
-- At reconstruction time, 87 later draft pull requests remained on historical stacked ancestry. Each must be recomposed as a focused delta onto the latest verified `main`; stale ancestry must not be merged wholesale.
+- At reconstruction time, 87 draft pull requests remained, beginning with #4, on historical stacked ancestry. Each must be recomposed as a focused delta onto the latest verified `main`; stale ancestry must not be merged wholesale.
 - Live deployment: none
 - Credentials: none
 - Funds: none
