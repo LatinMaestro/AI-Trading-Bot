@@ -12,6 +12,7 @@ Trading-cycle orchestrator
       |
       +--> public market-data adapter
       +--> immutable market-data persistence and gap checks
+      +--> immutable lifecycle-source capture
       +--> strategy engine
       +--> risk engine
       +--> execution adapter (disabled unless live gates pass)
@@ -39,17 +40,18 @@ Trading-cycle orchestrator
 
 1. Acquire a lease in D1 to prevent duplicate concurrent cycles.
 2. Load runtime state and verify mode.
-3. Discover current approved markets and fetch public committed candles.
-4. Persist accepted public-data batches and candles immutably.
-5. Detect missing, duplicate, stale, conflicting or unrecoverable market data and fail closed.
-6. Reconstruct the time-correct eligible research universe using only definitions, lifecycle events and quality evidence available by signal time.
-7. Generate a strategy decision from a versioned configuration; exclude every ineligible market.
-8. Reconcile balances and orders when private access is available.
-9. Evaluate hard risk limits.
-10. Create an order intent with a deterministic idempotency key.
-11. In non-live modes, record the proposed action only.
-12. In live mode, verify API permissions, activation secret and execution limits again immediately before submission.
-13. Submit, reconcile and record every response.
+3. At the daily 00:00 UTC slot, capture and atomically persist the fixed official Kraken listing/delisting indexes and status feeds. Any incomplete or malformed capture set fails the slot.
+4. Discover current approved markets and fetch public committed candles.
+5. Persist accepted public-data batches and candles immutably.
+6. Detect missing, duplicate, stale, conflicting or unrecoverable market data and fail closed.
+7. Reconstruct the time-correct eligible research universe using only definitions, lifecycle events and quality evidence available by signal time.
+8. Generate a strategy decision from a versioned configuration; exclude every ineligible market.
+9. Reconcile balances and orders when private access is available.
+10. Evaluate hard risk limits.
+11. Create an order intent with a deterministic idempotency key.
+12. In non-live modes, record the proposed action only.
+13. In live mode, verify API permissions, activation secret and execution limits again immediately before submission.
+14. Submit, reconcile and record every response.
 
 ## Data model
 
@@ -61,6 +63,8 @@ D1 stores:
 - immutable committed 60-minute and daily OHLCV candles;
 - immutable market definitions, lifecycle events and quality observations;
 - content-addressed universe-ingestion batch headers, source and record memberships, and database-verified commit markers;
+- deduplicated exact Kraken lifecycle payloads keyed by SHA-256;
+- immutable Kraken lifecycle fetch records and database-verified commit markers;
 - strategy decisions;
 - order intents, exchange orders and fills;
 - balances and equity snapshots;
@@ -71,6 +75,8 @@ D1 stores:
 Market batches and candles use deterministic SHA-256 content digests. Database triggers bind each candle to matching source-batch metadata and range, reject identity reuse with different content, and prevent ordinary update or delete operations. Gap detection is performed against explicit expected ranges before strategy research is allowed to rely on stored data.
 
 Universe definitions, lifecycle events and quality observations are append-only, carry lower-case SHA-256 payload digests, and use D1 checks and triggers to reject mutation or identity reuse. Prepared universe evidence is submitted through one transactional nine-statement D1 batch. A database commit marker is accepted only after every declared source and record membership exists; committed membership is then frozen, while exact retries remain idempotent. The universe module is a research-only boundary: it reconstructs eligibility without granting strategy-selection, runtime or order authority.
+
+Each distinct lifecycle payload is stored once as exact validated UTF-8 text with its original byte length and SHA-256. Every scheduled observation remains a separate immutable capture binding source kind, exact allowlisted URL, fetch time, media type and bounded response metadata to that payload. D1 permits a final capture commit marker only when the payload-backed capture exists and the commit does not predate the fetch. Raw captures do not create lifecycle declarations; reviewed pair-level events remain a separate, explicit evidence boundary.
 
 ## AI design
 
