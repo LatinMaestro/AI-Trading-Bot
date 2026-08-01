@@ -28,13 +28,15 @@ export default {
   },
 
   async scheduled(
-    _controller: ScheduledController,
+    controller: ScheduledController,
     env: Env,
     ctx: ExecutionContext,
   ): Promise<void> {
     const config = loadConfig(env);
     ctx.waitUntil(
-      runTradingCycle(env, config).catch((error: unknown) => {
+      runTradingCycle(env, config, {
+        scheduledAtMs: controller.scheduledTime,
+      }).catch((error: unknown) => {
         console.error(
           JSON.stringify({
             event: "trading-cycle-failed",
