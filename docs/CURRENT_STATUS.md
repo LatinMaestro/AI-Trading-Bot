@@ -5,9 +5,9 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `6f17d5df0bbedcdb28758e9422f8e7cda880812f`
-- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19 and #21 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20 and #22 are closed without merge.
-- This tree reconstructs pull request #23 as allowlisted official Kraken lifecycle evidence directly on that verified base.
+- Verified base `main`: `9a83d068dbec8f95c8853cb5f14a5bd33b086e3c`
+- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21 and #23 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20, #22 and #24 are closed without merge.
+- This tree reconstructs pull request #25 as scheduled immutable Kraken lifecycle-source capture directly on that verified base.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -32,6 +32,7 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - PR #17 run [30691425536](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30691425536): lockfile reproduction, paper type generation, strict TypeScript, 108 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #19 run [30691621315](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30691621315): lockfile reproduction, paper type generation, strict TypeScript, 114 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #21 run [30691823979](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30691823979): lockfile reproduction, paper type generation, strict TypeScript, 123 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #23 run [30692009871](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30692009871): lockfile reproduction, paper type generation, strict TypeScript, 129 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 
 ## Universe-ingestion evidence
 
@@ -102,8 +103,16 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - Validates source class, official origin/path, publication/capture chronology, event type and global-versus-Australian scope.
 - Accepts published future-effective events as knowable evidence without applying them before their effective time.
 - Audits listing, trading-status and Australian-availability history independently for each expected pair and rejects declarations outside that set.
-- Complete historical backfill, scheduled raw capture and immutable payload persistence remain incomplete.
+- Complete historical backfill and exact individual-document capture remain incomplete.
 - No free-text or language-model extraction, private API, credential, strategy-selection or order authority is added.
+
+## Scheduled lifecycle-capture evidence
+
+- At the daily 00:00 UTC slot, captures the fixed official Kraken listing index, delistings index, incidents feed and scheduled-maintenance feed before universe evaluation.
+- Enforces an exact allowlist, redirect rejection, strict media types, a full-body timeout, bounded retry/spacing, valid UTF-8 round-tripping and a one MiB streaming ceiling.
+- Deduplicates exact payload bytes by SHA-256 while preserving every fetch as an immutable source/time/header record with a database-verified commit marker.
+- Persists the complete four-source set atomically; incomplete or conflicting evidence fails the scheduled cycle closed.
+- Raw capture does not create lifecycle events and grants no strategy-selection, deployment, credential or order authority.
 
 ## Runtime boundary
 
@@ -118,4 +127,4 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 
 ## Next action
 
-Validate reconstructed PR #23 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct the earliest remaining open dependency.
+Validate reconstructed PR #25 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct the earliest remaining open dependency.
