@@ -71,3 +71,9 @@ Seeded moving-block bootstrap output is a reproducible scenario-frequency estima
 Every candidate evaluation must include aligned AUD cash, BTC hold, survivorship-safe equal-weight hold and five-year objective-path benchmarks. Tradable benchmarks use AUD. A converted objective path must be built from positive time-aligned FX rates and bind the same lower-case SHA-256 FX source digest recorded in report provenance.
 
 Research reports content-address exact code, data, universe, strategy, execution, objective and benchmark configuration evidence. Objective progress, scenario horizon, probability nesting and percentiles must be internally consistent. A report digest proves content identity only; it grants no approval, selection, activation or order authority.
+
+## 2026-08-01 — Time-correct universe ingestion and AUD valuation
+
+Prepare content-addressed public universe evidence from separately typed metadata, market-quality, official lifecycle and AUD-conversion sources. Definitions and observations may never claim availability before the source fetch that made them knowable. Future-effective official lifecycle events may be retained once published but do not apply before their effective time; snapshot absence never implies delisting.
+
+AUD conversion uses the shortest fresh simple path, rejects missing, multiple, chronologically invalid or numerically invalid paths, and binds every contributing digest. Calibration summaries remain venue-specific evidence and reject mixed venues, duplicate natural identities and conflicting payloads. They do not automatically change policy or grant runtime authority.
