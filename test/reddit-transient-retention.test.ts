@@ -94,12 +94,13 @@ async function observation(
 
 async function batch(
   observations: readonly RedditTransientPostObservation[],
+  captureId = "c".repeat(64),
 ): Promise<RedditTransientPostBatch> {
   const input = {
     schemaVersion: "reddit-transient-post-batch-v1",
     sourceId: SOURCE_ID,
     sourceContractSha256: CONTRACT_SHA,
-    captureId: "e".repeat(64),
+    captureId,
     observationIds: observations.map((entry) => entry.observationId),
     ignoredUnavailableCount: 0,
   };
@@ -107,7 +108,7 @@ async function batch(
     batchId: await sha256CanonicalIntelligence(input),
     sourceId: SOURCE_ID,
     sourceContractSha256: CONTRACT_SHA,
-    captureId: "e".repeat(64),
+    captureId,
     observations,
     ignoredUnavailableCount: 0,
     durableQueueAllowed: false,
@@ -344,7 +345,7 @@ test("rejects changed identities, expired inserts and unsafe sweep evidence", as
   await assert.rejects(
     async () =>
       prepareRedditTransientPostBatch(
-        await batch([wrongCapture]),
+        await batch([wrongCapture], "e".repeat(64)),
         2_300,
         OPERATION_2,
       ),
