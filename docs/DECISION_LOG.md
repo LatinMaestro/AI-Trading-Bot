@@ -183,3 +183,12 @@ Queue only source-contract-verified normalised intelligence records, acquisition
 The consumer verifies the canonical message, reproduces deterministic assessments from the referenced items and policy, and completes the existing content-addressed transactional D1 persistence before acknowledging delivery. Process at-least-once deliveries independently: acknowledge successful messages, retry failed messages with bounded exponential delay, and rely on database identity-conflict and exact-retry rules rather than assuming exactly-once transport.
 
 Advance conditional polling validators only after successful enqueue, confirmed not-modified handling or confirmed no-item normalisation. Queue or source failures remain explicit stale/delayed outcomes. Durable cache storage, minute Cron, Queue/DLQ bindings and deployed consumer wiring remain separate work. This queue cannot submit or approve orders and adds no credential, private exchange, fund, withdrawal, transfer, wallet or live-trading capability.
+
+
+## 2026-07-27 — Structured Kraken Status incident intelligence
+
+Bind the exact official Kraken unresolved-incidents JSON endpoint and Kraken Status page identity to a digest-only, one-minute polling source contract. Reproduce capture identity, require the contract to be active at capture time and enforce the shared one MiB transport boundary before parsing.
+
+Use only structured Statuspage identifiers, states and impact values. Major and critical unresolved incidents create authoritative negative network-incident evidence; minor and none remain neutral. Preserve provider display timestamps even when their precision places them slightly before creation timestamps, while requiring both to be no later than the update time.
+
+Hash update bodies without retaining or queueing raw text. The reserved KRAKEN.VENUE scope is not tradable, and this adapter grants no positive recommendation, strategy selection, deployment or order authority.
