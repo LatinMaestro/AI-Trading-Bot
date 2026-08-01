@@ -65,6 +65,7 @@
   - [x] Persist conditional cache validators durably with monotonic conflict controls.
   - [ ] Bind approved source manifests, minute Cron, Queue/DLQ and the deployed consumer.
     - [x] Add fail-closed paper-only Cron, Queue/DLQ, D1 and per-message consumer bindings with collection disabled.
+    - [x] Generate a content-addressed paper activation manifest from exact reviewed evidence and document owner-gated activation and rollback.
     - [ ] Provision hosted paper resources and deploy only at an approved milestone.
   - [ ] Add deterministic entity/topic linking, syndication clustering and manipulation controls.
   - [ ] Integrate `pause-new-risk` into paper-mode risk controls and incident reporting.
