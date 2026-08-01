@@ -5,9 +5,9 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `14cd6ac75e25133b21b546721541e98b0e83c8e3`
-- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #36 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20, #22, #24 and #26 are closed without merge.
-- This tree reconstructs pull request #37 as deterministic, digest-only RBA media-release RSS intelligence directly on that verified base.
+- Verified base `main`: `1707495e49ef02ef43d06fb16fc87d6faac59bc4`
+- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #37 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20, #22, #24 and #26 are closed without merge.
+- This tree reconstructs pull request #38 as deterministic, digest-only Kraken active-maintenance intelligence directly on that verified base.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -44,6 +44,7 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - PR #34 run [30702337446](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30702337446): lockfile reproduction, paper type generation, strict TypeScript, 205 tests including independently hardened lifecycle-document migration integrity, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #35 run [30702600500](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30702600500): lockfile reproduction, paper type generation, strict TypeScript, 212 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #36 run [30704381225](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30704381225): lockfile reproduction, paper type generation, strict TypeScript, 218 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #37 run [30704701287](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30704701287): lockfile reproduction, paper type generation, strict TypeScript, 224 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 
 ## Universe-ingestion evidence
 
@@ -224,6 +225,15 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - Accepts exact retries, rejects time regression and same-time identity conflicts, and verifies every write by readback.
 - Cache validators are operational transport state only and cannot classify evidence, alter risk, approve or submit an order.
 
+## Kraken active-maintenance intelligence evidence
+
+- Binds Kraken's official programmatic active-maintenance Status API endpoint to an account-free one-minute official-exchange manifest.
+- Reproduces active-contract capture identity and enforces a one MiB payload ceiling before bounded structured parsing.
+- Validates the exact Kraken Status page, active state, schedule/update/receipt chronology, unique update identities and canonical provider timestamps.
+- Provider names and update bodies contribute only to digests; no raw provider text is retained or queued.
+- Statuspage `none`, `minor` and `maintenance` impacts remain neutral. Only structured `major` or `critical` impact becomes negative venue evidence that may request `pause-new-risk` through the existing deterministic policy.
+- The source creates no positive candidate, strategy selection, order approval, order submission, deployment or live authority.
+
 ## Next action
 
-Validate reconstructed PR #37 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #38 as the earliest remaining open dependency.
+Validate reconstructed PR #38 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #39 as the earliest remaining open dependency.

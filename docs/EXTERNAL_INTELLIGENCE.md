@@ -135,6 +135,14 @@ The official RBA media-release RSS feed is an approved scheduled regulator sourc
 
 The parser reproduces capture and payload identities, accepts one bounded UTF-8 RSS root and canonical RBA media-release identifiers, and retains only deterministic identity, chronology and digests. Titles and raw XML are transient. Items remain neutral `macro` evidence under non-tradable `AUD.MACRO`; they cannot pause new risk, create positive candidates or grant order authority.
 
+## Kraken active-maintenance boundary
+
+Kraken's official Status API active-maintenance endpoint is an approved account-free official-exchange source using `minute-poll`. Kraken documents the endpoint specifically for programmatic access. The source contract binds the exact API origin and endpoint, digest-only retention, transient payload handling and explicit model-training prohibition.
+
+The parser reproduces capture and payload identities, enforces a one MiB payload ceiling, validates the exact Kraken Status page identity, bounded provider identifiers, active `in_progress` or `verifying` state, maintenance-window chronology, unique update identities and canonical provider timestamps. Provider names and update bodies contribute only to digests and are not retained or queued.
+
+Statuspage `maintenance`, `none` and `minor` impacts remain neutral. Only structured `major` or `critical` impact becomes authoritative negative `market-structure` evidence under non-tradable `KRAKEN.VENUE` scope and may request `pause-new-risk`; it still cannot approve or submit an order. Unknown impact or state values fail closed. The deployed minute collector remains pending.
+
 ## Planned implementation
 
 1. [x] Persist immutable intelligence items and assessments.
@@ -143,6 +151,7 @@ The parser reproduces capture and payload identities, accepts one bounded UTF-8 
 4. [ ] Add approved source manifests, source-specific parsing, provider signature implementations and deployed endpoints.
    - [x] Add a scheduled SEC press-release RSS manifest and deterministic metadata-only normaliser.
    - [x] Add a scheduled RBA media-release RSS manifest and neutral metadata normaliser.
+   - [x] Add a one-minute Kraken active-maintenance Status API manifest and deterministic digest-only normaliser.
    - [ ] Add further approved source manifests, source-specific parsing, provider signature implementations and deployed endpoints.
 5. [ ] Add compliant Reddit OAuth collection with adaptive rate limiting.
 6. [ ] Add minute-level collectors and queue-backed deduplicated processing.
@@ -153,9 +162,12 @@ The parser reproduces capture and payload identities, accepts one bounded UTF-8 
 
 ## Current limitation
 
-The persistence, reaction and generic acquisition-transport boundaries plus scheduled SEC and RBA RSS manifests with neutral metadata-only parsers are implemented. No truthful SEC runtime contact, deployed SEC collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
+The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC and RBA RSS parsers, and the Kraken active-maintenance minute-source normaliser are implemented. No truthful SEC runtime contact, deployed SEC collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
 
 ## Official references
+
+- Kraken Status API: https://status.kraken.com/api
+- Kraken active maintenances: https://status.kraken.com/api/v2/scheduled-maintenances/active.json
 
 - Reddit Data API Terms: https://redditinc.com/policies/data-api-terms
 - Reddit Developer Terms: https://redditinc.com/policies/developer-terms
