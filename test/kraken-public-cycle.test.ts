@@ -5,7 +5,11 @@ import {
   runScheduledKrakenUniverseCycle,
   type UniverseBatchSink,
 } from "../src/universe/krakenPublicCycle.ts";
-import type { UniverseIngestionBatch, UniverseIngestionInput } from "../src/universe/ingestion.ts";
+import {
+  prepareUniverseIngestionBatch,
+  type UniverseIngestionBatch,
+  type UniverseIngestionInput,
+} from "../src/universe/ingestion.ts";
 
 const pairsPayload = {
   error: [],
@@ -188,7 +192,7 @@ test("persists one prepared batch through the supplied atomic sink", async () =>
   const sink: UniverseBatchSink = {
     async persistBatch(input: UniverseIngestionInput): Promise<UniverseIngestionBatch> {
       persisted = input;
-      return { batchSha256: "a".repeat(64) };
+      return prepareUniverseIngestionBatch(input);
     },
   };
   const result = await runScheduledKrakenUniverseCycle(sink, {
@@ -199,7 +203,7 @@ test("persists one prepared batch through the supplied atomic sink", async () =>
     maximumDepthPairs: 1,
     requestSpacingMs: 0,
   });
-  assert.equal(result.batch.batchSha256, "a".repeat(64));
+  assert.match(result.batch.batchSha256, /^[0-9a-f]{64}$/);
   assert.equal(persisted?.venue, "kraken");
   assert.equal(result.requestCount, 3);
 });
