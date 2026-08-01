@@ -54,9 +54,15 @@ function env(overrides: Partial<Env> = {}): Env {
   };
 }
 
-function invalidEnvironment(value: string): Env {
-  const result = env({ EXTERNAL_INTELLIGENCE_ENABLED: "true" });
-  Object.defineProperty(result, "APP_ENV", { value, configurable: true });
+function runtimeEnv(overrides: Readonly<Record<string, unknown>>): Env {
+  const result = env();
+  for (const [key, value] of Object.entries(overrides)) {
+    Object.defineProperty(result, key, {
+      value,
+      configurable: true,
+      enumerable: true,
+    });
+  }
   return result;
 }
 
@@ -90,7 +96,7 @@ function dependencies(
         throw new Error("unexpected persistence");
       },
     }),
-    fetch,
+    fetchImpl: fetch,
     nowMs: () => SLOT + 1_000,
     ...overrides,
   };
@@ -132,7 +138,7 @@ test("remains fail-closed and side-effect free while disabled", async () => {
 test("rejects ambiguous activation, non-paper authority and missing contract", async () => {
   await assert.rejects(
     runExternalIntelligenceMinuteCycle(
-      env({ EXTERNAL_INTELLIGENCE_ENABLED: "TRUE" }),
+      runtimeEnv({ EXTERNAL_INTELLIGENCE_ENABLED: "TRUE" }),
       SLOT,
       dependencies(),
     ),
@@ -140,7 +146,10 @@ test("rejects ambiguous activation, non-paper authority and missing contract", a
   );
   await assert.rejects(
     runExternalIntelligenceMinuteCycle(
-      invalidEnvironment("preview"),
+      runtimeEnv({
+        APP_ENV: "preview",
+        EXTERNAL_INTELLIGENCE_ENABLED: "true",
+      }),
       SLOT,
       dependencies(),
     ),
@@ -148,17 +157,17 @@ test("rejects ambiguous activation, non-paper authority and missing contract", a
   );
   await assert.rejects(
     runExternalIntelligenceMinuteCycle(
-      env({ EXTERNAL_INTELLIGENCE_ENABLED: "true" }),
+      runtimeEnv({ EXTERNAL_INTELLIGENCE_ENABLED: "true" }),
       SLOT,
       dependencies(),
     ),
     /must contain one bounded contract/u,
   );
-  const missingQueue = env({
+  const missingQueue = runtimeEnv({
     EXTERNAL_INTELLIGENCE_ENABLED: "true",
     KRAKEN_ACTIVE_MAINTENANCE_CONTRACT_JSON: JSON.stringify(contract),
+    EXTERNAL_INTELLIGENCE_QUEUE: undefined,
   });
-  delete missingQueue.EXTERNAL_INTELLIGENCE_QUEUE;
   await assert.rejects(
     runExternalIntelligenceMinuteCycle(
       missingQueue,
@@ -175,7 +184,7 @@ test("binds an enabled minute source to Queue and D1 dependencies", async () => 
   let sourceCount = 0;
   let cacheDb: D1Database | undefined;
   const result = await runExternalIntelligenceMinuteCycle(
-    env({
+    runtimeEnv({
       EXTERNAL_INTELLIGENCE_ENABLED: "true",
       KRAKEN_ACTIVE_MAINTENANCE_CONTRACT_JSON: JSON.stringify(contract),
       DB: db,
@@ -264,7 +273,7 @@ test("consumes only the paper queue through the D1 repository", async () => {
   await assert.rejects(
     consumeExternalIntelligenceQueue(
       batch,
-      invalidEnvironment("production"),
+      runtimeEnv({ APP_ENV: "production" }),
       dependencies(),
     ),
     /restricted to fail-closed paper mode/u,
