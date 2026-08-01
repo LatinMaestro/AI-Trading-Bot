@@ -12,6 +12,7 @@ const MAXIMUM_ANCHOR_TAGS = 5_000;
 const MAXIMUM_ANCHOR_TAG_LENGTH = 2_000;
 const MAXIMUM_DISCOVERED_TARGETS = 2_000;
 const MAXIMUM_LISTING_INDEX_PAGE = 500;
+const MAXIMUM_RECURSIVE_INDEX_SOURCES = 32;
 const ANCHOR_START_PATTERN = /<a\b/giu;
 const IGNORED_REGION_START_PATTERN = /<!--|<(script|style|template)\b/giu;
 const HREF_ATTRIBUTE_PATTERN =
@@ -37,9 +38,39 @@ export interface KrakenLifecycleDiscoveryResult {
   readonly discoverySha256: string;
 }
 
+export interface KrakenLifecycleListingIndexPageCapture {
+  readonly captureId: string;
+  readonly sourceKind: "asset-listings-index-page";
+  readonly sourceRef: string;
+  readonly payloadSha256: string;
+  readonly payloadByteLength: number;
+  readonly payloadText: string;
+  readonly contentType: "text/html";
+}
+
+type DiscoverySource =
+  | KrakenLifecycleSourceCapture
+  | KrakenLifecycleListingIndexPageCapture;
+
 function assertDigest(name: string, value: string): void {
   if (!SHA256_PATTERN.test(value)) {
     throw new Error(`${name} must be lowercase SHA-256`);
+  }
+}
+
+function assertPayload(source: DiscoverySource): void {
+  assertDigest("captureId", source.captureId);
+  assertDigest("payloadSha256", source.payloadSha256);
+  if (
+    source.contentType !== "text/html" ||
+    source.payloadText.length === 0 ||
+    !Number.isSafeInteger(source.payloadByteLength) ||
+    source.payloadByteLength < 1 ||
+    source.payloadByteLength > 1_048_576 ||
+    new TextEncoder().encode(source.payloadText).byteLength !==
+      source.payloadByteLength
+  ) {
+    throw new Error(`${source.sourceKind} capture is not canonical`);
   }
 }
 
@@ -50,19 +81,11 @@ function assertIndexCapture(
 ): void {
   if (
     capture.sourceKind !== expectedKind ||
-    capture.sourceRef !== expectedRef ||
-    capture.contentType !== "text/html" ||
-    capture.payloadText.length === 0 ||
-    !Number.isSafeInteger(capture.payloadByteLength) ||
-    capture.payloadByteLength < 1 ||
-    capture.payloadByteLength > 1_048_576 ||
-    new TextEncoder().encode(capture.payloadText).byteLength !==
-      capture.payloadByteLength
+    capture.sourceRef !== expectedRef
   ) {
     throw new Error(`${expectedKind} capture is not canonical`);
   }
-  assertDigest("captureId", capture.captureId);
-  assertDigest("payloadSha256", capture.payloadSha256);
+  assertPayload(capture);
 }
 
 function indexCapture(
@@ -80,6 +103,25 @@ function indexCapture(
   }
   assertIndexCapture(capture, sourceKind, sourceRef);
   return capture;
+}
+
+function listingPageNumber(sourceRef: string): number | null {
+  const match =
+    /^https:\/\/blog\.kraken\.com\/category\/product\/asset-listings\/page\/([1-9][0-9]{0,2})$/u.exec(
+      sourceRef,
+    );
+  if (match === null) return null;
+  const page = Number(match[1]);
+  return page >= 2 && page <= MAXIMUM_LISTING_INDEX_PAGE ? page : null;
+}
+
+function assertListingIndexPage(
+  capture: KrakenLifecycleListingIndexPageCapture,
+): void {
+  if (listingPageNumber(capture.sourceRef) === null) {
+    throw new Error("asset-listings-index-page capture is not canonical");
+  }
+  assertPayload(capture);
 }
 
 function canonicalCandidate(rawHref: string, baseRef: string): URL | null {
@@ -119,13 +161,18 @@ function stripTrailingSlash(pathname: string): string {
 
 function targetFromUrl(
   url: URL,
-  capture: KrakenLifecycleSourceCapture,
+  source: DiscoverySource,
 ): KrakenLifecycleDiscoveredTarget | null {
   const pathname = stripTrailingSlash(url.pathname);
   let sourceKind: KrakenLifecycleDiscoveredTargetKind;
-  if (capture.sourceKind === "asset-listings-index") {
+  if (
+    source.sourceKind === "asset-listings-index" ||
+    source.sourceKind === "asset-listings-index-page"
+  ) {
     if (url.hostname !== "blog.kraken.com") return null;
-    if (/^\/product\/asset-listings\/[a-z0-9][a-z0-9-]{0,199}$/u.test(pathname)) {
+    if (
+      /^\/product\/asset-listings\/[a-z0-9][a-z0-9-]{0,199}$/u.test(pathname)
+    ) {
       sourceKind = "asset-listing-document";
     } else {
       const pageMatch =
@@ -138,7 +185,7 @@ function targetFromUrl(
       sourceKind = "asset-listings-index-page";
     }
   } else if (
-    capture.sourceKind === "delistings-index" &&
+    source.sourceKind === "delistings-index" &&
     url.hostname === "support.kraken.com" &&
     /^\/articles\/[A-Za-z0-9][A-Za-z0-9_-]{0,199}$/u.test(pathname)
   ) {
@@ -149,8 +196,8 @@ function targetFromUrl(
   return {
     sourceKind,
     sourceRef: `https://${url.hostname}${pathname}`,
-    discoveredFromCaptureId: capture.captureId,
-    discoveredFromPayloadSha256: capture.payloadSha256,
+    discoveredFromCaptureId: source.captureId,
+    discoveredFromPayloadSha256: source.payloadSha256,
   };
 }
 
@@ -208,10 +255,10 @@ function htmlWithIgnoredRegionsMasked(html: string): string {
 }
 
 function discoverFromHtml(
-  capture: KrakenLifecycleSourceCapture,
+  source: DiscoverySource,
 ): readonly KrakenLifecycleDiscoveredTarget[] {
   const targets: KrakenLifecycleDiscoveredTarget[] = [];
-  const scanHtml = htmlWithIgnoredRegionsMasked(capture.payloadText);
+  const scanHtml = htmlWithIgnoredRegionsMasked(source.payloadText);
   let anchorCount = 0;
   for (const match of scanHtml.matchAll(ANCHOR_START_PATTERN)) {
     anchorCount += 1;
@@ -230,9 +277,9 @@ function discoverFromHtml(
     const href = hrefs[0];
     const rawHref = href?.[1] ?? href?.[2];
     if (rawHref === undefined) continue;
-    const candidate = canonicalCandidate(rawHref, capture.sourceRef);
+    const candidate = canonicalCandidate(rawHref, source.sourceRef);
     if (candidate === null) continue;
-    const target = targetFromUrl(candidate, capture);
+    const target = targetFromUrl(candidate, source);
     if (target !== null) targets.push(target);
   }
   return targets;
@@ -242,10 +289,23 @@ function targetIdentity(target: KrakenLifecycleDiscoveredTarget): string {
   return `${target.sourceKind}\u0000${target.sourceRef}`;
 }
 
+function sourceRank(source: DiscoverySource): number {
+  if (source.sourceKind === "asset-listings-index") return 0;
+  if (source.sourceKind === "asset-listings-index-page") {
+    return listingPageNumber(source.sourceRef) ?? MAXIMUM_LISTING_INDEX_PAGE + 1;
+  }
+  return 0;
+}
+
 export async function discoverKrakenLifecycleDocumentTargets(
   captures: readonly KrakenLifecycleSourceCapture[],
+  committedListingIndexPages: readonly KrakenLifecycleListingIndexPageCapture[] = [],
 ): Promise<KrakenLifecycleDiscoveryResult> {
-  if (captures.length < 2 || captures.length > 4) {
+  if (
+    captures.length < 2 ||
+    captures.length > 4 ||
+    committedListingIndexPages.length > MAXIMUM_RECURSIVE_INDEX_SOURCES
+  ) {
     throw new Error("Lifecycle discovery requires the bounded capture set");
   }
   const listings = indexCapture(
@@ -258,36 +318,54 @@ export async function discoverKrakenLifecycleDocumentTargets(
     "delistings-index",
     DELISTINGS_INDEX,
   );
-  for (const capture of [listings, delistings]) {
-    if ((await sha256Hex(capture.payloadText)) !== capture.payloadSha256) {
-      throw new Error(`${capture.sourceKind} payload digest does not match`);
+  const pageRefs = new Set<string>();
+  for (const page of committedListingIndexPages) {
+    assertListingIndexPage(page);
+    if (pageRefs.has(page.sourceRef)) {
+      throw new Error("Lifecycle discovery contains duplicate index pages");
+    }
+    pageRefs.add(page.sourceRef);
+  }
+  const sources: DiscoverySource[] = [
+    listings,
+    ...committedListingIndexPages,
+    delistings,
+  ];
+  for (const source of sources) {
+    if ((await sha256Hex(source.payloadText)) !== source.payloadSha256) {
+      throw new Error(`${source.sourceKind} payload digest does not match`);
     }
   }
-  const byIdentity = new Map<string, KrakenLifecycleDiscoveredTarget>();
-  for (const target of [
-    ...discoverFromHtml(listings),
-    ...discoverFromHtml(delistings),
-  ]) {
-    const identity = targetIdentity(target);
-    const existing = byIdentity.get(identity);
-    if (
-      existing !== undefined &&
-      (existing.discoveredFromCaptureId !== target.discoveredFromCaptureId ||
-        existing.discoveredFromPayloadSha256 !==
-          target.discoveredFromPayloadSha256)
-    ) {
-      throw new Error("Lifecycle target has conflicting discovery provenance");
-    }
-    byIdentity.set(identity, target);
-    if (byIdentity.size > MAXIMUM_DISCOVERED_TARGETS) {
-      throw new Error("Lifecycle index discovered too many targets");
+  const byIdentity = new Map<
+    string,
+    { readonly target: KrakenLifecycleDiscoveredTarget; readonly rank: number }
+  >();
+  for (const source of sources) {
+    for (const target of discoverFromHtml(source)) {
+      const identity = targetIdentity(target);
+      const candidate = { target, rank: sourceRank(source) };
+      const existing = byIdentity.get(identity);
+      if (
+        existing === undefined ||
+        candidate.rank < existing.rank ||
+        (candidate.rank === existing.rank &&
+          candidate.target.discoveredFromCaptureId <
+            existing.target.discoveredFromCaptureId)
+      ) {
+        byIdentity.set(identity, candidate);
+      }
+      if (byIdentity.size > MAXIMUM_DISCOVERED_TARGETS) {
+        throw new Error("Lifecycle index discovered too many targets");
+      }
     }
   }
-  const targets = [...byIdentity.values()].sort(
-    (left, right) =>
-      left.sourceKind.localeCompare(right.sourceKind) ||
-      left.sourceRef.localeCompare(right.sourceRef),
-  );
+  const targets = [...byIdentity.values()]
+    .map(({ target }) => target)
+    .sort(
+      (left, right) =>
+        left.sourceKind.localeCompare(right.sourceKind) ||
+        left.sourceRef.localeCompare(right.sourceRef),
+    );
   const assetListingDocuments = targets.filter(
     (target) => target.sourceKind === "asset-listing-document",
   );
@@ -299,15 +377,19 @@ export async function discoverKrakenLifecycleDocumentTargets(
   );
   const discoverySha256 = await sha256Hex(
     JSON.stringify({
-      schemaVersion: "kraken-lifecycle-document-discovery-v1",
-      sources: [listings, delistings]
-        .map((capture) => ({
-          sourceKind: capture.sourceKind,
-          sourceRef: capture.sourceRef,
-          captureId: capture.captureId,
-          payloadSha256: capture.payloadSha256,
+      schemaVersion: "kraken-lifecycle-document-discovery-v2",
+      sources: sources
+        .map((source) => ({
+          sourceKind: source.sourceKind,
+          sourceRef: source.sourceRef,
+          captureId: source.captureId,
+          payloadSha256: source.payloadSha256,
         }))
-        .sort((left, right) => left.sourceKind.localeCompare(right.sourceKind)),
+        .sort(
+          (left, right) =>
+            left.sourceKind.localeCompare(right.sourceKind) ||
+            left.sourceRef.localeCompare(right.sourceRef),
+        ),
       targets,
     }),
   );

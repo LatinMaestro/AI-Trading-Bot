@@ -3,6 +3,7 @@ import {
   type KrakenLifecycleDocumentCapture,
   type KrakenLifecycleDocumentCaptureSink,
 } from "../universe/krakenLifecycleDocumentCapture.ts";
+import type { KrakenLifecycleListingIndexPageCapture } from "../universe/krakenLifecycleDiscovery.ts";
 import { sha256Hex } from "../utils/crypto.ts";
 
 type D1BindValue = string | number | null;
@@ -41,6 +42,105 @@ export const SELECT_COMMITTED_KRAKEN_LIFECYCLE_DOCUMENT_REFS_SQL =
      ON committed.capture_id = capture.capture_id
    GROUP BY capture.source_ref
    ORDER BY capture.source_ref`;
+
+export const SELECT_LATEST_COMMITTED_KRAKEN_LISTING_INDEX_PAGES_SQL =
+  `WITH latest AS (
+     SELECT capture.capture_id, capture.source_ref, capture.payload_sha256,
+            payload.payload_byte_length, payload.payload_text,
+            capture.content_type,
+            CAST(substr(
+              capture.source_ref,
+              length('https://blog.kraken.com/category/product/asset-listings/page/') + 1
+            ) AS INTEGER) AS page_number
+     FROM kraken_lifecycle_document_captures capture
+     JOIN kraken_lifecycle_document_capture_commits committed
+       ON committed.capture_id = capture.capture_id
+     JOIN kraken_lifecycle_source_payloads payload
+       ON payload.payload_sha256 = capture.payload_sha256
+     WHERE capture.source_kind = 'asset-listings-index-page'
+       AND NOT EXISTS (
+         SELECT 1
+         FROM kraken_lifecycle_document_captures newer
+         JOIN kraken_lifecycle_document_capture_commits newer_committed
+           ON newer_committed.capture_id = newer.capture_id
+         WHERE newer.source_kind = 'asset-listings-index-page'
+           AND newer.source_ref = capture.source_ref
+           AND (
+             newer.fetched_at_ms > capture.fetched_at_ms
+             OR (
+               newer.fetched_at_ms = capture.fetched_at_ms
+               AND newer.capture_id > capture.capture_id
+             )
+           )
+       )
+   ),
+   rotated AS (
+     SELECT latest.*,
+            row_number() OVER (
+              ORDER BY CASE
+                WHEN page_number >= ?1 THEN page_number
+                ELSE page_number + 499
+              END
+            ) AS page_ordinal,
+            sum(payload_byte_length) OVER (
+              ORDER BY CASE
+                WHEN page_number >= ?1 THEN page_number
+                ELSE page_number + 499
+              END
+            ) AS cumulative_payload_bytes
+     FROM latest
+   )
+   SELECT capture_id, source_ref, payload_sha256, payload_byte_length,
+          payload_text, content_type
+   FROM rotated
+   WHERE page_ordinal <= 32
+     AND cumulative_payload_bytes <= 8388608
+   ORDER BY page_ordinal`;
+
+interface KrakenListingIndexPageRow {
+  readonly capture_id: string;
+  readonly source_ref: string;
+  readonly payload_sha256: string;
+  readonly payload_byte_length: number;
+  readonly payload_text: string;
+  readonly content_type: string;
+}
+
+function listingIndexPageFromRow(
+  row: KrakenListingIndexPageRow,
+): KrakenLifecycleListingIndexPageCapture {
+  const page: KrakenLifecycleListingIndexPageCapture = {
+    captureId: row.capture_id,
+    sourceKind: "asset-listings-index-page",
+    sourceRef: row.source_ref,
+    payloadSha256: row.payload_sha256,
+    payloadByteLength: row.payload_byte_length,
+    payloadText: row.payload_text,
+    contentType: "text/html",
+  };
+  assertDigest("captureId", page.captureId);
+  assertDigest("payloadSha256", page.payloadSha256);
+  if (
+    row.content_type !== "text/html" ||
+    typeof page.sourceRef !== "string" ||
+    typeof page.payloadText !== "string" ||
+    !Number.isSafeInteger(page.payloadByteLength) ||
+    page.payloadByteLength < 1 ||
+    page.payloadByteLength > 1_048_576 ||
+    encoder.encode(page.payloadText).byteLength !== page.payloadByteLength
+  ) {
+    throw new Error(
+      "Lifecycle document repository returned an invalid listing index page",
+    );
+  }
+  assertCanonicalKrakenLifecycleDiscoveredTarget({
+    sourceKind: page.sourceKind,
+    sourceRef: page.sourceRef,
+    discoveredFromCaptureId: page.captureId,
+    discoveredFromPayloadSha256: page.payloadSha256,
+  });
+  return page;
+}
 
 function assertDigest(name: string, value: string): void {
   if (!SHA256_PATTERN.test(value)) {
@@ -214,6 +314,25 @@ export class KrakenLifecycleDocumentCaptureRepository
       refs.add(row.source_ref);
     }
     return refs;
+  }
+
+  async loadLatestCommittedListingIndexPages(
+    rotationStartPage: number,
+  ): Promise<
+    readonly KrakenLifecycleListingIndexPageCapture[]
+  > {
+    if (
+      !Number.isSafeInteger(rotationStartPage) ||
+      rotationStartPage < 2 ||
+      rotationStartPage > 500
+    ) {
+      throw new Error("Lifecycle listing-page rotation start is invalid");
+    }
+    const result = await this.db
+      .prepare(SELECT_LATEST_COMMITTED_KRAKEN_LISTING_INDEX_PAGES_SQL)
+      .bind(rotationStartPage)
+      .all<KrakenListingIndexPageRow>();
+    return result.results.map(listingIndexPageFromRow);
   }
 
   async persistDocumentCaptures(
