@@ -94,6 +94,11 @@ CREATE TABLE integrated_external_intelligence_assessments (
       = assessment_policy_sha256
     AND json_extract(integration_json, '$.effectiveReaction')
       = effective_reaction
+    AND json_extract(integration_json, '$.actionableRepostClusterSha256s')
+      = actionable_repost_cluster_sha256s_json
+    AND json_extract(integration_json, '$.watchOnlyRepostClusterSha256s')
+      = watch_only_repost_cluster_sha256s_json
+    AND json_extract(integration_json, '$.warnings') = warnings_json
   ),
   FOREIGN KEY (linkage_sha256)
     REFERENCES external_intelligence_linkages(linkage_sha256),
