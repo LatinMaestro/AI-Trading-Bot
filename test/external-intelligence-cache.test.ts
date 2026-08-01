@@ -210,4 +210,15 @@ test("cache validators share the transport's 500-character ceiling", () => {
         .run("kraken-status", "e".repeat(501), null, 1),
     /CHECK constraint failed/,
   );
+  assert.throws(
+    () =>
+      db
+        .prepare(
+          `INSERT INTO external_intelligence_source_cache
+            (source_id, etag, last_modified, observed_at_ms)
+           VALUES (?, ?, ?, ?)`,
+        )
+        .run("kraken-status", '"bad\\r\\nheader"', null, 2),
+    /CHECK constraint failed/,
+  );
 });
