@@ -338,6 +338,19 @@ test("rejects changed identities, expired inserts and unsafe sweep evidence", as
     /identity is invalid/,
   );
 
+  const wrongCapture = await observation("b", {
+    captureId: "d".repeat(64),
+  });
+  await assert.rejects(
+    async () =>
+      prepareRedditTransientPostBatch(
+        await batch([wrongCapture]),
+        2_300,
+        OPERATION_2,
+      ),
+    /wrong contract or capture/,
+  );
+
   const expired = await observation("c", { deleteByMs: 2_200 });
   await assert.rejects(
     async () =>
