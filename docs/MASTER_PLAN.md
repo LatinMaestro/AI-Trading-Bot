@@ -41,6 +41,20 @@
     - [ ] Complete authoritative lifecycle coverage and promote only signed, evidence-complete universe snapshots.
   - [ ] Support complete Australian-dollar valuation paths for every researched pair.
   - [ ] Persist signed universe policies and content-addressed snapshots.
+- [ ] Add near-real-time external intelligence from official sources, news and Reddit.
+  - [x] Define deterministic provenance, latency, source-authority, retention and reaction contracts.
+  - [x] Prevent Reddit-only/social-only evidence from creating a risk-on candidate.
+  - [x] Allow authoritative severe negative events to pause new risk without submitting an order.
+  - [ ] Persist immutable intelligence items, corrections and assessments.
+  - [ ] Add a versioned provider/source registry with licence, attribution, retention and model-use rules.
+  - [ ] Add official exchange, regulator, issuer and publisher RSS/webhook adapters.
+  - [ ] Add compliant Reddit OAuth collection with adaptive rate limits, deletion handling and minimal storage.
+  - [ ] Add dedicated one-minute collection and queue-backed at-least-once processing with idempotency.
+  - [ ] Add deterministic entity/topic linking, syndication clustering and manipulation controls.
+  - [ ] Integrate `pause-new-risk` into paper-mode risk controls and incident reporting.
+  - [ ] Backtest news/social features with original publication and receipt timestamps and no look-ahead.
+- [ ] Research external-intelligence features only after provenance, latency and manipulation controls are validated.
+
 - [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
   - [x] Add a deterministic pure target-weight rebalancing engine.
   - [x] Attribute maker/taker fees, spread, slippage, adverse selection and square-root price impact.
@@ -122,7 +136,7 @@
 - [ ] Preserve the signed strategy's hard drawdown, loss, permission and reconciliation limits.
 - [ ] Add drift detection and automatic return to paper/shadow mode.
 - [ ] Add incident runbooks and periodic credential rotation.
-- [ ] Maintain provider, market-universe, capacity and fee reviews.
+- [ ] Maintain provider, market-universe, intelligence-source, capacity and fee reviews.
 - [ ] Prevent automatic capital top-ups even when the system is behind the five-year path.
 
 ## Phase 8 — Adaptive models
@@ -141,3 +155,4 @@
 - [ ] Show drawdown, after-fee return, terminal-wealth distribution, risk of ruin, capacity and tax-adjusted estimates.
 - [ ] Attribute deposits and withdrawals separately so they cannot be mistaken for trading performance.
 - [ ] Preserve user-controlled withdrawal at the exchange interface; the bot never receives withdrawal authority.
+- [ ] Never train on Reddit or publisher content without explicit rights and approved provenance.

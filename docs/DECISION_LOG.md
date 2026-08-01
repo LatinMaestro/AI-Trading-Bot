@@ -149,3 +149,12 @@ Discover candidate lifecycle documents only from the exact preserved Kraken list
 Bind every target to its exact index capture and payload digest, deduplicate and sort deterministically, and content-address the complete discovery result. Reject non-HTTPS, untrusted, queried, fragmented, encoded, cross-index or excessively large link sets.
 
 Do not infer lifecycle meaning from support titles, link text or URL words. Support targets remain generic until reviewed, captured and explicitly classified. This discovery step creates no lifecycle declarations and adds no private endpoint, credential, account, wallet, fund or order capability.
+
+
+## 2026-07-27 — Near-real-time external intelligence boundary
+
+Collect official announcements, approved news and compliant Reddit observations through webhook, stream or scheduled polling adapters with explicit publication, receipt, availability and assessment times. “Live” means measured near-real-time delivery; source publication and provider delivery delays are never hidden.
+
+An authoritative severe negative event may pause new risk while deterministic market, account and portfolio checks run. Positive news requires authoritative or independent reputable corroboration and can create only a research candidate. Reddit-only and rumour-only evidence remains a watch signal regardless of volume. External intelligence never submits or approves an order.
+
+Reddit access must use approved API access, truthful OAuth identity, current rate limits, minimal permitted retention, deletion handling and no model-training permission. Publisher content requires a versioned licence/retention/attribution contract. Language-model output is an untrusted research draft and cannot cross the deterministic order boundary.
