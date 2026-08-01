@@ -252,3 +252,11 @@ Bind each Reddit source contract to metadata-only storage, required attribution,
 The official Reddit Data API documentation rechecked on 2 August 2026 states a free-access limit of 100 QPM per OAuth client ID averaged over ten minutes. Convert response headers into bounded integer milliquery state, retain a ten-percent reserve, space requests by at least one second and honour bounded `Retry-After` responses without retaining their bodies.
 
 This slice provides bounded OAuth listing acquisition only. Post normalisation, provider-deletion sweeps/corrections, an approved Reddit app and deployed credentials remain pending. Reddit remains social/watch-only and cannot create a risk-on candidate, approve an order or submit an order. No account, credential, deployment, paid service, private exchange API, funds, wallet or live-trading capability is added.
+
+## 2026-08-02 — Purge-oriented transient Reddit post lifecycle
+
+Normalise Reddit listing and info responses only inside a transient, source-contract-bound boundary. Retain the canonical post fullname, subreddit and publication chronology needed to refresh availability; validate but discard titles, bodies, authors and provider permalinks.
+
+Reproduce the source-contract, capture, metadata and observation digests before use. Refresh no more than 100 exact post fullnames per bounded OAuth request. Missing, provider-removed, deleted or retention-expired observations create immediate purge actions, while the next sweep is bounded by both a fifteen-minute interval and the earliest deletion deadline.
+
+Do not send post-level Reddit observations through the immutable intelligence queue or correction ledger. Durable compliance evidence contains source-level time and aggregate counts only, with no post identifiers or content-derived evidence. Purge-enforced transient persistence and downstream invalidation remain separate required work. Reddit remains social/watch-only and cannot approve risk, select a strategy or submit an order.
