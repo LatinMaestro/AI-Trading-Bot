@@ -95,13 +95,58 @@ function canonicalMediaReleaseUrl(value: string): {
   };
 }
 
+const RBA_RSS_PUBLICATION_TIME =
+  /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), (0[1-9]|[12][0-9]|3[01]) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (19[7-9][0-9]|2[0-9]{3}) ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]) (GMT|([+-])(0[0-9]|1[0-4])([0-5][0-9]))$/u;
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+] as const;
+
 function parsePublicationTime(value: string, receivedAtMs: number): number {
-  const parsed = Date.parse(value);
+  const match = RBA_RSS_PUBLICATION_TIME.exec(value);
+  if (match === null) {
+    throw new Error("RBA media-release publication time is invalid");
+  }
+  const day = Number(match[2]);
+  const month = MONTHS.indexOf(match[3] as (typeof MONTHS)[number]);
+  const year = Number(match[4]);
+  const hour = Number(match[5]);
+  const minute = Number(match[6]);
+  const second = Number(match[7]);
+  const offsetHour = match[8] === "GMT" ? 0 : Number(match[10]);
+  const offsetMinute = match[8] === "GMT" ? 0 : Number(match[11]);
+  if (offsetHour === 14 && offsetMinute !== 0) {
+    throw new Error("RBA media-release publication time is invalid");
+  }
+  const localCalendarMs = Date.UTC(year, month, day, hour, minute, second);
+  const localCalendar = new Date(localCalendarMs);
   if (
-    !Number.isSafeInteger(parsed) ||
-    parsed < 0 ||
-    parsed > receivedAtMs
+    localCalendar.getUTCFullYear() !== year ||
+    localCalendar.getUTCMonth() !== month ||
+    localCalendar.getUTCDate() !== day ||
+    localCalendar.getUTCHours() !== hour ||
+    localCalendar.getUTCMinutes() !== minute ||
+    localCalendar.getUTCSeconds() !== second ||
+    WEEKDAYS[localCalendar.getUTCDay()] !== match[1]
   ) {
+    throw new Error("RBA media-release publication time is invalid");
+  }
+  const offsetSign = match[9] === "-" ? -1 : 1;
+  const parsed =
+    localCalendarMs -
+    offsetSign * (offsetHour * 60 + offsetMinute) * 60_000;
+  if (!Number.isSafeInteger(parsed) || parsed < 0 || parsed > receivedAtMs) {
     throw new Error("RBA media-release publication time is invalid");
   }
   return parsed;

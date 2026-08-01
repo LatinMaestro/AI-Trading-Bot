@@ -267,6 +267,42 @@ test("fails closed on unapproved links, GUIDs and future publication", async () 
     ),
     /guid does not match/u,
   );
+  const nonRssDate = item("2026-18").replace(
+    "Wed, 08 Jul 2026 09:30:00 +1000",
+    "2026-07-08T09:30:00+10:00",
+  );
+  await assert.rejects(
+    normaliseRbaMediaReleaseCapture(
+      await contract(),
+      await capture(rss([nonRssDate])),
+      policy,
+    ),
+    /publication time is invalid/u,
+  );
+  const impossibleDate = item("2026-18").replace(
+    "Wed, 08 Jul 2026 09:30:00 +1000",
+    "Tue, 31 Feb 2026 09:30:00 +1000",
+  );
+  await assert.rejects(
+    normaliseRbaMediaReleaseCapture(
+      await contract(),
+      await capture(rss([impossibleDate])),
+      policy,
+    ),
+    /publication time is invalid/u,
+  );
+  const wrongWeekday = item("2026-18").replace(
+    "Wed, 08 Jul 2026 09:30:00 +1000",
+    "Tue, 08 Jul 2026 09:30:00 +1000",
+  );
+  await assert.rejects(
+    normaliseRbaMediaReleaseCapture(
+      await contract(),
+      await capture(rss([wrongWeekday])),
+      policy,
+    ),
+    /publication time is invalid/u,
+  );
   const future = item("2026-18").replace(
     "Wed, 08 Jul 2026 09:30:00 +1000",
     "Wed, 29 Jul 2026 09:30:00 +1000",
