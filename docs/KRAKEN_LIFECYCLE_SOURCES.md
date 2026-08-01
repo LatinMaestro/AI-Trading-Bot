@@ -14,11 +14,15 @@ Only Kraken-owned HTTPS sources are accepted:
 
 Individual evidence records must reference an exact Kraken Blog listing article, Kraken Support article or Kraken Status incident/API document. The exact successful payload is captured separately and identified by a lowercase SHA-256 digest.
 
-## Raw-source capture
+## Raw-source capture and discovery
 
 `docs/KRAKEN_LIFECYCLE_CAPTURE.md` defines the scheduled preservation boundary. The daily 00:00 UTC cycle captures the official listing and delisting indexes plus Kraken Status incident and scheduled-maintenance feeds. Exact valid UTF-8 bytes are SHA-256 hashed and stored once as bounded content-addressed D1 payloads; each fetch remains a separate immutable capture with a database-verified commit marker.
 
-Raw capture does not create lifecycle events. Complete pair-level evidence still requires reviewed declarations tied to exact committed source payloads. Exact individual listing, delisting and Australian-availability documents must be discovered and captured before their declarations are admitted.
+The preserved listing and delisting indexes are processed through a deterministic discovery contract. It verifies their exact payload digests, extracts only bounded quoted anchor links outside comments and raw-text elements, and accepts only source-specific canonical Kraken Blog listing articles, Kraken Blog pagination pages and Kraken Support article targets. Every discovered target retains the exact index capture ID and payload digest and is included in a content-addressed discovery result.
+
+Kraken Support targets remain generic lifecycle candidates until reviewed. Link text, title fragments and URL words are not used to infer global delisting, suspension or Australian availability.
+
+Raw capture and discovery do not create lifecycle events. Complete pair-level evidence still requires exact document capture and reviewed declarations tied to committed source payloads.
 
 ## Source classes
 
@@ -62,7 +66,7 @@ Missing classes remain explicit. Coverage completeness does not imply current el
 
 ## Remaining work
 
-- Discover and capture exact individual listing, delisting and regional-availability documents from the preserved indexes.
+- Capture and immutably persist discovered listing-index pages and individual listing, delisting and regional-availability documents.
 - Backfill the complete Kraken listing, delisting, suspension/resumption and Australian-availability history.
 - Reconcile asset-level announcements to every affected canonical spot pair.
 - Persist reviewed declarations with an explicit link to committed raw captures.
