@@ -35,9 +35,19 @@ A daily candle set is usable only when:
 
 Any violation fails closed before strategy evaluation.
 
+## Persistence contract
+
+Committed 60-minute and 1,440-minute candles may be persisted only through the immutable contract in `docs/MARKET_DATA_PERSISTENCE.md`.
+
+The D1 identity is venue, canonical pair, interval and open timestamp. Exact duplicate content is idempotent. Reuse of a batch identity with different provenance, or reuse of a candle identity with different OHLCV content, is a hard conflict. Every candle must match its source batch's venue, symbols, interval and time range. Stored batches and candles cannot be updated or deleted through normal application SQL.
+
+The scheduled ingestion path must record the public request provenance, persist only closed intervals, inspect the expected range for gaps and stop research evaluation when required data is missing or unreconciled.
+
 ## Known limitation
 
-Kraken's REST OHLC endpoint returns at most 720 recent entries. It is suitable for the operational strategy window but not sufficient alone for broad historical research. A later Phase 1 slice must establish a reproducible historical dataset, provenance record, gap-repair process and D1 persistence before backtest conclusions are accepted.
+Kraken's REST OHLC endpoint returns at most 720 recent entries and always includes the current uncommitted interval. This leaves no more than 719 committed rows available for repair at a selected interval.
+
+The current persistence and gap-planning primitives identify which missing ranges remain recoverable from Kraken REST and which have aged outside that boundary. They do not make Kraken REST a complete historical research source. Broader backtesting still requires progressive collection or a separately approved reproducible historical dataset with provenance and reconciliation.
 
 ## Sources
 
