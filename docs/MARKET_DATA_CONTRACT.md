@@ -53,3 +53,18 @@ The current persistence and gap-planning primitives identify which missing range
 
 - https://docs.kraken.com/api-reference/market-data/get-tradable-asset-pairs
 - https://docs.kraken.com/api-reference/market-data/get-ohlc-data
+
+## Public market-quality evidence
+
+The research-universe path uses Kraken's official public contracts with `assetVersion=1`:
+
+- `AssetPairs` filtered to Australian availability, currency-class assets and the international execution venue;
+- `Ticker` for all or an exact requested set of display-format pairs; and
+- `Depth` for one requested pair with a bounded level count from 1 to 500.
+
+Each successful response retains its source URL, fetch time and SHA-256 digest of the exact response text before typed parsing. Redirected responses, unexpected media types, HTTP errors, Kraken envelope errors, invalid JSON, missing requested tickers, legacy pair keys, malformed numeric values, crossed markets, unordered books, unsafe timestamps and non-finite arithmetic fail closed.
+
+Ticker evidence provides best prices and 24-hour base volume/VWAP for quote-turnover calculation. L2 order-book evidence provides coherent spread, conservative two-sided quote depth and candidate-order impact. Candidate impact is `null` when either side lacks enough displayed depth; it is never converted into a favourable estimate.
+
+These contracts do not yet create a complete universe observation. Scheduled orchestration must still join them with committed candle counts, annualised volatility, fresh AUD conversion evidence and lifecycle evidence before atomic persistence.
+
