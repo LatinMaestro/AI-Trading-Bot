@@ -15,7 +15,6 @@
     "check": "npm run cf-typegen && npm run typecheck && npm test && npm run deploy:dry && npm run check:forbidden"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "5.20260801.1",
     "@types/node": "22.20.1",
     "typescript": "5.8.3",
     "wrangler": "4.118.0"
