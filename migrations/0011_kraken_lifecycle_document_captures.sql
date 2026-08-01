@@ -67,8 +67,6 @@ CREATE TABLE kraken_lifecycle_document_captures (
     )
   ),
   UNIQUE (source_ref, fetched_at_ms),
-  FOREIGN KEY (discovered_from_capture_id)
-    REFERENCES kraken_lifecycle_source_captures(capture_id),
   FOREIGN KEY (discovered_from_payload_sha256)
     REFERENCES kraken_lifecycle_source_payloads(payload_sha256),
   FOREIGN KEY (payload_sha256)
@@ -97,22 +95,37 @@ END;
 
 CREATE TRIGGER enforce_kraken_lifecycle_document_discovery_provenance
 BEFORE INSERT ON kraken_lifecycle_document_captures
-WHEN NOT EXISTS (
-  SELECT 1
-  FROM kraken_lifecycle_source_captures source
-  JOIN kraken_lifecycle_source_capture_commits committed
-    ON committed.capture_id = source.capture_id
-  WHERE source.capture_id = NEW.discovered_from_capture_id
-    AND source.payload_sha256 = NEW.discovered_from_payload_sha256
-    AND (
-      (NEW.source_kind IN (
-          'asset-listing-document',
-          'asset-listings-index-page'
-        )
-        AND source.source_kind = 'asset-listings-index')
-      OR (NEW.source_kind = 'support-lifecycle-document'
-        AND source.source_kind = 'delistings-index')
-    )
+WHEN NOT (
+  EXISTS (
+    SELECT 1
+    FROM kraken_lifecycle_source_captures source
+    JOIN kraken_lifecycle_source_capture_commits committed
+      ON committed.capture_id = source.capture_id
+    WHERE source.capture_id = NEW.discovered_from_capture_id
+      AND source.payload_sha256 = NEW.discovered_from_payload_sha256
+      AND (
+        (NEW.source_kind IN (
+            'asset-listing-document',
+            'asset-listings-index-page'
+          )
+          AND source.source_kind = 'asset-listings-index')
+        OR (NEW.source_kind = 'support-lifecycle-document'
+          AND source.source_kind = 'delistings-index')
+      )
+  )
+  OR EXISTS (
+    SELECT 1
+    FROM kraken_lifecycle_document_captures source
+    JOIN kraken_lifecycle_document_capture_commits committed
+      ON committed.capture_id = source.capture_id
+    WHERE source.capture_id = NEW.discovered_from_capture_id
+      AND source.payload_sha256 = NEW.discovered_from_payload_sha256
+      AND source.source_kind = 'asset-listings-index-page'
+      AND NEW.source_kind IN (
+        'asset-listing-document',
+        'asset-listings-index-page'
+      )
+  )
 )
 BEGIN
   SELECT RAISE(ABORT, 'Kraken lifecycle document discovery provenance is incomplete');
