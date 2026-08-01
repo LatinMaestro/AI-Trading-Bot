@@ -36,6 +36,8 @@
     - [x] Add an allowlisted official-source manifest, future-effective event handling and deterministic coverage audit.
     - [ ] Backfill complete listing, trading-status, delisting and Australian-availability history.
     - [x] Add scheduled raw-source capture and immutable persistence.
+      - [x] Discover canonical listing-index pages, listing articles and support lifecycle documents from preserved index payloads.
+      - [ ] Capture and immutably persist discovered index pages and individual documents.
     - [ ] Complete authoritative lifecycle coverage and promote only signed, evidence-complete universe snapshots.
   - [ ] Support complete Australian-dollar valuation paths for every researched pair.
   - [ ] Persist signed universe policies and content-addressed snapshots.
