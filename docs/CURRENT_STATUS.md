@@ -5,9 +5,9 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `0c7d10a6bb75bdea8779287580e575c496f0f97f`
-- Pull requests #1 through #6, #8, #9, #11 through #15, #17 and #19 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18 and #20 are closed without merge.
-- This tree reconstructs pull request #21 as signal-time D1 candle-history evidence directly on that verified base.
+- Verified base `main`: `6f17d5df0bbedcdb28758e9422f8e7cda880812f`
+- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19 and #21 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20 and #22 are closed without merge.
+- This tree reconstructs pull request #23 as allowlisted official Kraken lifecycle evidence directly on that verified base.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -31,6 +31,7 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - PR #15 run [30691290356](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30691290356): lockfile reproduction, paper type generation, strict TypeScript, 102 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #17 run [30691425536](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30691425536): lockfile reproduction, paper type generation, strict TypeScript, 108 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #19 run [30691621315](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30691621315): lockfile reproduction, paper type generation, strict TypeScript, 114 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #21 run [30691823979](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30691823979): lockfile reproduction, paper type generation, strict TypeScript, 123 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 
 ## Universe-ingestion evidence
 
@@ -95,6 +96,15 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - Loads history only for the bounded selected rotation and rejects material Ticker/Depth time skew.
 - This evidence does not grant dynamic-universe strategy selection, deployment or order authority.
 
+## Official lifecycle-source evidence
+
+- Allowlists exact Kraken Blog asset-listing articles, Kraken Support notices and Kraken Status incident/API documents.
+- Validates source class, official origin/path, publication/capture chronology, event type and global-versus-Australian scope.
+- Accepts published future-effective events as knowable evidence without applying them before their effective time.
+- Audits listing, trading-status and Australian-availability history independently for each expected pair and rejects declarations outside that set.
+- Complete historical backfill, scheduled raw capture and immutable payload persistence remain incomplete.
+- No free-text or language-model extraction, private API, credential, strategy-selection or order authority is added.
+
 ## Runtime boundary
 
 - Runtime markets remain `BTC/AUD` and `ETH/AUD` only.
@@ -108,4 +118,4 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 
 ## Next action
 
-Validate reconstructed PR #21 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct the earliest remaining open dependency.
+Validate reconstructed PR #23 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct the earliest remaining open dependency.

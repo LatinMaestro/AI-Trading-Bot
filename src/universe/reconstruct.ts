@@ -36,7 +36,7 @@ const LIFECYCLE_EVENT_ORDER: Record<
   "trading-online": 1,
   "trading-suspended": 1,
   "trading-resumed": 1,
-  delisted: 1,
+  delisted: 3,
   "au-enabled": 2,
   "au-disabled": 2,
 };
