@@ -218,3 +218,44 @@ test("recursive listing pages ignore links in comments and raw-text elements", a
     "https://blog.kraken.com/product/asset-listings/real",
   ]);
 });
+
+
+test("rejects repository page windows above the orchestration resource bound", async () => {
+  const listings = await sourceCapture(
+    "asset-listings-index",
+    "https://blog.kraken.com/category/product/asset-listings",
+    "<html>root</html>",
+    "7",
+  );
+  const delistings = await sourceCapture(
+    "delistings-index",
+    "https://support.kraken.com/sections/delistings",
+    "<html>root</html>",
+    "8",
+  );
+  const payloadText = "x";
+  const payloadSha256 = await sha256Hex(payloadText);
+  const pages = Array.from(
+    { length: 9 },
+    (_, index): KrakenLifecycleListingIndexPageCapture => ({
+      captureId: (index + 1).toString(16).repeat(64),
+      sourceKind: "asset-listings-index-page",
+      sourceRef:
+        `https://blog.kraken.com/category/product/asset-listings/page/${index + 2}`,
+      payloadSha256,
+      payloadByteLength: 1_048_576,
+      payloadText,
+      contentType: "text/html",
+    }),
+  );
+  const repository = new FakeRepository(pages, new Set());
+  await assert.rejects(
+    runScheduledKrakenLifecycleDocumentCycle(
+      { due: true, captures: [listings, delistings], requestCount: 2 },
+      repository,
+      { scheduledAtMs: 0 },
+    ),
+    /page window exceeds resource bounds/u,
+  );
+  assert.deepEqual(repository.persisted, []);
+});
