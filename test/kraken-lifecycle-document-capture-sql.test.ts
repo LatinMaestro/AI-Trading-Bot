@@ -175,7 +175,7 @@ test("rejects noncanonical paths and commits before fetch", async () => {
     async () =>
       await prepareKrakenLifecycleDocumentCapturePersistence(
         [
-          capture({
+          await capture({
             sourceRef:
               "https://blog.kraken.com/product/asset-listings/example?bad=1",
           }),
