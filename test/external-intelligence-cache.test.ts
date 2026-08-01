@@ -108,10 +108,14 @@ test("cache migration preserves monotonic validators and exact retries", () => {
   );
 
   assert.deepEqual(
-    db.prepare(
-      `SELECT source_id, etag, last_modified, observed_at_ms
-       FROM external_intelligence_source_cache`,
-    ).get(),
+    JSON.parse(
+      JSON.stringify(
+        db.prepare(
+          `SELECT source_id, etag, last_modified, observed_at_ms
+           FROM external_intelligence_source_cache`,
+        ).get(),
+      ),
+    ),
     {
       source_id: "kraken-status",
       etag: '"v2"',
@@ -218,7 +222,7 @@ test("cache validators share the transport's 500-character ceiling", () => {
             (source_id, etag, last_modified, observed_at_ms)
            VALUES (?, ?, ?, ?)`,
         )
-        .run("kraken-status", '"bad\\r\\nheader"', null, 2),
+        .run("kraken-status", '"bad\r\nheader"', null, 2),
     /CHECK constraint failed/,
   );
 });
