@@ -172,6 +172,7 @@ function parsePublishedAt(value: string, receivedAtMs: number): number {
   const parsed = Date.parse(value);
   if (
     !Number.isSafeInteger(parsed) ||
+    new Date(parsed).toUTCString() !== value ||
     parsed < 0 ||
     parsed > receivedAtMs
   ) {
