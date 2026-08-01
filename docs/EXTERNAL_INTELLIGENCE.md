@@ -106,21 +106,37 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
 
 The persistence boundary stores versioned source contracts, immutable items, append-only corrections and deterministic assessments in content-addressed ingestion batches. Exact retries are idempotent. Changed item, provider-event, assessment or batch identities fail closed, and a batch becomes usable only after its membership, evidence-digest and chronology checks produce an immutable commit marker.
 
+## Acquisition adapter boundary
+
+Registry-bound feed and webhook acquisition is a transport boundary, not a classification or trading boundary.
+
+- Polling accepts only an enabled, effective source-contract version whose source origin and acquisition mode match the target.
+- Official, regulator, issuer and approved publisher targets may use `minute-poll`, `scheduled-poll` or authenticated `webhook` delivery as permitted by their contract. Reddit is rejected and remains reserved for the separate approved OAuth collector.
+- Polling uses canonical HTTPS targets, rejects credential or signature query parameters, rejects redirects and unsupported media types, and applies one bounded retry for transient network, timeout, HTTP 408, HTTP 429 and server failures.
+- `Retry-After` is respected but bounded. Conditional `ETag` and `Last-Modified` requests preserve explicit not-modified observations instead of fabricating new content.
+- One bounded deadline remains active through response headers, streamed-body receipt and payload hashing. Bodies above one MiB, empty bodies and invalid declared lengths fail closed.
+- Webhook payloads require POST, an approved media type and a provider-specific signature verifier before they become available for downstream processing.
+- Every accepted payload records request start, receipt, availability, response latency, availability latency, exact byte length, SHA-256, cache validators, source-contract digest and a deterministic capture identity.
+- Raw bytes are transient unless the exact source contract permits full-content retention. Model-training permission remains false.
+
+The adapter output still requires source-specific RSS, Atom, JSON Feed or provider-event parsing, canonical item identity, publication-time extraction, retention enforcement, immutable batch persistence and deterministic assessment before it can influence research state.
+
 ## Planned implementation
 
 1. [x] Persist immutable intelligence items and assessments.
 2. [x] Add the versioned provider/source registry and retention rules.
-3. [ ] Add official exchange, regulator, issuer and publisher RSS/webhook adapters.
-4. [ ] Add compliant Reddit OAuth collection with adaptive rate limiting.
-5. [ ] Add minute-level collectors and queue-backed deduplicated processing.
-6. [ ] Add deterministic entity/topic linking, syndication clustering and correction handling.
-7. [ ] Integrate `pause-new-risk` with paper-mode risk controls.
-8. [ ] Backtest news/social features without look-ahead using original publication and receipt timestamps.
-9. [ ] Promote any risk-on use only after walk-forward, holdout, manipulation and cost evidence.
+3. [x] Add registry-bound bounded feed polling and authenticated webhook payload acquisition.
+4. [ ] Add approved source manifests, source-specific parsing, provider signature implementations and deployed endpoints.
+5. [ ] Add compliant Reddit OAuth collection with adaptive rate limiting.
+6. [ ] Add minute-level collectors and queue-backed deduplicated processing.
+7. [ ] Add deterministic entity/topic linking, syndication clustering and correction handling.
+8. [ ] Integrate `pause-new-risk` with paper-mode risk controls.
+9. [ ] Backtest news/social features without look-ahead using original publication and receipt timestamps.
+10. [ ] Promote any risk-on use only after walk-forward, holdout, manipulation and cost evidence.
 
 ## Current limitation
 
-The persistence and reaction boundaries are implemented, but no Reddit account, news provider, live webhook, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms and paid subscriptions remain separately approved client/provider actions.
+The persistence, reaction and generic acquisition-transport boundaries are implemented, but no approved source manifest, source-specific parser, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
 
 ## Official references
 
