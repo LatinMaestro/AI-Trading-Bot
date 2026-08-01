@@ -310,3 +310,47 @@ test("calibration summaries are deterministic and enforce evidence minimums", as
     /Conflicting calibration sample/,
   );
 });
+
+test("AUD identity paths still validate time bounds", () => {
+  assert.throws(
+    () => resolveAudValuationPath("AUD", [], -1, HOUR),
+    /asOfMs/,
+  );
+  assert.throws(
+    () => resolveAudValuationPath("AUD", [], NOW, -1),
+    /maximumAudQuoteAgeMs/,
+  );
+});
+
+test("definition identity binds source availability rather than unrelated quality time", async () => {
+  const earlier = await prepareUniverseIngestionBatch(
+    input([{ ...market, availableAtMs: NOW - 1 }]),
+  );
+  const later = await prepareUniverseIngestionBatch(input([market]));
+  assert.deepEqual(earlier.definitions, later.definitions);
+  assert.notDeepEqual(earlier.observations, later.observations);
+});
+
+test("unknown lifecycle event types fail closed at the runtime boundary", async () => {
+  const invalid = input([market]);
+  const announcements = invalid.lifecycleAnnouncements;
+  if (announcements === undefined || announcements[0] === undefined) {
+    throw new Error("Missing fixture");
+  }
+  await assert.rejects(
+    prepareUniverseIngestionBatch({
+      ...invalid,
+      lifecycleAnnouncements: [
+        {
+          ...announcements[0],
+          announcement: {
+            ...announcements[0].announcement,
+            eventType: "halted" as never,
+          },
+        },
+      ],
+    }),
+    /eventType is invalid/,
+  );
+});
+
