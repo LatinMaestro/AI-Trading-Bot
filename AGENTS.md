@@ -7,6 +7,7 @@ Read these files before changing the repository:
 - `CODEX_START_PROMPT.md`
 - `README.md`
 - `docs/SPECIFICATION_SOURCE_OF_TRUTH.md`
+- `docs/FIVE_YEAR_AGGRESSIVE_MANDATE.md`
 - `docs/MASTER_PLAN.md`
 - `docs/ARCHITECTURE.md`
 - `docs/SECURITY_MODEL.md`
@@ -28,8 +29,10 @@ Read the remaining `docs/` files when their subject is relevant.
 6. Live mode is disabled by default and requires all activation gates.
 7. Every decision, signal, order attempt, response, fill, balance change and risk event must be auditable.
 8. Australian-dollar valuations and records are mandatory for tax reporting.
-9. A strategy may not advance because of headline returns alone. It must pass out-of-sample, walk-forward, fee, slippage, drawdown and stability tests.
+9. A strategy may not advance because of headline returns alone. It must pass out-of-sample, walk-forward, fee, slippage, drawdown, ruin-probability and stability tests.
 10. The US$1 million objective is aspirational, not a guarantee or permission to bypass controls.
+11. Research must optimise for the five-year aggressive mandate rather than defaulting to a slow multi-decade strategy. Market-cap-agnostic, concentrated, high-volatility and high-turnover spot candidates are permitted when evidence supports them.
+12. Aggressive capital risk never weakens operational safety. The bot may risk only the explicitly approved exchange capital and may never obtain withdrawal, transfer, wallet-signing or debt-creating authority.
 
 ## Pull-request discipline
 
@@ -46,15 +49,17 @@ Read the remaining `docs/` files when their subject is relevant.
 At minimum:
 
 ```bash
-npm install
+npm ci --ignore-scripts
+npm install --ignore-scripts --package-lock-only
 npm run cf-typegen
 npm run typecheck
 npm test
 npm run deploy:dry
 npm run check:forbidden
+npm run check:secrets
 ```
 
-Run additional backtests, migration checks and security tests when relevant.
+Verify the regenerated lockfile has no diff. Run additional backtests, migration checks and security tests when relevant.
 
 ## Client-only stop conditions
 
