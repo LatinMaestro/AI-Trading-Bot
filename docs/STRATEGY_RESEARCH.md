@@ -24,6 +24,8 @@ The universe is divided into separately evaluated lanes:
 
 Each lane requires explicit online status, listing date, supported quote/AUD valuation, precision, minimums, spread, liquidity, price-impact and data-quality evidence. Leveraged, inverse and derivative-wrapper tokens are excluded.
 
+The authoritative reconstruction contract is `docs/MARKET_UNIVERSE.md`, and production code must import through `src/universe/index.ts`. Synthetic fixtures are not authoritative market evidence; scheduled sources, AUD valuation paths, calibration and signed policy persistence remain required.
+
 ## Baseline A — venue-wide relative-strength rotation
 
 For each established or high-volatility candidate:

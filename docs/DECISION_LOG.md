@@ -51,3 +51,9 @@ Use a pure, runtime-disconnected target-weight engine to model maker/taker fees,
 Sells execute before buys, cash-constrained buys scale proportionally, and invalid chronology, missing marks, duplicate markets or targets, gross spot targets above 100%, negative cash and short positions fail closed.
 
 Synthetic fixtures prove arithmetic and safety invariants only. Strategy conclusions require time-appropriate venue, pair, universe-tier and equity-scale calibration plus survivorship-safe market evidence. This primitive grants no strategy selection, runtime, deployment or order authority.
+
+## 2026-08-01 — Survivorship-safe dynamic research universe
+
+Use immutable, time-bounded market definitions, lifecycle events and quality observations to reconstruct eligibility strictly from evidence available by each signal time. Classify eligible markets deterministically into established, high-volatility and new-listing tiers, and retain every candidate with explicit reason codes.
+
+TypeScript validation and D1 constraints require lower-case SHA-256 payload digests. Delisting closes a listing era; relisting starts a new era and requires fresh evidence that the market is available in Australia. Synthetic fixtures prove reconstruction invariants only. This research boundary grants no strategy selection, runtime, deployment or order authority.

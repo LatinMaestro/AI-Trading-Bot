@@ -12,8 +12,9 @@
     "test": "node --test --experimental-strip-types test/*.test.ts",
     "deploy:dry": "wrangler deploy --dry-run --env paper",
     "check:forbidden": "node scripts/check-forbidden.mjs",
-    "check": "npm run cf-typegen && npm run typecheck && npm test && npm run deploy:dry && npm run check:forbidden && npm run check:secrets",
-    "check:secrets": "node scripts/check-secrets.mjs"
+    "check": "npm run cf-typegen && npm run typecheck && npm test && npm run deploy:dry && npm run check:forbidden && npm run check:secrets && npm run check:universe-imports",
+    "check:secrets": "node scripts/check-secrets.mjs",
+    "check:universe-imports": "node scripts/check-universe-imports.mjs"
   },
   "devDependencies": {
     "@types/node": "22.20.1",
