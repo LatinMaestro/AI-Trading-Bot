@@ -2,45 +2,87 @@
 
 ## Purpose
 
-The user accepts that the allocated capital may be lost, but the system does not interpret that as permission for unlimited or unobservable risk. The policy prevents software and credential failures from turning an intentionally limited experiment into a larger loss.
+The user accepts that the complete explicitly approved trading allocation may be lost in pursuit of the five-year objective. The system must therefore permit aggressive capital-risk research without allowing software, credential or provider failures to create a larger loss, debt, unauthorised transfer or access to unrelated assets.
 
-## Initial hard limits
+The authoritative objective and strategy interpretation is in `docs/FIVE_YEAR_AGGRESSIVE_MANDATE.md`.
 
-These are conservative foundation defaults and may only be changed through a reviewed decision-log entry:
+## Non-negotiable operational limits
+
+These limits apply to every strategy and cannot be relaxed by a high return target:
 
 - spot positions only;
-- approved universe only;
+- no leverage, margin, derivatives, borrowing, lending, staking or shorting;
+- no negative-balance or liability-creating strategy;
+- no withdrawal, transfer, deposit, address-management or wallet-signing authority;
+- approved venue, account and universe only;
+- no automatic capital top-up;
+- no order when data, permissions, balances, prior orders or reconciliation state are stale, incomplete, inconsistent or ambiguous;
+- every order must satisfy venue precision, minimums, idempotency and maximum price-deviation rules;
+- the risk engine remains authoritative over every strategy or model.
+
+## Aggressive research envelope
+
+Research and paper modes must test materially more aggressive candidates than the conservative foundation baseline, including:
+
+- up to 100% gross spot exposure, retaining only any cash required for fees and settlement;
+- a single concentrated asset or a small portfolio of the strongest ranked assets;
+- venue-wide, market-cap-agnostic spot eligibility, including micro-caps and newly listed assets that pass explicit liquidity and data gates;
+- hourly decisions and multiple portfolio changes per day;
+- maker or taker execution when the expected after-cost edge justifies the cost and fill risk;
+- wider drawdown tolerance and faster rotation than the initial foundation limits;
+- separate candidate configurations for established assets, high-volatility assets and newly listed assets.
+
+Nominal token price is not a risk measure. Liquidity, spread, depth, turnover, volatility, listing history, price impact and data integrity are authoritative.
+
+## Current implementation defaults
+
+The existing foundation limits remain fail-closed implementation defaults until the backtest, paper and review gates approve a signed aggressive configuration. They must not be treated as the final strategy mandate or used to justify a slow multi-decade plan.
+
+Current defaults are:
+
 - maximum 90% gross crypto exposure;
 - minimum 10% AUD cash buffer;
-- one active directional asset at a time during the baseline strategy;
-- maximum one portfolio rebalance in 24 hours;
+- one active directional asset;
+- maximum one rebalance in 24 hours;
 - post-only limit orders by default;
 - maximum 2% price deviation from the current validated reference price;
-- maximum 5% daily realised-plus-unrealised loss before trading pauses;
-- maximum 10% rolling seven-day loss before trading pauses;
-- maximum 15% drawdown from high-water mark before the kill switch engages;
-- maximum 12% trailing adverse move for a held asset before an exit signal is forced;
-- no order when data is stale, incomplete or inconsistent;
-- no order while a prior intent has an ambiguous state.
+- 5% daily loss pause;
+- 10% rolling seven-day loss pause;
+- 15% high-water-mark drawdown kill switch;
+- 12% trailing adverse-move forced exit.
+
+Changing the live-capable values requires a reviewed decision-log entry, a signed strategy configuration and the applicable activation gate. Research may test much wider values without enabling live execution.
+
+## Required aggressive-risk analysis
+
+Each candidate must report:
+
+- probability and historical frequency of 50%, 75% and substantially complete capital loss;
+- maximum drawdown and time under water;
+- target-attainment probability and terminal-wealth percentiles;
+- sensitivity to single-asset concentration, turnover, spread, slippage and missed fills;
+- capacity limits as equity grows from the initial allocation;
+- performance during exchange outages, suspensions, delistings and liquidity shocks;
+- results under candidate portfolio drawdown responses, including 25%, 40%, 60% and 80% thresholds.
+
+A backtest reaching US$1,000,000 is insufficient if it depends on unavailable assets, survivorship bias, impossible fills, hidden leverage, fragile parameters or unbounded operational risk.
 
 ## Position sizing
 
-The baseline strategy may target up to 90% exposure only when:
+A promoted configuration may use concentrated or full spot exposure only when:
 
-- the asset passes long-term trend, momentum and liquidity filters;
-- volatility is below the configured ceiling;
-- the risk engine calculates sufficient cash for fees and price movement;
-- the resulting loss at the configured emergency exit remains within the approved risk budget.
-
-The position target is reduced as volatility rises. A strategy cannot override the risk engine.
+- the asset and pair pass the applicable universe, liquidity and data-quality gates;
+- modelled spread, fees, slippage and price impact leave positive expected edge;
+- sufficient exchange balance remains to pay fees and avoid a negative account balance;
+- the exact concentration and exit policy are versioned and approved;
+- the resulting risk remains limited to the approved trading capital.
 
 ## Drawdown response
 
-- Warning threshold: reduce new exposure and alert.
-- Pause threshold: cancel eligible open orders and prohibit new entries.
-- Kill threshold: prohibit all entries; permit only a risk-reducing spot sale after reconciliation.
-- Reset: requires a documented review and explicit user approval for live accounts.
+Every promoted strategy must define deterministic warning, pause, risk-reduction and kill states. Aggressive configurations may tolerate materially deeper market drawdowns than the foundation default, but may not disable observability, reconciliation, incident alerts or the exchange-side kill procedure.
+
+A reset after an operational kill state or an unapproved live drawdown threshold remains an explicit user decision.
 
 ## Capital increases
 
-No automatic capital top-up is permitted. Each increase requires explicit approval after reviewing live performance, drawdown, operational incidents, fees, slippage and tax-record completeness.
+No automatic capital top-up is permitted. Each increase requires explicit approval after reviewing live performance, target-path progress, drawdown, risk of ruin, operational incidents, fees, slippage and tax-record completeness.

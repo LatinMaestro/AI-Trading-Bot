@@ -5,7 +5,8 @@
 - [x] Create project control documents.
 - [x] Define security, venue and live-activation boundaries.
 - [x] Scaffold Cloudflare Worker, D1 schema, Kraken adapter interfaces, strategy and risk modules.
-- [x] Add baseline CI and forbidden-capability checks.
+- [x] Add baseline CI, forbidden-capability checks and current-tree secret scanning.
+- [x] Define the five-year aggressive, market-cap-agnostic research mandate.
 - [x] Obtain green exact-head CI and merge the foundation pull request.
 
 ## Phase 1 — Market data and deterministic research
@@ -19,31 +20,44 @@
   - [x] Add immutable hashed batch and candle persistence.
   - [x] Add strict expected-range gap detection and Kraken REST-horizon classification.
   - [ ] Add scheduled gap repair and an approved historical source for data outside Kraken's REST horizon.
-- [ ] Build fee/slippage-aware backtest engine.
-- [ ] Add benchmark comparisons: AUD cash, BTC hold and equal-weight hold.
+- [ ] Build a dynamic market-cap-agnostic spot universe from current Australian venue metadata.
+  - [ ] Add established, high-volatility and new-listing research tiers.
+  - [ ] Record listing, suspension and delisting dates to prevent survivorship bias.
+  - [ ] Enforce spread, liquidity, price-impact, order-minimum, data-quality and instrument-type gates.
+  - [ ] Support complete Australian-dollar valuation paths for every researched pair.
+- [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
+- [ ] Add benchmark comparisons: AUD cash, BTC hold, equal-weight hold and the five-year constant-compounding objective path.
+- [ ] Add target-attainment, terminal-wealth and risk-of-ruin analysis.
 - [ ] Produce repeatable research reports and signed strategy configurations.
 
-## Phase 2 — Strategy portfolio
+## Phase 2 — Aggressive strategy portfolio
 
-- [ ] Complete momentum rotation baseline.
-- [ ] Add volatility targeting and trend-strength filter.
-- [ ] Research mean-reversion and breakout candidates separately.
-- [ ] Reject candidates that fail walk-forward or stability gates.
+- [ ] Complete venue-wide cross-sectional momentum and relative-strength rotation.
+- [ ] Add multi-timeframe breakout, volatility-expansion and trend-continuation candidates.
+- [ ] Add separate high-volatility and new-listing strategy lanes.
+- [ ] Research short-horizon mean reversion separately after realistic execution modelling.
+- [ ] Test concentrated one-asset and small-portfolio configurations up to 100% gross spot exposure.
+- [ ] Test hourly decisions, multiple daily rebalances and maker/taker execution policies.
+- [ ] Add volatility targeting and regime-dependent risk allocation without forcing conservative exposure.
+- [ ] Reject candidates that fail walk-forward, final holdout, survivorship, capacity or parameter-stability gates.
 - [ ] Implement regime classification without external paid AI APIs.
-- [ ] Add strategy ensemble only when it improves out-of-sample results.
+- [ ] Add a strategy ensemble only when it improves out-of-sample five-year objective metrics after costs.
 
 ## Phase 3 — Paper execution and accounting
 
 - [ ] Implement paper order book, partial fills and cancellations.
-- [ ] Model maker/taker fees, spread, slippage and minimum order sizes.
+- [ ] Model maker/taker fees, spread, slippage, missed fills, price impact and minimum order sizes.
 - [ ] Reconcile simulated positions and cash every cycle.
 - [ ] Produce Australian-dollar tax-lot and disposal records.
-- [ ] Add performance, drawdown, exposure and turnover reporting.
+- [ ] Add performance, objective-path, drawdown, exposure, turnover and ruin-risk reporting.
+- [ ] Demonstrate that aggressive strategies cannot create a negative balance or use more than approved capital.
 
 ## Phase 4 — Private operations dashboard
 
 - [ ] Add authenticated private dashboard.
 - [ ] Show mode, health, strategy version, positions, pending orders and risk state.
+- [ ] Show actual equity against the five-year objective path without presenting it as a forecast.
+- [ ] Show probabilities and historical frequencies of substantial or complete capital loss.
 - [ ] Show all actions required before live activation.
 - [ ] Add user-operated emergency stop and credential-revocation guidance.
 - [ ] Add export of complete audit and tax records.
@@ -54,7 +68,7 @@
 - [ ] Prove that withdrawal, address-management, deposit and earn permissions are absent.
 - [ ] Implement balances, open/closed orders and ledger retrieval.
 - [ ] Implement validate-only spot orders.
-- [ ] Implement post-only limit order creation and cancellation.
+- [ ] Implement post-only and approved taker-capable spot order creation and cancellation.
 - [ ] Implement idempotency, reconciliation and ambiguous-response recovery.
 - [ ] Complete an independent security review.
 
@@ -64,16 +78,18 @@
 - [ ] Run shadow mode against the actual scoped account.
 - [ ] Complete failure injection for API outages, stale data, duplicate schedules, partial fills and D1 errors.
 - [ ] Complete tax/accounting review.
+- [ ] Approve one signed aggressive strategy configuration and its exact risk envelope.
 - [ ] Request explicit canary activation approval.
 - [ ] Activate only the approved canary amount.
 
 ## Phase 7 — Graduated autonomous operation
 
 - [ ] Require minimum observation periods and evidence before capital increases.
-- [ ] Preserve hard drawdown and loss limits.
+- [ ] Preserve the signed strategy's hard drawdown, loss, permission and reconciliation limits.
 - [ ] Add drift detection and automatic return to paper/shadow mode.
 - [ ] Add incident runbooks and periodic credential rotation.
-- [ ] Maintain provider and fee reviews.
+- [ ] Maintain provider, market-universe, capacity and fee reviews.
+- [ ] Prevent automatic capital top-ups even when the system is behind the five-year path.
 
 ## Phase 8 — Adaptive models
 
@@ -82,9 +98,12 @@
 - [ ] Version data, features, code, model and decision policy.
 - [ ] Require champion/challenger testing and automatic rollback.
 - [ ] Never permit a model to bypass the risk engine or execution limits.
+- [ ] Optimise adaptive selection for after-cost objective attainment and ruin risk, not headline return alone.
 
 ## Phase 9 — Objective tracking
 
-- [ ] Report progress against US$200 and US$1,000,000 without forecasts presented as promises.
-- [ ] Show required remaining multiple, drawdown, after-fee return and tax-adjusted estimates.
+- [ ] Report progress against US$200 and US$1,000,000 over the five-year horizon without forecasts presented as promises.
+- [ ] Show the year-by-year reference path, required remaining multiple and required forward compound rate.
+- [ ] Show drawdown, after-fee return, terminal-wealth distribution, risk of ruin, capacity and tax-adjusted estimates.
+- [ ] Attribute deposits and withdrawals separately so they cannot be mistaken for trading performance.
 - [ ] Preserve user-controlled withdrawal at the exchange interface; the bot never receives withdrawal authority.
