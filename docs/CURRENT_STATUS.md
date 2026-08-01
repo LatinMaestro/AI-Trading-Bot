@@ -5,9 +5,9 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `8d8d5d871816843acc34de7be0f9817f690b1ed1`
-- Pull requests #1 through #6, #8, #9 and #11 through #13 are repaired, exact-head validated and squash-merged; PRs #7 and #10 are closed without merge.
-- This tree reconstructs pull request #14 as security-operations and incident-response runbooks directly on that verified base.
+- Verified base `main`: `360cbe198e1a28daa0bb548763b4067e0add9301`
+- Pull requests #1 through #6, #8, #9 and #11 through #14 are repaired, exact-head validated and squash-merged; PRs #7 and #10 are closed without merge.
+- This tree reconstructs pull request #15 as atomic universe-ingestion persistence directly on that verified base.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -27,6 +27,7 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - PR #11 run [30689958962](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30689958962): lockfile reproduction, paper type generation, strict TypeScript, 77 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #12 run [30690340466](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30690340466): lockfile reproduction, paper type generation, strict TypeScript, 87 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #13 run [30690624243](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30690624243): lockfile reproduction, paper type generation, strict TypeScript, 96 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #14 run [30690795113](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30690795113): lockfile reproduction, paper type generation, strict TypeScript, 96 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 
 ## Universe-ingestion evidence
 
@@ -48,13 +49,21 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - Content digests prove identity only; tax treatment, lot-selection policy, discounts, exemptions, losses and capital-versus-revenue classification remain professional-review decisions.
 - Immutable fill ingestion, exchange reconciliation and professional review remain incomplete.
 
-## Security-runbook candidate
+## Security-runbook evidence
 
 - Defines minimum-permission provisioning, current-cycle permission checks, quarterly rotation and revocation drills without storing secrets.
 - Defines SEV-1 through SEV-3 playbooks for compromise, unknown orders, reconciliation drift, stale data, Cloudflare/D1 failure and supply-chain compromise.
 - Any authorised responder may stop automation; provider-side revocation requires the owner or provider support; live recovery remains owner-only.
 - Requires exchange-authoritative reconciliation, redacted evidence digests, exact-head validation, paper/shadow regression and explicit owner recovery approval.
 - Runbooks grant no deployment, credential, capital or live authority.
+
+## Universe-persistence candidate
+
+- Persists one immutable batch header, sorted source digests and exact definition, lifecycle-event and quality-observation memberships in one transactional D1 batch.
+- A database-enforced commit marker proves declared membership counts are complete; only committed batches are complete research evidence.
+- Exact retries are idempotent, while conflicting identity reuse, venue mismatch, partial writes and post-commit membership extension fail closed.
+- Fixed nine-statement batching avoids D1 subrequest growth with universe size.
+- Persistence grants no strategy-selection, runtime, deployment or order authority.
 
 ## Runtime boundary
 
@@ -69,4 +78,4 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 
 ## Next action
 
-Validate reconstructed PR #14 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct the earliest remaining open dependency.
+Validate reconstructed PR #15 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct the earliest remaining open dependency.

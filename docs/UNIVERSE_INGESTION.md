@@ -2,7 +2,7 @@
 
 ## Scope
 
-This contract prepares deterministic, content-addressed universe evidence from scheduled public venue inputs. It does not fetch data, infer profitability, place orders or activate capital.
+This contract prepares and atomically persists deterministic, content-addressed universe evidence from scheduled public venue inputs. It does not fetch data, infer profitability, place orders or activate capital.
 
 ## Source evidence
 
@@ -47,6 +47,19 @@ Converted metrics include 24-hour quote turnover, available quote-volume capacit
 
 Exact source content produces the same IDs, payload digests and batch digest.
 
+## Atomic persistence
+
+`UniverseIngestionRepository.persistBatch` submits one transactional D1 batch with nine statements regardless of universe size. Canonical JSON row expansion writes:
+
+- immutable batch provenance and sorted source-digest memberships;
+- market definitions, lifecycle events and quality observations;
+- immutable links from every record to the containing batch; and
+- a final commit marker.
+
+The database accepts the commit marker only when source and record membership counts exactly match the batch header. Exact retries remain idempotent. Changed reuse of a record or natural identity fails closed, and transactional rollback prevents orphaned provenance. Batch headers, memberships and commit markers reject updates and deletion. Once committed, a batch cannot gain new memberships.
+
+Only a batch with a commit marker is complete ingestion evidence. The fixed statement count avoids scaling D1 subrequests linearly with the number of listed markets.
+
 ## Calibration evidence
 
 `summariseUniverseCalibration` produces evidence summaries by universe tier:
@@ -64,7 +77,6 @@ A summary is venue-specific and rejects mixed venues, duplicate natural identiti
 ## Remaining work
 
 - connect scheduled Kraken public endpoints;
-- persist ingestion batches atomically into existing append-only tables;
 - establish complete official lifecycle-source coverage;
 - calibrate AUD conversion freshness and tier thresholds from historical evidence;
 - persist signed universe policies and generated snapshots.
