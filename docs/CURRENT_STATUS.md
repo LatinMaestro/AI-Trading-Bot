@@ -5,9 +5,9 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `692c6a8bafaee0674f59602555b1e7df957a0ee2`
-- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #38 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20, #22, #24 and #26 are closed without merge.
-- This tree reconstructs pull request #39 as bounded, OAuth-only Reddit listing acquisition directly on that verified base.
+- Verified base `main`: `73c92c68926067fd8ad8c31ae7874f07d8ad258c`
+- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #39 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20, #22, #24 and #26 are closed without merge.
+- This tree reconstructs pull request #40 as purge-oriented transient Reddit post normalisation and retention reconciliation directly on that verified base.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -46,6 +46,7 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 - PR #36 run [30704381225](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30704381225): lockfile reproduction, paper type generation, strict TypeScript, 218 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #37 run [30704701287](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30704701287): lockfile reproduction, paper type generation, strict TypeScript, 224 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #38 run [30705019227](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30705019227): lockfile reproduction, paper type generation, strict TypeScript, 232 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #39 run [30706612840](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30706612840): lockfile reproduction, paper type generation, strict TypeScript, 244 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 
 ## Universe-ingestion evidence
 
@@ -244,6 +245,15 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 - Carries transient bytes and a maximum 48-hour deletion deadline; credentials and User-Agent values do not enter capture evidence.
 - Post normalisation, provider-deletion sweeps/corrections, approved Reddit account terms, credentials, deployment and any risk integration remain incomplete. Reddit remains social/watch-only.
 
+## Reddit transient-lifecycle evidence
+
+- Adds canonical bounded OAuth info targets for refreshing at most 100 exact post fullnames.
+- Reproduces source-contract, payload-capture, metadata and observation identities before accepting transient state.
+- Retains only post identity, subreddit and publication chronology; titles, bodies, authors and provider permalinks are validated transiently and discarded.
+- Provider-removed, deleted, missing or retention-expired observations produce immediate purge actions.
+- Durable output is limited to source-level aggregate compliance counts without Reddit post identifiers; post-level records remain prohibited from the immutable intelligence queue.
+- Purge-enforced transient persistence, downstream watch-state invalidation, an approved Reddit app, credentials and deployment remain pending. Reddit remains social/watch-only.
+
 ## Next action
 
-Validate reconstructed PR #39 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #40 as the earliest remaining open dependency.
+Validate reconstructed PR #40 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #41 as the earliest remaining open dependency.
