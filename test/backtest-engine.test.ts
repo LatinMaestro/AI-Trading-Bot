@@ -288,3 +288,45 @@ test("zero maker fill is retained as a missed execution", () => {
   assert.equal(execution.missedNotionalAud, 200);
   assert.equal(result.costs.missedFillNotionalAud, 200);
 });
+
+test("a missed exit cannot fund a replacement buy", () => {
+  const result = runBacktest(
+    {
+      ...config({
+        makerFeeBps: 0,
+        takerFeeBps: 0,
+        takerSlippageBps: 0,
+        makerAdverseSelectionBps: 0,
+        impactCoefficientBps: 0,
+        maximumImpactBps: 0,
+        makerFillRate: 0,
+        minimumOrderAud: 0,
+      }),
+      defaultExitStyle: "maker",
+    },
+    [
+      step(0, [market("A/AUD", 10), market("B/AUD", 10)], [
+        { pair: "A/AUD", targetWeight: 1, executionStyle: "taker" },
+      ]),
+      step(2, [market("A/AUD", 10), market("B/AUD", 10)], [
+        { pair: "B/AUD", targetWeight: 1, executionStyle: "taker" },
+      ]),
+    ],
+  );
+
+  assert.deepEqual(
+    result.executions.map(
+      (execution) =>
+        `${execution.side}:${execution.pair}:${execution.status}`,
+    ),
+    [
+      "buy:A/AUD:filled",
+      "sell:A/AUD:missed",
+      "buy:B/AUD:missed",
+    ],
+  );
+  assert.equal(result.equityCurve[1]?.cashAud, 0);
+  assert.equal(result.finalPositions.length, 1);
+  assert.equal(result.finalPositions[0]?.pair, "A/AUD");
+  assert.equal(result.finalPositions[0]?.marketValueAud, 200);
+});
