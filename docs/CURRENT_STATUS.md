@@ -181,7 +181,7 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 ## External-intelligence cache evidence
 
 - Persists conditional ETag and Last-Modified validators by source ID across Worker instances and restarts.
-- Enforces one shared 500-character transport ceiling, canonical text and non-negative integer observation times in application and D1 boundaries.
+- Enforces one shared 500-character transport ceiling, application-level canonical text, D1 CR/LF rejection and non-negative integer observation times.
 - Accepts exact retries, rejects time regression and same-time identity conflicts, and verifies every write by readback.
 - Cache validators are operational transport state only and cannot classify evidence, alter risk, approve or submit an order.
 
