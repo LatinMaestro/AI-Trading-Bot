@@ -50,6 +50,8 @@
   - [x] Add a versioned provider/source registry with licence, attribution, retention and model-use rules.
   - [x] Add registry-bound bounded feed polling and authenticated webhook payload acquisition.
   - [ ] Add approved source manifests, source-specific parsing, provider signature implementations and deployed endpoints.
+    - [x] Add a scheduled SEC press-release RSS manifest and deterministic metadata-only normaliser.
+    - [ ] Add further approved source manifests, source-specific parsing, provider signature implementations and deployed endpoints.
   - [ ] Add compliant Reddit OAuth collection with adaptive rate limits, deletion handling and minimal storage.
   - [x] Add deterministic bounded queue envelopes, per-message acknowledgement/retry and source-level stale outcomes.
   - [x] Persist conditional cache validators durably with monotonic conflict controls.
