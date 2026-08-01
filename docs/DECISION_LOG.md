@@ -77,3 +77,12 @@ Research reports content-address exact code, data, universe, strategy, execution
 Prepare content-addressed public universe evidence from separately typed metadata, market-quality, official lifecycle and AUD-conversion sources. Definitions and observations may never claim availability before the source fetch that made them knowable. Future-effective official lifecycle events may be retained once published but do not apply before their effective time; snapshot absence never implies delisting.
 
 AUD conversion uses the shortest fresh simple path, rejects missing, multiple, chronologically invalid or numerically invalid paths, and binds every contributing digest. Calibration summaries remain venue-specific evidence and reject mixed venues, duplicate natural identities and conflicting payloads. They do not automatically change policy or grant runtime authority.
+
+## 2026-08-01 — Explicit tax lots and content-addressed exports
+
+Preserve one factual record for every crypto acquisition, disposal, crypto fee, transfer, income, expense or adjustment with a canonical UTC timestamp, the matching Australian local date in a validated Australian IANA time zone, AUD value and source/valuation digests.
+
+Do not choose tax lots automatically. Every disposal must be fully linked to explicit acquisition records through a versioned selection reference before a provisional CGT worksheet is produced. Asset mismatches, later acquisitions, non-reciprocal linked records and over-allocation fail closed.
+
+Export transactions, allocation outcomes and Australian financial-year summaries as deterministic CSV and canonical machine-readable content with one SHA-256 bundle digest. Spreadsheet formula-like text is neutralised. The digest proves content identity only; professional tax review remains mandatory.
+
