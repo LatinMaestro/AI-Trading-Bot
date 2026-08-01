@@ -189,6 +189,8 @@ Statuspage `maintenance`, `none` and `minor` impacts remain neutral. Only struct
    - [x] Add purge-enforced transient persistence and downstream invalidation.
    - [ ] Supply approved hosted credentials and deploy the collector.
 6. [ ] Add minute-level collectors and queue-backed deduplicated processing.
+   - [x] Bind the existing minute collector and idempotent consumer to paper-only Cron, Queue/DLQ and D1 runtime configuration.
+   - [ ] Provision hosted paper resources and deploy only after a reviewed milestone approval.
 7. [ ] Add deterministic entity/topic linking, syndication clustering and correction handling.
 8. [ ] Integrate `pause-new-risk` with paper-mode risk controls.
 9. [ ] Backtest news/social features without look-ahead using original publication and receipt timestamps.
@@ -196,7 +198,7 @@ Statuspage `maintenance`, `none` and `minor` impacts remain neutral. Only struct
 
 ## Current limitation
 
-The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC, RBA, AUSTRAC and Bitcoin Core RSS parsers, the Kraken active-maintenance minute-source normaliser, bounded Reddit OAuth acquisition, transient post lifecycle, purge-enforced transient D1 persistence and downstream watch-state invalidation are implemented. An approved Reddit app and deployed credentials remain absent. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, account terms, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
+The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC, RBA, AUSTRAC and Bitcoin Core RSS parsers, the Kraken active-maintenance minute-source normaliser, paper-only Cron/Queue/DLQ runtime bindings, bounded Reddit OAuth acquisition, transient post lifecycle, purge-enforced transient D1 persistence and downstream watch-state invalidation are implemented. All paper runtime bindings remain disabled and undeployed. An approved Reddit app and deployed credentials remain absent. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, provisioned minute Cron Trigger, queue, model or order path is connected. Provider credentials, account terms, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
 
 ## Official references
 
