@@ -76,7 +76,7 @@ export interface ExternalIntelligencePayloadCapture {
 export interface ExternalIntelligencePayloadCaptureIdentityInput {
   readonly sourceId: string;
   readonly sourceContractSha256: string;
-  readonly sourceKind: ExternalIntelligenceAdapterSourceKind;
+  readonly sourceKind: IntelligenceSourceKind;
   readonly sourceRef: string;
   readonly acquisitionMode: Exclude<IntelligenceAcquisitionMode, "stream">;
   readonly requestStartedAtMs: number;
