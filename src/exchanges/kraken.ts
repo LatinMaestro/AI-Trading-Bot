@@ -7,6 +7,7 @@ import type {
 } from "./types.ts";
 import { krakenSignature } from "../utils/crypto.ts";
 import { MonotonicNonce } from "./monotonicNonce.ts";
+import { parseKrakenSpotPairs, type SpotPairDefinition } from "../marketData/pairs.ts";
 
 const API_BASE = "https://api.kraken.com";
 const FORBIDDEN_PERMISSIONS = new Set([
@@ -67,6 +68,21 @@ export class KrakenSpotAdapter implements ExchangeAdapter {
 
   constructor(credentials?: KrakenCredentials) {
     this.credentials = credentials;
+  }
+
+  async getSpotPairs(countryCode = "AU"): Promise<readonly SpotPairDefinition[]> {
+    const url = new URL("/0/public/AssetPairs", API_BASE);
+    url.searchParams.set("assetVersion", "1");
+    url.searchParams.set("aclass_base", "currency");
+    url.searchParams.set("country_code", countryCode.toUpperCase());
+    url.searchParams.set("execution_venue", "international");
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Kraken AssetPairs returned HTTP ${response.status}`);
+    }
+    const payload = (await response.json()) as KrakenEnvelope<unknown>;
+    this.assertNoErrors(payload.error, "AssetPairs");
+    return parseKrakenSpotPairs(payload.result);
   }
 
   async getDailyCandles(pair: string, sinceSeconds?: number): Promise<readonly Candle[]> {
