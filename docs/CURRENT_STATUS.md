@@ -1,13 +1,13 @@
 # Current status
 
-Last verified: 1 August 2026 (Australia/Brisbane)
+Last verified: 2 August 2026 (Australia/Brisbane)
 
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `1707495e49ef02ef43d06fb16fc87d6faac59bc4`
-- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #37 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20, #22, #24 and #26 are closed without merge.
-- This tree reconstructs pull request #38 as deterministic, digest-only Kraken active-maintenance intelligence directly on that verified base.
+- Verified base `main`: `692c6a8bafaee0674f59602555b1e7df957a0ee2`
+- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #38 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20, #22, #24 and #26 are closed without merge.
+- This tree reconstructs pull request #39 as bounded, OAuth-only Reddit listing acquisition directly on that verified base.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -45,6 +45,7 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - PR #35 run [30702600500](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30702600500): lockfile reproduction, paper type generation, strict TypeScript, 212 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #36 run [30704381225](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30704381225): lockfile reproduction, paper type generation, strict TypeScript, 218 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #37 run [30704701287](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30704701287): lockfile reproduction, paper type generation, strict TypeScript, 224 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #38 run [30705019227](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30705019227): lockfile reproduction, paper type generation, strict TypeScript, 232 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 
 ## Universe-ingestion evidence
 
@@ -234,6 +235,15 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - Statuspage `none`, `minor` and `maintenance` impacts remain neutral. Only structured `major` or `critical` impact becomes negative venue evidence that may request `pause-new-risk` through the existing deterministic policy.
 - The source creates no positive candidate, strategy selection, order approval, order submission, deployment or live authority.
 
+## Reddit OAuth acquisition evidence
+
+- Restricts listing acquisition to exact canonical `oauth.reddit.com` subreddit targets using a runtime bearer token and truthful canonical User-Agent.
+- Reproduces source-contract and shared payload-capture identities and requires the Reddit contract to be enabled and active at both the scheduled slot and request.
+- Converts official rate-limit headers into bounded integer state, retains a ten-percent reserve, spaces requests and defers without network access while the prior budget remains active.
+- Rejects redirects, malformed or inconsistent lengths, non-JSON media, invalid listings, unsafe chronology and time overflow.
+- Carries transient bytes and a maximum 48-hour deletion deadline; credentials and User-Agent values do not enter capture evidence.
+- Post normalisation, provider-deletion sweeps/corrections, approved Reddit account terms, credentials, deployment and any risk integration remain incomplete. Reddit remains social/watch-only.
+
 ## Next action
 
-Validate reconstructed PR #38 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #39 as the earliest remaining open dependency.
+Validate reconstructed PR #39 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #40 as the earliest remaining open dependency.
