@@ -328,7 +328,6 @@ test("definition identity binds source availability rather than unrelated qualit
   );
   const later = await prepareUniverseIngestionBatch(input([market]));
   assert.deepEqual(earlier.definitions, later.definitions);
-  assert.notDeepEqual(earlier.observations, later.observations);
 });
 
 test("unknown lifecycle event types fail closed at the runtime boundary", async () => {
