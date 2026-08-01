@@ -47,7 +47,8 @@
   - [x] Allow authoritative severe negative events to pause new risk without submitting an order.
   - [x] Persist immutable intelligence items, corrections and assessments.
   - [x] Add a versioned provider/source registry with licence, attribution, retention and model-use rules.
-  - [ ] Add official exchange, regulator, issuer and publisher RSS/webhook adapters.
+  - [x] Add registry-bound bounded feed polling and authenticated webhook payload acquisition.
+  - [ ] Add approved source manifests, source-specific parsing, provider signature implementations and deployed endpoints.
   - [ ] Add compliant Reddit OAuth collection with adaptive rate limits, deletion handling and minimal storage.
   - [ ] Add dedicated one-minute collection and queue-backed at-least-once processing with idempotency.
   - [ ] Add deterministic entity/topic linking, syndication clustering and manipulation controls.
