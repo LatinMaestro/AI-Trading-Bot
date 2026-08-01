@@ -296,7 +296,7 @@ test("fails closed on unsupported severity, inactive state, page and digest conf
   await assert.rejects(
     normaliseKrakenActiveMaintenanceCapture(
       await contract(),
-      { ...(await capture()), payloadSha256: "d".repeat(64) },
+      await capture(undefined, { payloadSha256: "d".repeat(64) }),
       policy,
     ),
     /digest does not match/,
