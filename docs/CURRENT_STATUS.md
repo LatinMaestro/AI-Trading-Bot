@@ -5,9 +5,9 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `feb81b9d96b71481cc2f9bc3924cf1c0c45e65a3`
-- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #39 are repaired, exact-head validated and squash-merged; replacement PRs #99 through #105 carry reconstructed historical #40 through #46 slices; PRs #7, #10, #16, #18, #20, #22, #24, #26 and historical #40 through #47 are closed without merge.
-- This tree reconstructs historical pull request #47 as deterministic permitted-content repost/manipulation evidence directly on that verified base, with fingerprint chronology bound to the correction-effective linkage.
+- Verified base `main`: `5155a251e6d00ccd3a535da0739be96c0dfdceb1`
+- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #39 are repaired, exact-head validated and squash-merged; replacement PRs #99 through #106 carry reconstructed historical #40 through #47 slices; PRs #7, #10, #16, #18, #20, #22, #24, #26 and historical #40 through #48 are closed without merge.
+- This tree reconstructs historical pull request #48 as deterministic assessment integration and immutable persistence directly on that verified base, with exact cross-artifact partition and representative binding.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -54,6 +54,7 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 - Replacement PR #103 run [30713688105](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30713688105): lockfile reproduction, paper type generation, strict TypeScript, 276 tests, paper dry-run with paper-only Queue/D1 bindings, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - Replacement PR #104 run [30713916329](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30713916329): lockfile reproduction, paper type generation, strict TypeScript, 280 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - Replacement PR #105 run [30714124100](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30714124100): lockfile reproduction, paper type generation, strict TypeScript, 289 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- Replacement PR #106 run [30715219700](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30715219700): lockfile reproduction, paper type generation, strict TypeScript, 297 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 
 ## Universe-ingestion evidence
 
@@ -186,7 +187,7 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 - Applies verified append-only content updates to the effective view and removes retracted/deleted items from active clusters while retaining exact correction identities.
 - Rejects future evidence, source-authority mismatches, changed natural identities, changed correction-digest identity reuse and invalid post-terminal correction chains.
 - Collapses exact effective content only within the same topic, event type and stance, selecting one deterministic authority-ranked representative before publisher corroboration.
-- Feeds a separate deterministic manipulation stage; assessment persistence, paper risk reactions and order paths remain separate.
+- Feeds a separate deterministic manipulation stage; this tree adds assessment persistence, while paper risk reactions and order paths remain separate.
 
 ## External-intelligence manipulation evidence
 
@@ -195,6 +196,14 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 - Uses bounded five-token shingle digests, integer Jaccard thresholds and deterministic complete-link clustering; raw text is never returned or retained.
 - Collapses every exact/near-duplicate repost group to one corroboration unit and marks rapid multi-publisher repost patterns watch-only without asserting identity or intent.
 - Remains pure research evidence with no classification, risk, strategy, deployment or order authority.
+
+## External-intelligence assessment-integration evidence
+
+- Reproduces assessment inputs only from the correction-effective linkage and manipulation artifacts; raw publisher counts cannot be reintroduced after clustering.
+- Requires manipulation clusters to exactly partition linkage clusters, reproduce unioned member/publisher/source identities and bind representatives byte-for-byte to their linkage records.
+- Persists linkage, manipulation evidence and one or more integrated assessments through one fixed three-statement D1 batch without requiring a pre-populated base-assessment row.
+- Exact retries remain idempotent; digest, chronology, partition, representative, identity-conflict and mutation failures fail closed.
+- Rapid multi-publisher reposts remain watch-only, except that authoritative severe negatives preserve the fail-safe pause path. This slice grants no paper reaction, deployment or order authority.
 
 ## External-intelligence activation-manifest evidence
 
@@ -323,4 +332,4 @@ Last verified: 2 August 2026 (Australia/Brisbane)
 
 ## Next action
 
-Validate reconstructed PR #47 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #48 as the earliest remaining open dependency.
+Validate this reconstructed historical #48 slice at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #49 as the earliest remaining open dependency.
