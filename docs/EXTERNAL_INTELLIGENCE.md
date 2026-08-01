@@ -145,6 +145,15 @@ The official RBA media-release RSS feed is an approved scheduled regulator sourc
 
 The parser reproduces capture and payload identities, accepts one bounded UTF-8 RSS root and canonical RBA media-release identifiers, and retains only deterministic identity, chronology and digests. Titles and raw XML are transient. Items remain neutral `macro` evidence under non-tradable `AUD.MACRO`; they cannot pause new risk, create positive candidates or grant order authority.
 
+
+## AUSTRAC media-release RSS boundary
+
+AUSTRAC's official media-release RSS feed is an approved lower-priority Australian regulator source using `scheduled-poll`. AUSTRAC documents RSS-reader polling and licenses its own website material for attributed reuse. The source contract binds the exact official feed and AUSTRAC origin, digest-only retention, required attribution, the reviewed copyright snapshot and model-training prohibition.
+
+The parser reproduces active source-contract and capture identities, re-verifies payload length and SHA-256 through the bounded strict RSS boundary, and accepts only official canonical AUSTRAC release paths, exact matching GUIDs and strict publication chronology. It retains deterministic identities, source URLs, chronology and content digests, but never titles or raw XML.
+
+Every item is neutral `regulatory-action` evidence under the non-tradable `AUSTRAC.REGULATOR` scope until a separately reviewed deterministic entity/event linker exists. It cannot pause new risk, create a positive candidate, approve an order or submit an order. AUSTRAC has announced that the RSS feed will be withdrawn in favour of email subscriptions; collection must expose any feed failure as stale/unavailable and must not silently scrape the website as a replacement.
+
 ## Kraken active-maintenance boundary
 
 Kraken's official Status API active-maintenance endpoint is an approved account-free official-exchange source using `minute-poll`. Kraken documents the endpoint specifically for programmatic access. The source contract binds the exact API origin and endpoint, digest-only retention, transient payload handling and explicit model-training prohibition.
@@ -161,6 +170,7 @@ Statuspage `maintenance`, `none` and `minor` impacts remain neutral. Only struct
 4. [ ] Add approved source manifests, source-specific parsing, provider signature implementations and deployed endpoints.
    - [x] Add a scheduled SEC press-release RSS manifest and deterministic metadata-only normaliser.
    - [x] Add a scheduled RBA media-release RSS manifest and neutral metadata normaliser.
+   - [x] Add a scheduled AUSTRAC media-release RSS manifest and neutral metadata normaliser with retirement monitoring.
    - [x] Add a one-minute Kraken active-maintenance Status API manifest and deterministic digest-only normaliser.
    - [ ] Add further approved source manifests, source-specific parsing, provider signature implementations and deployed endpoints.
 5. [ ] Add compliant Reddit OAuth collection with adaptive rate limiting.
@@ -176,13 +186,15 @@ Statuspage `maintenance`, `none` and `minor` impacts remain neutral. Only struct
 
 ## Current limitation
 
-The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC and RBA RSS parsers, the Kraken active-maintenance minute-source normaliser, bounded Reddit OAuth acquisition, transient post lifecycle, purge-enforced transient D1 persistence and downstream watch-state invalidation are implemented. An approved Reddit app and deployed credentials remain absent. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, account terms, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
+The persistence, reaction and generic acquisition-transport boundaries, scheduled SEC, RBA and AUSTRAC RSS parsers, the Kraken active-maintenance minute-source normaliser, bounded Reddit OAuth acquisition, transient post lifecycle, purge-enforced transient D1 persistence and downstream watch-state invalidation are implemented. An approved Reddit app and deployed credentials remain absent. No truthful SEC runtime contact, deployed collector, Reddit account, news-provider account, live webhook endpoint, minute Cron Trigger, queue, model or order path is connected. Provider credentials, account terms, commercial terms, licences and paid subscriptions remain separately approved client/provider actions.
 
 ## Official references
 
 - Kraken Status API: https://status.kraken.com/api
 - Kraken active maintenances: https://status.kraken.com/api/v2/scheduled-maintenances/active.json
 
+- AUSTRAC RSS guidance: https://www.austrac.gov.au/subscribing-media-release-alerts
+- AUSTRAC copyright and attribution: https://www.austrac.gov.au/copyright
 - Reddit Data API Terms: https://redditinc.com/policies/data-api-terms
 - Reddit Developer Terms: https://redditinc.com/policies/developer-terms
 - Cloudflare Cron Triggers: https://developers.cloudflare.com/workers/configuration/cron-triggers/
