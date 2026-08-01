@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   acquireRedditOAuthListing,
+  createRedditOAuthInfoTarget,
   createRedditOAuthListingTarget,
   createRedditOAuthUserAgent,
   REDDIT_DATA_API_TERMS_REF,
@@ -489,5 +490,27 @@ test("rejects unsafe time arithmetic", async () => {
       fetcher: fetcher(response()),
     }),
     /safe time range/u,
+  );
+});
+
+test("builds canonical bounded OAuth info targets", () => {
+  const target = createRedditOAuthInfoTarget(
+    SOURCE_ID,
+    "CryptoCurrency",
+    ["t3_def456", "t3_abc123"],
+  );
+  assert.equal(
+    target.sourceRef,
+    "https://oauth.reddit.com/r/CryptoCurrency/api/info?id=t3_abc123%2Ct3_def456&raw_json=1",
+  );
+  assert.deepEqual(target.fullnames, ["t3_abc123", "t3_def456"]);
+  assert.throws(
+    () =>
+      createRedditOAuthInfoTarget(
+        SOURCE_ID,
+        "CryptoCurrency",
+        ["t3_abc123", "t3_abc123"],
+      ),
+    /duplicate/,
   );
 });
