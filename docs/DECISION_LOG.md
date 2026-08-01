@@ -226,3 +226,11 @@ Use the SEC's official press-release RSS endpoint only through an enabled author
 Re-verify payload length and SHA-256 before bounded UTF-8 RSS parsing. Accept only one canonical RSS root, canonical current or legacy SEC press-release paths, matching GUIDs and publication times no later than receipt. Retain content-addressed identity, source URL and chronology, but never the title or raw XML.
 
 Until a separately reviewed deterministic entity/event linker exists, emit only neutral `other` evidence under the non-tradable `SEC.REGULATOR` scope. This source cannot pause new risk, create a positive candidate, approve an order or submit an order. No collector deployment, credential, provider account, paid term, private API, fund, wallet or live-trading capability is added.
+
+## 2026-07-28 — Scheduled RBA media-release metadata intelligence
+
+Use the official RBA media-release RSS feed only through an enabled authoritative regulator contract binding the exact origin, scheduled-poll mode, digest-only retention, required attribution, copyright terms and model-training prohibition.
+
+Re-verify capture identity, payload length and SHA-256 before bounded UTF-8 RSS parsing. Accept one canonical RSS root, exact media-release paths, matching GUIDs and publication times no later than receipt. Retain content-addressed identity, source URL and chronology, but never titles or raw XML.
+
+Emit only neutral `macro` evidence under non-tradable `AUD.MACRO`. The source cannot pause new risk, create a positive candidate, approve or submit an order. No collector, credential, paid service, private API, fund, wallet or live capability is added.
