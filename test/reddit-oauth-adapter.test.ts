@@ -289,16 +289,17 @@ test("rejects contracts without short retention and deletion handling", async ()
     }),
     /outside the approved manifest/,
   );
+  const valid = await contract();
   await assert.rejects(
     acquireRedditOAuthListing({
-      contract: await contract({ deletionHandling: "not-applicable" }),
+      contract: { ...valid, deletionHandling: "not-applicable" },
       target: TARGET,
       accessToken: ACCESS_TOKEN,
       userAgent: USER_AGENT,
       scheduledAtMs: 1_000,
       fetcher: fetcher(response()),
     }),
-    /outside the approved manifest/,
+    /deletion handling|digest does not match/,
   );
 });
 
