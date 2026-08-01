@@ -102,21 +102,25 @@ The real-time boundary remains deterministic: source allowlist, timestamps, iden
 - Conflicting authoritative reports fail closed and trigger operator review.
 - Corrections and deleted content create new immutable evidence states; history is not rewritten.
 
+## Persistence boundary
+
+The persistence boundary stores versioned source contracts, immutable items, append-only corrections and deterministic assessments in content-addressed ingestion batches. Exact retries are idempotent. Changed item, provider-event, assessment or batch identities fail closed, and a batch becomes usable only after its membership, evidence-digest and chronology checks produce an immutable commit marker.
+
 ## Planned implementation
 
-1. Persist immutable intelligence items and assessments.
-2. Add the versioned provider/source registry and retention rules.
-3. Add official exchange, regulator, issuer and publisher RSS/webhook adapters.
-4. Add compliant Reddit OAuth collection with adaptive rate limiting.
-5. Add minute-level collectors and queue-backed deduplicated processing.
-6. Add deterministic entity/topic linking, syndication clustering and correction handling.
-7. Integrate `pause-new-risk` with paper-mode risk controls.
-8. Backtest news/social features without look-ahead using original publication and receipt timestamps.
-9. Promote any risk-on use only after walk-forward, holdout, manipulation and cost evidence.
+1. [x] Persist immutable intelligence items and assessments.
+2. [x] Add the versioned provider/source registry and retention rules.
+3. [ ] Add official exchange, regulator, issuer and publisher RSS/webhook adapters.
+4. [ ] Add compliant Reddit OAuth collection with adaptive rate limiting.
+5. [ ] Add minute-level collectors and queue-backed deduplicated processing.
+6. [ ] Add deterministic entity/topic linking, syndication clustering and correction handling.
+7. [ ] Integrate `pause-new-risk` with paper-mode risk controls.
+8. [ ] Backtest news/social features without look-ahead using original publication and receipt timestamps.
+9. [ ] Promote any risk-on use only after walk-forward, holdout, manipulation and cost evidence.
 
 ## Current limitation
 
-This contract defines provenance, freshness, latency and reaction gates. It does not yet connect a Reddit account, news provider, live webhook, minute Cron Trigger, queue, model or order path. Provider credentials, commercial terms and paid subscriptions remain separately approved client/provider actions.
+The persistence and reaction boundaries are implemented, but no Reddit account, news provider, live webhook, minute Cron Trigger, queue, model or order path is connected. Provider credentials, commercial terms and paid subscriptions remain separately approved client/provider actions.
 
 ## Official references
 

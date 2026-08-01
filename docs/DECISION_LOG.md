@@ -158,3 +158,12 @@ Collect official announcements, approved news and compliant Reddit observations 
 An authoritative severe negative event may pause new risk while deterministic market, account and portfolio checks run. Positive news requires authoritative or independent reputable corroboration and can create only a research candidate. Reddit-only and rumour-only evidence remains a watch signal regardless of volume. External intelligence never submits or approves an order.
 
 Reddit access must use approved API access, truthful OAuth identity, current rate limits, minimal permitted retention, deletion handling and no model-training permission. Publisher content requires a versioned licence/retention/attribution contract. Language-model output is an untrusted research draft and cannot cross the deterministic order boundary.
+
+
+## 2026-07-27 — Immutable external-intelligence evidence and source contracts
+
+Persist each external-intelligence slice as one content-addressed D1 batch containing versioned source contracts, immutable items, append-only corrections, deterministic assessment records, exact memberships and a final database-verified commit marker. Exact retries are idempotent; changed natural identities, source-contract mismatches, invalid chronology or incomplete memberships fail closed.
+
+Every source contract binds provider and publisher identity, allowed acquisition modes, content licence digest, attribution, retention, deletion handling, effective dates and explicit model-use prohibition. Reddit full-content storage remains disabled by default, finite retention and deletion handling are mandatory, and Reddit-only evidence cannot cross the watch boundary.
+
+Corrections, retractions and deletions create new immutable records rather than rewriting prior evidence. Assessments must reproduce exactly from referenced items and policy before persistence. This slice adds no provider connection, credential, collector, queue, private exchange API or order authority.

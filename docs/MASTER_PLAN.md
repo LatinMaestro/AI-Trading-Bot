@@ -45,8 +45,8 @@
   - [x] Define deterministic provenance, latency, source-authority, retention and reaction contracts.
   - [x] Prevent Reddit-only/social-only evidence from creating a risk-on candidate.
   - [x] Allow authoritative severe negative events to pause new risk without submitting an order.
-  - [ ] Persist immutable intelligence items, corrections and assessments.
-  - [ ] Add a versioned provider/source registry with licence, attribution, retention and model-use rules.
+  - [x] Persist immutable intelligence items, corrections and assessments.
+  - [x] Add a versioned provider/source registry with licence, attribution, retention and model-use rules.
   - [ ] Add official exchange, regulator, issuer and publisher RSS/webhook adapters.
   - [ ] Add compliant Reddit OAuth collection with adaptive rate limits, deletion handling and minimal storage.
   - [ ] Add dedicated one-minute collection and queue-backed at-least-once processing with idempotency.

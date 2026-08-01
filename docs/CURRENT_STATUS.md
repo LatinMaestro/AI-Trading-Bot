@@ -5,9 +5,9 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `bd3bc6e2705d8249ea8b80bc83209e0462e9fc05`
-- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25 and #27 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20, #22, #24 and #26 are closed without merge.
-- This tree reconstructs pull request #28 as deterministic external-intelligence contracts directly on that verified base.
+- Verified base `main`: `98bdb992afc42652c481638f610d1b442ff25e53`
+- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 are repaired, exact-head validated and squash-merged; PRs #7, #10, #16, #18, #20, #22, #24 and #26 are closed without merge.
+- This tree reconstructs pull request #29 as immutable external-intelligence persistence directly on that verified base.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -35,6 +35,7 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - PR #23 run [30692009871](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30692009871): lockfile reproduction, paper type generation, strict TypeScript, 129 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #25 run [30693134018](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30693134018): lockfile reproduction, paper type generation, strict TypeScript, 140 tests, SQLite migration integrity, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - PR #27 run [30693321913](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30693321913): lockfile reproduction, paper type generation, strict TypeScript, 145 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- PR #28 run [30695191920](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30695191920): lockfile reproduction, paper type generation, strict TypeScript, 155 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 
 ## Universe-ingestion evidence
 
@@ -139,6 +140,14 @@ Last verified: 1 August 2026 (Australia/Brisbane)
 - Requires complete per-source freshness policy, canonical identity, exact accepted-evidence digests and fail-closed chronology, authority and storage rules.
 - Provider adapters, minute collection, Queue/DLQ processing, source registry, immutable persistence and compliant Reddit OAuth remain incomplete.
 
+## External-intelligence persistence evidence
+
+- Versioned source contracts bind provider/publisher identity, approved acquisition modes, licence digest, attribution, retention, deletion, effective dates and explicit model-use prohibition.
+- Immutable items, append-only corrections and reproduced assessments persist through content-addressed batches with database-verified relational closure.
+- Assessment rows retain exact accepted-evidence digests; semantically identical reordered policies produce identical persisted evidence.
+- Exact retries are idempotent; identity conflicts, source revocation, invalid chronology, incomplete membership and post-commit extension fail closed.
+- Provider adapters, compliant Reddit OAuth, minute collection, Queue/DLQ processing and paper risk integration remain incomplete.
+
 ## Next action
 
-Validate reconstructed PR #28 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct the earliest remaining open dependency.
+Validate reconstructed PR #29 at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct the earliest remaining open dependency.
