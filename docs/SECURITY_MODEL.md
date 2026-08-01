@@ -54,3 +54,11 @@ Any missing, malformed or ambiguous state means no order.
 - Run dependency review and secret scanning.
 - Review lockfile changes as code.
 - Do not use unverified trading-bot packages or copied strategy code.
+
+## Operational procedures
+
+Credential provisioning, minimum-permission verification, quarterly rotation, revocation, backup evidence and drills follow `docs/SECURITY_OPERATIONS_RUNBOOK.md`.
+
+Severity classification, containment, exchange-authoritative reconciliation, recovery evidence and post-incident review follow `docs/INCIDENT_RESPONSE_RUNBOOK.md`.
+
+Authorised responders may stop automation immediately. Provider-side credential revocation requires the owner or provider support, and live restoration remains an explicit owner gate.
