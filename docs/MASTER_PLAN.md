@@ -36,6 +36,10 @@
   - [ ] Calibrate assumptions by venue, pair, universe tier, equity scale and historical period.
   - [ ] Add exchange-specific precision, tick-size and multi-event order-lifecycle simulation.
 - [ ] Add benchmark comparisons: AUD cash, BTC hold, equal-weight hold and the five-year constant-compounding objective path.
+  - [x] Add deterministic aligned equity-series builders and comparisons.
+  - [x] Bind converted objective paths to time-aligned FX rates and their source digest.
+  - [x] Add content-addressed research-report v1 provenance.
+  - [ ] Populate reports from authoritative walk-forward, holdout and sensitivity evidence.
 - [ ] Add target-attainment, terminal-wealth and risk-of-ruin analysis.
   - [x] Add objective-path, progress-status and required-forward-rate calculations.
   - [x] Add terminal-wealth, target-attainment and loss/drawdown scenario summaries.
