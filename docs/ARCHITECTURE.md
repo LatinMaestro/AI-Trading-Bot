@@ -82,7 +82,9 @@ D1 stores:
 - immutable audit events;
 - Australian-dollar tax ledger entries.
 
-External-intelligence linkages bind each reviewed topic to exact entity keys and allowed event types, apply verified append-only corrections as an effective view, remove retracted/deleted evidence, and collapse exact syndicated content to one authority-ranked representative before corroboration. Linkage manifests and clusters are content-addressed; near-duplicate and coordinated-repost controls remain a separate gate.
+External-intelligence linkages bind each reviewed topic to exact entity keys and allowed event types, apply verified append-only corrections as an effective view, remove retracted/deleted evidence, and collapse exact syndicated content to one authority-ranked representative before corroboration. Linkage manifests and clusters are content-addressed.
+
+A separate content-addressed manipulation-evidence stage accepts only exact effective representative content whose reviewed policy permits excerpts or full-content processing. It transiently normalises that content, persists no raw text, compares bounded five-token shingle digests with a reviewed Jaccard threshold and uses deterministic complete-link clusters so transitive similarity cannot inflate a group. Every exact or near-duplicate group contributes one corroboration unit. Rapid near-duplicate publication by multiple publishers is surfaced as a watch-only coordination pattern, not asserted as identity proof. Missing, changed or pre-linkage fingerprints fail closed. Reddit post content, identifiers and content-derived hashes remain excluded from this durable path; content-free transient social watch state remains separate.
 
 Market batches and candles use deterministic SHA-256 content digests. Database triggers bind each candle to matching source-batch metadata and range, reject identity reuse with different content, and prevent ordinary update or delete operations. Gap detection is performed against explicit expected ranges before strategy research is allowed to rely on stored data.
 

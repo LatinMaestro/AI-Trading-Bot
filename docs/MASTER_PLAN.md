@@ -67,9 +67,9 @@
     - [x] Add fail-closed paper-only Cron, Queue/DLQ, D1 and per-message consumer bindings with collection disabled.
     - [x] Generate a content-addressed paper activation manifest from exact reviewed evidence and document owner-gated activation and rollback.
     - [ ] Provision hosted paper resources and deploy only at an approved milestone.
-  - [ ] Add deterministic entity/topic linking, syndication clustering and manipulation controls.
+  - [x] Add deterministic entity/topic linking, syndication clustering and manipulation controls.
     - [x] Add reviewed entity/topic rules, exact-content syndication clustering and correction-safe representative selection.
-    - [ ] Add permitted-content near-duplicate/repost clustering and coordinated-manipulation evidence.
+    - [x] Add permitted-content near-duplicate/repost clustering and coordinated-manipulation evidence.
   - [ ] Integrate `pause-new-risk` into paper-mode risk controls and incident reporting.
   - [ ] Backtest news/social features with original publication and receipt timestamps and no look-ahead.
 - [ ] Research external-intelligence features only after provenance, latency and manipulation controls are validated.
