@@ -71,7 +71,7 @@ D1 stores:
 - immutable Kraken lifecycle fetch records and database-verified commit markers;
 - immutable discovered lifecycle document captures bound to exact discovery and committed-index provenance;
 - versioned external-intelligence source contracts covering provider, publisher, licence, attribution, retention, deletion and model-use rules;
-- immutable external-intelligence items, append-only corrections and deterministic assessments;
+- immutable external-intelligence items, append-only corrections, content-addressed entity/syndication linkages and deterministic assessments;
 - purge-enforced transient Reddit post metadata with non-extendable deletion deadlines;
 - content-free aggregate Reddit watch state, retention audits and invalidation events;
 - content-addressed external-intelligence ingestion batches, memberships and database-verified commit markers;
@@ -81,6 +81,8 @@ D1 stores:
 - risk events and kill-switch state;
 - immutable audit events;
 - Australian-dollar tax ledger entries.
+
+External-intelligence linkages bind each reviewed topic to exact entity keys and allowed event types, apply verified append-only corrections as an effective view, remove retracted/deleted evidence, and collapse exact syndicated content to one authority-ranked representative before corroboration. Linkage manifests and clusters are content-addressed; near-duplicate and coordinated-repost controls remain a separate gate.
 
 Market batches and candles use deterministic SHA-256 content digests. Database triggers bind each candle to matching source-batch metadata and range, reject identity reuse with different content, and prevent ordinary update or delete operations. Gap detection is performed against explicit expected ranges before strategy research is allowed to rely on stored data.
 
