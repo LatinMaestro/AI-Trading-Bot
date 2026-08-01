@@ -28,6 +28,18 @@ const LIFECYCLE_EVENT_TYPES = new Set([
   "au-enabled",
   "au-disabled",
 ]);
+const LIFECYCLE_EVENT_ORDER: Record<
+  MarketLifecycleEvent["eventType"],
+  number
+> = {
+  listed: 0,
+  "trading-online": 1,
+  "trading-suspended": 1,
+  "trading-resumed": 1,
+  delisted: 1,
+  "au-enabled": 2,
+  "au-disabled": 2,
+};
 const DATA_QUALITY_STATES = new Set([
   "complete",
   "gap",
@@ -280,6 +292,8 @@ function reconstructLifecycle(
       (left, right) =>
         left.effectiveAtMs - right.effectiveAtMs ||
         left.publishedAtMs - right.publishedAtMs ||
+        LIFECYCLE_EVENT_ORDER[left.eventType] -
+          LIFECYCLE_EVENT_ORDER[right.eventType] ||
         left.eventId.localeCompare(right.eventId),
     );
 
