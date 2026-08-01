@@ -3,9 +3,19 @@ CREATE TABLE external_intelligence_source_cache (
     CHECK(length(source_id) BETWEEN 1 AND 500)
     CHECK(source_id = trim(source_id)),
   etag TEXT
-    CHECK(etag IS NULL OR (length(etag) BETWEEN 1 AND 500 AND etag = trim(etag))),
+    CHECK(etag IS NULL OR (
+      length(etag) BETWEEN 1 AND 500
+      AND etag = trim(etag)
+      AND instr(etag, char(10)) = 0
+      AND instr(etag, char(13)) = 0
+    )),
   last_modified TEXT
-    CHECK(last_modified IS NULL OR (length(last_modified) BETWEEN 1 AND 500 AND last_modified = trim(last_modified))),
+    CHECK(last_modified IS NULL OR (
+      length(last_modified) BETWEEN 1 AND 500
+      AND last_modified = trim(last_modified)
+      AND instr(last_modified, char(10)) = 0
+      AND instr(last_modified, char(13)) = 0
+    )),
   observed_at_ms INTEGER NOT NULL
     CHECK(observed_at_ms >= 0)
     CHECK(typeof(observed_at_ms) = 'integer')
