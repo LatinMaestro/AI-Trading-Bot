@@ -8,6 +8,8 @@ import {
   CycleControlRepository,
   scheduleKeyFromTimestamp,
 } from "../storage/cycleControl.ts";
+import { UniverseIngestionRepository } from "../storage/universeIngestion.ts";
+import { runScheduledKrakenUniverseCycle } from "../universe/krakenPublicCycle.ts";
 
 export interface CycleResult {
   readonly cycleId: string;
@@ -60,6 +62,15 @@ export async function runTradingCycle(
       };
     }
 
+    const universe = await runScheduledKrakenUniverseCycle(
+      new UniverseIngestionRepository(env.DB),
+      {
+        scheduledAtMs: invocation.scheduledAtMs,
+        nowMs: clock,
+        maximumDepthPairs: Math.max(1, 8 - config.approvedPairs.length),
+      },
+    );
+
     const exchange = new KrakenSpotAdapter();
     const availablePairs = await exchange.getSpotPairs("AU");
     const approvedPairs = selectApprovedAudPairs(
@@ -103,6 +114,10 @@ export async function runTradingCycle(
         action: decision.action,
         targetPair: decision.targetPair ?? null,
         targetExposurePct: decision.targetExposurePct,
+        universeBatchSha256: universe.batch.batchSha256,
+        universeSelectedPairCount: universe.selectedPairs.length,
+        universeSkippedPairCount: universe.skippedPairs.length,
+        universePublicRequestCount: universe.requestCount,
       },
       createdAt: new Date(clock()).toISOString(),
     });
