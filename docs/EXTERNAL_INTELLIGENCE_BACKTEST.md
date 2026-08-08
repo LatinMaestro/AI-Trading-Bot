@@ -67,15 +67,35 @@ These measurements distinguish publisher delay, transport delay, processing
 delay and assessment delay. Missing or delayed evidence cannot be presented as
 zero-latency information.
 
+## Execution-aware comparison
+
+The execution-aware boundary accepts the complete replay source input and
+rebuilds it before use. It does not accept caller-authored per-step pause flags.
+Every backtest step must have exactly one rebuilt frame whose decision time
+equals the step signal time.
+
+A fresh pause removes only buy requests, before fee, fill, capacity and impact
+modelling. Sells remain executable, including reductions and exits following
+earlier partial fills. Every suppression records the exact frame, pause
+evidence, requested AUD notional, signal time and execution time. Suppression
+is distinct from a market miss and never becomes a simulated fill.
+
+The same configuration and steps run once without intelligence and once with
+the verified gate. The comparison content-addresses both complete results,
+equity and return deltas, suppression counts and notional, and pause and
+research-candidate frame counts. Research candidates remain observational and
+cannot change targets or create requests.
+
 ## Reproducibility
 
-Each snapshot, policy, frame and complete replay has a canonical SHA-256
-identity. The replay output includes the exact selected snapshot, visible
-assessments, active pause evidence, research candidates, watch-only evidence,
-ignored evidence, expired assessments and latency measurements for every
-hourly decision.
+Each snapshot, policy, frame, complete replay and comparison has a canonical
+SHA-256 identity. Standalone replay verification checks structure, chronology,
+partitions, declared snapshot membership and digest identity. The execution
+boundary additionally rebuilds the replay from the complete linkage,
+manipulation and integrated-assessment source artifacts before any request can
+be suppressed.
 
-This is a research primitive, not evidence of strategy profitability or
-approval for live use. A later execution-engine integration must bind each
-order intent to its exact replay frame and prove that blocked additions cannot
-enter the execution request set.
+This remains research evidence only. Synthetic fixtures prove binding and
+execution invariants, not profitability. Authoritative market data, calibrated
+costs, walk-forward and final-holdout evaluation, persistence and every
+strategy review gate remain required. No runtime or order authority is added.
