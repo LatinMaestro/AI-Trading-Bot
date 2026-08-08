@@ -72,6 +72,8 @@
     - [x] Add permitted-content near-duplicate/repost clustering and coordinated-manipulation evidence.
   - [x] Integrate `pause-new-risk` into paper-mode risk controls and incident reporting.
   - [ ] Backtest news/social features with original publication and receipt timestamps and no look-ahead.
+    - [x] Add deterministic hourly replay frames with complete correction-effective artifact verification.
+    - [ ] Bind replay frames to execution-aware backtests and persist authoritative comparison evidence.
 - [ ] Research external-intelligence features only after provenance, latency and manipulation controls are validated.
 
 - [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
