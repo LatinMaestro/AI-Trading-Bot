@@ -40,7 +40,9 @@ export interface ExternalIntelligenceBacktestComparison {
   readonly schemaVersion: "external-intelligence-backtest-comparison-v1";
   readonly replaySha256: string;
   readonly baselineResult: BacktestResult;
+  readonly baselineResultSha256: string;
   readonly intelligenceGatedResult: BacktestResult;
+  readonly intelligenceGatedResultSha256: string;
   readonly finalEquityDeltaAud: number;
   readonly totalReturnDeltaPct: number;
   readonly suppressedRequestCount: number;
@@ -730,11 +732,17 @@ export async function runExternalIntelligenceBacktestComparison(
   );
   const suppressedExecutions =
     intelligenceGatedResult.externalIntelligence?.suppressedExecutions ?? [];
+  const baselineResultSha256 =
+    await sha256CanonicalIntelligence(baselineResult);
+  const intelligenceGatedResultSha256 =
+    await sha256CanonicalIntelligence(intelligenceGatedResult);
   const canonical = {
     schemaVersion: "external-intelligence-backtest-comparison-v1",
     replaySha256: replay.replaySha256,
     baselineResult,
+    baselineResultSha256,
     intelligenceGatedResult,
+    intelligenceGatedResultSha256,
     finalEquityDeltaAud:
       intelligenceGatedResult.finalEquityAud -
       baselineResult.finalEquityAud,
