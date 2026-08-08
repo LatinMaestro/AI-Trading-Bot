@@ -1,8 +1,9 @@
 import { sha256CanonicalIntelligence } from "../intelligence/canonical.ts";
 import {
-  verifyExternalIntelligenceReplay,
+  prepareExternalIntelligenceBacktestReplay,
   type ExternalIntelligenceReplay,
   type ExternalIntelligenceReplayFrame,
+  type PrepareExternalIntelligenceReplayInput,
 } from "./externalIntelligenceReplay.ts";
 import type {
   BacktestConfig,
@@ -697,9 +698,10 @@ export function runBacktest(
 export async function runExternalIntelligenceBacktestComparison(
   config: BacktestConfig,
   steps: readonly BacktestStep[],
-  replay: ExternalIntelligenceReplay,
+  replayInput: PrepareExternalIntelligenceReplayInput,
 ): Promise<ExternalIntelligenceBacktestComparison> {
-  await verifyExternalIntelligenceReplay(replay);
+  const replay =
+    await prepareExternalIntelligenceBacktestReplay(replayInput);
   if (steps.length !== replay.frames.length) {
     throw new Error(
       "Replay must contain exactly one verified frame per backtest step",
