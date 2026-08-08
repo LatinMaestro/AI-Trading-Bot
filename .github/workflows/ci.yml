@@ -22,5 +22,7 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Verify lockfile reproduction
         run: npm install --ignore-scripts --package-lock-only && git diff --exit-code -- package-lock.json
+      - name: Audit locked dependency graph
+        run: npm audit --audit-level=low
       - name: Validate exact head
         run: npm run check
