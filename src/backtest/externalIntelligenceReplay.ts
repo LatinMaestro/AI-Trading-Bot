@@ -19,6 +19,8 @@ import type {
 
 const HOUR_MS = 3_600_000;
 const MAXIMUM_REPLAY_FRAMES = 100_000;
+const MAXIMUM_FRAME_EVIDENCE = 500;
+const SHA256_PATTERN = /^[0-9a-f]{64}$/u;
 const REACTIONS: readonly IntelligenceReaction[] = [
   "ignore",
   "pause-new-risk",
@@ -113,16 +115,26 @@ function assertDuration(name: string, value: number): void {
   assertTime(name, value);
 }
 
+function assertDigest(name: string, value: string): void {
+  if (!SHA256_PATTERN.test(value)) {
+    throw new Error(`${name} must be lowercase SHA-256`);
+  }
+}
+
 function assertSortedUnique(
   name: string,
   values: readonly string[],
 ): void {
   const sorted = [...values].sort();
   if (
+    values.length > MAXIMUM_FRAME_EVIDENCE ||
     new Set(sorted).size !== values.length ||
-    canonicalIntelligenceJson(values) !== canonicalIntelligenceJson(sorted)
+    canonicalIntelligenceJson(values) !== canonicalIntelligenceJson(sorted) ||
+    values.some((value) => !SHA256_PATTERN.test(value))
   ) {
-    throw new Error(`${name} must be sorted and unique`);
+    throw new Error(
+      `${name} must be sorted, unique, bounded lowercase SHA-256 values`,
+    );
   }
 }
 
@@ -357,6 +369,202 @@ export async function prepareExternalIntelligenceBacktestReplay(
     ...canonical,
     replaySha256: await sha256CanonicalIntelligence(canonical),
   };
+}
+
+
+function canonicalReplayFrame(
+  frame: ExternalIntelligenceReplayFrame,
+): Omit<ExternalIntelligenceReplayFrame, "frameSha256"> {
+  return {
+    schemaVersion: frame.schemaVersion,
+    decisionAtMs: frame.decisionAtMs,
+    selectedSnapshotSha256: frame.selectedSnapshotSha256,
+    selectedSnapshotAssessedAtMs: frame.selectedSnapshotAssessedAtMs,
+    selectedSnapshotAgeMs: frame.selectedSnapshotAgeMs,
+    visibleIntegrationSha256s: frame.visibleIntegrationSha256s,
+    activePauseNewRiskSha256s: frame.activePauseNewRiskSha256s,
+    activeResearchCandidateSha256s:
+      frame.activeResearchCandidateSha256s,
+    activeWatchSha256s: frame.activeWatchSha256s,
+    activeIgnoredSha256s: frame.activeIgnoredSha256s,
+    expiredIntegrationSha256s: frame.expiredIntegrationSha256s,
+    latency: frame.latency,
+  };
+}
+
+export async function verifyExternalIntelligenceReplayFrame(
+  frame: ExternalIntelligenceReplayFrame,
+): Promise<void> {
+  if (frame.schemaVersion !== "external-intelligence-replay-frame-v1") {
+    throw new Error("Unsupported external-intelligence replay frame");
+  }
+  assertTime("frame decisionAtMs", frame.decisionAtMs);
+  if (frame.decisionAtMs % HOUR_MS !== 0) {
+    throw new Error("Replay frame decision must be hourly aligned");
+  }
+  assertDigest("frameSha256", frame.frameSha256);
+  for (const [name, values] of [
+    ["visibleIntegrationSha256s", frame.visibleIntegrationSha256s],
+    ["activePauseNewRiskSha256s", frame.activePauseNewRiskSha256s],
+    [
+      "activeResearchCandidateSha256s",
+      frame.activeResearchCandidateSha256s,
+    ],
+    ["activeWatchSha256s", frame.activeWatchSha256s],
+    ["activeIgnoredSha256s", frame.activeIgnoredSha256s],
+    ["expiredIntegrationSha256s", frame.expiredIntegrationSha256s],
+  ] as const) {
+    assertSortedUnique(name, values);
+  }
+
+  const classifiedSha256s = [
+    ...frame.activePauseNewRiskSha256s,
+    ...frame.activeResearchCandidateSha256s,
+    ...frame.activeWatchSha256s,
+    ...frame.activeIgnoredSha256s,
+    ...frame.expiredIntegrationSha256s,
+  ].sort();
+  if (
+    canonicalIntelligenceJson(classifiedSha256s) !==
+    canonicalIntelligenceJson(frame.visibleIntegrationSha256s)
+  ) {
+    throw new Error(
+      "Replay frame classifications must exactly partition visible integrations",
+    );
+  }
+
+  const snapshotFields = [
+    frame.selectedSnapshotSha256,
+    frame.selectedSnapshotAssessedAtMs,
+    frame.selectedSnapshotAgeMs,
+  ];
+  const hasSnapshot = snapshotFields.every((value) => value !== null);
+  if (!hasSnapshot && snapshotFields.some((value) => value !== null)) {
+    throw new Error("Replay frame snapshot fields must be all null or present");
+  }
+  if (hasSnapshot) {
+    assertDigest(
+      "selectedSnapshotSha256",
+      frame.selectedSnapshotSha256 ?? "",
+    );
+    assertTime(
+      "selectedSnapshotAssessedAtMs",
+      frame.selectedSnapshotAssessedAtMs ?? -1,
+    );
+    assertDuration(
+      "selectedSnapshotAgeMs",
+      frame.selectedSnapshotAgeMs ?? -1,
+    );
+    if (
+      frame.decisionAtMs -
+        (frame.selectedSnapshotAssessedAtMs ?? 0) !==
+      frame.selectedSnapshotAgeMs
+    ) {
+      throw new Error("Replay frame snapshot age is inconsistent");
+    }
+  } else if (frame.visibleIntegrationSha256s.length > 0) {
+    throw new Error("Replay frame without a snapshot cannot expose evidence");
+  }
+
+  const latencyTimes = [
+    frame.latency.earliestPublishedAtMs,
+    frame.latency.latestReceivedAtMs,
+    frame.latency.latestAvailableAtMs,
+  ];
+  const hasLatency = latencyTimes.every((value) => value !== null);
+  if (!hasLatency && latencyTimes.some((value) => value !== null)) {
+    throw new Error("Replay latency timestamps must be all null or present");
+  }
+  for (const [name, value] of Object.entries({
+    maximumPublicationToReceiptMs:
+      frame.latency.maximumPublicationToReceiptMs,
+    maximumReceiptToAvailabilityMs:
+      frame.latency.maximumReceiptToAvailabilityMs,
+    maximumAvailabilityToAssessmentMs:
+      frame.latency.maximumAvailabilityToAssessmentMs,
+    maximumPublicationToAssessmentMs:
+      frame.latency.maximumPublicationToAssessmentMs,
+  })) {
+    assertDuration(name, value);
+  }
+  if (hasLatency) {
+    const publishedAtMs = frame.latency.earliestPublishedAtMs ?? 0;
+    const receivedAtMs = frame.latency.latestReceivedAtMs ?? 0;
+    const availableAtMs = frame.latency.latestAvailableAtMs ?? 0;
+    const assessedAtMs = frame.selectedSnapshotAssessedAtMs;
+    assertTime("earliestPublishedAtMs", publishedAtMs);
+    assertTime("latestReceivedAtMs", receivedAtMs);
+    assertTime("latestAvailableAtMs", availableAtMs);
+    if (
+      assessedAtMs === null ||
+      publishedAtMs > receivedAtMs ||
+      receivedAtMs > availableAtMs ||
+      availableAtMs > assessedAtMs
+    ) {
+      throw new Error("Replay frame latency chronology is invalid");
+    }
+  } else if (
+    frame.latency.maximumPublicationToReceiptMs !== 0 ||
+    frame.latency.maximumReceiptToAvailabilityMs !== 0 ||
+    frame.latency.maximumAvailabilityToAssessmentMs !== 0 ||
+    frame.latency.maximumPublicationToAssessmentMs !== 0
+  ) {
+    throw new Error(
+      "Replay frame without latency timestamps must use zero delays",
+    );
+  }
+
+  const expected = await sha256CanonicalIntelligence(
+    canonicalReplayFrame(frame),
+  );
+  if (expected !== frame.frameSha256) {
+    throw new Error("External-intelligence replay frame digest does not match");
+  }
+}
+
+export async function verifyExternalIntelligenceReplay(
+  replay: ExternalIntelligenceReplay,
+): Promise<void> {
+  if (replay.schemaVersion !== "external-intelligence-replay-v1") {
+    throw new Error("Unsupported external-intelligence replay");
+  }
+  assertDigest("policySha256", replay.policySha256);
+  assertDigest("replaySha256", replay.replaySha256);
+  if (
+    replay.snapshotSha256s.length > 10_000 ||
+    new Set(replay.snapshotSha256s).size !== replay.snapshotSha256s.length
+  ) {
+    throw new Error("Replay snapshot identities must be unique and bounded");
+  }
+  for (const digest of replay.snapshotSha256s) {
+    assertDigest("snapshotSha256s", digest);
+  }
+  validateDecisionTimestamps(
+    replay.frames.map((frame) => frame.decisionAtMs),
+  );
+  await Promise.all(
+    replay.frames.map(verifyExternalIntelligenceReplayFrame),
+  );
+  const snapshotSha256s = new Set(replay.snapshotSha256s);
+  for (const frame of replay.frames) {
+    if (
+      frame.selectedSnapshotSha256 !== null &&
+      !snapshotSha256s.has(frame.selectedSnapshotSha256)
+    ) {
+      throw new Error(
+        "Replay frame references an undeclared snapshot identity",
+      );
+    }
+  }
+  const expected = await sha256CanonicalIntelligence({
+    schemaVersion: replay.schemaVersion,
+    policySha256: replay.policySha256,
+    snapshotSha256s: replay.snapshotSha256s,
+    frames: replay.frames,
+  });
+  if (expected !== replay.replaySha256) {
+    throw new Error("External-intelligence replay digest does not match");
+  }
 }
 
 export function evaluateExternalIntelligenceBacktestGate(
