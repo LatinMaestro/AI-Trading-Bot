@@ -328,3 +328,10 @@ Load only immutable integrated assessments whose effective reaction is `pause-ne
 Suppress only proposed paper `buy` actions, converting them to `hold` with zero target exposure. Preserve `sell` actions because a pause on new risk is not a forced-liquidation instruction. Record every fresh pause assessment as an immutable content-addressed `pause` risk event whose identity binds the complete proposed and resulting decisions, and bind the gate result plus exact assessment digests into the cycle audit.
 
 Research, shadow, validate and live modes remain disconnected. External intelligence cannot submit or approve an order, and no deployment, credential, provider activation, fund, wallet or live-execution capability is added.
+
+
+## 2026-08-08 — Look-ahead-safe external-intelligence research replay
+
+Reconstruct historical PR #50 as a deterministic hourly replay primitive over complete correction-effective external-intelligence snapshots. Select only the latest snapshot assessed no later than each simulated decision, preserve publication, receipt, availability and assessment latency, and content-address every policy, snapshot, frame and complete replay.
+
+Re-verify the complete linkage/manipulation-evidence cross-artifact partition before accepting a snapshot. A digest-valid but incomplete evidence partition fails closed. Fresh `pause-new-risk` evidence may block only new or increased research exposure; reductions, exits and holds remain permitted. Research candidates remain observational. This primitive does not establish strategy profitability, select a strategy, connect to runtime execution, deploy infrastructure or change live authority.
