@@ -23,6 +23,8 @@ Each backtest step contains:
 
 Execution timestamps must be strictly increasing. A held position must have a valid mark at every step. Duplicate markets, duplicate targets, missing target markets, non-finite values, negative costs and gross target weights above 100% fail closed.
 
+An intelligence-aware comparison accepts the complete replay source artifacts rather than caller-supplied gate flags. It re-runs linkage, manipulation, assessment, chronology and digest verification, rebuilds the replay, and requires exactly one frame whose decision time equals each step signal time. Partial coverage, duplicate frame use, changed identities and forgeable per-step gate metadata fail closed.
+
 The separation between signal time and execution time prevents a strategy from using the same observation as both the decision input and a guaranteed fill. Historical data construction must still prove that every feature and universe-membership record was available at signal time.
 
 ## Execution sequence
@@ -35,8 +37,9 @@ For each step the engine:
 4. executes sells before buys so rotations can fund replacement positions;
 5. calculates capacity- and cash-constrained buy limits;
 6. scales multiple buy requests proportionally when fees or the cash reserve make the full target set unaffordable;
-7. records filled, partially filled and completely missed executions; and
-8. marks the resulting portfolio and updates drawdown.
+7. removes buy requests before fill, fee, capacity and impact modelling when the rebuilt frame contains active `pause-new-risk` evidence, while preserving sells;
+8. records each suppression separately from filled, partially filled and missed executions; and
+9. marks the resulting portfolio and updates drawdown.
 
 The engine never creates a negative cash balance, negative asset position, short exposure or more than 100% gross spot target exposure.
 
@@ -107,6 +110,8 @@ The result includes:
 - the equity curve;
 - final positions; and
 - aggregate fees, spread, slippage, impact and missed-fill notional.
+
+Intelligence-aware output additionally binds the verified replay and every frame identity, and records each suppressed buy with its signal/execution time, pair, style, requested AUD notional and exact pause-evidence identities. A content-addressed comparison runs identical steps with and without the verified gate and reports equity/return deltas, suppressed request counts/notional and observed pause/research-candidate frame counts. Suppression is not a market miss and cannot become a simulated fill.
 
 ## Required calibration before strategy conclusions
 

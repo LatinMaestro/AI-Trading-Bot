@@ -335,3 +335,12 @@ Research, shadow, validate and live modes remain disconnected. External intellig
 Reconstruct historical PR #50 as a deterministic hourly replay primitive over complete correction-effective external-intelligence snapshots. Select only the latest snapshot assessed no later than each simulated decision, preserve publication, receipt, availability and assessment latency, and content-address every policy, snapshot, frame and complete replay.
 
 Re-verify the complete linkage/manipulation-evidence cross-artifact partition before accepting a snapshot. A digest-valid but incomplete evidence partition fails closed. Fresh `pause-new-risk` evidence may block only new or increased research exposure; reductions, exits and holds remain permitted. Research candidates remain observational. This primitive does not establish strategy profitability, select a strategy, connect to runtime execution, deploy infrastructure or change live authority.
+
+
+## 2026-08-08 — Verified replay-bound backtest suppression
+
+Reconstruct historical PR #51 by deriving execution gates only from complete replay source artifacts. The comparison boundary re-runs correction-effective linkage, manipulation-evidence and integrated-assessment verification, rebuilds the exact hourly replay and requires one unique frame whose decision time equals every backtest signal time. Caller-authored per-step pause flags are not accepted.
+
+A fresh `pause-new-risk` frame removes buy requests before fee, fill, capacity and impact modelling. Reductions and exits remain available, including after an earlier partial fill. Suppressed requests are separate from market misses and bind exact frame, evidence, chronology, style and requested AUD notional. Research candidates remain measurable but cannot change targets or create requests.
+
+The baseline and intelligence-gated results are content-addressed together with return/equity deltas and suppression evidence. This is runtime-disconnected research infrastructure and does not establish profitability, select a strategy, deploy infrastructure or grant order authority. Authoritative calibrated data, persistence, walk-forward and holdout evidence remain required.

@@ -5,9 +5,9 @@ Last verified: 8 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `f028637a08fa9040409a3652e0c12c396178cb90`
-- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #39 are repaired, exact-head validated and squash-merged; replacement PRs #99 through #108 carry reconstructed historical #40 through #49 slices; PRs #7, #10, #16, #18, #20, #22, #24, #26 and historical #40 through #49 are closed without merge.
-- This tree reconstructs historical pull request #50 as deterministic look-ahead-safe external-intelligence replay directly on that verified base, with complete cross-artifact verification and no strategy or execution authority.
+- Verified base `main`: `fa76ee97091a242b1909e1eeff9dcacc659c07ba`
+- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #39 are repaired, exact-head validated and squash-merged; replacement PRs #99 through #109 carry reconstructed historical #40 through #50 slices; PRs #7, #10, #16, #18, #20, #22, #24, #26 and historical #40 through #50 are closed without merge.
+- This tree reconstructs historical pull request #51 as a replay-bound execution-aware research gate directly on that verified base. It rebuilds complete intelligence artifacts before suppression and grants no strategy, runtime or order authority.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -55,6 +55,9 @@ Last verified: 8 August 2026 (Australia/Brisbane)
 - Replacement PR #104 run [30713916329](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30713916329): lockfile reproduction, paper type generation, strict TypeScript, 280 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - Replacement PR #105 run [30714124100](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30714124100): lockfile reproduction, paper type generation, strict TypeScript, 289 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - Replacement PR #106 run [30715219700](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30715219700): lockfile reproduction, paper type generation, strict TypeScript, 297 tests, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- Replacement PR #107 run [30717577097](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30717577097): lockfile reproduction, paper type generation, strict TypeScript, 303 tests including assessment-persistence migration validation, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- Replacement PR #108 run [30717952524](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30717952524): lockfile reproduction, paper type generation, strict TypeScript, 310 tests, migration validation, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
+- Replacement PR #109 run [31239966469](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/31239966469): lockfile reproduction, enforcing zero-vulnerability audit, paper type generation, strict TypeScript, 317 tests, paper dry-run and all forbidden/secret/import-boundary scans passed.
 
 ## Universe-ingestion evidence
 
@@ -346,6 +349,17 @@ Last verified: 8 August 2026 (Australia/Brisbane)
 - Suppresses proposed paper buys to hold with zero exposure while preserving exits; non-paper modes remain disconnected.
 - Risk-event identity binds the complete proposed and resulting decisions and exact assessment evidence.
 
+
+## Replay-bound backtest execution evidence
+
+- Rebuilds the complete correction-effective linkage, manipulation and integrated-assessment source artifacts before a replay can affect a research execution request.
+- Requires exactly one unique hourly frame for every backtest step and exact equality between frame decision time and signal time.
+- Removes only buy requests under fresh `pause-new-risk` evidence before fill, fee, capacity and impact modelling; reductions and exits remain executable.
+- Records suppressed requests separately from market misses with exact frame/evidence identities, chronology, style and requested AUD notional.
+- Runs identical baseline and verified-gated steps and content-addresses both results, deltas and suppression evidence.
+- Research candidates remain observational. Synthetic fixtures prove invariants only; authoritative calibrated comparison evidence and persistence remain incomplete.
+- No runtime connection, deployment, credential, fund, strategy-selection or order authority is added.
+
 ## Next action
 
-Validate this reconstructed historical #50 slice at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #51 as the earliest remaining open dependency.
+Validate this reconstructed historical #51 slice at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #52 as the earliest remaining open dependency.

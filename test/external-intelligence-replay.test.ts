@@ -3,9 +3,18 @@ import test from "node:test";
 import {
   evaluateExternalIntelligenceBacktestGate,
   prepareExternalIntelligenceBacktestReplay,
+  verifyExternalIntelligenceReplay,
   type ExternalIntelligenceReplayPolicy,
   type ExternalIntelligenceReplaySnapshot,
 } from "../src/backtest/externalIntelligenceReplay.ts";
+import {
+  runExternalIntelligenceBacktestComparison,
+} from "../src/backtest/engine.ts";
+import type {
+  BacktestConfig,
+  BacktestMarket,
+  BacktestStep,
+} from "../src/backtest/types.ts";
 import {
   prepareIntegratedExternalIntelligenceAssessments,
 } from "../src/intelligence/externalIntelligenceAssessmentIntegration.ts";
@@ -52,6 +61,47 @@ const MANIPULATION_POLICY = {
   rapidRepostWindowMs: 300_000,
   minimumRapidRepostPublishers: 2,
 } as const;
+
+const BACKTEST_CONFIG: BacktestConfig = {
+  initialCashAud: 200,
+  defaultExitStyle: "taker",
+  assumptions: {
+    makerFeeBps: 0,
+    takerFeeBps: 0,
+    takerSlippageBps: 0,
+    makerAdverseSelectionBps: 0,
+    impactCoefficientBps: 0,
+    maximumImpactBps: 0,
+    maximumParticipationRate: 1,
+    makerFillRate: 1,
+    minimumOrderAud: 0,
+    cashReserveAud: 0,
+  },
+};
+
+function market(
+  pair: string,
+  midPriceAud: number,
+): BacktestMarket {
+  return {
+    pair,
+    midPriceAud,
+    spreadBps: 0,
+    availableQuoteVolumeAud: 1_000_000,
+  };
+}
+
+function backtestStep(
+  signalTimestampMs: number,
+  targets: BacktestStep["targets"],
+): BacktestStep {
+  return {
+    signalTimestampMs,
+    executionTimestampMs: signalTimestampMs + HOUR_MS,
+    markets: [market("BTC/AUD", 100)],
+    targets,
+  };
+}
 
 async function item(
   id: string,
@@ -451,5 +501,262 @@ test("rejects a digest-valid manipulation artifact that omits linkage partitions
       policy: REPLAY_POLICY,
     }),
     /exact partitions/u,
+  );
+});
+
+
+test("gates buys only after rebuilding the complete replay artifacts", async () => {
+  const risk = await item(
+    "execution-risk",
+    "official-exchange",
+    "security-incident",
+    "negative",
+    DECISION_HOUR - 60_000,
+    DECISION_HOUR - 40_000,
+    DECISION_HOUR - 20_000,
+  );
+  const replayInput = {
+    decisionTimestampsMs: [DECISION_HOUR],
+    snapshots: [await snapshot(DECISION_HOUR, [risk])],
+    policy: REPLAY_POLICY,
+  };
+  const replay =
+    await prepareExternalIntelligenceBacktestReplay(replayInput);
+  const comparison = await runExternalIntelligenceBacktestComparison(
+    BACKTEST_CONFIG,
+    [
+      backtestStep(DECISION_HOUR, [
+        {
+          pair: "BTC/AUD",
+          targetWeight: 1,
+          executionStyle: "taker",
+        },
+      ]),
+    ],
+    replayInput,
+  );
+  assert.equal(comparison.baselineResult.executions.length, 1);
+  assert.equal(comparison.baselineResult.externalIntelligence, null);
+  assert.equal(comparison.intelligenceGatedResult.executions.length, 0);
+  assert.equal(comparison.suppressedRequestCount, 1);
+  assert.equal(comparison.suppressedRequestedNotionalAud, 200);
+  assert.equal(
+    comparison.intelligenceGatedResult.externalIntelligence
+      ?.executionGateFrameSha256s[0],
+    replay.frames[0]?.frameSha256,
+  );
+  assert.equal(
+    comparison.intelligenceGatedResult.externalIntelligence
+      ?.suppressedExecutions[0]?.pauseEvidenceSha256s[0],
+    replay.frames[0]?.activePauseNewRiskSha256s[0],
+  );
+  assert.match(comparison.comparisonSha256, /^[0-9a-f]{64}$/u);
+});
+
+test("preserves an exit while a fresh replay pause is active", async () => {
+  const risk = await item(
+    "exit-risk",
+    "official-exchange",
+    "security-incident",
+    "negative",
+    DECISION_HOUR - 60_000,
+    DECISION_HOUR - 40_000,
+    DECISION_HOUR - 20_000,
+  );
+  const replayInput = {
+    decisionTimestampsMs: [DECISION_HOUR - HOUR_MS, DECISION_HOUR],
+    snapshots: [await snapshot(DECISION_HOUR, [risk])],
+    policy: REPLAY_POLICY,
+  };
+  const comparison = await runExternalIntelligenceBacktestComparison(
+    BACKTEST_CONFIG,
+    [
+      backtestStep(DECISION_HOUR - HOUR_MS, [
+        {
+          pair: "BTC/AUD",
+          targetWeight: 1,
+          executionStyle: "taker",
+        },
+      ]),
+      backtestStep(DECISION_HOUR, []),
+    ],
+    replayInput,
+  );
+  assert.deepEqual(
+    comparison.intelligenceGatedResult.executions.map(
+      (execution) => execution.side,
+    ),
+    ["buy", "sell"],
+  );
+  assert.equal(
+    comparison.intelligenceGatedResult.externalIntelligence
+      ?.suppressedExecutions.length,
+    0,
+  );
+  assert.equal(
+    comparison.intelligenceGatedResult.finalPositions.length,
+    0,
+  );
+});
+
+test("blocks an increase after an earlier partial fill", async () => {
+  const risk = await item(
+    "increase-risk",
+    "official-exchange",
+    "security-incident",
+    "negative",
+    DECISION_HOUR - 60_000,
+    DECISION_HOUR - 40_000,
+    DECISION_HOUR - 20_000,
+  );
+  const replayInput = {
+    decisionTimestampsMs: [DECISION_HOUR - HOUR_MS, DECISION_HOUR],
+    snapshots: [await snapshot(DECISION_HOUR, [risk])],
+    policy: REPLAY_POLICY,
+  };
+  const config: BacktestConfig = {
+    ...BACKTEST_CONFIG,
+    assumptions: {
+      ...BACKTEST_CONFIG.assumptions,
+      makerFillRate: 0.25,
+    },
+  };
+  const comparison = await runExternalIntelligenceBacktestComparison(
+    config,
+    [
+      backtestStep(DECISION_HOUR - HOUR_MS, [
+        {
+          pair: "BTC/AUD",
+          targetWeight: 1,
+          executionStyle: "maker",
+        },
+      ]),
+      backtestStep(DECISION_HOUR, [
+        {
+          pair: "BTC/AUD",
+          targetWeight: 1,
+          executionStyle: "maker",
+        },
+      ]),
+    ],
+    replayInput,
+  );
+  assert.equal(
+    comparison.intelligenceGatedResult.executions[0]
+      ?.filledReferenceNotionalAud,
+    50,
+  );
+  assert.equal(
+    comparison.intelligenceGatedResult.externalIntelligence
+      ?.suppressedExecutions[0]?.requestedNotionalAud,
+    150,
+  );
+  assert.equal(
+    comparison.intelligenceGatedResult.executions.length,
+    1,
+  );
+});
+
+test("research candidates remain measurable and cannot create exposure", async () => {
+  const positiveOne = await item(
+    "candidate-one",
+    "mainstream-news",
+    "partnership",
+    "positive",
+    DECISION_HOUR - 60_000,
+    DECISION_HOUR - 40_000,
+    DECISION_HOUR - 20_000,
+  );
+  const positiveTwo = await item(
+    "candidate-two",
+    "mainstream-news",
+    "partnership",
+    "positive",
+    DECISION_HOUR - 50_000,
+    DECISION_HOUR - 30_000,
+    DECISION_HOUR - 10_000,
+  );
+  const replayInput = {
+    decisionTimestampsMs: [DECISION_HOUR],
+    snapshots: [
+      await snapshot(DECISION_HOUR, [positiveOne, positiveTwo]),
+    ],
+    policy: REPLAY_POLICY,
+  };
+  const comparison = await runExternalIntelligenceBacktestComparison(
+    BACKTEST_CONFIG,
+    [backtestStep(DECISION_HOUR, [])],
+    replayInput,
+  );
+  assert.equal(comparison.researchCandidateFrameCount, 1);
+  assert.equal(comparison.suppressedRequestCount, 0);
+  assert.equal(comparison.intelligenceGatedResult.executions.length, 0);
+  assert.equal(comparison.baselineResult.executions.length, 0);
+});
+
+test("rejects mismatched coverage and digest-valid undeclared snapshot references", async () => {
+  const risk = await item(
+    "invalid-risk",
+    "official-exchange",
+    "security-incident",
+    "negative",
+    DECISION_HOUR - 60_000,
+    DECISION_HOUR - 40_000,
+    DECISION_HOUR - 20_000,
+  );
+  const replayInput = {
+    decisionTimestampsMs: [DECISION_HOUR],
+    snapshots: [await snapshot(DECISION_HOUR, [risk])],
+    policy: REPLAY_POLICY,
+  };
+  await assert.rejects(
+    runExternalIntelligenceBacktestComparison(
+      BACKTEST_CONFIG,
+      [
+        backtestStep(DECISION_HOUR - HOUR_MS, []),
+        backtestStep(DECISION_HOUR, []),
+      ],
+      replayInput,
+    ),
+    /exactly one verified frame per backtest step/u,
+  );
+  await assert.rejects(
+    runExternalIntelligenceBacktestComparison(
+      BACKTEST_CONFIG,
+      [backtestStep(DECISION_HOUR - HOUR_MS, [])],
+      replayInput,
+    ),
+    /does not match backtest signal time/u,
+  );
+
+  const replay =
+    await prepareExternalIntelligenceBacktestReplay(replayInput);
+  const originalFrame = replay.frames[0];
+  assert.ok(originalFrame);
+  const {
+    frameSha256: _originalFrameSha256,
+    ...originalFrameBody
+  } = originalFrame;
+  const frameBody = {
+    ...originalFrameBody,
+    selectedSnapshotSha256: "f".repeat(64),
+  };
+  const forgedFrame = {
+    ...frameBody,
+    frameSha256: await sha256CanonicalIntelligence(frameBody),
+  };
+  const replayBody = {
+    schemaVersion: replay.schemaVersion,
+    policySha256: replay.policySha256,
+    snapshotSha256s: replay.snapshotSha256s,
+    frames: [forgedFrame],
+  };
+  const forgedReplay = {
+    ...replayBody,
+    replaySha256: await sha256CanonicalIntelligence(replayBody),
+  };
+  await assert.rejects(
+    verifyExternalIntelligenceReplay(forgedReplay),
+    /undeclared snapshot identity/u,
   );
 });
