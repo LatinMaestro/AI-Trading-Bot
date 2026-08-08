@@ -28,6 +28,7 @@ Strategy, AUD cash, BTC and equal-weight series must use one reporting currency.
 - return/drawdown summaries and comparisons;
 - objective progress and scenario-risk metrics;
 - code, data, universe, strategy, execution, objective and benchmark configuration digests;
+- a sorted unique bounded list of persisted external-intelligence comparison digests, empty when none applies;
 - optional versioned FX-conversion digest;
 - canonical warnings; and
 - SHA-256 digest of canonical report content.

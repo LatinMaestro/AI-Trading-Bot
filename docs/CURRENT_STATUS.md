@@ -5,9 +5,9 @@ Last verified: 8 August 2026 (Australia/Brisbane)
 ## Integration checkpoint
 
 - Repository: `LatinMaestro/AI-Trading-Bot`
-- Verified base `main`: `fa76ee97091a242b1909e1eeff9dcacc659c07ba`
-- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #39 are repaired, exact-head validated and squash-merged; replacement PRs #99 through #109 carry reconstructed historical #40 through #50 slices; PRs #7, #10, #16, #18, #20, #22, #24, #26 and historical #40 through #50 are closed without merge.
-- This tree reconstructs historical pull request #51 as a replay-bound execution-aware research gate directly on that verified base. It rebuilds complete intelligence artifacts before suppression and grants no strategy, runtime or order authority.
+- Verified base `main`: `d3e74d381ea85c82bb746930357ad37495cc76ed`
+- Pull requests #1 through #6, #8, #9, #11 through #15, #17, #19, #21, #23, #25, #27 and #28 through #39 are repaired, exact-head validated and squash-merged; replacement PRs #99 through #110 carry reconstructed historical #40 through #51 slices; PRs #7, #10, #16, #18, #20, #22, #24, #26 and historical #40 through #51 are closed without merge.
+- This tree reconstructs historical pull request #52 as source-reproduced immutable external-intelligence comparison persistence directly on that verified base. It grants no strategy, runtime or order authority.
 - The remaining draft stack was created on historical ancestry. Each later pull request must be reconstructed as a focused delta on the latest verified `main`.
 - Live deployment: none
 - Credentials: none
@@ -58,6 +58,7 @@ Last verified: 8 August 2026 (Australia/Brisbane)
 - Replacement PR #107 run [30717577097](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30717577097): lockfile reproduction, paper type generation, strict TypeScript, 303 tests including assessment-persistence migration validation, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - Replacement PR #108 run [30717952524](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/30717952524): lockfile reproduction, paper type generation, strict TypeScript, 310 tests, migration validation, paper dry-run, forbidden/secret/import-boundary scans and zero-vulnerability audit passed.
 - Replacement PR #109 run [31239966469](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/31239966469): lockfile reproduction, enforcing zero-vulnerability audit, paper type generation, strict TypeScript, 317 tests, paper dry-run and all forbidden/secret/import-boundary scans passed.
+- Replacement PR #110 run [31242232560](https://github.com/LatinMaestro/AI-Trading-Bot/actions/runs/31242232560): lockfile reproduction, enforcing zero-vulnerability audit, paper type generation, strict TypeScript, 322 tests, paper dry-run and all forbidden/secret/import-boundary scans passed.
 
 ## Universe-ingestion evidence
 
@@ -360,6 +361,16 @@ Last verified: 8 August 2026 (Australia/Brisbane)
 - Research candidates remain observational. Synthetic fixtures prove invariants only; authoritative calibrated comparison evidence and persistence remain incomplete.
 - No runtime connection, deployment, credential, fund, strategy-selection or order authority is added.
 
+## Immutable intelligence-comparison persistence evidence
+
+- Independently content-addresses complete baseline and intelligence-gated results before binding them into one comparison identity.
+- Rebuilds the complete replay source artifacts, execution configuration and steps inside the persistence verifier and requires exact canonical reproduction.
+- Persists a compact D1 manifest binding replay, result, derived-metric, suppression, frame-count and final-execution evidence.
+- Requires persistence no earlier than final execution in both application and database constraints; exact retries retain the first persistence time.
+- Rejects identity conflicts and ordinary update/delete operations, and binds a sorted unique comparison-digest list into research-report provenance.
+- Synthetic fixtures prove persistence and tamper invariants only; authoritative calibrated comparison population remains incomplete.
+- No runtime connection, deployment, credential, fund, strategy-selection or order authority is added.
+
 ## Next action
 
-Validate this reconstructed historical #51 slice at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #52 as the earliest remaining open dependency.
+Validate this reconstructed historical #52 slice at its exact head, inspect every job and log, merge only if all locked gates pass, verify merged bytes, then reconstruct PR #53 as the earliest remaining open dependency.

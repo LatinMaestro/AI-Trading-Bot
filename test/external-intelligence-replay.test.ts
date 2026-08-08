@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 import {
   evaluateExternalIntelligenceBacktestGate,
@@ -28,6 +30,10 @@ import {
   prepareExternalIntelligenceManipulationEvidence,
 } from "../src/intelligence/externalIntelligenceManipulation.ts";
 import { sha256CanonicalIntelligence } from "../src/intelligence/canonical.ts";
+import {
+  prepareExternalIntelligenceBacktestComparisonPersistence,
+  verifyExternalIntelligenceBacktestComparison,
+} from "../src/storage/externalIntelligenceBacktestComparison.ts";
 import { sha256Hex } from "../src/utils/crypto.ts";
 
 const HOUR_MS = 3_600_000;
@@ -550,7 +556,145 @@ test("gates buys only after rebuilding the complete replay artifacts", async () 
       ?.suppressedExecutions[0]?.pauseEvidenceSha256s[0],
     replay.frames[0]?.activePauseNewRiskSha256s[0],
   );
+  assert.match(comparison.baselineResultSha256, /^[0-9a-f]{64}$/u);
+  assert.match(
+    comparison.intelligenceGatedResultSha256,
+    /^[0-9a-f]{64}$/u,
+  );
   assert.match(comparison.comparisonSha256, /^[0-9a-f]{64}$/u);
+});
+
+test("reproduces and immutably persists a chronology-bound comparison", async () => {
+  const risk = await item(
+    "persisted-risk",
+    "official-exchange",
+    "security-incident",
+    "negative",
+    DECISION_HOUR - 60_000,
+    DECISION_HOUR - 40_000,
+    DECISION_HOUR - 20_000,
+  );
+  const replayInput = {
+    decisionTimestampsMs: [DECISION_HOUR],
+    snapshots: [await snapshot(DECISION_HOUR, [risk])],
+    policy: REPLAY_POLICY,
+  };
+  const steps = [
+    backtestStep(DECISION_HOUR, [
+      {
+        pair: "BTC/AUD",
+        targetWeight: 1,
+        executionStyle: "taker" as const,
+      },
+    ]),
+  ];
+  const comparison = await runExternalIntelligenceBacktestComparison(
+    BACKTEST_CONFIG,
+    steps,
+    replayInput,
+  );
+  const persistedAtMs = DECISION_HOUR + 2 * HOUR_MS;
+  const input = {
+    comparison,
+    config: BACKTEST_CONFIG,
+    steps,
+    replayInput,
+    persistedAtMs,
+  };
+  const verified =
+    await verifyExternalIntelligenceBacktestComparison(input);
+  assert.equal(
+    verified.latestExecutionAtMs,
+    DECISION_HOUR + HOUR_MS,
+  );
+
+  const first =
+    await prepareExternalIntelligenceBacktestComparisonPersistence(input);
+  const retry =
+    await prepareExternalIntelligenceBacktestComparisonPersistence({
+      ...input,
+      persistedAtMs: persistedAtMs + HOUR_MS,
+    });
+  const db = new DatabaseSync(":memory:");
+  db.exec(
+    readFileSync(
+      new URL(
+        "../migrations/0015_external_intelligence_backtest_comparisons.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
+  db.prepare(first.sql).run(...first.params);
+  db.prepare(retry.sql).run(...retry.params);
+  const row = db
+    .prepare(
+      `SELECT comparison_sha256, replay_sha256, baseline_result_sha256,
+              intelligence_gated_result_sha256, suppressed_request_count,
+              latest_execution_at_ms, persisted_at_ms
+       FROM external_intelligence_backtest_comparisons`,
+    )
+    .get() as Record<string, string | number>;
+  assert.deepEqual({ ...row }, {
+    comparison_sha256: comparison.comparisonSha256,
+    replay_sha256: comparison.replaySha256,
+    baseline_result_sha256: comparison.baselineResultSha256,
+    intelligence_gated_result_sha256:
+      comparison.intelligenceGatedResultSha256,
+    suppressed_request_count: 1,
+    latest_execution_at_ms: DECISION_HOUR + HOUR_MS,
+    persisted_at_ms: persistedAtMs,
+  });
+
+  const conflicting = [...first.params];
+  conflicting[10] = 2;
+  assert.throws(
+    () => db.prepare(first.sql).run(...conflicting),
+    /comparison conflict/u,
+  );
+  const predated = [...first.params];
+  predated[0] = "f".repeat(64);
+  predated[15] = DECISION_HOUR;
+  assert.throws(
+    () => db.prepare(first.sql).run(...predated),
+    /CHECK constraint failed/u,
+  );
+  assert.throws(
+    () =>
+      db
+        .prepare(
+          `UPDATE external_intelligence_backtest_comparisons
+           SET persisted_at_ms = persisted_at_ms + 1`,
+        )
+        .run(),
+    /immutable/u,
+  );
+  assert.throws(
+    () =>
+      db
+        .prepare("DELETE FROM external_intelligence_backtest_comparisons")
+        .run(),
+    /immutable/u,
+  );
+  db.close();
+
+  await assert.rejects(
+    verifyExternalIntelligenceBacktestComparison({
+      ...input,
+      comparison: {
+        ...comparison,
+        suppressedRequestCount: 2,
+      },
+    }),
+    /does not reproduce exactly/u,
+  );
+  await assert.rejects(
+    prepareExternalIntelligenceBacktestComparisonPersistence({
+      ...input,
+      persistedAtMs: DECISION_HOUR,
+    }),
+    /no earlier than comparison execution/u,
+  );
 });
 
 test("preserves an exit while a fresh replay pause is active", async () => {

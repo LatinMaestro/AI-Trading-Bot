@@ -74,7 +74,8 @@
   - [ ] Backtest news/social features with original publication and receipt timestamps and no look-ahead.
     - [x] Add deterministic hourly replay frames with complete correction-effective artifact verification.
     - [x] Bind rebuilt replay frames to execution-aware backtests and content-address baseline-versus-gated comparisons.
-    - [ ] Persist and populate authoritative comparison evidence from calibrated survivorship-safe market data.
+    - [x] Persist independently content-addressed, source-reproduced comparison manifests with immutable chronology controls.
+    - [ ] Populate authoritative comparison evidence from calibrated survivorship-safe market data.
 - [ ] Research external-intelligence features only after provenance, latency and manipulation controls are validated.
 
 - [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
@@ -88,6 +89,7 @@
   - [x] Add deterministic aligned equity-series builders and comparisons.
   - [x] Bind converted objective paths to time-aligned FX rates and their source digest.
   - [x] Add content-addressed research-report v1 provenance.
+  - [x] Bind sorted unique external-intelligence comparison identities into report provenance.
   - [ ] Populate reports from authoritative walk-forward, holdout and sensitivity evidence.
 - [ ] Add target-attainment, terminal-wealth and risk-of-ruin analysis.
   - [x] Add objective-path, progress-status and required-forward-rate calculations.

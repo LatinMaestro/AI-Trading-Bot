@@ -72,6 +72,7 @@ D1 stores:
 - immutable discovered lifecycle document captures bound to exact discovery and committed-index provenance;
 - versioned external-intelligence source contracts covering provider, publisher, licence, attribution, retention, deletion and model-use rules;
 - immutable external-intelligence items, append-only corrections, content-addressed entity/syndication linkages and deterministic assessments;
+- immutable content-addressed external-intelligence backtest comparison manifests;
 - purge-enforced transient Reddit post metadata with non-extendable deletion deadlines;
 - content-free aggregate Reddit watch state, retention audits and invalidation events;
 - content-addressed external-intelligence ingestion batches, memberships and database-verified commit markers;
@@ -97,6 +98,8 @@ Discovered lifecycle pages and documents use a separate immutable capture table 
 Reddit post-level state uses a separate transient boundary and never enters the immutable intelligence ledger or durable Queue. D1 preserves only bounded post identity metadata until the original deletion deadline. Deletes require a batch-local purge authorization; provider removals and deadline expiry atomically delete transient rows, record only aggregate content-free compliance evidence and invalidate downstream watch state. Failed provider refreshes cannot extend retention.
 
 External-intelligence batches use deterministic source-contract, correction, policy, assessment and batch digests. Application validation binds every item to an effective source-contract version and reproduces every assessment from referenced items and policy. Database constraints reject changed identities, enforce chronology and source-contract compatibility, preserve corrections instead of rewriting history and expose a batch only after declared memberships are complete.
+
+External-intelligence backtest comparisons reproduce the complete replay, baseline and gated results from exact source artifacts, execution configuration and steps before persistence. Compact D1 manifests bind independent result digests, replay identity, derived deltas, suppression totals and the latest execution time. Persistence cannot predate execution; exact retries are idempotent, while conflicting identity reuse and ordinary mutation fail closed.
 
 ## AI design
 

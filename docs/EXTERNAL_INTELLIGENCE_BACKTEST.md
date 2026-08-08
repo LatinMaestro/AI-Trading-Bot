@@ -81,10 +81,27 @@ evidence, requested AUD notional, signal time and execution time. Suppression
 is distinct from a market miss and never becomes a simulated fill.
 
 The same configuration and steps run once without intelligence and once with
-the verified gate. The comparison content-addresses both complete results,
-equity and return deltas, suppression counts and notional, and pause and
-research-candidate frame counts. Research candidates remain observational and
-cannot change targets or create requests.
+the verified gate. The comparison independently content-addresses both complete
+results and then binds those result identities with equity and return deltas,
+suppression counts and notional, and pause and research-candidate frame counts.
+Research candidates remain observational and cannot change targets or create
+requests.
+
+## Immutable comparison persistence
+
+Persistence does not accept a replay artifact as sufficient proof. It receives
+the complete replay source input, execution configuration and steps, rebuilds
+both results and requires exact canonical equality with the supplied comparison
+before preparing any D1 statement. This removes stale or caller-forged replay,
+frame, suppression and derived-metric surfaces from the storage boundary.
+
+The compact manifest stores the comparison, replay and independent result
+digests, final equity and return metrics, suppression totals, observed frame
+counts, latest execution time and persistence time. Application and D1 checks
+require persistence no earlier than the final execution. Exact retries preserve
+the first persistence time; changed identity reuse conflicts, and update or
+delete operations fail closed. The manifest proves reproducible research
+identity only and grants no strategy approval.
 
 ## Reproducibility
 
@@ -97,5 +114,5 @@ be suppressed.
 
 This remains research evidence only. Synthetic fixtures prove binding and
 execution invariants, not profitability. Authoritative market data, calibrated
-costs, walk-forward and final-holdout evaluation, persistence and every
-strategy review gate remain required. No runtime or order authority is added.
+costs, walk-forward and final-holdout evaluation, authoritative population and
+every strategy review gate remain required. No runtime or order authority is added.
