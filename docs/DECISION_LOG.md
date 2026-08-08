@@ -344,3 +344,11 @@ Reconstruct historical PR #51 by deriving execution gates only from complete rep
 A fresh `pause-new-risk` frame removes buy requests before fee, fill, capacity and impact modelling. Reductions and exits remain available, including after an earlier partial fill. Suppressed requests are separate from market misses and bind exact frame, evidence, chronology, style and requested AUD notional. Research candidates remain measurable but cannot change targets or create requests.
 
 The baseline and intelligence-gated results are content-addressed together with return/equity deltas and suppression evidence. This is runtime-disconnected research infrastructure and does not establish profitability, select a strategy, deploy infrastructure or grant order authority. Authoritative calibrated data, persistence, walk-forward and holdout evidence remain required.
+
+## 2026-08-08 — Source-reproduced immutable intelligence comparisons
+
+Reconstruct historical PR #52 by independently content-addressing complete baseline and intelligence-gated backtest results and binding both identities into the comparison digest. A persistence request must provide the complete replay source artifacts, execution configuration and steps; the storage boundary rebuilds the comparison and requires exact canonical equality instead of trusting a caller-supplied replay or gate artifact.
+
+Persist only a compact immutable D1 manifest binding the replay, independent results, derived deltas, suppression evidence totals, observed frame counts and final execution time. Application and database controls prohibit persistence before the final execution, preserve the first persistence time on exact retry, reject changed identity reuse and prevent ordinary update or deletion.
+
+Research-report provenance carries a sorted unique bounded list of comparison identities, including an explicit empty list when no comparison applies. These digests prove reproducible research identity only. They do not establish profitability, select or sign a strategy, connect runtime execution, deploy infrastructure or grant order authority.
