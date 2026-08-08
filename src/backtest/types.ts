@@ -83,6 +83,23 @@ export interface BacktestCostSummary {
   readonly missedFillNotionalAud: number;
 }
 
+export interface BacktestSuppressedExecution {
+  readonly signalTimestampMs: number;
+  readonly executionTimestampMs: number;
+  readonly pair: string;
+  readonly side: "buy";
+  readonly executionStyle: ExecutionStyle;
+  readonly requestedNotionalAud: number;
+  readonly frameSha256: string;
+  readonly pauseEvidenceSha256s: readonly string[];
+}
+
+export interface BacktestExternalIntelligenceEvidence {
+  readonly replaySha256: string;
+  readonly executionGateFrameSha256s: readonly string[];
+  readonly suppressedExecutions: readonly BacktestSuppressedExecution[];
+}
+
 export interface BacktestResult {
   readonly initialEquityAud: number;
   readonly finalEquityAud: number;
@@ -93,4 +110,5 @@ export interface BacktestResult {
   readonly equityCurve: readonly BacktestEquityPoint[];
   readonly finalPositions: readonly BacktestPosition[];
   readonly costs: BacktestCostSummary;
+  readonly externalIntelligence: BacktestExternalIntelligenceEvidence | null;
 }
