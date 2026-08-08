@@ -73,7 +73,8 @@
   - [x] Integrate `pause-new-risk` into paper-mode risk controls and incident reporting.
   - [ ] Backtest news/social features with original publication and receipt timestamps and no look-ahead.
     - [x] Add deterministic hourly replay frames with complete correction-effective artifact verification.
-    - [ ] Bind replay frames to execution-aware backtests and persist authoritative comparison evidence.
+    - [x] Bind rebuilt replay frames to execution-aware backtests and content-address baseline-versus-gated comparisons.
+    - [ ] Persist and populate authoritative comparison evidence from calibrated survivorship-safe market data.
 - [ ] Research external-intelligence features only after provenance, latency and manipulation controls are validated.
 
 - [ ] Build fee-, spread-, slippage-, missed-fill- and price-impact-aware backtest engine.
