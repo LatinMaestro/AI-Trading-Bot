@@ -198,6 +198,8 @@ Statuspage `maintenance`, `none` and `minor` impacts remain neutral. Only struct
    - [x] Bind exact linkage/manipulation partitions to reproduced immutable assessments.
 8. [x] Integrate `pause-new-risk` with paper-mode risk controls.
 9. [ ] Backtest news/social features without look-ahead using original publication and receipt timestamps.
+   - [x] Add deterministic hourly replay using complete correction-effective snapshots, original publication/receipt/availability/assessment chronology and exact cross-artifact verification.
+   - [ ] Bind replay frames to execution-aware backtests and produce authoritative baseline-versus-gated results.
 10. [ ] Promote any risk-on use only after walk-forward, holdout, manipulation and cost evidence.
 
 ## Current limitation
