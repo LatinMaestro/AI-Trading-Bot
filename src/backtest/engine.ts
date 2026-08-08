@@ -1,3 +1,9 @@
+import { sha256CanonicalIntelligence } from "../intelligence/canonical.ts";
+import {
+  verifyExternalIntelligenceReplay,
+  type ExternalIntelligenceReplay,
+  type ExternalIntelligenceReplayFrame,
+} from "./externalIntelligenceReplay.ts";
 import type {
   BacktestConfig,
   BacktestEquityPoint,
@@ -7,6 +13,7 @@ import type {
   BacktestPosition,
   BacktestResult,
   BacktestStep,
+  BacktestSuppressedExecution,
   ExecutionAssumptions,
   ExecutionStyle,
   TargetAllocation,
@@ -26,6 +33,20 @@ interface OrderRequest {
   readonly requestedNotionalAud: number;
   readonly executionStyle: ExecutionStyle;
   readonly market: BacktestMarket;
+}
+
+export interface ExternalIntelligenceBacktestComparison {
+  readonly schemaVersion: "external-intelligence-backtest-comparison-v1";
+  readonly replaySha256: string;
+  readonly baselineResult: BacktestResult;
+  readonly intelligenceGatedResult: BacktestResult;
+  readonly finalEquityDeltaAud: number;
+  readonly totalReturnDeltaPct: number;
+  readonly suppressedRequestCount: number;
+  readonly suppressedRequestedNotionalAud: number;
+  readonly pauseFrameCount: number;
+  readonly researchCandidateFrameCount: number;
+  readonly comparisonSha256: string;
 }
 
 function assertFinite(name: string, value: number): void {
@@ -487,9 +508,10 @@ function equityPoint(
   };
 }
 
-export function runBacktest(
+function runBacktestInternal(
   config: BacktestConfig,
   steps: readonly BacktestStep[],
+  verifiedReplay: ExternalIntelligenceReplay | null,
 ): BacktestResult {
   validateAssumptions(config);
   if (steps.length === 0) {
@@ -502,10 +524,13 @@ export function runBacktest(
   };
   const executions: BacktestExecution[] = [];
   const equityCurve: BacktestEquityPoint[] = [];
+  const suppressedExecutions: BacktestSuppressedExecution[] = [];
   let previousExecutionTimestampMs: number | undefined;
   let highWaterMarkAud = config.initialCashAud;
 
-  for (const step of steps) {
+  for (const [stepIndex, step] of steps.entries()) {
+    const frame: ExternalIntelligenceReplayFrame | null =
+      verifiedReplay?.frames[stepIndex] ?? null;
     const indexed = indexStep(
       step,
       previousExecutionTimestampMs,
@@ -519,6 +544,26 @@ export function runBacktest(
       indexed.targets,
       config.defaultExitStyle,
     );
+    const pausesNewRisk =
+      (frame?.activePauseNewRiskSha256s.length ?? 0) > 0;
+    const executableBuys = pausesNewRisk ? [] : requests.buys;
+    if (pausesNewRisk) {
+      if (frame === null) {
+        throw new Error("Suppressed requests require a verified replay frame");
+      }
+      for (const request of requests.buys) {
+        suppressedExecutions.push({
+          signalTimestampMs: step.signalTimestampMs,
+          executionTimestampMs: step.executionTimestampMs,
+          pair: request.pair,
+          side: "buy",
+          executionStyle: request.executionStyle,
+          requestedNotionalAud: request.requestedNotionalAud,
+          frameSha256: frame.frameSha256,
+          pauseEvidenceSha256s: frame.activePauseNewRiskSha256s,
+        });
+      }
+    }
 
     for (const request of requests.sells) {
       executions.push(
@@ -536,11 +581,11 @@ export function runBacktest(
       portfolio.cashAud - config.assumptions.cashReserveAud,
     );
     const buyFillLimits = proportionalBuyFillLimits(
-      requests.buys,
+      executableBuys,
       availableCashAud,
       config.assumptions,
     );
-    for (const [index, request] of requests.buys.entries()) {
+    for (const [index, request] of executableBuys.entries()) {
       executions.push(
         executeOrder(
           request,
@@ -629,5 +674,85 @@ export function runBacktest(
     equityCurve,
     finalPositions,
     costs,
+    externalIntelligence:
+      verifiedReplay === null
+        ? null
+        : {
+            replaySha256: verifiedReplay.replaySha256,
+            executionGateFrameSha256s: verifiedReplay.frames.map(
+              (frame) => frame.frameSha256,
+            ),
+            suppressedExecutions,
+          },
+  };
+}
+
+export function runBacktest(
+  config: BacktestConfig,
+  steps: readonly BacktestStep[],
+): BacktestResult {
+  return runBacktestInternal(config, steps, null);
+}
+
+export async function runExternalIntelligenceBacktestComparison(
+  config: BacktestConfig,
+  steps: readonly BacktestStep[],
+  replay: ExternalIntelligenceReplay,
+): Promise<ExternalIntelligenceBacktestComparison> {
+  await verifyExternalIntelligenceReplay(replay);
+  if (steps.length !== replay.frames.length) {
+    throw new Error(
+      "Replay must contain exactly one verified frame per backtest step",
+    );
+  }
+  const frameSha256s = new Set<string>();
+  for (const [index, step] of steps.entries()) {
+    const frame = replay.frames[index];
+    if (
+      frame === undefined ||
+      frame.decisionAtMs !== step.signalTimestampMs
+    ) {
+      throw new Error("Replay frame does not match backtest signal time");
+    }
+    if (frameSha256s.has(frame.frameSha256)) {
+      throw new Error("Replay frame cannot gate multiple backtest steps");
+    }
+    frameSha256s.add(frame.frameSha256);
+  }
+
+  const baselineResult = runBacktestInternal(config, steps, null);
+  const intelligenceGatedResult = runBacktestInternal(
+    config,
+    steps,
+    replay,
+  );
+  const suppressedExecutions =
+    intelligenceGatedResult.externalIntelligence?.suppressedExecutions ?? [];
+  const canonical = {
+    schemaVersion: "external-intelligence-backtest-comparison-v1",
+    replaySha256: replay.replaySha256,
+    baselineResult,
+    intelligenceGatedResult,
+    finalEquityDeltaAud:
+      intelligenceGatedResult.finalEquityAud -
+      baselineResult.finalEquityAud,
+    totalReturnDeltaPct:
+      intelligenceGatedResult.totalReturnPct -
+      baselineResult.totalReturnPct,
+    suppressedRequestCount: suppressedExecutions.length,
+    suppressedRequestedNotionalAud: suppressedExecutions.reduce(
+      (sum, execution) => sum + execution.requestedNotionalAud,
+      0,
+    ),
+    pauseFrameCount: replay.frames.filter(
+      (frame) => frame.activePauseNewRiskSha256s.length > 0,
+    ).length,
+    researchCandidateFrameCount: replay.frames.filter(
+      (frame) => frame.activeResearchCandidateSha256s.length > 0,
+    ).length,
+  } as const;
+  return {
+    ...canonical,
+    comparisonSha256: await sha256CanonicalIntelligence(canonical),
   };
 }
